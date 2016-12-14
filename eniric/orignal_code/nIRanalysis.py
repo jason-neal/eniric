@@ -97,7 +97,7 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
     print "Starting the Rotation convolution for vsini=%.2f..." % (vsini)
 
     delta_lambda_min = wav_band[0]*vsini/3.0e5
-    delta_lambda_max = wav_band[1]*vsini/3.0e5
+    delta_lambda_max = wav_band[-1]*vsini/3.0e5
     #widest wavelength bin for the rotation convolution
     wav_ext_rotation, flux_ext_rotation = wav_selector(wav, flux, wav_band[0]-delta_lambda_min-FWHM_lim*FWHM_min, wav_band[-1]+delta_lambda_max+FWHM_lim*FWHM_max) 
     wav_ext_rotation = np.array(wav_ext_rotation, dtype="float64")
