@@ -17,7 +17,7 @@ from IOmodule import read_2col, read_3col
 
 from Qcalculator import *
 
-data_rep = "/home/pfigueira/data/nIRmodels/"
+data_rep = "../data/nIRmodels/"
 results_dir = "results/"
 resampled_dir = "resampled/"
 
