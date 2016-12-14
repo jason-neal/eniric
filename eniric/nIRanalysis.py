@@ -177,11 +177,33 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
 def wav_selector(wav, flux, wav_min, wav_max):
     """
     function that returns wavelength and flux withn a giving range
-    """
-    wav_sel = np.array([value for value in wav if(wav_min < value < wav_max)], dtype="float64")
-    flux_sel = np.array([value[1] for value in zip(wav, flux) if(wav_min < value[0] < wav_max)], dtype="float64")
 
-    return [wav_sel, flux_sel]
+    Parameters
+    ----------
+    wav: array-like
+        Wavelength array.
+    flux: array-like
+        Flux array.
+    wav_min: float
+        Lower bound wavelength value.
+    wav_max: float
+        Upper bound wavelength value.
+
+    Returns
+    -------
+    wav_sel: array
+        New wavelength array within bounds wav_min, wav_max
+    flux_sel: array
+        New wavelength array within bounds wav_min, wav_max
+        """
+    wav = np.asarray(wav, dtype="float64")
+    flux = np.asarray(flux, dtype="float64")
+
+    mask = (wav > wav_min) & (wav < wav_max)
+    flux_sel = flux[mask]
+    wav_sel = wav[mask]
+
+    return wav_sel, flux_sel
 
 
 def unitary_Gauss(x, center, FWHM):
