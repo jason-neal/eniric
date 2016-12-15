@@ -19,8 +19,8 @@ from matplotlib import rc
 rc('text', usetex=True)
 
 data_rep = "../data/nIRmodels/"
-results_dir = "results/"
-resampled_dir = "resampled/"
+results_dir = "../data/results/"
+resampled_dir = "../data/resampled/"
 
 # models form PHOENIX-ACES
 M0_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
