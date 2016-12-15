@@ -4,7 +4,7 @@ Created on Mon Dec 29 00:14:56 2014
 @author: pfigueira
 """
 
-from eniric.orignal_code.IOmodule import read_2col
+from eniric.original_code.IOmodule import read_2col
 
 import numpy as np
 
