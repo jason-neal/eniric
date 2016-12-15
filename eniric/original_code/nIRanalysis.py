@@ -14,9 +14,9 @@ from matplotlib import rc
 #set stuff for latex usage
 rc('text', usetex=True)
 
-from eniric.orignal_code.IOmodule import read_2col, read_3col
+from eniric.original_code.IOmodule import read_2col, read_3col
 
-from eniric.orignal_code.Qcalculator import *
+from eniric.original_code.Qcalculator import *
 
 data_rep = "../../data/nIRmodels/"
 results_dir = "../../data/orignal_code/results/"
