@@ -8,8 +8,8 @@ import numpy as np
 from os import listdir
 from os.path import isfile, join
 
-from IOmodule import read_2col, read_3col
-from Qcalculator import RVprec_calc, SqrtSumWis
+from eniric.IOmodule import read_2col, read_3col
+from eniric.Qcalculator import RVprec_calc, SqrtSumWis
 
 import matplotlib.pyplot as plt
 from matplotlib import rc
@@ -111,38 +111,12 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
     wav_extended = np.array(wav_extended, dtype="float64")
     flux_extended = np.array(flux_extended, dtype="float64")
 
-    flux_conv_rot = []
-    counter = 0
-    for wav in wav_extended:
-        # select all values such that they are within the FWHM limits
-        delta_lambda_L = wav*vsini/3.0e5
-        indexes = [i for i in range(len(wav_ext_rotation)) if ((wav - delta_lambda_L) < wav_ext_rotation[i] < (wav + delta_lambda_L))]
-        flux_2convolve = flux_ext_rotation[indexes[0]:indexes[-1]+1]
-        rotation_profile = rotation_kernel(wav_ext_rotation[indexes[0]:indexes[-1]+1]-wav, delta_lambda_L, vsini, epsilon)
-        flux_conv_rot.append(np.sum(rotation_profile*flux_2convolve))
-        if(len(flux_conv_rot) % (len(wav_extended)/100) == 0):
-            counter = counter+1
-            print("Rotation Convolution at %d%%..." % (counter))
-
-    print("Done.\n")
-    flux_conv_rot = np.array(flux_conv_rot, dtype="float64")
+    # rotational convolution
+    flux_conv_rot = rotational_convolution(wav, wav_extended, wav_ext_rotation, flux_ext_rotation, vsini, epsilon)
 
     print("Starting the Resolution convolution...")
 
-    flux_conv_res = []
-    counter = 0
-    for wav in wav_band:
-        # select all values such that they are within the FWHM limits
-        FWHM = wav/R
-        indexes = [i for i in range(len(wav_extended)) if ((wav - FWHM_lim*FWHM) < wav_extended[i] < (wav + FWHM_lim*FWHM))]
-        flux_2convolve = flux_conv_rot[indexes[0]:indexes[-1]+1]
-        IP = unitary_Gauss(wav_extended[indexes[0]:indexes[-1]+1], wav, FWHM)
-        flux_conv_res.append(np.sum(IP*flux_2convolve))
-        if(len(flux_conv_res) % (len(wav_band)/100) == 0):
-            counter = counter+1
-            print("Resolution Convolution at %d%%..." % (counter))
-    flux_conv_res = np.array(flux_conv_res, dtype="float64")
-    print("Done.\n")
+    flux_conv_res = resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim)
 
     print("Saving results...")
 
@@ -166,6 +140,47 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
         plt.close()
 
     return [wav_band, flux_conv_res]
+
+
+def rotational_convolution(wav, wav_extended, wav_ext_rotation, flux_ext_rotation, vsini, epsilon):
+    """ Perform Rotational convolution part of convolution.
+    """
+    flux_conv_rot = []
+    counter = 0
+    for wav in wav_extended:
+        # select all values such that they are within the FWHM limits
+        delta_lambda_L = wav*vsini/3.0e5
+        indexes = [i for i in range(len(wav_ext_rotation)) if ((wav - delta_lambda_L) < wav_ext_rotation[i] < (wav + delta_lambda_L))]
+        flux_2convolve = flux_ext_rotation[indexes[0]:indexes[-1]+1]
+        rotation_profile = rotation_kernel(wav_ext_rotation[indexes[0]:indexes[-1]+1]-wav, delta_lambda_L, vsini, epsilon)
+        flux_conv_rot.append(np.sum(rotation_profile*flux_2convolve))
+        if(len(flux_conv_rot) % (len(wav_extended)/100) == 0):
+            counter = counter+1
+            print("Rotation Convolution at %d%%..." % (counter))
+
+    print("Done.\n")
+    flux_conv_rot = np.array(flux_conv_rot, dtype="float64")
+    return flux_conv_rot
+
+
+def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim):
+    """ Perform Resolution convolution part of convolution.
+    """
+    flux_conv_res = []
+    counter = 0
+    for wav in wav_band:
+        # select all values such that they are within the FWHM limits
+        FWHM = wav/R
+        indexes = [i for i in range(len(wav_extended)) if ((wav - FWHM_lim*FWHM) < wav_extended[i] < (wav + FWHM_lim*FWHM))]
+        flux_2convolve = flux_conv_rot[indexes[0]:indexes[-1]+1]
+        IP = unitary_Gauss(wav_extended[indexes[0]:indexes[-1]+1], wav, FWHM)
+        flux_conv_res.append(np.sum(IP*flux_2convolve))
+        if(len(flux_conv_res) % (len(wav_band)/100) == 0):
+            counter = counter+1
+            print("Resolution Convolution at %d%%..." % (counter))
+    flux_conv_res = np.array(flux_conv_res, dtype="float64")
+    print("Done.\n")
+    return flux_conv_res
 
 
 ###############################################################################
@@ -207,30 +222,60 @@ def wav_selector(wav, flux, wav_min, wav_max):
 
 
 def unitary_Gauss(x, center, FWHM):
-    """
-    Gaussian_function of area=1
+    """ Gaussian function of area = 1.
 
-    p[0] = A
-    p[1] = mean
-    p[2] = FWHM
+    Parameters
+    ----------
+    x: array-like
+        Position array
+    center: float
+        Central postion of Gaussian
+    FHWM: float
+        Full Width at Half Maximum
+
+    Returns
+    -------
+    result: array-like
+        Result of gaussian function sampled at x values.
     """
 
     sigma = np.abs(FWHM) / (2 * np.sqrt(2 * np.log(2)))
-    Amp = 1.0 / (sigma*np.sqrt(2*np.pi))
-    tau = -((x - center)**2) / (2*(sigma**2))
+    Amp = 1.0 / (sigma * np.sqrt(2 * np.pi))
+    tau = -((x - center)**2) / (2 * (sigma**2))
     result = Amp * np.exp(tau)
 
     return result
 
 
 def rotation_kernel(delta_lambdas, delta_lambda_L, vsini, epsilon):
-    """
-    calculates the rotation kernel for a given wavelength
-    """
-    c1 = 2.0*(1.0-epsilon) / (np.pi*vsini*(1.0-epsilon/3.0))
-    c2 = 0.5*np.pi*epsilon / (np.pi*vsini*(1.0-epsilon/3.0))
+    """ Calculate the rotation kernel for a given wavelength
 
-    return (c1*np.sqrt(1.0-(delta_lambdas/delta_lambda_L)**2.0) + c2*(1.0-(delta_lambdas/delta_lambda_L)**2.0))
+    Parameters
+    ----------
+    delta_lambdas: array
+        Wavelength values selected within delta_lambda_L around central value. (check)
+    delta_lambda_L: float
+        FWHM of rotational broading. (check)
+    vsini: float
+        Projected rotational velocity [km/s]
+    epsilon: float
+        Linear limb-darkening coefficient (0-1).
+
+    Returns
+    -------
+        Rotational kernal
+
+    Notes:
+    Equations * from .... book.
+
+    """
+    denominator = (np.pi * vsini * (1.0 - epsilon / 3.0))
+    lambda_ratio_sqr = (delta_lambdas / delta_lambda_L)**2.0
+
+    c1 = 2.0 * (1.0 - epsilon) / denominator
+    c2 = 0.5 * np.pi * epsilon / denominator
+
+    return (c1 * np.sqrt(1.0-lambda_ratio_sqr) + c2 * (1.0-lambda_ratio_sqr))
 
 
 ###############################################################################
