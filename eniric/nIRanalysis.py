@@ -8,8 +8,8 @@ import numpy as np
 from os import listdir
 from os.path import isfile, join
 
-from IOmodule import read_2col, read_3col
-from Qcalculator import RVprec_calc, SqrtSumWis
+from eniric.IOmodule import read_2col, read_3col
+from eniric.Qcalculator import RVprec_calc, SqrtSumWis
 
 import matplotlib.pyplot as plt
 from matplotlib import rc
