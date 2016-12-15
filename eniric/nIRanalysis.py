@@ -185,17 +185,26 @@ def wav_selector(wav, flux, wav_min, wav_max):
 
 
 def unitary_Gauss(x, center, FWHM):
-    """
-    Gaussian_function of area=1
+    """ Gaussian function of area = 1.
 
-    p[0] = A
-    p[1] = mean
-    p[2] = FWHM
+    Parameters
+    ----------
+    x: array-like
+        Position array
+    center: float
+        Central postion of Gaussian
+    FHWM: float
+        Full Width at Half Maximum
+
+    Returns
+    -------
+    result: array-like
+        Result of gaussian function sampled at x values.
     """
 
     sigma = np.abs(FWHM) / (2 * np.sqrt(2 * np.log(2)))
-    Amp = 1.0 / (sigma*np.sqrt(2*np.pi))
-    tau = -((x - center)**2) / (2*(sigma**2))
+    Amp = 1.0 / (sigma * np.sqrt(2 * np.pi))
+    tau = -((x - center)**2) / (2 * (sigma**2))
     result = Amp * np.exp(tau)
 
     return result
