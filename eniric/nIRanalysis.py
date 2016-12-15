@@ -7,6 +7,7 @@ Adapted December 2016 by Jason Neal
 """
 from __future__ import division, print_function
 import numpy as np
+from tqdm import tqdm
 from os import listdir
 from os.path import isfile, join
 
@@ -149,7 +150,7 @@ def rotational_convolution(wav, wav_extended, wav_ext_rotation, flux_ext_rotatio
     """
     flux_conv_rot = []
     counter = 0
-    for wav in wav_extended:
+    for wav in tqdm(wav_extended):
         # select all values such that they are within the FWHM limits
         delta_lambda_L = wav*vsini/3.0e5
         indexes = [i for i in range(len(wav_ext_rotation)) if ((wav - delta_lambda_L) < wav_ext_rotation[i] < (wav + delta_lambda_L))]
@@ -170,7 +171,7 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim):
     """
     flux_conv_res = []
     counter = 0
-    for wav in wav_band:
+    for wav in tqdm(wav_band):
         # select all values such that they are within the FWHM limits
         FWHM = wav/R
         indexes = [i for i in range(len(wav_extended)) if ((wav - FWHM_lim*FWHM) < wav_extended[i] < (wav + FWHM_lim*FWHM))]
