@@ -2,8 +2,10 @@
 Created on Sun Dec 14 15:43:13 2014
 
 @author: pfigueira
-"""
 
+Adapted December 2016 by Jason Neal
+"""
+from __future__ import division, print_function
 import numpy as np
 from os import listdir
 from os.path import isfile, join
