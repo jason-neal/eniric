@@ -13,9 +13,9 @@ from matplotlib import rc
 #set stuff for latex usage
 rc('text', usetex=True)
 
-from IOmodule import read_2col, read_3col
+from eneric.orignal_code.IOmodule import read_2col, read_3col
 
-from Qcalculator import *
+from eneric.orignal_code.Qcalculator import *
 
 data_rep = "../../data/nIRmodels/"
 results_dir = "results/"
