@@ -226,13 +226,34 @@ def unitary_Gauss(x, center, FWHM):
 
 
 def rotation_kernel(delta_lambdas, delta_lambda_L, vsini, epsilon):
-    """
-    calculates the rotation kernel for a given wavelength
-    """
-    c1 = 2.0*(1.0-epsilon) / (np.pi*vsini*(1.0-epsilon/3.0))
-    c2 = 0.5*np.pi*epsilon / (np.pi*vsini*(1.0-epsilon/3.0))
+    """ Calculate the rotation kernel for a given wavelength
 
-    return (c1*np.sqrt(1.0-(delta_lambdas/delta_lambda_L)**2.0) + c2*(1.0-(delta_lambdas/delta_lambda_L)**2.0))
+    Parameters
+    ----------
+    delta_lambdas: array
+        Wavelength values selected within delta_lambda_L around central value. (check)
+    delta_lambda_L: float
+        FWHM of rotational broading. (check)
+    vsini: float
+        Projected rotational velocity [km/s]
+    epsilon: float
+        Linear limb-darkening coefficient (0-1).
+
+    Returns
+    -------
+        Rotational kernal
+
+    Notes:
+    Equations * from .... book.
+
+    """
+    denominator = (np.pi * vsini * (1.0 - epsilon / 3.0))
+    lambda_ratio_sqr = (delta_lambdas / delta_lambda_L)**2.0
+
+    c1 = 2.0 * (1.0 - epsilon) / denominator
+    c2 = 0.5 * np.pi * epsilon / denominator
+
+    return (c1 * np.sqrt(1.0-lambda_ratio_sqr) + c2 * (1.0-lambda_ratio_sqr))
 
 
 ###############################################################################
