@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # Testing script for nIR analysis
 # Jason Neal
 # December 2016
