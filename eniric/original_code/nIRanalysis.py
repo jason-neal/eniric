@@ -19,7 +19,7 @@ from eniric.original_code.IOmodule import read_2col, read_3col
 from eniric.original_code.Qcalculator import *
 
 data_rep = "../../data/nIRmodels/"
-results_dir = "../../data/orignal_code/results/"
+results_dir = "../../data/original_code/results/"
 resampled_dir = "../../data/original_code/resampled/"
 
 #models form PHOENIX-ACES
@@ -268,7 +268,8 @@ def name_assignment(spectrum):
         name = "M9-PHOENIX-ACES"
     else:
         print("Name not found!")
-        exit()
+        #exit()
+        name = "Unknown_name"
     return name
 
 def write_2col(filename, data1, data2):
