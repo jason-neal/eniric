@@ -14,13 +14,13 @@ from matplotlib import rc
 #set stuff for latex usage
 rc('text', usetex=True)
 
-from eniric.orignal_code.IOmodule import read_2col, read_3col
+from eniric.original_code.IOmodule import read_2col, read_3col
 
-from eniric.orignal_code.Qcalculator import *
+from eniric.original_code.Qcalculator import *
 
 data_rep = "../../data/nIRmodels/"
-results_dir = "results/"
-resampled_dir = "resampled/"
+results_dir = "../../data/orignal_code/results/"
+resampled_dir = "../../data/original_code/resampled/"
 
 #models form PHOENIX-ACES
 M0_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"

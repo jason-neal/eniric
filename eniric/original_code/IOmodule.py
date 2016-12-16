@@ -1,6 +1,4 @@
 
-import string
-
 ################################################################################
 #
 #    Functions to read column-separated files
@@ -49,8 +47,7 @@ def read_col(filename):
         if line[0] == '#':
                     continue
 
-        line = string.split(line)
-        list_data.append(line)
+        list_data.append(line.strip().split())
 
     f.close()
 
@@ -74,8 +71,7 @@ def read_col_charsplit(filename, sepchar):
         if line[0] == '#':
                     continue
 
-        line = string.split(line, sep=sepchar)
-        list_data.append(line)
+        list_data.append(line.strip.split(sepchar))
 
     f.close()
 
