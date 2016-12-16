@@ -7,6 +7,7 @@ Adapted December 2016 by Jason Neal
 """
 from __future__ import division, print_function
 import numpy as np
+from tqdm import tqdm
 from os import listdir
 from os.path import isfile, join
 
@@ -19,8 +20,8 @@ from matplotlib import rc
 rc('text', usetex=True)
 
 data_rep = "../data/nIRmodels/"
-results_dir = "results/"
-resampled_dir = "resampled/"
+results_dir = "../data/results/"
+resampled_dir = "../data/resampled/"
 
 # models form PHOENIX-ACES
 M0_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
@@ -149,7 +150,7 @@ def rotational_convolution(wav, wav_extended, wav_ext_rotation, flux_ext_rotatio
     """
     flux_conv_rot = []
     counter = 0
-    for wav in wav_extended:
+    for wav in tqdm(wav_extended):
         # select all values such that they are within the FWHM limits
         delta_lambda_L = wav*vsini/3.0e5
         indexes = [i for i in range(len(wav_ext_rotation)) if ((wav - delta_lambda_L) < wav_ext_rotation[i] < (wav + delta_lambda_L))]
@@ -170,7 +171,7 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim):
     """
     flux_conv_res = []
     counter = 0
-    for wav in wav_band:
+    for wav in tqdm(wav_band):
         # select all values such that they are within the FWHM limits
         FWHM = wav/R
         indexes = [i for i in range(len(wav_extended)) if ((wav - FWHM_lim*FWHM) < wav_extended[i] < (wav + FWHM_lim*FWHM))]
@@ -194,11 +195,33 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim):
 def wav_selector(wav, flux, wav_min, wav_max):
     """
     function that returns wavelength and flux withn a giving range
-    """
-    wav_sel = np.array([value for value in wav if(wav_min < value < wav_max)], dtype="float64")
-    flux_sel = np.array([value[1] for value in zip(wav, flux) if(wav_min < value[0] < wav_max)], dtype="float64")
 
-    return [wav_sel, flux_sel]
+    Parameters
+    ----------
+    wav: array-like
+        Wavelength array.
+    flux: array-like
+        Flux array.
+    wav_min: float
+        Lower bound wavelength value.
+    wav_max: float
+        Upper bound wavelength value.
+
+    Returns
+    -------
+    wav_sel: array
+        New wavelength array within bounds wav_min, wav_max
+    flux_sel: array
+        New wavelength array within bounds wav_min, wav_max
+        """
+    wav = np.asarray(wav, dtype="float64")
+    flux = np.asarray(flux, dtype="float64")
+
+    mask = (wav > wav_min) & (wav < wav_max)
+    flux_sel = flux[mask]
+    wav_sel = wav[mask]
+
+    return wav_sel, flux_sel
 
 
 def unitary_Gauss(x, center, FWHM):
