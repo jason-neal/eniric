@@ -12,7 +12,7 @@ from hypothesis import given, example
 import hypothesis.strategies as st
 
 import eniric.nIRanalysis as nir
-import eniric.orignal_code.nIRanalysis as nir_org
+import eniric.original_code.nIRanalysis as nir_org
 
 
 def load_data():
