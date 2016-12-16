@@ -25,8 +25,29 @@ def test_convolution_indexing():
     index_mask = ((wav_extended > (wav_val - FWHM_lim*FWHM)) &
                   (wav_extended < (wav_val + FWHM_lim*FWHM)))
 
-    flux_2convolve = flux_extended[index_mask]
-    wav_2convolve = wav_extended[index_mask]
+    new_flux_2convolve = flux_extended[index_mask]
+    new_wav_2convolve = wav_extended[index_mask]
 
-    assert  np.all(old_flux_2convolve == flux_2convolve)
-    assert  np.all(old_wav_2convolve == wav_2convolve)
+    assert  np.all(old_flux_2convolve == new_flux_2convolve)
+    assert  np.all(old_wav_2convolve == new_wav_2convolve)
+
+def test_rotational_convolution_indexing():
+    wav_ext_rotation = np.arange(100, 200)
+    flux_ext_rotation = np.random.random(size=wav_ext_rotation.size)
+    wav = 145
+    delta_lambda_L = 35
+
+    # Old Code
+    indexes = [i for i in range(len(wav_ext_rotation)) if ((wav - delta_lambda_L) < wav_ext_rotation[i] < (wav + delta_lambda_L))]
+    old_flux_2convolve = flux_ext_rotation[indexes[0]:indexes[-1]+1]
+    old_wav_2convolve = wav_ext_rotation[indexes[0]:indexes[-1]+1]
+
+    # New code
+    index_mask = ((wav_ext_rotation > (wav - delta_lambda_L)) &
+          (wav_ext_rotation < (wav + delta_lambda_L)))
+
+    new_flux_2convolve = flux_ext_rotation[index_mask]
+    new_wav_2convolve = wav_ext_rotation[index_mask]
+
+    assert np.all(old_flux_2convolve == new_flux_2convolve)
+    assert np.all(old_wav_2convolve == new_wav_2convolve)
