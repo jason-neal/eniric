@@ -153,9 +153,15 @@ def rotational_convolution(wav, wav_extended, wav_ext_rotation, flux_ext_rotatio
     for wav in tqdm(wav_extended):
         # select all values such that they are within the FWHM limits
         delta_lambda_L = wav*vsini/3.0e5
-        indexes = [i for i in range(len(wav_ext_rotation)) if ((wav - delta_lambda_L) < wav_ext_rotation[i] < (wav + delta_lambda_L))]
-        flux_2convolve = flux_ext_rotation[indexes[0]:indexes[-1]+1]
-        rotation_profile = rotation_kernel(wav_ext_rotation[indexes[0]:indexes[-1]+1]-wav, delta_lambda_L, vsini, epsilon)
+
+        index_mask = ((wav_ext_rotation > (wav - delta_lambda_L)) &
+                      (wav_ext_rotation < (wav + delta_lambda_L)))
+        flux_2convolve = flux_ext_rotation[index_mask]
+        rotation_profile = rotation_kernel(wav_ext_rotation[index_mask]-wav, delta_lambda_L, vsini, epsilon)
+
+        # indexes = [i for i in range(len(wav_ext_rotation)) if ((wav - delta_lambda_L) < wav_ext_rotation[i] < (wav + delta_lambda_L))]
+        # flux_2convolve = flux_ext_rotation[indexes[0]:indexes[-1]+1]
+        # rotation_profile = rotation_kernel(wav_ext_rotation[indexes[0]:indexes[-1]+1]-wav, delta_lambda_L, vsini, epsilon)
         flux_conv_rot.append(np.sum(rotation_profile*flux_2convolve))
         if(len(flux_conv_rot) % (len(wav_extended)/100) == 0):
             counter = counter+1
@@ -173,10 +179,16 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim):
     counter = 0
     for wav in tqdm(wav_band):
         # select all values such that they are within the FWHM limits
-        FWHM = wav/R
-        indexes = [i for i in range(len(wav_extended)) if ((wav - FWHM_lim*FWHM) < wav_extended[i] < (wav + FWHM_lim*FWHM))]
-        flux_2convolve = flux_conv_rot[indexes[0]:indexes[-1]+1]
-        IP = unitary_Gauss(wav_extended[indexes[0]:indexes[-1]+1], wav, FWHM)
+        FWHM = wav / R
+
+        # Mask of wavelength range within 5 FWHM of wav
+        index_mask = ((wav_extended > (wav - FWHM_lim*FWHM)) &
+              (wav_extended < (wav + FWHM_lim*FWHM)))
+
+        flux_2convolve = flux_conv_rot[index_mask]
+        # Gausian Instrument Profile for given resolution and wavelength
+        IP = unitary_Gauss(wav_extended[index_mask], wav, FWHM)
+
         flux_conv_res.append(np.sum(IP*flux_2convolve))
         if(len(flux_conv_res) % (len(wav_band)/100) == 0):
             counter = counter+1
