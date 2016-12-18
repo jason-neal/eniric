@@ -26,4 +26,9 @@ It has a number of effecincy problems which need to be improved upon before the 
 
 ## Runtime results:
 Comparing the same calculation perfromed between the old and new code after a series of changes.
-...
+On laptop after replacing the comprehension lists:
+
+    new convolution = 27 seconds
+    old convolution = 1hr 22 minutes
+Rediculous!
+
