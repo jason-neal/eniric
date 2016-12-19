@@ -34,6 +34,7 @@ def read_spectrum(spec_name):
     """
     function that reads spectra from the database
     """
+    # pandas.read_csv should be 7 times faster at reading in files!!!
     wav, flux = read_2col(spec_name)
     wav = np.array(wav, dtype="float64")*1.0e-4  # conversion to microns
     flux = np.array(flux, dtype="float64")
