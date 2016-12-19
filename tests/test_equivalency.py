@@ -100,13 +100,3 @@ def test_resampled_RVprec_equal():
     new_RVprec = RVprec_calc(spectrum_file=new_spectrum)
     old_RVprec = old_RVprec_calc(spectrum_file=old_spectrum)
     assert new_RVprec == old_RVprec
-
-
-def test_RVprec_equal():
-    """ Test quality of new and old spectra"""
-    new_spectrum = "data/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
-    old_spectrum = "data/original_code/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
-    new_RVprec = RVprec_calc(spectrum_file=new_spectrum)
-    old_RVprec = old_RVprec_calc(spectrum_file=old_spectrum)
-
-    assert new_RVprec == old_RVprec
