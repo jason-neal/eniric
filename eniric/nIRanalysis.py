@@ -44,7 +44,7 @@ def read_spectrum(spec_name):
 
     flux_photons = flux * wav
 
-    return [wav[:], flux_photons[:]]
+    return wav[:], flux_photons[:]
 
 
 def band_selector(wav, flux, band):
@@ -69,7 +69,7 @@ def band_selector(wav, flux, band):
     # select values form the band
     wav_band, flux_band = wav_selector(wav, flux, bandmin, bandmax)
 
-    return [wav_band, flux_band]
+    return wav_band, flux_band
 
 
 def plotter(spectrum, band, vsini=0, R=0):
@@ -146,7 +146,7 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
         fig.savefig(filename[:-3]+"pdf", facecolor='w', format='pdf', bbox_inches='tight')
         plt.close()
 
-    return [wav_band, flux_conv_res]
+    return wav_band, flux_conv_res
 
 
 def rotational_convolution(wav, wav_extended, wav_ext_rotation, flux_ext_rotation, vsini, epsilon):
