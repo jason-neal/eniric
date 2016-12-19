@@ -6,10 +6,10 @@ Created on Mon Dec 29 00:14:56 2014
 Editied Thur Dec 15 13:00 2016 by Jason Neal for eniric.
 """
 
-from eniric.IOmodule import read_2col
+# from eniric.IOmodule import read_2col
 
 import numpy as np
-
+import pandas as pd
 c = 299792458  # m/s
 
 
@@ -17,7 +17,8 @@ def RVprec_calc(spectrum_file="resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0
     """
     function that claculates the RV precision achievable on a spectrum
     """
-    wavelength, flux = read_2col(spectrum_file)
+    data = pd.read_table(spectrum_file, comment='#', names=["wavelength", "flux"], dtype=np.float64)
+    wav, flux = data["wavelength"].values, data["flux"].values
 
     return [c / SqrtSumWis(wavelength, flux)]
 
