@@ -8,19 +8,19 @@ from __future__ import print_function, division
 import numpy as np
 from os import listdir
 from os.path import isfile, join
-
+import datetime as dt
 import matplotlib.pyplot as plt
 from matplotlib import rc
 #set stuff for latex usage
 rc('text', usetex=True)
 
-from eniric.orignal_code.IOmodule import read_2col, read_3col
+from eniric.original_code.IOmodule import read_2col, read_3col
 
-from eniric.orignal_code.Qcalculator import *
+from eniric.original_code.Qcalculator import *
 
-data_rep = "../../data/nIRmodels/"
-results_dir = "results/"
-resampled_dir = "resampled/"
+data_rep = "../data/nIRmodels/"
+results_dir = "../data/original_code/results/"
+resampled_dir = "../data/original_code/resampled/"
 
 #models form PHOENIX-ACES
 M0_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
@@ -95,8 +95,8 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
     FWHM_max = wav_band[-1]/R
 
     #performing convolution with rotation kernel
-    print("Starting the Rotation convolution for vsini=%.2f..." % (vsini))
-
+    print("Starting the Rotation convolution for vsini=%.2f..." % (vsini),
+          "At", dt.datetime.now())
     delta_lambda_min = wav_band[0]*vsini/3.0e5
     delta_lambda_max = wav_band[-1]*vsini/3.0e5
     #widest wavelength bin for the rotation convolution
@@ -122,10 +122,10 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
             counter = counter+1
             print("Rotation Convolution at %d%%..." % (counter))
 
-    print("Done.\n")
+    print("Done At", dt.datetime.now(), "\n")
     flux_conv_rot = np.array(flux_conv_rot, dtype="float64")
 
-    print("Starting the Resolution convolution...")
+    print("Starting the Resolution convolution... At", dt.datetime.now())
 
     flux_conv_res = []
     counter=0
@@ -140,14 +140,14 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
             counter = counter+1
             print("Resolution Convolution at %d%%..." % (counter))
     flux_conv_res = np.array(flux_conv_res, dtype="float64")
-    print("Done.\n")
+    print("Done. At ", dt.datetime.now(), "\n")
 
-    print("Saving results...")
+    print("Saving results... At", dt.datetime.now())
 
     #Note: difference in sampling at 1.0 and 1.5 microns makes jumps in the beginning of Y and H bands
 
     name_model = name_assignment(spectrum)
-    filename = results_dir+"Spectrum_"+name_model+"_"+band+"band_vsini"+str(vsini)+"_R"+str(R/1000)+"k.txt"
+    filename = results_dir+"Spectrum_"+name_model+"_"+band+"band_vsini"+str(vsini)+"_R"+str(int(R/1000))+"k.txt"
     write_3col(filename, wav_band, flux_band, flux_conv_res)
     print("Done.")
 
@@ -268,7 +268,8 @@ def name_assignment(spectrum):
         name = "M9-PHOENIX-ACES"
     else:
         print("Name not found!")
-        exit()
+        #exit()
+        name = "Unknown_name"
     return name
 
 def write_2col(filename, data1, data2):
