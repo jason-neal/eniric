@@ -167,9 +167,6 @@ def rotational_convolution(wav, wav_extended, wav_ext_rotation, flux_ext_rotatio
         # flux_2convolve = flux_ext_rotation[indexes[0]:indexes[-1]+1]
         # rotation_profile = rotation_kernel(wav_ext_rotation[indexes[0]:indexes[-1]+1]-wav, delta_lambda_L, vsini, epsilon)
         flux_conv_rot.append(np.sum(rotation_profile*flux_2convolve))
-        if(len(flux_conv_rot) % (len(wav_extended)/100) == 0):
-            counter = counter+1
-            print("Rotation Convolution at %d%%..." % (counter))
 
     print("Done.\n")
     flux_conv_rot = np.array(flux_conv_rot, dtype="float64")
@@ -194,9 +191,6 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim):
         IP = unitary_Gauss(wav_extended[index_mask], wav, FWHM)
 
         flux_conv_res.append(np.sum(IP*flux_2convolve))
-        if(len(flux_conv_res) % (len(wav_band)/100) == 0):
-            counter = counter+1
-            print("Resolution Convolution at %d%%..." % (counter))
     flux_conv_res = np.array(flux_conv_res, dtype="float64")
     print("Done.\n")
     return flux_conv_res
