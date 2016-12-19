@@ -1,3 +1,5 @@
-numpy
-matplotlib
 tqdm
+numpy
+pandas
+matplotlib
+multiprocess
