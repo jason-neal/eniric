@@ -2,6 +2,13 @@
 import numpy as np
 import pytest
 from hypothesis import given
+from eniric.Qcalculator import RVprec_calc
+from eniric.IOmodule import read_2col, read_3col
+
+from eniric.original_code.Qcalculator import RVprec_calc as old_RVprec_calc
+from eniric.original_code.IOmodule import read_2col as old_read_2col
+from eniric.original_code.IOmodule import read_3col as old_read_3col
+
 # To test the equivalence of code to check if it does the same thing:
 
 
@@ -14,7 +21,9 @@ def test_convolution_indexing():
     FWHM = wav_val/R
     FWHM_lim = 5
     # Replace this code
-    indexes = [i for i in range(len(wav_extended)) if ((wav_val - FWHM_lim*FWHM) < wav_extended[i] < (wav_val + FWHM_lim*FWHM))]
+    indexes = [i for i in range(len(wav_extended))
+               if ((wav_val - FWHM_lim*FWHM) < wav_extended[i] <
+               (wav_val + FWHM_lim*FWHM))]
 
     old_flux_2convolve = flux_extended[indexes[0]:indexes[-1]+1]
     old_wav_2convolve = wav_extended[indexes[0]:indexes[-1]+1]
@@ -28,8 +37,8 @@ def test_convolution_indexing():
     new_flux_2convolve = flux_extended[index_mask]
     new_wav_2convolve = wav_extended[index_mask]
 
-    assert  np.all(old_flux_2convolve == new_flux_2convolve)
-    assert  np.all(old_wav_2convolve == new_wav_2convolve)
+    assert np.all(old_flux_2convolve == new_flux_2convolve)
+    assert np.all(old_wav_2convolve == new_wav_2convolve)
 
 def test_rotational_convolution_indexing():
     wav_ext_rotation = np.arange(100, 200)
@@ -38,16 +47,57 @@ def test_rotational_convolution_indexing():
     delta_lambda_L = 35
 
     # Old Code
-    indexes = [i for i in range(len(wav_ext_rotation)) if ((wav - delta_lambda_L) < wav_ext_rotation[i] < (wav + delta_lambda_L))]
+    indexes = [i for i in range(len(wav_ext_rotation))
+               if ((wav - delta_lambda_L) < wav_ext_rotation[i] <
+               (wav + delta_lambda_L))]
     old_flux_2convolve = flux_ext_rotation[indexes[0]:indexes[-1]+1]
     old_wav_2convolve = wav_ext_rotation[indexes[0]:indexes[-1]+1]
 
     # New code
     index_mask = ((wav_ext_rotation > (wav - delta_lambda_L)) &
-          (wav_ext_rotation < (wav + delta_lambda_L)))
+                  (wav_ext_rotation < (wav + delta_lambda_L)))
 
     new_flux_2convolve = flux_ext_rotation[index_mask]
     new_wav_2convolve = wav_ext_rotation[index_mask]
 
     assert np.all(old_flux_2convolve == new_flux_2convolve)
     assert np.all(old_wav_2convolve == new_wav_2convolve)
+
+
+def test_result_files_the_same():
+    """ Test the result files are  """
+
+    print("Reading the data...")
+    new_spectrum = "data/results/Spectrum_M0-PHOENIX-ACE_Yband_vsini1_R100k.txt"
+    old_spectrum = "data/original_code/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
+    new_wavelength, new_flux = read_2col(new_spectrum)
+    old_wavelength, old_flux = old_read_2col(old_spectrum)
+
+
+def test_resampled_files_the_same():
+    """ Test the resampled files are the same"""
+    new_spectrum = "data/resampled/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt
+    old_spectrum = "data/original_code/resampled/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt
+    new_wavelength, new_flux = read_2col(new_spectrum)
+    old_wavelength, old_flux = old_read_2col(old_spectrum)
+    assert np.all(old_wavelength == new_wavelength)
+    assert np.all(old_flux == new_flux)
+
+
+def test_resampled_RVprec_equal():
+    """ Test quality of new and old spectra"""
+    new_spectrum = "data/resampled/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt"
+    old_spectrum = "data/original_code/resampled/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt"
+    new_RVprec = RVprec_calc(spectrum_file=new_spectrum)
+    old_RVprec = old_RVprec_calc(spectrum_file=old_spectrum)
+    assert new_RVprec == old_RVprec
+
+
+def test_RVprec_equal():
+    """ Test quality of new and old spectra"""
+    new_spectrum = "data/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
+    old_spectrum = "data/original_code/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
+    new_RVprec = RVprec_calc(spectrum_file=new_spectrum)
+    old_RVprec = old_RVprec_calc(spectrum_file=old_spectrum)
+
+    assert new_RVprec == old_RVprec
