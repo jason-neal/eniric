@@ -119,7 +119,7 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
     flux_extended = np.array(flux_extended, dtype="float64")
 
     # rotational convolution
-    flux_conv_rot = rotational_convolution(wav, wav_extended, wav_ext_rotation, flux_ext_rotation, vsini, epsilon)
+    flux_conv_rot = rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation, vsini, epsilon)
 
     print("Starting the Resolution convolution...")
 
@@ -149,7 +149,7 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
     return wav_band, flux_conv_res
 
 
-def rotational_convolution(wav, wav_extended, wav_ext_rotation, flux_ext_rotation, vsini, epsilon):
+def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation, vsini, epsilon, numProcs=1):
     """ Perform Rotational convolution part of convolution.
     """
     flux_conv_rot = []
