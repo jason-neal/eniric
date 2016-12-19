@@ -3,8 +3,9 @@
 # Jason Neal
 # December 2016
 from __future__ import division, print_function
-from eniric.nIRanalysis import convolution
+from eniric.nIRanalysis import convolution, resample_allfiles
 from eniric.original_code.nIRanalysis import convolution as old_convolution
+from eniric.original_code.nIRanalysis import resample_allfiles as old_resample_allfiles
 import matplotlib.pyplot as plt
 import datetime
 
@@ -17,7 +18,7 @@ resampled_dir = "../data/resampled/"
 spectrum_path = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/" + spectrum_name
 # Some test parameters
 band = "Y"
-R = 105000
+R = 100000
 vsini = 1
 epsilon = 0.6
 FWHM_lim = 5
@@ -32,6 +33,7 @@ end_time = datetime.datetime.now()
 print("Time at end of new code", end_time)
 print("Time to run new convolution = {}".format((end_time-start_time)))
 
+resample_allfiles()
 
 # The unchanged version
 old_start_time = datetime.datetime.now()
@@ -40,6 +42,8 @@ old_wav_band, old_flux_conv_res = old_convolution(spectrum_path, band, vsini, R,
 old_end_time = datetime.datetime.now()
 print("Time at end of old code", old_end_time)
 print("Time to run old convolution = {}".format((end_time-start_time)))
+
+old_resample_allfiles()
 
 # Plot results together
 plt.plot(old_wav_band, old_flux_conv_res, label='Old code')
