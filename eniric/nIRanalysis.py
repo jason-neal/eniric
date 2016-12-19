@@ -38,7 +38,7 @@ def read_spectrum(spec_name):
     # wav, flux = read_2col(spec_name)
 
     # pandas.read_table round 7 times faster at reading in files!!!
-    data = pd.read_table(spec_name, comment='#', names=["wavelength", "flux"], dtype=np.float64)
+    data = pd.read_table(spec_name, comment='#', names=["wavelength", "flux"], dtype=np.float64, delim_whitespace=True)
     wav, flux = data["wavelength"].values, data["flux"].values
     wav *= 1.0e-4  # conversion to microns
 
@@ -313,7 +313,7 @@ def resampler(spectrum_name="results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60
     resamples a spectrum by interpolation onto a grid with a sampling of 3 pixels per resolution element
     """
     # wavelength, theoretical_spectrum, spectrum = read_3col(spectrum_name)
-    data = pd.read_table(spectrum_name, header=None, names=["wavelength", "theoretical_spectrum", "spectrum"], dtype=np.float64)
+    data = pd.read_table(spectrum_name, header=None, names=["wavelength", "theoretical_spectrum", "spectrum"], dtype=np.float64, delim_whitespace=True)
     wavelength = data["wavelength"].values
     theoretical_spectrum = data["theoretical_spectrum"].values
     spectrum = data["spectrum"].values
