@@ -28,9 +28,9 @@ def SqrtSumWis(wavelength, flux):
     Calculation of the SquareRoot of the sum of the Wis for a spectrum
     """
 
-    delta_F = (np.array(flux[1:]) - np.array(flux[:-1]))
-    delta_l = np.array(wavelength[:-1])
+    delta_F = np.diff(flux)
+    delta_l = wavelength[:-1]
 
     derivF_over_lambda = delta_F/delta_l
 
-    return np.sqrt(np.sum(np.array(wavelength[:-1])**2.0 * derivF_over_lambda**2.0 / np.array(flux[:-1])))
+    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivF_over_lambda**2.0 / flux[:-1]))
