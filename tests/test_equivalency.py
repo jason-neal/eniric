@@ -1,5 +1,6 @@
 
 import numpy as np
+import pandas as pd
 import pytest
 from hypothesis import given
 from eniric.Qcalculator import RVprec_calc
@@ -65,13 +66,21 @@ def test_rotational_convolution_indexing():
 
 
 def test_result_files_the_same():
-    """ Test the result files are  """
+    """ Test the result files are equal """
 
     print("Reading the data...")
     new_spectrum = "data/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
     old_spectrum = "data/original_code/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
-    new_wavelength, new_flux = read_2col(new_spectrum)
-    old_wavelength, old_flux = old_read_2col(old_spectrum)
+
+    data = pd.read_table(new_spectrum, delim_whitespace=True, names=["w", "ts", "s"], dtype=np.float64)
+    new_wavelength, new_flux = data["w"].values, data['s'].values
+    new_ts = data["ts"].values
+
+    old_wavelength, old_ts, old_spectrum = old_read_3col(old_spectrum)
+
+    assert np.allclose(new_wavelength, np.array(old_wavelength, dtype="float64"))
+    assert np.allclose(new_ts, np.array(old_ts, dtype="float64"))
+    assert np.allclose(new_flux, np.array(old_spectrum, dtype="float64"))
 
 
 def test_resampled_files_the_same():
