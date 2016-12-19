@@ -8,11 +8,12 @@ Adapted December 2016 by Jason Neal
 from __future__ import division, print_function
 import numpy as np
 from tqdm import tqdm
+import pandas as pd
 from os import listdir
 from os.path import isfile, join
 
-from eniric.IOmodule import read_2col, read_3col
-from eniric.Qcalculator import RVprec_calc, SqrtSumWis
+# from eniric.IOmodule import read_2col, read_3col
+# from eniric.Qcalculator import RVprec_calc, SqrtSumWis
 
 import matplotlib.pyplot as plt
 from matplotlib import rc
@@ -34,10 +35,12 @@ def read_spectrum(spec_name):
     """
     function that reads spectra from the database
     """
-    # pandas.read_csv should be 7 times faster at reading in files!!!
-    wav, flux = read_2col(spec_name)
-    wav = np.array(wav, dtype="float64")*1.0e-4  # conversion to microns
-    flux = np.array(flux, dtype="float64")
+    # wav, flux = read_2col(spec_name)
+
+    # pandas.read_table round 7 times faster at reading in files!!!
+    data = pd.read_table(spec_name, comment='#', names=["wavelength", "flux"], dtype=np.float64)
+    wav, flux = data["wavelength"].values, data["flux"].values
+    wav *= 1.0e-4  # conversion to microns
 
     flux_photons = flux * wav
 
@@ -309,7 +312,11 @@ def resampler(spectrum_name="results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60
     """
     resamples a spectrum by interpolation onto a grid with a sampling of 3 pixels per resolution element
     """
-    wavelength, theoretical_spectrum, spectrum = read_3col(spectrum_name)
+    # wavelength, theoretical_spectrum, spectrum = read_3col(spectrum_name)
+    data = pd.read_table(spectrum_name, header=None, names=["wavelength", "theoretical_spectrum", "spectrum"], dtype=np.float64)
+    wavelength = data["wavelength"].values
+    theoretical_spectrum = data["theoretical_spectrum"].values
+    spectrum = data["spectrum"].values
 
     wavelength_start = wavelength[1]  # because fo border effects
     wavelength_end = wavelength[-1]
