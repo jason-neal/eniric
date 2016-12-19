@@ -7,6 +7,7 @@ Adapted December 2016 by Jason Neal
 """
 from __future__ import division, print_function
 import numpy as np
+from tqdm import tqdm
 import pandas as pd
 from os import listdir
 from os.path import isfile, join
@@ -20,8 +21,8 @@ from matplotlib import rc
 rc('text', usetex=True)
 
 data_rep = "../data/nIRmodels/"
-results_dir = "results/"
-resampled_dir = "resampled/"
+results_dir = "../data/results/"
+resampled_dir = "../data/resampled/"
 
 # models form PHOENIX-ACES
 M0_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
@@ -37,7 +38,7 @@ def read_spectrum(spec_name):
     # wav, flux = read_2col(spec_name)
 
     # pandas.read_table round 7 times faster at reading in files!!!
-    data = pd.read_table(spec_name, comment='#', names=["wavelength", "flux"], dtype=np.float64)
+    data = pd.read_table(spec_name, comment='#', names=["wavelength", "flux"], dtype=np.float64, delim_whitespace=True)
     wav, flux = data["wavelength"].values, data["flux"].values
     wav *= 1.0e-4  # conversion to microns
 
@@ -129,7 +130,7 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
     # Note: difference in sampling at 1.0 and 1.5 microns makes jumps in the beginning of Y and H bands
 
     name_model = name_assignment(spectrum)
-    filename = results_dir+"Spectrum_"+name_model+"_"+band+"band_vsini"+str(vsini)+"_R"+str(R/1000)+"k.txt"
+    filename = results_dir+"Spectrum_"+name_model+"_"+band+"band_vsini"+str(vsini)+"_R"+str(int(R/1000))+"k.txt"
     write_3col(filename, wav_band, flux_band, flux_conv_res)
     print("Done.")
 
@@ -153,12 +154,18 @@ def rotational_convolution(wav, wav_extended, wav_ext_rotation, flux_ext_rotatio
     """
     flux_conv_rot = []
     counter = 0
-    for wav in wav_extended:
+    for wav in tqdm(wav_extended):
         # select all values such that they are within the FWHM limits
         delta_lambda_L = wav*vsini/3.0e5
-        indexes = [i for i in range(len(wav_ext_rotation)) if ((wav - delta_lambda_L) < wav_ext_rotation[i] < (wav + delta_lambda_L))]
-        flux_2convolve = flux_ext_rotation[indexes[0]:indexes[-1]+1]
-        rotation_profile = rotation_kernel(wav_ext_rotation[indexes[0]:indexes[-1]+1]-wav, delta_lambda_L, vsini, epsilon)
+
+        index_mask = ((wav_ext_rotation > (wav - delta_lambda_L)) &
+                      (wav_ext_rotation < (wav + delta_lambda_L)))
+        flux_2convolve = flux_ext_rotation[index_mask]
+        rotation_profile = rotation_kernel(wav_ext_rotation[index_mask]-wav, delta_lambda_L, vsini, epsilon)
+
+        # indexes = [i for i in range(len(wav_ext_rotation)) if ((wav - delta_lambda_L) < wav_ext_rotation[i] < (wav + delta_lambda_L))]
+        # flux_2convolve = flux_ext_rotation[indexes[0]:indexes[-1]+1]
+        # rotation_profile = rotation_kernel(wav_ext_rotation[indexes[0]:indexes[-1]+1]-wav, delta_lambda_L, vsini, epsilon)
         flux_conv_rot.append(np.sum(rotation_profile*flux_2convolve))
         if(len(flux_conv_rot) % (len(wav_extended)/100) == 0):
             counter = counter+1
@@ -174,12 +181,18 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim):
     """
     flux_conv_res = []
     counter = 0
-    for wav in wav_band:
+    for wav in tqdm(wav_band):
         # select all values such that they are within the FWHM limits
-        FWHM = wav/R
-        indexes = [i for i in range(len(wav_extended)) if ((wav - FWHM_lim*FWHM) < wav_extended[i] < (wav + FWHM_lim*FWHM))]
-        flux_2convolve = flux_conv_rot[indexes[0]:indexes[-1]+1]
-        IP = unitary_Gauss(wav_extended[indexes[0]:indexes[-1]+1], wav, FWHM)
+        FWHM = wav / R
+
+        # Mask of wavelength range within 5 FWHM of wav
+        index_mask = ((wav_extended > (wav - FWHM_lim*FWHM)) &
+              (wav_extended < (wav + FWHM_lim*FWHM)))
+
+        flux_2convolve = flux_conv_rot[index_mask]
+        # Gausian Instrument Profile for given resolution and wavelength
+        IP = unitary_Gauss(wav_extended[index_mask], wav, FWHM)
+
         flux_conv_res.append(np.sum(IP*flux_2convolve))
         if(len(flux_conv_res) % (len(wav_band)/100) == 0):
             counter = counter+1
@@ -198,11 +211,33 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim):
 def wav_selector(wav, flux, wav_min, wav_max):
     """
     function that returns wavelength and flux withn a giving range
-    """
-    wav_sel = np.array([value for value in wav if(wav_min < value < wav_max)], dtype="float64")
-    flux_sel = np.array([value[1] for value in zip(wav, flux) if(wav_min < value[0] < wav_max)], dtype="float64")
 
-    return [wav_sel, flux_sel]
+    Parameters
+    ----------
+    wav: array-like
+        Wavelength array.
+    flux: array-like
+        Flux array.
+    wav_min: float
+        Lower bound wavelength value.
+    wav_max: float
+        Upper bound wavelength value.
+
+    Returns
+    -------
+    wav_sel: array
+        New wavelength array within bounds wav_min, wav_max
+    flux_sel: array
+        New wavelength array within bounds wav_min, wav_max
+        """
+    wav = np.asarray(wav, dtype="float64")
+    flux = np.asarray(flux, dtype="float64")
+
+    mask = (wav > wav_min) & (wav < wav_max)
+    flux_sel = flux[mask]
+    wav_sel = wav[mask]
+
+    return wav_sel, flux_sel
 
 
 def unitary_Gauss(x, center, FWHM):
@@ -278,8 +313,8 @@ def resampler(spectrum_name="results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60
     resamples a spectrum by interpolation onto a grid with a sampling of 3 pixels per resolution element
     """
     # wavelength, theoretical_spectrum, spectrum = read_3col(spectrum_name)
-    data = pd.read_table(spectrum_name, header=None, names=["wavelength", "theoretical_spectrum", "spectrum"], dtype=np.float64)
-    wavelength = data["wavelength"].values,
+    data = pd.read_table(spectrum_name, header=None, names=["wavelength", "theoretical_spectrum", "spectrum"], dtype=np.float64, delim_whitespace=True)
+    wavelength = data["wavelength"].values
     theoretical_spectrum = data["theoretical_spectrum"].values
     spectrum = data["spectrum"].values
 
