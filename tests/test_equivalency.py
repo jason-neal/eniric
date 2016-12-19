@@ -68,7 +68,7 @@ def test_result_files_the_same():
     """ Test the result files are  """
 
     print("Reading the data...")
-    new_spectrum = "data/results/Spectrum_M0-PHOENIX-ACE_Yband_vsini1_R100k.txt"
+    new_spectrum = "data/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
     old_spectrum = "data/original_code/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
     new_wavelength, new_flux = read_2col(new_spectrum)
     old_wavelength, old_flux = old_read_2col(old_spectrum)
@@ -76,8 +76,8 @@ def test_result_files_the_same():
 
 def test_resampled_files_the_same():
     """ Test the resampled files are the same"""
-    new_spectrum = "data/resampled/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt
-    old_spectrum = "data/original_code/resampled/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt
+    new_spectrum = "data/resampled/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt"
+    old_spectrum = "data/original_code/resampled/original_code/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt"
     new_wavelength, new_flux = read_2col(new_spectrum)
     old_wavelength, old_flux = old_read_2col(old_spectrum)
     assert np.all(old_wavelength == new_wavelength)
@@ -87,7 +87,7 @@ def test_resampled_files_the_same():
 def test_resampled_RVprec_equal():
     """ Test quality of new and old spectra"""
     new_spectrum = "data/resampled/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt"
-    old_spectrum = "data/original_code/resampled/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt"
+    old_spectrum = "data/original_code/resampled/original_code/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt"
     new_RVprec = RVprec_calc(spectrum_file=new_spectrum)
     old_RVprec = old_RVprec_calc(spectrum_file=old_spectrum)
     assert new_RVprec == old_RVprec
