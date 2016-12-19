@@ -17,8 +17,8 @@ def RVprec_calc(spectrum_file="resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0
     """
     function that claculates the RV precision achievable on a spectrum
     """
-    data = pd.read_table(spectrum_file, comment='#', names=["wavelength", "flux"], dtype=np.float64)
-    wav, flux = data["wavelength"].values, data["flux"].values
+    data = pd.read_table(spectrum_file, comment='#', header=None, names=["wavelength", "flux"], dtype=np.float64, delim_whitespace=True)
+    wavelength, flux = data["wavelength"].values, data["flux"].values
 
     return [c / SqrtSumWis(wavelength, flux)]
 
