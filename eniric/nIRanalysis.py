@@ -135,7 +135,7 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, 
 
     print("Starting the Resolution convolution...")
 
-    flux_conv_res = resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim)
+    flux_conv_res = resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim, numProcs=numProcs)
 
     print("Saving results...")
 
@@ -209,15 +209,15 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation, vs
     return flux_conv_rot
 
 
-def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim):
+
+def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim, numProcs=1):
     """ Perform Resolution convolution part of convolution.
     """
-    flux_conv_res = []
-    counter = 0
-    for wav in tqdm(wav_band):
-        # select all values such that they are within the FWHM limits
-        FWHM = wav / R
 
+    # Define inner convolution functions
+    def element_res_convolution(wav, R, wav_extended, flux_conv_rot, FWHM_lim):
+        """ Embarisingly parallel component of resolution convolution"""
+        FWHM = wav / R
         # Mask of wavelength range within 5 FWHM of wav
         index_mask = ((wav_extended > (wav - FWHM_lim*FWHM)) &
               (wav_extended < (wav + FWHM_lim*FWHM)))
@@ -226,9 +226,37 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim):
         # Gausian Instrument Profile for given resolution and wavelength
         IP = unitary_Gauss(wav_extended[index_mask], wav, FWHM)
 
-        flux_conv_res.append(np.sum(IP*flux_2convolve))
-    flux_conv_res = np.array(flux_conv_res, dtype="float64")
-    print("Done.\n")
+        sum_val = np.sum(IP * flux_2convolve)
+        # Correct for the effect of convolution with non-equidistant postions
+        # unitary_val = np.sum(IP * np.ones_like(flux_2convolve))
+        return sum_val  # / unitary_val
+
+
+    def wrapper_res_parallel_convolution(args):
+        """ Wrapper for res_parallel_convolution needed to unpack the arguments for
+        fast_convolve as multiprocess.Pool.map does not accept multiple
+        arguments
+        """
+        return element_res_convolution(*args)
+
+    if numProcs != 0:
+        if numProcs is None:
+            numProcs = mprocess.cpu_count() - 1
+
+        mprocPool = mprocess.Pool(processes=numProcs)
+        # Need to update the values here
+        args_generator = tqdm([[wav, R, wav_extended, flux_conv_rot, FWHM_lim]
+                              for wav in wav_band])
+        flux_conv_res = np.array(mprocPool.map(wrapper_res_parallel_convolution,
+                                               args_generator))
+        mprocPool.close()
+
+    else:  # numProcs == 0
+        flux_conv_res = np.empty_like(wav_band)   # Memory assignment
+        for jj, wav in enumerate(tqdm(wav_band)):
+            flux_conv_res[jj] = element_res_convolution(wav, R, wav_extended,
+                                                        flux_conv_rot, FWHM_lim)
+        print("Done.\n")
     return flux_conv_res
 
 
