@@ -9,6 +9,7 @@ from __future__ import division, print_function
 import numpy as np
 from tqdm import tqdm
 import pandas as pd
+import multiprocess as mprocess
 from os import listdir
 from os.path import isfile, join
 
@@ -87,11 +88,22 @@ def plotter(spectrum, band, vsini=0, R=0):
     plt.close()
 
 
-def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
+def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, numProcs=None):
 
     """
     function that convolves a given spectra to a resolution of R
     R = 60 000 , R = 80 000, R = 100 000
+
+    Parameters
+    ----------
+    numProcs: int, None
+        Number of processes to use with multiprocess. If None it is asigned to 1 less then total number of cores.
+        If numProcs = 0, then multiprocess is not used.
+
+    Returns
+    -------
+    Saves figures to results_dir.
+
     """
 
     print("Reading the data...")
@@ -149,27 +161,51 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
     return wav_band, flux_conv_res
 
 
-def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation, vsini, epsilon, numProcs=1):
+def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation, vsini, epsilon, numProcs=None):
     """ Perform Rotational convolution part of convolution.
     """
-    flux_conv_rot = []
-    counter = 0
-    for wav in tqdm(wav_extended):
+
+    def wrapper_rot_parallel_convolution(args):
+        """ Wrapper for rot_parallel_convolution needed to unpack the arguments for
+        fast_convolve as multiprocess.Pool.map does not accept multiple
+        arguments
+        """
+        return element_rot_convolution(*args)
+
+    def element_rot_convolution(wav, wav_extended, wav_ext_rotation, flux_ext_rotation, vsini, epsilon):
+        """Embarisingly parallel part of rotational convolution"""
         # select all values such that they are within the FWHM limits
-        delta_lambda_L = wav*vsini/3.0e5
+        delta_lambda_L = wav * vsini / 3.0e5
 
         index_mask = ((wav_ext_rotation > (wav - delta_lambda_L)) &
                       (wav_ext_rotation < (wav + delta_lambda_L)))
         flux_2convolve = flux_ext_rotation[index_mask]
-        rotation_profile = rotation_kernel(wav_ext_rotation[index_mask]-wav, delta_lambda_L, vsini, epsilon)
+        rotation_profile = rotation_kernel(wav_ext_rotation[index_mask] - wav, delta_lambda_L, vsini, epsilon)
+        return np.sum(rotation_profile * flux_2convolve)
 
-        # indexes = [i for i in range(len(wav_ext_rotation)) if ((wav - delta_lambda_L) < wav_ext_rotation[i] < (wav + delta_lambda_L))]
-        # flux_2convolve = flux_ext_rotation[indexes[0]:indexes[-1]+1]
-        # rotation_profile = rotation_kernel(wav_ext_rotation[indexes[0]:indexes[-1]+1]-wav, delta_lambda_L, vsini, epsilon)
-        flux_conv_rot.append(np.sum(rotation_profile*flux_2convolve))
+    if numProcs != 0:
+        if numProcs is None:
+            numProcs = mprocess.cpu_count() - 1
 
-    print("Done.\n")
-    flux_conv_rot = np.array(flux_conv_rot, dtype="float64")
+        mprocPool = mprocess.Pool(processes=numProcs)
+
+        args_generator = tqdm([[wav, wav_extended, wav_ext_rotation,
+                                flux_ext_rotation, vsini, epsilon]
+                              for wav in wav_extended])
+
+        flux_conv_rot = np.array(mprocPool.map(wrapper_rot_parallel_convolution,
+                                 args_generator))
+
+        mprocPool.close()
+
+    else:  # numProcs == 0
+        flux_conv_rot = np.empty_like(wav_extended)  # Memory assignment
+        for ii, wav in enumerate(tqdm(wav_extended)):
+            flux_conv_rot[ii] = element_rot_convolution(wav, wav_extended,
+                                                        wav_ext_rotation,
+                                                        flux_ext_rotation,
+                                                        vsini, epsilon)
+        print("Done.\n")
     return flux_conv_rot
 
 
