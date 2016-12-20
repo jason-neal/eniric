@@ -37,5 +37,5 @@ conv_times = time_diff_procs(numprocs)
 
 print("Num Processors\t Time")
 
-for key in bunprocs:
+for key in numprocs:
     print("{0}\t{1}".format(key, conv_times[key]))
