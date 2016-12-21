@@ -4,7 +4,7 @@ Created on Sun Dec 14 15:43:13 2014
 @author: pfigueira
 """
 from __future__ import print_function, division
-
+import sys
 import numpy as np
 from os import listdir
 from os.path import isfile, join
@@ -18,15 +18,15 @@ from eniric.original_code.IOmodule import read_2col, read_3col
 
 from eniric.original_code.Qcalculator import *
 
-data_rep = "../data/nIRmodels/"
+data_rep = "../data/PHOENIX_ACES_spectra/"
 results_dir = "../data/original_code/results/"
 resampled_dir = "../data/original_code/resampled/"
 
 #models form PHOENIX-ACES
-M0_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M3_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M6_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M9_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M0_ACES = data_rep+"lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M3_ACES = data_rep+"lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M6_ACES = data_rep+"lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M9_ACES = data_rep+"lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 
 def read_spectrum(spec_name):
     """
@@ -41,18 +41,27 @@ def read_spectrum(spec_name):
     return [wav[:], flux_photons[:]]
 
 def band_selector(wav, flux, band):
-    if(band in ["ALL", "all", ""]):
+    if(band.upper() in ["ALL", ""]):
         return [wav, flux]
-    elif(band == "Y"):
+    elif(band.upper() == "VIS"):
+        bandmin = 0.38
+        bandmax = 0.78
+    elif(band.upper() == "GAP"):
+        bandmin = 0.78
+        bandmax = 0.83
+    elif(band.upper() == "Z"):
+        bandmin = 0.83
+        bandmax = 0.93
+    elif(band.upper() == "Y"):
         bandmin = 1.0
         bandmax = 1.1
-    elif(band == "J"):
+    elif(band.upper() == "J"):
         bandmin = 1.17
         bandmax = 1.33
-    elif(band == "H"):
+    elif(band.upper() == "H"):
         bandmin = 1.5
         bandmax = 1.75
-    elif(band == "K"):
+    elif(band.upper() == "K"):
         bandmin = 2.07
         bandmax = 2.35
     else:
@@ -77,6 +86,20 @@ def plotter(spectrum, band, vsini=0, R=0):
     plt.plot(wav_band, flux_band, color ='k', marker="o", linestyle="-")
     plt.show()
     plt.close()
+
+def run_convolutions(spectrum_string, band):
+    """
+    Runs the convolutions for a set of spectra in batch
+    """
+    vsini = [1.0, 5.0, 10.0]
+    R = [60000, 80000, 100000]
+
+    exec('spectrum = ' + spectrum_string)       #note: warnings to be dismissed, due to exec usage
+    print(spectrum)
+    print("Running the convolutions for spectra of %s in band %s\n." % (spectrum, band))
+    for vel in vsini:
+        for res in R:
+            convolution(spectrum, band, vel, res, plot=False)
 
 def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
 
@@ -223,8 +246,8 @@ def resampler(spectrum_name = "results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R
     """
     wavelength, theoretical_spectrum, spectrum  = read_3col(spectrum_name)
 
-    wavelength_start = wavelength[1] #because fo border effects
-    wavelength_end = wavelength[-1]
+    wavelength_start = wavelength[1]  # because of border effects
+    wavelength_end = wavelength[-2]  # because of border effects
     resolution_string = spectrum_name[-8:-5]
 
     if(resolution_string[0]=="R"):
@@ -310,3 +333,11 @@ def list_creator(spectrum, band):
             print("\t ", wav_band[i]*1.0e4)
     print("In a spectrum with %d points, %d lines were found." % (len(wav_band), len(line_centers)))
     return line_centers
+
+###############################################################################
+
+if __name__ == "__main__":
+    if len(sys.argv) == 3 :
+        run_convolutions(sys.argv[1], sys.argv[2])
+    else:
+        print("Arguments not compatible with called functtion.")
