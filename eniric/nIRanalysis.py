@@ -379,13 +379,15 @@ def resample_allfiles(results_dir=results_dir, resampled_dir=resampled_dir):
     reample all files inside folder
     Parameters
     ----------
-    folder: str
-        Folder containing results to resample.
+    results_dir: str
+        Directory containing results to resample.
     """
     # getting a list of all the files
-    onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
+    onlyfiles = [f for f in listdir(results_dir) if isfile(join(results_dir, f))]
 
-    [resampler(spectrum_file, results_dir=results_dir, resampled_dir=resampled_dir) for spectrum_file in onlyfiles if spectrum_file[-4:] == ".txt"]
+    [resampler(spectrum_file, results_dir=results_dir,
+               resampled_dir=resampled_dir) for spectrum_file in onlyfiles
+     if spectrum_file[-4:] == ".txt"]
 
 
 def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
@@ -397,7 +399,7 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
     # wavelength, theoretical_spectrum, spectrum = read_3col(spectrum_name)
     read_name = results_dir + spectrum_name
     data = pd.read_table(read_name, header=None, dtype=np.float64,
-                         names=["wave", "model", "spectrum"],
+                         names=["wavelength", "model", "spectrum"],
                          delim_whitespace=True)
     wavelength = data["wavelength"].values
     # theoretical_spectrum = data["model"].values
