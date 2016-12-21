@@ -435,17 +435,23 @@ def name_assignment(spectrum):
     """
     assigns a name to the filename in which the spectrum is going to be saved
     """
-    if (spectrum == M0_ACES):
+    # Simplified to temperature and base in spectrum name.
+    M0_ACES = "lte03900"
+    M3_ACES = "lte03500"
+    M6_ACES = "lte02800"
+    M9_ACES = "lte02600"
+    base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+    if (M0_ACES in spectrum) and (base in spectrum):
         name = "M0-PHOENIX-ACES"
-    elif(spectrum == M3_ACES):
+    elif(M3_ACES in spectrum) and (base in spectrum):
         name = "M3-PHOENIX-ACES"
-    elif(spectrum == M6_ACES):
+    elif(M6_ACES in spectrum) and (base in spectrum):
         name = "M6-PHOENIX-ACES"
-    elif(spectrum == M9_ACES):
+    elif(M9_ACES in spectrum) and (base in spectrum):
         name = "M9-PHOENIX-ACES"
     else:
-        print("Name not found!")
-        exit()
+        print("Name {} not found!".format(spectrum))
+        exit(1)
     return name
 
 
