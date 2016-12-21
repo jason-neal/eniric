@@ -309,3 +309,4 @@ def list_creator(spectrum, band):
             line_centers.append(wav_band[i])
             print("\t ", wav_band[i]*1.0e4)
     print("In a spectrum with %d points, %d lines were found." % (len(wav_band), len(line_centers)))
+    return line_centers
