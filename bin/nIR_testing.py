@@ -18,13 +18,14 @@ resampled_dir = "../data/resampled/"
 
 spectrum_path = data_rep + spectrum_name
 # Some test parameters
-band = "Y"
+band = "GAP"
 R = 100000
 vsini = 1
 epsilon = 0.6
 FWHM_lim = 5
 plot = False
 numProcs = 4
+do_old = True
 # print("readin =", read_spectrum(spectrum))  # takes a bit of time
 
 # New version
@@ -38,17 +39,18 @@ print("Time to run new convolution = {}".format((end_time-start_time)))
 resample_allfiles()
 
 # The unchanged version
-# old_start_time = datetime.datetime.now()
-# print("Time at start of old code", old_start_time)
-# old_wav_band, old_flux_conv_res = old_convolution(spectrum_path, band, vsini, R, epsilon, F FWHM_lim, plot)  # takes a very long time. good progress indicator though
-# old_end_time = datetime.datetime.now()
-# print("Time at end of old code", old_end_time)
-# print("Time to run old convolution = {}".format((end_time-start_time)))
+if do_old:
+    old_start_time = datetime.datetime.now()
+    print("Time at start of old code", old_start_time)
+    old_wav_band, old_flux_conv_res = old_convolution(spectrum_path, band, vsini, R, epsilon, FWHM_lim, plot)  # takes a very long time. good progress indicator though
+    old_end_time = datetime.datetime.now()
+    print("Time at end of old code", old_end_time)
+    print("Time to run old convolution = {}".format((end_time-start_time)))
 
-# old_resample_allfiles()
+    old_resample_allfiles()
 
-# Plot results together
-# plt.plot(old_wav_band, old_flux_conv_res, label='Old code')
-# plt.plot(wav_band, flux_conv_res, label='New code')
-# plt.legend(loc=0)
-# plt.show()
+    # Plot results together
+    plt.plot(old_wav_band, old_flux_conv_res, label='Old code')
+    plt.plot(wav_band, flux_conv_res, label='New code')
+    plt.legend(loc=0)
+    plt.show()
