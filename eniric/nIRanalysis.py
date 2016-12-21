@@ -409,10 +409,16 @@ def resampler(spectrum_name="results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60
     else:
         resolution = int(resolution_string)*1000
 
-    wav_grid = [wavelength_start]
-    while(wav_grid[-1] < wavelength_end):
-        wav_grid.append(wav_grid[-1]*(1.0+1.0/(sampling*resolution)))
-    wav_grid = np.array(wav_grid)
+    # wav_grid = [wavelength_start]
+    # while(wav_grid[-1] < wavelength_end):
+    #     wav_grid.append(wav_grid[-1]*(1.0+1.0/(sampling*resolution)))
+    # wav_grid = np.array(wav_grid)
+
+    # Create grid using logarithms with base of (1.0+1.0/(sampling*resolution))
+    base = 1.0 + 1.0 / (sampling * resolution)
+    n = np.log(wavelength_end / wavelength_start) / np.log(base)
+    powers = np.arange(np.ceil(n))
+    wav_grid = wavelength_start * base ** powers
 
     interpolated_flux = np.interp(wav_grid, wavelength, spectrum)
     filetowrite = resampled_dir + spectrum_name[8:-4]+"_res"+str(int(sampling))+".txt"
