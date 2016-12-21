@@ -12,11 +12,11 @@ import datetime
 
 spectrum_name = "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 
-data_rep = "../data/nIRmodels/"
+data_rep = "../data/PHOENIX-ACES_spectra/"
 results_dir = "../data/results/"
 resampled_dir = "../data/resampled/"
 
-spectrum_path = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/" + spectrum_name
+spectrum_path = data_rep + spectrum_name
 # Some test parameters
 band = "Y"
 R = 100000
