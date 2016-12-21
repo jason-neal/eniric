@@ -457,10 +457,18 @@ def list_creator(spectrum, band):
     wav, flux = read_spectrum(spectrum)
     wav_band, flux_band = band_selector(wav, flux, band)
 
-    line_centers = []
     print(band + " band list:")
-    for i in range(2, len(wav_band)-2):
-        if(flux_band[i-2] > flux_band[i-1] > flux_band[i] and flux_band[i] < flux_band[i+1] < flux_band[i+2]):
-            line_centers.append(wav_band[i])
-            print("\t ", wav_band[i]*1.0e4)
-    print("In a spectrum with %d points, %d lines were found." % (len(wav_band), len(line_centers)))
+    short_flux = flux_band[2:-2]
+    left_mask = ((short_flux < flux_band[:-4]) &
+                 (short_flux < flux_band[1:-3]) &
+                 (flux_band[:-4] > flux_band[1:-3]))
+
+    right_mask = mask_right = ((short_flux < flux_band[3:-1]) &
+                               (short_flux < flux_band[4:]) &
+                               (flux_band[4:] > flux_band[3:-1]))
+
+    line_centers = wav_band[2:-2][left_mask * right_mask]  # find peaks using masking
+    print("Line centers", line_centers * 1.0e4)
+    print("In a spectrum with {} points".format(len(wav_band)),
+          ", {} lines were found.".format(len(line_centers)))
+    return line_centers

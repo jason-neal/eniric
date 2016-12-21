@@ -10,6 +10,8 @@ from eniric.original_code.Qcalculator import RVprec_calc as old_RVprec_calc
 from eniric.original_code.IOmodule import read_2col as old_read_2col
 from eniric.original_code.IOmodule import read_3col as old_read_3col
 
+import eniric.original_code.nIRanalysis as oldnIR
+import eniric.nIRanalysis as nIR
 # To test the equivalence of code to check if it does the same thing:
 
 
@@ -100,3 +102,11 @@ def test_resampled_RVprec_equal():
     new_RVprec = RVprec_calc(spectrum_file=new_spectrum)
     old_RVprec = old_RVprec_calc(spectrum_file=old_spectrum)
     assert new_RVprec == old_RVprec
+
+
+def test_list_creator():
+    """ Test new masking in list creator is equivalent"""
+
+    spectrum = "data/PHOENIX-ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+    # test one small band only for speed
+    assert np.allclose(np.array(oldnIR.list_creator(spectrum, "Y")), nIR.list_creator(spectrum, "Y"))
