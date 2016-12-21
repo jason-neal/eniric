@@ -6,6 +6,7 @@ Created on Sun Dec 14 15:43:13 2014
 Adapted December 2016 by Jason Neal
 """
 from __future__ import division, print_function
+import sys
 import numpy as np
 from tqdm import tqdm
 import pandas as pd
@@ -21,15 +22,15 @@ from matplotlib import rc
 # set stuff for latex usage
 rc('text', usetex=True)
 
-data_rep = "../data/nIRmodels/"
+data_rep = "../data/PHOENIX_ACES_spectra/"
 results_dir = "../data/results/"
 resampled_dir = "../data/resampled/"
 
 # models form PHOENIX-ACES
-M0_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M3_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M6_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M9_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M0_ACES = data_rep+"lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M3_ACES = data_rep+"lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M6_ACES = data_rep+"lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M9_ACES = data_rep+"lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 
 
 def read_spectrum(spec_name):
@@ -49,8 +50,18 @@ def read_spectrum(spec_name):
 
 
 def band_selector(wav, flux, band):
-    if(band in ["ALL", "all", ""]):
-        return [wav, flux]
+    band = band.upper()
+    if(band in ["ALL", ""]):
+        return wav, flux
+    elif(band == "VIS"):
+        bandmin = 0.38
+        bandmax = 0.78
+    elif(band == "GAP"):
+        bandmin = 0.78
+        bandmax = 0.83
+    elif(band == "Z"):
+        bandmin = 0.83
+        bandmax = 0.93
     elif(band == "Y"):
         bandmin = 1.0
         bandmax = 1.1
@@ -65,7 +76,7 @@ def band_selector(wav, flux, band):
         bandmax = 2.35
     else:
         print("Unrecognized band tag.")
-        exit()
+        exit(1)
 
     # select values form the band
     wav_band, flux_band = wav_selector(wav, flux, bandmin, bandmax)
@@ -87,6 +98,19 @@ def plotter(spectrum, band, vsini=0, R=0):
     plt.show()
     plt.close()
 
+def run_convolutions(spectrum_string, band):
+    """
+    Runs the convolutions for a set of spectra in batch
+    """
+    vsini = [1.0, 5.0, 10.0]
+    R = [60000, 80000, 100000]
+
+    exec('spectrum = ' + spectrum_string)        #note: warnings to be dismissed, due to exec usage
+    print(spectrum)
+    print("Running the convolutions for spectra of %s in band %s\n." % (spectrum, band))
+    for vel in vsini:
+        for res in R:
+            convolution(spectrum, band, vel, res, plot=False)
 
 def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, numProcs=None):
 
@@ -376,8 +400,8 @@ def resampler(spectrum_name="results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60
     theoretical_spectrum = data["theoretical_spectrum"].values
     spectrum = data["spectrum"].values
 
-    wavelength_start = wavelength[1]  # because fo border effects
-    wavelength_end = wavelength[-1]
+    wavelength_start = wavelength[1]  # because of border effects
+    wavelength_end = wavelength[-2]   # because of border effects
     resolution_string = spectrum_name[-8:-5]
 
     if(resolution_string[0] == "R"):
@@ -472,3 +496,12 @@ def list_creator(spectrum, band):
     print("In a spectrum with {} points".format(len(wav_band)),
           ", {} lines were found.".format(len(line_centers)))
     return line_centers
+
+
+###############################################################################
+
+if __name__ == "__main__":
+    if len(sys.argv) == 3 :
+        run_convolutions(sys.argv[1], sys.argv[2])
+    else:
+        print("Arguments not compatible with called functtion.")
