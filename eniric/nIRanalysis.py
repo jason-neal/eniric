@@ -48,38 +48,34 @@ def read_spectrum(spec_name):
 
 
 def band_selector(wav, flux, band):
+    """ Select a specific wavelength band.
+
+    Parameters
+    ----------
+    wav: array-like
+        Wavelength values.
+    flux: array-like
+        Flux values.
+    band: str
+        Band letter to select, upper or lower case is supported. Options
+        are ("ALL" or ""), "VIS", "GAP", "Z", "Y", "J", "H", "K".
+    """
     band = band.upper()
+
+    bands = {"VIS": (0.38, 0.78), "GAP": (0.78, 0.83), "Z": (0.83, 0.93),
+             "Y": (1.0, 1.1), "J": (1.17, 1.33), "H": (1.5, 1.75),
+             "K": (2.07, 2.35)}
     if(band in ["ALL", ""]):
         return wav, flux
-    elif(band == "VIS"):
-        bandmin = 0.38
-        bandmax = 0.78
-    elif(band == "GAP"):
-        bandmin = 0.78
-        bandmax = 0.83
-    elif(band == "Z"):
-        bandmin = 0.83
-        bandmax = 0.93
-    elif(band == "Y"):
-        bandmin = 1.0
-        bandmax = 1.1
-    elif(band == "J"):
-        bandmin = 1.17
-        bandmax = 1.33
-    elif(band == "H"):
-        bandmin = 1.5
-        bandmax = 1.75
-    elif(band == "K"):
-        bandmin = 2.07
-        bandmax = 2.35
+    elif band in bands:
+        # select values form the band
+        bandmin = bands[band][0]
+        bandmax = bands[band][1]
+
+        return wav_selector(wav, flux, bandmin, bandmax)
     else:
         print("Unrecognized band tag.")
         exit(1)
-
-    # select values form the band
-    wav_band, flux_band = wav_selector(wav, flux, bandmin, bandmax)
-
-    return wav_band, flux_band
 
 
 def plotter(spectrum, band, vsini=0, R=0):
