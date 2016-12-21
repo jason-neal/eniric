@@ -37,16 +37,14 @@ def read_spectrum(spec_name):
     """
     function that reads spectra from the database
     """
-    # wav, flux = read_2col(spec_name)
-
-    # pandas.read_table round 7 times faster at reading in files!!!
-    data = pd.read_table(spec_name, comment='#', names=["wavelength", "flux"], dtype=np.float64, delim_whitespace=True)
+    data = pd.read_table(spec_name, comment='#', names=["wavelength", "flux"],
+                         dtype=np.float64, delim_whitespace=True)
     wav, flux = data["wavelength"].values, data["flux"].values
     wav *= 1.0e-4  # conversion to microns
 
     flux_photons = flux * wav
 
-    return wav[:], flux_photons[:]
+    return wav, flux_photons
 
 
 def band_selector(wav, flux, band):
@@ -136,8 +134,8 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, 
     print("Done.")
 
     # we need to calculate the FWHM at this value in order to set the starting point for the convolution
-    FWHM_min = wav_band[0]/R    # FWHM at the extremes of vector
-    FWHM_max = wav_band[-1]/R
+    FWHM_min = wav_band[0] / R    # FWHM at the extremes of vector
+    FWHM_max = wav_band[-1] / R
 
     # performing convolution with rotation kernel
     print("Starting the Rotation convolution for vsini=%.2f..." % (vsini))
@@ -252,8 +250,8 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim, n
 
         sum_val = np.sum(IP * flux_2convolve)
         # Correct for the effect of convolution with non-equidistant postions
-        # unitary_val = np.sum(IP * np.ones_like(flux_2convolve))
-        return sum_val  # / unitary_val
+        # unitary_val = np.sum(IP * np.ones_like(flux_2convolve))  # Affects precision
+        return sum_val # / unitary_val
 
 
     def wrapper_res_parallel_convolution(args):
