@@ -112,7 +112,7 @@ def run_convolutions(spectrum_string, band):
         for res in R:
             convolution(spectrum, band, vel, res, plot=False)
 
-def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, numProcs=None):
+def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, numProcs=None, data_rep=data_rep, results_dir=results_dir):
 
     """
     function that convolves a given spectra to a resolution of R
@@ -380,24 +380,33 @@ def rotation_kernel(delta_lambdas, delta_lambda_L, vsini, epsilon):
 
 
 ###############################################################################
-def resample_allfiles(folder=results_dir):
+def resample_allfiles(results_dir=results_dir, resampled_dir=resampled_dir):
     """
     reample all files inside folder
+    Parameters
+    ----------
+    folder: str
+        Folder containing results to resample.
     """
     # getting a list of all the files
     onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
 
-    [resampler(results_dir+spectrum_file) for spectrum_file in onlyfiles if spectrum_file[-4:] == ".txt"]
+    [resampler(spectrum_file, results_dir=results_dir, resampled_dir=resampled_dir) for spectrum_file in onlyfiles if spectrum_file[-4:] == ".txt"]
 
 
-def resampler(spectrum_name="results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt", sampling=3.0, plottest=False):
+def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
+              results_dir=results_dir, resampled_dir=resampled_dir,
+              sampling=3.0, plottest=False):
     """
     resamples a spectrum by interpolation onto a grid with a sampling of 3 pixels per resolution element
     """
     # wavelength, theoretical_spectrum, spectrum = read_3col(spectrum_name)
-    data = pd.read_table(spectrum_name, header=None, names=["wavelength", "theoretical_spectrum", "spectrum"], dtype=np.float64, delim_whitespace=True)
+    read_name = results_dir + spectrum_name
+    data = pd.read_table(read_name, header=None, dtype=np.float64,
+                         names=["wave", "model", "spectrum"],
+                         delim_whitespace=True)
     wavelength = data["wavelength"].values
-    theoretical_spectrum = data["theoretical_spectrum"].values
+    # theoretical_spectrum = data["model"].values
     spectrum = data["spectrum"].values
 
     wavelength_start = wavelength[1]  # because of border effects
@@ -421,7 +430,8 @@ def resampler(spectrum_name="results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60
     wav_grid = wavelength_start * base ** powers
 
     interpolated_flux = np.interp(wav_grid, wavelength, spectrum)
-    filetowrite = resampled_dir + spectrum_name[8:-4]+"_res"+str(int(sampling))+".txt"
+    filetowrite = "{0}{1}_res{2}.txt".format(resampled_dir, spectrum_name[:-4],
+                                             int(sampling))
     write_2col(filetowrite, wav_grid, interpolated_flux)
 
     if(plottest):
