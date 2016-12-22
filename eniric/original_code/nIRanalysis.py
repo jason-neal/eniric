@@ -23,10 +23,10 @@ results_dir = "../data/original_code/results/"
 resampled_dir = "../data/original_code/resampled/"
 
 #models form PHOENIX-ACES
-M0_ACES = data_rep+"lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M3_ACES = data_rep+"lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M6_ACES = data_rep+"lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M9_ACES = data_rep+"lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M0_ACES = "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M3_ACES = "lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M6_ACES = "lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M9_ACES = "lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 
 def read_spectrum(spec_name):
     """
@@ -281,13 +281,13 @@ def name_assignment(spectrum):
     """
     assigns a name to the filename in which the spectrum is going to be saved
     """
-    if (spectrum == M0_ACES):
+    if (M0_ACES in spectrum):
         name = "M0-PHOENIX-ACES"
-    elif(spectrum == M3_ACES):
+    elif(M3_ACES in spectrum):
         name = "M3-PHOENIX-ACES"
-    elif(spectrum == M6_ACES):
+    elif(M6_ACES in spectrum):
         name = "M6-PHOENIX-ACES"
-    elif(spectrum == M9_ACES):
+    elif(M9_ACES in spectrum):
         name = "M9-PHOENIX-ACES"
     else:
         print("Name not found!")
