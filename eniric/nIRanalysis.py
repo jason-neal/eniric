@@ -34,8 +34,20 @@ M9_ACES = data_rep+"lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat
 
 
 def read_spectrum(spec_name):
-    """
-    function that reads spectra from the database
+    """ Function that reads spectra from the database and converts to photons!.
+
+    Parameters
+    ----------
+    spec_name: str
+        Location and name of model spectrum file.
+
+    Returns
+    -------
+    wav: array-like, float64
+        Wavelength in microns.
+    flux_photons: array-like, float64
+        Spectral flux converted into photons.
+
     """
     data = pd.read_table(spec_name, comment='#', names=["wavelength", "flux"],
                          dtype=np.float64, delim_whitespace=True)
