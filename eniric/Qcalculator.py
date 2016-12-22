@@ -29,8 +29,8 @@ def SqrtSumWis(wavelength, flux):
     """
 
     delta_F = np.diff(flux)
-    delta_l = wavelength[:-1]
+    delta_l = np.diff(wavelength)
 
-    derivF_over_lambda = delta_F/delta_l
+    derivF_over_lambda = delta_F / delta_l
 
     return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivF_over_lambda**2.0 / flux[:-1]))
