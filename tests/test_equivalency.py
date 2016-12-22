@@ -107,6 +107,11 @@ def test_resampled_RVprec_equal():
 
 def test_list_creator():
     """ Test new masking in list creator is equivalent"""
+    # test a couple of single bands only for speed
+
+    for band in ["K"]:
+        spectrum = "data/PHOENIX-ACES_spectra/test_sample/{}_band_test_sample_lte03900-PHOENIX-ACES.dat".format(band)
+        assert np.allclose(np.array(oldnIR.list_creator(spectrum, band)), nIR.list_creator(spectrum, band))
 
 def test_pdread_2col():
     """ Test reading 2cols with pandas"""
@@ -133,6 +138,3 @@ def test_pdread_3col():
     assert np.allclose(wav_1_pd, np.array(wav_1))
     assert np.allclose(theoretical_1_pd, np.array(theoretical_1))
     assert np.allclose(flux_1_pd, np.array(flux_1))
-    spectrum = "data/PHOENIX-ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-    # test one small band only for speed
-    assert np.allclose(np.array(oldnIR.list_creator(spectrum, "Y")), nIR.list_creator(spectrum, "Y"))
