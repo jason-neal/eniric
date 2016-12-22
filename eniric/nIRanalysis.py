@@ -106,7 +106,9 @@ def run_convolutions(spectrum_string, band):
         for res in R:
             convolution(spectrum, band, vel, res, plot=False)
 
-def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, numProcs=None, data_rep=data_rep, results_dir=results_dir):
+def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True,
+                numProcs=None, data_rep=data_rep, results_dir=results_dir,
+                normalize=False):
 
     """
     function that convolves a given spectra to a resolution of R
@@ -151,11 +153,15 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, 
     # rotational convolution
     flux_conv_rot = rotational_convolution(wav_extended, wav_ext_rotation,
                                            flux_ext_rotation, vsini, epsilon,
-                                           numProcs=numProcs)
+                                           numProcs=numProcs,
+                                           normalize=normalize)
 
     print("Starting the Resolution convolution...")
 
-    flux_conv_res = resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim, numProcs=numProcs)
+    flux_conv_res = resolution_convolution(wav_band, wav_extended,
+                                           flux_conv_rot, R, FWHM_lim,
+                                           numProcs=numProcs,
+                                           normalize=normalize)
 
     print("Saving results...")
 
@@ -181,9 +187,12 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, 
     return wav_band, flux_conv_res
 
 
-def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation, vsini, epsilon, numProcs=None):
+def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
+                           vsini, epsilon, numProcs=None, normalize=False):
     """ Perform Rotational convolution part of convolution.
     """
+    if normalize:
+        print("Normalization not implemented for rotation")
 
     def wrapper_rot_parallel_convolution(args):
         """ Wrapper for rot_parallel_convolution needed to unpack the arguments for
@@ -192,7 +201,9 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation, vs
         """
         return element_rot_convolution(*args)
 
-    def element_rot_convolution(wav, wav_extended, wav_ext_rotation, flux_ext_rotation, vsini, epsilon):
+    def element_rot_convolution(wav, wav_extended, wav_ext_rotation,
+                                flux_ext_rotation, vsini, epsilon,
+                                normalize):
         """Embarisingly parallel part of rotational convolution"""
         # select all values such that they are within the FWHM limits
         delta_lambda_L = wav * vsini / 3.0e5
@@ -210,7 +221,7 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation, vs
         mprocPool = mprocess.Pool(processes=numProcs)
 
         args_generator = tqdm([[wav, wav_extended, wav_ext_rotation,
-                                flux_ext_rotation, vsini, epsilon]
+                                flux_ext_rotation, vsini, epsilon, normalize]
                               for wav in wav_extended])
 
         flux_conv_rot = np.array(mprocPool.map(wrapper_rot_parallel_convolution,
@@ -224,18 +235,21 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation, vs
             flux_conv_rot[ii] = element_rot_convolution(wav, wav_extended,
                                                         wav_ext_rotation,
                                                         flux_ext_rotation,
-                                                        vsini, epsilon)
+                                                        vsini, epsilon,
+                                                        normalize)
         print("Done.\n")
     return flux_conv_rot
 
 
 
-def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim, numProcs=1):
+def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim,
+                           numProcs=1, normalize=False):
     """ Perform Resolution convolution part of convolution.
     """
 
     # Define inner convolution functions
-    def element_res_convolution(wav, R, wav_extended, flux_conv_rot, FWHM_lim):
+    def element_res_convolution(wav, R, wav_extended, flux_conv_rot, FWHM_lim,
+                                normalize):
         """ Embarisingly parallel component of resolution convolution"""
         FWHM = wav / R
         # Mask of wavelength range within 5 FWHM of wav
@@ -247,14 +261,16 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim, n
         IP = unitary_Gauss(wav_extended[index_mask], wav, FWHM)
 
         sum_val = np.sum(IP * flux_2convolve)
-        # Correct for the effect of convolution with non-equidistant postions
-        # unitary_val = np.sum(IP * np.ones_like(flux_2convolve))  # Affects precision
-        return sum_val # / unitary_val
-
+        if normalize:
+            # Correct for the effect of convolution with non-equidistant postions
+            unitary_val = np.sum(IP * np.ones_like(flux_2convolve))  # Affects precision
+            return sum_val / unitary_val
+        else:
+            return sum_val
 
     def wrapper_res_parallel_convolution(args):
-        """ Wrapper for res_parallel_convolution needed to unpack the arguments for
-        fast_convolve as multiprocess.Pool.map does not accept multiple
+        """ Wrapper for res_parallel_convolution needed to unpack the arguments
+        for fast_convolve as multiprocess.Pool.map does not accept multiple
         arguments
         """
         return element_res_convolution(*args)
@@ -265,8 +281,8 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim, n
 
         mprocPool = mprocess.Pool(processes=numProcs)
         # Need to update the values here
-        args_generator = tqdm([[wav, R, wav_extended, flux_conv_rot, FWHM_lim]
-                              for wav in wav_band])
+        args_generator = tqdm([[wav, R, wav_extended, flux_conv_rot, FWHM_lim,
+                                normalize] for wav in wav_band])
         flux_conv_res = np.array(mprocPool.map(wrapper_res_parallel_convolution,
                                                args_generator))
         mprocPool.close()
