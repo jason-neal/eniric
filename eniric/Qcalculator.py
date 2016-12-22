@@ -103,7 +103,8 @@ def SqrtSumWis(wavelength, flux):
 
     derivF_over_lambda = delta_F / delta_l
 
-    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivF_over_lambda**2.0 / flux[:-1]))
+    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivF_over_lambda**2.0 /
+                          flux[:-1]))
 
 
 def RVprec_calc_chunks(wavelength, flux):
@@ -128,9 +129,10 @@ def RVprec_calc_chunks(wavelength, flux):
 
     """
 
-    RV_vector = np.array([RVprec_calc(wav_chunk, flux_chunk) for wav_chunk, flux_chunk in zip(wavelength, flux)])
+    RV_vector = np.array([RVprec_calc(wav_chunk, flux_chunk) for wav_chunk,
+                          flux_chunk in zip(wavelength, flux)])
 
-    RV_value = 1.0/(np.sqrt(np.sum( (1.0/RV_vector)**2.0 )))
+    RV_value = 1.0 / (np.sqrt(np.sum((1.0 / RV_vector)**2.0)))
 
     return RV_value
 
@@ -139,7 +141,21 @@ def RVprec_calc_chunks(wavelength, flux):
 def RV_prec_calc_Trans(wavelength, flux, transmission):
     """
     The same as RV_prec_calc, but considering a transmission different than zero
-    """
+
+    Parameters
+    ----------
+    wavelength: array-like
+        Wavelength array
+    flux: array-like
+        Flux array
+    transmission: array-like
+        Transmission array
+
+    Returns
+    -------
+    RVrms: float
+        Radial velocity precision for a spectrum affected by atmospheric transmission
+"""
     return c / SqrtSumWisTrans(wavelength, flux, transmission)
 
 
@@ -159,7 +175,7 @@ def SqrtSumWisTrans(wavelength, flux, transmission):
     Returns
     -------
     SqrtSumWisTrans: array-like
-        Squarerooted sum of pixel weigths including transmission.
+        Squarerooted sum of pixel weigths including effects of transmission.
     """
 
     delta_F = np.diff(flux)
@@ -167,4 +183,5 @@ def SqrtSumWisTrans(wavelength, flux, transmission):
 
     derivF_over_lambda = delta_F/delta_l
 
-    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivF_over_lambda**2.0 / (flux[:-1])/(transmission[:-1]**2.0))))
+    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivF_over_lambda**2.0 /
+                          (flux[:-1] / transmission[:-1]**2.0)))
