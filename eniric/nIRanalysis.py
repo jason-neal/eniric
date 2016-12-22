@@ -15,6 +15,7 @@ from os import listdir
 from os.path import isfile, join
 
 # from eniric.IOmodule import read_2col, read_3col
+from eniric.IOmodule import pdread_2col, pdread_3col
 # from eniric.Qcalculator import RVprec_calc, SqrtSumWis
 
 import matplotlib.pyplot as plt
@@ -49,9 +50,7 @@ def read_spectrum(spec_name):
         Spectral flux converted into photons.
 
     """
-    data = pd.read_table(spec_name, comment='#', names=["wavelength", "flux"],
-                         dtype=np.float64, delim_whitespace=True)
-    wav, flux = data["wavelength"].values, data["flux"].values
+    wav, flux = pdread_2col(spec_name)
     wav *= 1.0e-4  # conversion to microns
 
     flux_photons = flux * wav
@@ -428,12 +427,8 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
     """
     # wavelength, theoretical_spectrum, spectrum = read_3col(spectrum_name)
     read_name = results_dir + spectrum_name
-    data = pd.read_table(read_name, header=None, dtype=np.float64,
-                         names=["wavelength", "model", "spectrum"],
-                         delim_whitespace=True)
-    wavelength = data["wavelength"].values
     # theoretical_spectrum = data["model"].values
-    spectrum = data["spectrum"].values
+    wavelength, __, spectrum = pdread_3col(read_name, noheader=True)
 
     wavelength_start = wavelength[1]  # because of border effects
     wavelength_end = wavelength[-2]   # because of border effects
