@@ -75,10 +75,7 @@ def test_result_files_the_same():
     new_spectrum = "data/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
     old_spectrum = "data/original_code/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
 
-    data = pd.read_table(new_spectrum, delim_whitespace=True, names=["w", "ts", "s"], dtype=np.float64)
-    new_wavelength, new_flux = data["w"].values, data['s'].values
-    new_ts = data["ts"].values
-
+    new_wavelength, new_ts, new_flux = pdread_3col(new_spectrum)
     old_wavelength, old_ts, old_spectrum = old_read_3col(old_spectrum)
 
     assert np.allclose(new_wavelength, np.array(old_wavelength, dtype="float64"))
@@ -88,22 +85,29 @@ def test_result_files_the_same():
 
 def test_resampled_files_the_same():
     """ Test the resampled files are the same"""
-    new_spectrum = "data/resampled/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt"
-    old_spectrum = "data/original_code/resampled/original_code/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt"
-    new_wavelength, new_flux = read_2col(new_spectrum)
+    band = "GAP"
+    new_spectrum = "data/resampled/Spectrum_M0-PHOENIX-ACES_{}band_vsini1_R100k_res3.txt".format(band)
+    old_spectrum = "data/original_code/resampled/original_code/results/Spectrum_M0-PHOENIX-ACES_{}band_vsini1_R100k_res3.txt".format(band)
+    new_wavelength, new_flux = pdread_2col(new_spectrum, noheader=True)
     old_wavelength, old_flux = old_read_2col(old_spectrum)
-    assert np.all(old_wavelength == new_wavelength)
-    assert np.all(old_flux == new_flux)
+    assert np.allclose(old_wavelength, new_wavelength)
+    assert np.allclose(old_flux, new_flux)
 
 
 def test_resampled_RVprec_equal():
     """ Test quality of new and old spectra"""
-    new_spectrum = "data/resampled/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt"
-    old_spectrum = "data/original_code/resampled/original_code/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt"
-    new_RVprec = RVprec_calc(spectrum_file=new_spectrum)
-    old_RVprec = old_RVprec_calc(spectrum_file=old_spectrum)
-    assert new_RVprec == old_RVprec
+    band = "GAP"
+    new_spectrum = "data/resampled/Spectrum_M0-PHOENIX-ACES_{}band_vsini1_R100k_res3.txt".format(band)
+    old_spectrum = "data/original_code/resampled/original_code/results/Spectrum_M0-PHOENIX-ACES_{}band_vsini1_R100k_res3.txt".format(band)
 
+    new_wavelength, new_flux = pdread_2col(new_spectrum, noheader=True)
+
+    old_wavelength, old_flux = old_read_2col(old_spectrum)
+
+    new_RVprec = RVprec_calc(new_wavelength, new_flux)
+    old_RVprec = old_RVprec_calc(old_wavelength, old_flux)
+    assert np.allclose(new_RVprec.value, old_RVprec)
+    assert new_RVprec.unit == "m / s"  # Check unit of precision
 
 def test_list_creator():
     """ Test new masking in list creator is equivalent"""
