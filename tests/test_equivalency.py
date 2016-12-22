@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 from hypothesis import given
 from eniric.Qcalculator import RVprec_calc
-from eniric.IOmodule import read_2col, read_3col
+from eniric.IOmodule import pdread_2col, pdread_3col, read_2col, read_3col
 
 from eniric.original_code.Qcalculator import RVprec_calc as old_RVprec_calc
 from eniric.original_code.IOmodule import read_2col as old_read_2col
@@ -42,6 +42,7 @@ def test_convolution_indexing():
 
     assert np.all(old_flux_2convolve == new_flux_2convolve)
     assert np.all(old_wav_2convolve == new_wav_2convolve)
+
 
 def test_rotational_convolution_indexing():
     wav_ext_rotation = np.arange(100, 200)
@@ -107,6 +108,31 @@ def test_resampled_RVprec_equal():
 def test_list_creator():
     """ Test new masking in list creator is equivalent"""
 
+def test_pdread_2col():
+    """ Test reading 2cols with pandas"""
+    spectrum_1 = "data/PHOENIX-ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+    spectrum_2 = "data/resampled/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt"
+
+    wav_1_pd, flux_1_pd = pdread_2col(spectrum_1)
+    wav_1, flux_1 = read_2col(spectrum_1)
+    assert np.allclose(wav_1_pd, np.array(wav_1))
+    assert np.allclose(flux_1_pd, np.array(flux_1))
+
+    wav_2_pd, flux_2_pd = pdread_2col(spectrum_2, noheader=True)
+    wav_2, flux_2 = read_2col(spectrum_2)
+    assert np.allclose(wav_2_pd, np.array(wav_2))
+    assert np.allclose(flux_2_pd, np.array(flux_2))
+
+
+def test_pdread_3col():
+    """ Test reading 3cols  with pandas"""
+    filename = "data/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
+
+    wav_1_pd, theoretical_1_pd, flux_1_pd = pdread_3col(filename, noheader=True)
+    wav_1, theoretical_1, flux_1 = read_3col(filename)
+    assert np.allclose(wav_1_pd, np.array(wav_1))
+    assert np.allclose(theoretical_1_pd, np.array(theoretical_1))
+    assert np.allclose(flux_1_pd, np.array(flux_1))
     spectrum = "data/PHOENIX-ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
     # test one small band only for speed
     assert np.allclose(np.array(oldnIR.list_creator(spectrum, "Y")), nIR.list_creator(spectrum, "Y"))
