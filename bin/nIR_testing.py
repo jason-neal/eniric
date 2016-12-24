@@ -25,7 +25,7 @@ epsilon = 0.6
 FWHM_lim = 5
 plot = False
 numProcs = 4
-do_old = True
+do_old = False
 
 #for band in ["GAP", "Y", "J", "K"]:
 for band in ["K"]:
