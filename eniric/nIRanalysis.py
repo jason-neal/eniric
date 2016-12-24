@@ -223,7 +223,15 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
                       (wav_ext_rotation < (wav + delta_lambda_L)))
         flux_2convolve = flux_ext_rotation[index_mask]
         rotation_profile = rotation_kernel(wav_ext_rotation[index_mask] - wav, delta_lambda_L, vsini, epsilon)
-        return np.sum(rotation_profile * flux_2convolve)
+
+        sum_val = np.sum(rotation_profile * flux_2convolve)
+
+        if normalize:
+            # Correct for the effect of non-equidistant sampling
+            unitary_rot_val = np.sum(rotation_profile * np.ones_like(flux_2convolve))  # Affects precision
+            return sum_val / unitary_rot_val
+        else:
+            return sum_val
 
     if numProcs != 0:
         if numProcs is None:
