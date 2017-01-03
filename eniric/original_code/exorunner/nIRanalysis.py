@@ -3,30 +3,28 @@ Created on Sun Dec 14 15:43:13 2014
 
 @author: pfigueira
 """
-from __future__ import print_function, division
+
 import sys
 import numpy as np
 from os import listdir
 from os.path import isfile, join
-import datetime as dt
+
 import matplotlib.pyplot as plt
 from matplotlib import rc
 #set stuff for latex usage
 rc('text', usetex=True)
 
-from eniric.original_code.IOmodule import read_2col, read_3col
+from eniric.original_code.exorunner.IOmodule import read_2col, read_3col
 
-from eniric.original_code.Qcalculator import *
-
-data_rep = "../data/PHOENIX_ACES_spectra/"
-results_dir = "../data/original_code/results/"
-resampled_dir = "../data/original_code/resampled/"
+data_rep = "PHOENIX_ACES_spectra/"
+results_dir = "results_new/"
+resampled_dir = "resampled/"
 
 #models form PHOENIX-ACES
-M0_ACES = "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M3_ACES = "lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M6_ACES = "lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M9_ACES = "lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M0_ACES = data_rep+"lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M3_ACES = data_rep+"lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M6_ACES = data_rep+"lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M9_ACES = data_rep+"lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 
 def read_spectrum(spec_name):
     """
@@ -94,7 +92,7 @@ def run_convolutions(spectrum_string, band):
     vsini = [1.0, 5.0, 10.0]
     R = [60000, 80000, 100000]
 
-    exec('spectrum = ' + spectrum_string)       #note: warnings to be dismissed, due to exec usage
+    exec('spectrum = ' + spectrum_string)        #note: warnings to be dismissed, due to exec usage
     print(spectrum)
     print("Running the convolutions for spectra of %s in band %s\n." % (spectrum, band))
     for vel in vsini:
@@ -118,8 +116,8 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
     FWHM_max = wav_band[-1]/R
 
     #performing convolution with rotation kernel
-    print("Starting the Rotation convolution for vsini=%.2f..." % (vsini),
-          "At", dt.datetime.now())
+    print("Starting the Rotation convolution for vsini=%.2f..." % (vsini))
+
     delta_lambda_min = wav_band[0]*vsini/3.0e5
     delta_lambda_max = wav_band[-1]*vsini/3.0e5
     #widest wavelength bin for the rotation convolution
@@ -145,10 +143,10 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
             counter = counter+1
             print("Rotation Convolution at %d%%..." % (counter))
 
-    print("Done At", dt.datetime.now(), "\n")
+    print("Done.\n")
     flux_conv_rot = np.array(flux_conv_rot, dtype="float64")
 
-    print("Starting the Resolution convolution... At", dt.datetime.now())
+    print("Starting the Resolution convolution...")
 
     flux_conv_res = []
     counter=0
@@ -163,14 +161,14 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
             counter = counter+1
             print("Resolution Convolution at %d%%..." % (counter))
     flux_conv_res = np.array(flux_conv_res, dtype="float64")
-    print("Done. At ", dt.datetime.now(), "\n")
+    print("Done.\n")
 
-    print("Saving results... At", dt.datetime.now())
+    print("Saving results...")
 
     #Note: difference in sampling at 1.0 and 1.5 microns makes jumps in the beginning of Y and H bands
 
     name_model = name_assignment(spectrum)
-    filename = results_dir+"Spectrum_"+name_model+"_"+band+"band_vsini"+str(vsini)+"_R"+str(int(R/1000))+"k.txt"
+    filename = results_dir+"Spectrum_"+name_model+"_"+band+"band_vsini"+str(vsini)+"_R"+str(R/1000)+"k.txt"
     write_3col(filename, wav_band, flux_band, flux_conv_res)
     print("Done.")
 
@@ -240,14 +238,15 @@ def resample_allfiles(folder=results_dir):
     onlyfiles = [ f for f in listdir(folder) if isfile(join(folder,f)) ]
 
     [resampler(results_dir+spectrum_file) for spectrum_file in onlyfiles if spectrum_file[-4:]==".txt"]
+
 def resampler(spectrum_name = "results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt", sampling=3.0, plottest=False):
     """
     resamples a spectrum by interpolation onto a grid with a sampling of 3 pixels per resolution element
     """
     wavelength, theoretical_spectrum, spectrum  = read_3col(spectrum_name)
 
-    wavelength_start = wavelength[1]  # because of border effects
-    wavelength_end = wavelength[-2]  # because of border effects
+    wavelength_start = wavelength[1] #because of border effects
+    wavelength_end = wavelength[-2] #because of border effects
     resolution_string = spectrum_name[-8:-5]
 
     if(resolution_string[0]=="R"):
@@ -281,18 +280,17 @@ def name_assignment(spectrum):
     """
     assigns a name to the filename in which the spectrum is going to be saved
     """
-    if (M0_ACES in spectrum):
+    if (spectrum == M0_ACES):
         name = "M0-PHOENIX-ACES"
-    elif(M3_ACES in spectrum):
+    elif(spectrum == M3_ACES):
         name = "M3-PHOENIX-ACES"
-    elif(M6_ACES in spectrum):
+    elif(spectrum == M6_ACES):
         name = "M6-PHOENIX-ACES"
-    elif(M9_ACES in spectrum):
+    elif(spectrum == M9_ACES):
         name = "M9-PHOENIX-ACES"
     else:
         print("Name not found!")
-        #exit()
-        name = "Unknown_name"
+        exit()
     return name
 
 def write_2col(filename, data1, data2):
@@ -332,7 +330,6 @@ def list_creator(spectrum, band):
             line_centers.append(wav_band[i])
             print("\t ", wav_band[i]*1.0e4)
     print("In a spectrum with %d points, %d lines were found." % (len(wav_band), len(line_centers)))
-    return line_centers
 
 ###############################################################################
 
