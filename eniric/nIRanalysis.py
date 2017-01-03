@@ -63,6 +63,12 @@ def band_selector(wav, flux, band):
     elif(band == "K"):
         bandmin = 2.07
         bandmax = 2.35
+    elif(band == "NIR"):
+        bandmin = 0.83
+        bandmax = 2.35
+    elif(band == "CONT"):
+        bandmin = 0.45
+        bandmax = 1.05
     else:
         print("Unrecognized band tag.")
         exit()
