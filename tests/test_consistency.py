@@ -15,15 +15,12 @@ import eniric.nIRanalysis as nir
 import eniric.original_code.nIRanalysis as nir_org
 
 
-def load_data():
-    pass
-
-
-@given(st.lists(st.floats(min_value=1e-4, max_value=1, allow_infinity=False, allow_nan=False), min_size=3), st.floats(min_value=1e-2, max_value=200), st.floats(min_value=1e-4, max_value=1))
+@given(st.lists(st.floats(min_value=1e-7, max_value=1e-5, allow_infinity=False, allow_nan=False), unique=True, min_size=3, max_size=25), st.floats(min_value=1e-2, max_value=200), st.floats(min_value=1e-4, max_value=1))
 def test_rotational_kernal(delta_lambdas, vsini, epsilon):
     """ Test that the new and original code produces the same output."""
     delta_lambdas = np.sort(np.asarray(delta_lambdas), kind='quicksort')
-    delta_lambda_L = np.mean(delta_lambdas) * vsini / 3.0e5 /2 # from the middle of delta_lambdas
+    delta_lambdas = np.append(np.flipud(delta_lambdas), np.insert(delta_lambdas, 0, 0))
+    delta_lambda_L = np.max(delta_lambdas) * 2
 
     org_profile = nir_org.rotation_kernel(delta_lambdas, delta_lambda_L, vsini, epsilon)
     new_profile = nir.rotation_kernel(delta_lambdas, delta_lambda_L, vsini, epsilon)

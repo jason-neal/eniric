@@ -4,6 +4,70 @@
 #    Functions to read column-separated files
 #
 ################################################################################
+import pandas as pd
+import numpy as np
+
+
+def pdread_2col(filename, noheader=False):
+    """ Read in a 2 column file with pandas.
+
+    Faster then read_2col
+
+    Parameters
+    ----------
+    filename: str
+        Name of file to read.
+    noheader: bool
+        Flag indicating if there is no column names given in file.
+        Default = False.
+
+    Returns
+    -------
+    col1: ndarray
+        First column as float64.
+    col2: ndarray
+        Second column as float64.
+    """
+    if noheader:
+        data = pd.read_table(filename, comment='#', names=["col1", "col2"],
+                         header=None, dtype=np.float64, delim_whitespace=True)
+    else:
+        data = pd.read_table(filename, comment='#', names=["col1", "col2"],
+                         dtype=np.float64, delim_whitespace=True)
+
+
+    return data["col1"].values, data["col2"].values
+
+
+def pdread_3col(filename, noheader=False):
+    """ Read in a 3 column file with pandas.
+
+    Faster then read_3col
+
+    Parameters
+    ----------
+    filename: str
+        Name of file to read.
+    noheader: bool
+        Flag indicating if there is no column names given in file
+
+    Returns
+    -------
+    col1: ndarray
+        First column as float64.
+    col2: ndarray
+        Second column as float64.
+    col3: ndarray
+        Third column as float64.
+    """
+    if noheader:
+        data = pd.read_table(filename, comment='#', names=["col1", "col2", "col3"],
+                             header=None, dtype=np.float64, delim_whitespace=True)
+    else:
+        data = pd.read_table(filename, comment='#', names=["col1", "col2", "col3"],
+                             dtype=np.float64, delim_whitespace=True)
+
+    return data["col1"].values, data["col2"].values, data["col3"].values
 
 
 def read_fullcol(filename):

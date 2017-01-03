@@ -4,11 +4,11 @@ Created on Mon Dec 29 00:14:56 2014
 @author: pfigueira
 """
 
-from eniric.original_code.IOmodule import read_2col
+from eniric.original_code.exorunner.IOmodule import read_2col
 
 import numpy as np
 
-c = 299792458  # m/s
+c =      299792458 #m/s
 
 def RVprec_test(spectrum_file= "resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt"):
     wavelength, flux = read_2col(spectrum_file)
@@ -20,7 +20,6 @@ def RVprec_calc(wavelength, flux):
     function that calculates the RV precision achievable on a spectrum
     """
     return c / SqrtSumWis(wavelength, flux)
-
 
 def SqrtSumWis(wavelength, flux):
     """
@@ -55,7 +54,7 @@ def RV_prec_calc_Trans(wavelength, flux, transmission):
 
 def SqrtSumWisTrans(wavelength, flux, transmission):
     """
-    Calculation of the SquareRoot of the sum of the Wis for a spectrum, considering transmission
+    Calculation of the SquareRoot of the sum of the Wis for a spectrum, conssidering transmission
     """
 
     delta_F = (np.array(flux[1:]) - np.array(flux[:-1]))
