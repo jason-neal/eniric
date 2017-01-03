@@ -1,5 +1,6 @@
 tqdm
 numpy
 pandas
+astropy
 matplotlib
 multiprocess

@@ -6,6 +6,7 @@ Created on Sun Dec 14 15:43:13 2014
 Adapted December 2016 by Jason Neal
 """
 from __future__ import division, print_function
+import sys
 import numpy as np
 from tqdm import tqdm
 import pandas as pd
@@ -14,6 +15,7 @@ from os import listdir
 from os.path import isfile, join
 
 # from eniric.IOmodule import read_2col, read_3col
+from eniric.IOmodule import pdread_2col, pdread_3col
 # from eniric.Qcalculator import RVprec_calc, SqrtSumWis
 
 import matplotlib.pyplot as plt
@@ -21,62 +23,70 @@ from matplotlib import rc
 # set stuff for latex usage
 rc('text', usetex=True)
 
-data_rep = "../data/nIRmodels/"
+data_rep = "../data/PHOENIX_ACES_spectra/"
 results_dir = "../data/results/"
 resampled_dir = "../data/resampled/"
 
 # models form PHOENIX-ACES
-M0_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M3_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M6_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M9_ACES = data_rep+"PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M0_ACES = data_rep+"lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M3_ACES = data_rep+"lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M6_ACES = data_rep+"lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M9_ACES = data_rep+"lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 
 
 def read_spectrum(spec_name):
-    """
-    function that reads spectra from the database
-    """
-    # wav, flux = read_2col(spec_name)
+    """ Function that reads spectra from the database and converts to photons!.
 
-    # pandas.read_table round 7 times faster at reading in files!!!
-    data = pd.read_table(spec_name, comment='#', names=["wavelength", "flux"], dtype=np.float64, delim_whitespace=True)
-    wav, flux = data["wavelength"].values, data["flux"].values
+    Parameters
+    ----------
+    spec_name: str
+        Location and name of model spectrum file.
+
+    Returns
+    -------
+    wav: array-like, float64
+        Wavelength in microns.
+    flux_photons: array-like, float64
+        Spectral flux converted into photons.
+
+    """
+    wav, flux = pdread_2col(spec_name)
     wav *= 1.0e-4  # conversion to microns
 
     flux_photons = flux * wav
 
-    return wav[:], flux_photons[:]
+    return wav, flux_photons
 
 
 def band_selector(wav, flux, band):
-    if(band in ["ALL", "all", ""]):
-        return [wav, flux]
-    elif(band == "Y"):
-        bandmin = 1.0
-        bandmax = 1.1
-    elif(band == "J"):
-        bandmin = 1.17
-        bandmax = 1.33
-    elif(band == "H"):
-        bandmin = 1.5
-        bandmax = 1.75
-    elif(band == "K"):
-        bandmin = 2.07
-        bandmax = 2.35
-    elif(band == "NIR"):
-        bandmin = 0.83
-        bandmax = 2.35
-    elif(band == "CONT"):
-        bandmin = 0.45
-        bandmax = 1.05
+    """ Select a specific wavelength band.
+
+    Parameters
+    ----------
+    wav: array-like
+        Wavelength values.
+    flux: array-like
+        Flux values.
+    band: str
+        Band letter to select, upper or lower case is supported. Options
+        are ("ALL" or ""), "VIS", "GAP", "Z", "Y", "J", "H", "K".
+    """
+    band = band.upper()
+
+    bands = {"VIS": (0.38, 0.78), "GAP": (0.78, 0.83), "Z": (0.83, 0.93),
+             "Y": (1.0, 1.1), "J": (1.17, 1.33), "H": (1.5, 1.75),
+             "K": (2.07, 2.35), "CONT": (0.45, 1.05), "NIR": (0.83, 2.35)}
+    if(band in ["ALL", ""]):
+        return wav, flux
+    elif band in bands:
+        # select values form the band
+        bandmin = bands[band][0]
+        bandmax = bands[band][1]
+
+        return wav_selector(wav, flux, bandmin, bandmax)
     else:
         print("Unrecognized band tag.")
-        exit()
-
-    # select values form the band
-    wav_band, flux_band = wav_selector(wav, flux, bandmin, bandmax)
-
-    return wav_band, flux_band
+        exit(1)
 
 
 def plotter(spectrum, band, vsini=0, R=0):
@@ -93,9 +103,24 @@ def plotter(spectrum, band, vsini=0, R=0):
     plt.show()
     plt.close()
 
+def run_convolutions(spectrum_string, band):
+    """
+    Runs the convolutions for a set of spectra in batch
+    """
+    vsini = [1.0, 5.0, 10.0]
+    R = [60000, 80000, 100000]
 
-def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, numProcs=None, output_name=None):
+    exec('spectrum = ' + spectrum_string)        #note: warnings to be dismissed, due to exec usage
+    print(spectrum)
+    print("Running the convolutions for spectra of %s in band %s\n." % (spectrum, band))
+    for vel in vsini:
+        for res in R:
+            convolution(spectrum, band, vel, res, plot=False)
 
+
+def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True,
+                numProcs=None, data_rep=data_rep, results_dir=results_dir,
+                normalize=False, output_name=None):
     """
     function that convolves a given spectra to a resolution of R
     R = 60 000 , R = 80 000, R = 100 000
@@ -118,8 +143,8 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, 
     print("Done.")
 
     # we need to calculate the FWHM at this value in order to set the starting point for the convolution
-    FWHM_min = wav_band[0]/R    # FWHM at the extremes of vector
-    FWHM_max = wav_band[-1]/R
+    FWHM_min = wav_band[0] / R    # FWHM at the extremes of vector
+    FWHM_max = wav_band[-1] / R
 
     # performing convolution with rotation kernel
     print("Starting the Rotation convolution for vsini=%.2f..." % (vsini))
@@ -137,11 +162,17 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, 
     flux_extended = np.array(flux_extended, dtype="float64")
 
     # rotational convolution
-    flux_conv_rot = rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation, vsini, epsilon)
+    flux_conv_rot = rotational_convolution(wav_extended, wav_ext_rotation,
+                                           flux_ext_rotation, vsini, epsilon,
+                                           numProcs=numProcs,
+                                           normalize=normalize)
 
     print("Starting the Resolution convolution...")
 
-    flux_conv_res = resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim, numProcs=numProcs)
+    flux_conv_res = resolution_convolution(wav_band, wav_extended,
+                                           flux_conv_rot, R, FWHM_lim,
+                                           numProcs=numProcs,
+                                           normalize=normalize)
 
     print("Saving results...")
 
@@ -169,9 +200,12 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, 
     return wav_band, flux_conv_res
 
 
-def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation, vsini, epsilon, numProcs=None):
+def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
+                           vsini, epsilon, numProcs=None, normalize=False):
     """ Perform Rotational convolution part of convolution.
     """
+    if normalize:
+        print("Normalization not implemented for rotation")
 
     def wrapper_rot_parallel_convolution(args):
         """ Wrapper for rot_parallel_convolution needed to unpack the arguments for
@@ -180,7 +214,9 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation, vs
         """
         return element_rot_convolution(*args)
 
-    def element_rot_convolution(wav, wav_extended, wav_ext_rotation, flux_ext_rotation, vsini, epsilon):
+    def element_rot_convolution(wav, wav_extended, wav_ext_rotation,
+                                flux_ext_rotation, vsini, epsilon,
+                                normalize):
         """Embarisingly parallel part of rotational convolution"""
         # select all values such that they are within the FWHM limits
         delta_lambda_L = wav * vsini / 3.0e5
@@ -189,7 +225,15 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation, vs
                       (wav_ext_rotation < (wav + delta_lambda_L)))
         flux_2convolve = flux_ext_rotation[index_mask]
         rotation_profile = rotation_kernel(wav_ext_rotation[index_mask] - wav, delta_lambda_L, vsini, epsilon)
-        return np.sum(rotation_profile * flux_2convolve)
+
+        sum_val = np.sum(rotation_profile * flux_2convolve)
+
+        if normalize:
+            # Correct for the effect of non-equidistant sampling
+            unitary_rot_val = np.sum(rotation_profile * np.ones_like(flux_2convolve))  # Affects precision
+            return sum_val / unitary_rot_val
+        else:
+            return sum_val
 
     if numProcs != 0:
         if numProcs is None:
@@ -198,7 +242,7 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation, vs
         mprocPool = mprocess.Pool(processes=numProcs)
 
         args_generator = tqdm([[wav, wav_extended, wav_ext_rotation,
-                                flux_ext_rotation, vsini, epsilon]
+                                flux_ext_rotation, vsini, epsilon, normalize]
                               for wav in wav_extended])
 
         flux_conv_rot = np.array(mprocPool.map(wrapper_rot_parallel_convolution,
@@ -212,18 +256,21 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation, vs
             flux_conv_rot[ii] = element_rot_convolution(wav, wav_extended,
                                                         wav_ext_rotation,
                                                         flux_ext_rotation,
-                                                        vsini, epsilon)
+                                                        vsini, epsilon,
+                                                        normalize)
         print("Done.\n")
     return flux_conv_rot
 
 
 
-def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim, numProcs=1):
+def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim,
+                           numProcs=1, normalize=False):
     """ Perform Resolution convolution part of convolution.
     """
 
     # Define inner convolution functions
-    def element_res_convolution(wav, R, wav_extended, flux_conv_rot, FWHM_lim):
+    def element_res_convolution(wav, R, wav_extended, flux_conv_rot, FWHM_lim,
+                                normalize):
         """ Embarisingly parallel component of resolution convolution"""
         FWHM = wav / R
         # Mask of wavelength range within 5 FWHM of wav
@@ -235,14 +282,16 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim, n
         IP = unitary_Gauss(wav_extended[index_mask], wav, FWHM)
 
         sum_val = np.sum(IP * flux_2convolve)
-        # Correct for the effect of convolution with non-equidistant postions
-        # unitary_val = np.sum(IP * np.ones_like(flux_2convolve))
-        return sum_val  # / unitary_val
-
+        if normalize:
+            # Correct for the effect of convolution with non-equidistant postions
+            unitary_val = np.sum(IP * np.ones_like(flux_2convolve))  # Affects precision
+            return sum_val / unitary_val
+        else:
+            return sum_val
 
     def wrapper_res_parallel_convolution(args):
-        """ Wrapper for res_parallel_convolution needed to unpack the arguments for
-        fast_convolve as multiprocess.Pool.map does not accept multiple
+        """ Wrapper for res_parallel_convolution needed to unpack the arguments
+        for fast_convolve as multiprocess.Pool.map does not accept multiple
         arguments
         """
         return element_res_convolution(*args)
@@ -253,8 +302,8 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim, n
 
         mprocPool = mprocess.Pool(processes=numProcs)
         # Need to update the values here
-        args_generator = tqdm([[wav, R, wav_extended, flux_conv_rot, FWHM_lim]
-                              for wav in wav_band])
+        args_generator = tqdm([[wav, R, wav_extended, flux_conv_rot, FWHM_lim,
+                                normalize] for wav in wav_band])
         flux_conv_res = np.array(mprocPool.map(wrapper_res_parallel_convolution,
                                                args_generator))
         mprocPool.close()
@@ -364,28 +413,35 @@ def rotation_kernel(delta_lambdas, delta_lambda_L, vsini, epsilon):
 
 
 ###############################################################################
-def resample_allfiles(folder=results_dir):
+def resample_allfiles(results_dir=results_dir, resampled_dir=resampled_dir):
     """
     reample all files inside folder
+    Parameters
+    ----------
+    results_dir: str
+        Directory containing results to resample.
     """
     # getting a list of all the files
-    onlyfiles = [f for f in listdir(folder) if isfile(join(folder, f))]
+    onlyfiles = [f for f in listdir(results_dir) if isfile(join(results_dir, f))]
 
-    [resampler(results_dir+spectrum_file) for spectrum_file in onlyfiles if spectrum_file[-4:] == ".txt"]
+    [resampler(spectrum_file, results_dir=results_dir,
+               resampled_dir=resampled_dir) for spectrum_file in onlyfiles
+     if spectrum_file[-4:] == ".txt"]
 
 
-def resampler(spectrum_name="results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt", sampling=3.0, plottest=False):
+def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
+              results_dir=results_dir, resampled_dir=resampled_dir,
+              sampling=3.0, plottest=False):
     """
     resamples a spectrum by interpolation onto a grid with a sampling of 3 pixels per resolution element
     """
     # wavelength, theoretical_spectrum, spectrum = read_3col(spectrum_name)
-    data = pd.read_table(spectrum_name, header=None, names=["wavelength", "theoretical_spectrum", "spectrum"], dtype=np.float64, delim_whitespace=True)
-    wavelength = data["wavelength"].values
-    theoretical_spectrum = data["theoretical_spectrum"].values
-    spectrum = data["spectrum"].values
+    read_name = results_dir + spectrum_name
+    # theoretical_spectrum = data["model"].values
+    wavelength, __, spectrum = pdread_3col(read_name, noheader=True)
 
-    wavelength_start = wavelength[1]  # because fo border effects
-    wavelength_end = wavelength[-1]
+    wavelength_start = wavelength[1]  # because of border effects
+    wavelength_end = wavelength[-2]   # because of border effects
     resolution_string = spectrum_name[-8:-5]
 
     if(resolution_string[0] == "R"):
@@ -393,13 +449,20 @@ def resampler(spectrum_name="results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60
     else:
         resolution = int(resolution_string)*1000
 
-    wav_grid = [wavelength_start]
-    while(wav_grid[-1] < wavelength_end):
-        wav_grid.append(wav_grid[-1]*(1.0+1.0/(sampling*resolution)))
-    wav_grid = np.array(wav_grid)
+    # wav_grid = [wavelength_start]
+    # while(wav_grid[-1] < wavelength_end):
+    #     wav_grid.append(wav_grid[-1]*(1.0+1.0/(sampling*resolution)))
+    # wav_grid = np.array(wav_grid)
+
+    # Create grid using logarithms with base of (1.0+1.0/(sampling*resolution))
+    base = 1.0 + 1.0 / (sampling * resolution)
+    n = np.log(wavelength_end / wavelength_start) / np.log(base)
+    powers = np.arange(np.ceil(n))
+    wav_grid = wavelength_start * base ** powers
 
     interpolated_flux = np.interp(wav_grid, wavelength, spectrum)
-    filetowrite = resampled_dir + spectrum_name[8:-4]+"_res"+str(int(sampling))+".txt"
+    filetowrite = "{0}{1}_res{2}.txt".format(resampled_dir, spectrum_name[:-4],
+                                             int(sampling))
     write_2col(filetowrite, wav_grid, interpolated_flux)
 
     if(plottest):
@@ -419,17 +482,23 @@ def name_assignment(spectrum):
     """
     assigns a name to the filename in which the spectrum is going to be saved
     """
-    if (spectrum == M0_ACES):
+    # Simplified to temperature and base in spectrum name.
+    M0_ACES = "lte03900"
+    M3_ACES = "lte03500"
+    M6_ACES = "lte02800"
+    M9_ACES = "lte02600"
+    base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+    if (M0_ACES in spectrum) and (base in spectrum):
         name = "M0-PHOENIX-ACES"
-    elif(spectrum == M3_ACES):
+    elif(M3_ACES in spectrum) and (base in spectrum):
         name = "M3-PHOENIX-ACES"
-    elif(spectrum == M6_ACES):
+    elif(M6_ACES in spectrum) and (base in spectrum):
         name = "M6-PHOENIX-ACES"
-    elif(spectrum == M9_ACES):
+    elif(M9_ACES in spectrum) and (base in spectrum):
         name = "M9-PHOENIX-ACES"
     else:
-        print("Name not found!")
-        exit()
+        print("Name {} not found!".format(spectrum))
+        exit(1)
     return name
 
 
@@ -465,10 +534,27 @@ def list_creator(spectrum, band):
     wav, flux = read_spectrum(spectrum)
     wav_band, flux_band = band_selector(wav, flux, band)
 
-    line_centers = []
     print(band + " band list:")
-    for i in range(2, len(wav_band)-2):
-        if(flux_band[i-2] > flux_band[i-1] > flux_band[i] and flux_band[i] < flux_band[i+1] < flux_band[i+2]):
-            line_centers.append(wav_band[i])
-            print("\t ", wav_band[i]*1.0e4)
-    print("In a spectrum with %d points, %d lines were found." % (len(wav_band), len(line_centers)))
+    short_flux = flux_band[2:-2]
+    left_mask = ((short_flux < flux_band[:-4]) &
+                 (short_flux < flux_band[1:-3]) &
+                 (flux_band[:-4] > flux_band[1:-3]))
+
+    right_mask = mask_right = ((short_flux < flux_band[3:-1]) &
+                               (short_flux < flux_band[4:]) &
+                               (flux_band[4:] > flux_band[3:-1]))
+
+    line_centers = wav_band[2:-2][left_mask * right_mask]  # find peaks using masking
+    print("Line centers", line_centers * 1.0e4)
+    print("In a spectrum with {} points".format(len(wav_band)),
+          ", {} lines were found.".format(len(line_centers)))
+    return line_centers
+
+
+###############################################################################
+
+if __name__ == "__main__":
+    if len(sys.argv) == 3 :
+        run_convolutions(sys.argv[1], sys.argv[2])
+    else:
+        print("Arguments not compatible with called functtion.")
