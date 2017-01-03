@@ -94,7 +94,7 @@ def plotter(spectrum, band, vsini=0, R=0):
     plt.close()
 
 
-def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, numProcs=None):
+def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, numProcs=None, output_name=None):
 
     """
     function that convolves a given spectra to a resolution of R
@@ -146,9 +146,11 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, 
     print("Saving results...")
 
     # Note: difference in sampling at 1.0 and 1.5 microns makes jumps in the beginning of Y and H bands
-
-    name_model = name_assignment(spectrum)
-    filename = results_dir+"Spectrum_"+name_model+"_"+band+"band_vsini"+str(vsini)+"_R"+str(int(R/1000))+"k.txt"
+    if output_name is None:
+        name_model = name_assignment(spectrum)
+        filename = results_dir+"Spectrum_"+name_model+"_"+band+"band_vsini"+str(vsini)+"_R"+str(int(R/1000))+"k.txt"
+    else:
+        filename = output_name
     write_3col(filename, wav_band, flux_band, flux_conv_res)
     print("Done.")
 
