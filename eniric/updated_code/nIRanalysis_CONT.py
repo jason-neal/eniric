@@ -114,9 +114,9 @@ def run_convolutions_CONT(spectrum_string, band):
     for vel in vsini:
         for res in R:
             convolution_CONT(spectrum, band, vel, res, plot=False)
-        
-def convolution_CONT(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True):
-    
+
+def convolution_CONT(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True, return_only=False):
+
     """
     function that convolves a given spectra to a resolution of R
     R = 60 000 , R = 80 000, R = 100 000
@@ -178,17 +178,22 @@ def convolution_CONT(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=T
             counter = counter+1
             print("Resolution Convolution at %d%%..." % (counter))
     flux_conv_res = np.array(flux_conv_res, dtype="float64")
-    print "Done.\n"
-    
-    print "Saving results..."  
+    print("Done.\n")
 
-    #Note: difference in sampling at 1.0 and 1.5 microns makes jumps in the beginning of Y and H bands
-      
-    name_model = name_assignment(spectrum)
-    filename = results_dir+"Spectrum_"+name_model+"_"+band+"band_vsini"+str(vsini)+"_R"+str(R/1000)+"k_CONT.txt"
-    write_3col(filename, wav_band, flux_band, flux_conv_res)
-    print "Done."    
-  
+    if return_only:
+        # Only return values - don't save to file
+        print("Not Saving results...")
+        return wav_band, flux_conv_res
+    else:
+        print("Saving results...")
+
+        # Note: difference in sampling at 1.0 and 1.5 microns makes jumps in the beginning of Y and H bands
+
+        name_model = name_assignment(spectrum)
+        filename = results_dir+"Spectrum_"+name_model+"_"+band+"band_vsini"+str(vsini)+"_R"+str(R/1000)+"k_CONT.txt"
+        write_3col(filename, wav_band, flux_band, flux_conv_res)
+        print("Done.")
+
     if(plot):
         fig=plt.figure(1)
         plt.xlabel(r"wavelength [ $\mu$m ])")
