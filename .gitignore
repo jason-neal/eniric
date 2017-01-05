@@ -1,7 +1,18 @@
+# Ignore sync file
+.sync/
+
 # eniric files
 data/original_code/*
 data/resampled/*
 data/results/*
+
+# updated_files data
+eniric/updated_code/resampled_cont/*
+# White list one file
+!eniric/updated_code/resampled_cont/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R100k_res3.txt
+
+
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
