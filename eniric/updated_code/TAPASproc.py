@@ -22,35 +22,35 @@ def read_TAPAS(filename):
     lambdas = []
     flux = []
     for line in FileConv:
-        if(line[0] == '|'): 
+        if(line[0] == '|'):
             #this is to ignore the header of the plot
             continue
         elif(line[0] == '\\'):
-            #add everything starting with a \\ to the dictionary 
-            key_dic, value_dic = string.split(line[1:-1], "=")	#remove the "\" form the beggining and the "\n" from the end
+            #add everything starting with a \\ to the dictionary
+            key_dic, value_dic = string.split(line[1:-1], "=")  #remove the "\" form the beggining and the "\n" from the end
             properties_dict[key_dic] = value_dic
         else:
             #these are the values of the file itself
             lambda_act, flux_act = string.split(line)
             lambdas.append(float(lambda_act))
             flux.append(float(flux_act))
-            
+
     lambdas = np.array(lambdas)
     flux = np.array(flux)
     #note that the lambdas are provided in reversed order
     return [properties_dict, lambdas[::-1], flux[::-1]]
- 
+
 def read_allfiles(mask_limit = 0.02):
     """
     reads all the files in list_files
     """
 
     Files = IOmodule.read_fullcol(dirmodels+list_files)
-    print "Reading the files..."
+    print("Reading the files...")
     atm_models = [read_TAPAS(dirmodels+file_act[:-1]) for file_act in Files]
-    print "done."
+    print("done.")
 
-    wav = atm_models[0][1]         
+    wav = atm_models[0][1]
     mean_flux = []
     std_flux = []
     mask = []
@@ -65,14 +65,14 @@ def read_allfiles(mask_limit = 0.02):
             mask.append(0.0)
 
     write_4col_eeed(outdir+"Average_TAPAS_2014_visible.txt", wav, mean_flux, std_flux, mask)
-    
+
 def write_4col_eeed(filename, data1, data2, data3, data4):
 # Writes data in 3 columns separated by tabs in a "filename" file.
 
     f = open(filename, "w")
-	
+
     for i in range(len(data1)):
  #       f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
         f.write("\t%e\t\t%e\t\t%e\t\t%d\n" % (data1[i], data2[i], data3[i], data4[i]))
-	
+
     f.close();
