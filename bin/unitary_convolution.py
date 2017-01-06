@@ -83,6 +83,7 @@ for band in bands:
                                                           normalize=True,
                                                           output_name=filename_norm, results_dir=results_dir, return_only=False)
 
+
                 cont_wav, cont_flux = convolution_CONT(unitary_name, band, vel,
                                                        Res, plot=False,
                                                        return_only=True)
