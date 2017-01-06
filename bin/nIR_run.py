@@ -13,18 +13,20 @@ def _parser():
     :returns: the args
     """
     parser = argparse.ArgumentParser(description='Helpful discription')
-    parser.add_argument('spectrum', help='Spectrum name', dtype=str)
-    parser.add_argument("-v", "--vsini",  help="Rotational velocity of source", dtype(float))
-    parser.add_argument("-R", "--resolution",  help="Observational resolution", dtype(float))
-    parser.add_argument("-b", "--band", dtype=str, default="ALL",
+    parser.add_argument('spectrum', help='Spectrum name', type=str)
+    parser.add_argument("-v", "--vsini", help="Rotational velocity of source",
+                        type=float)
+    parser.add_argument("-R", "--resolution", help="Observational resolution",
+                        type=float)
+    parser.add_argument("-b", "--band", type=str, default="ALL",
                         choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
                         help="Wavelength band to select")
-    parser.add_argument('-d', '--data_dir', help='Data directory', dtype=str)
-    parser.add_argument('--sample_rate', default=3.0, dtype=float,
+    parser.add_argument('-d', '--data_dir', help='Data directory', type=str)
+    parser.add_argument('--sample_rate', default=3.0, type=float,
                         help="Resample rate, pixels per FWHM. Default=3.0")
-    parser.add_argument('--results', default=None, dtype=str,
+    parser.add_argument('--results', default=None, type=str,
                         help='Result directory Default=data_dir+"/../"')
-    parser.add_argument('--resamples', default=None, dtype=str
+    parser.add_argument('--resamples', default=None, type=str,
                         help='Resample directory. Default=data_dir+"/../"')
     parser.add_argument('--noresample', help='Resample output', default=True,
                         action="store_false")
