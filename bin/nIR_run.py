@@ -41,7 +41,19 @@ def main(spectrum, vsini, resolution, band, data_dir=None, results=None,
          resamples=None, sample_rate=3.0, noresample=False, normalize=False):
 
         # vsini, resolution, band and sample_rate can all be a series of values
+    if data_dir is None:
+        data_dir = "../data/"
     pass
+
+    if results is None:
+        results_dir = data_dir + "results/"
+    else:
+        results_dir = results
+
+    if resamples is None:
+        resampled_dir = data_dir + "resampled/"
+    else:
+        resampled_dir = resamples
 
 
 
