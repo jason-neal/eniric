@@ -28,14 +28,17 @@ def _parser():
                         help='Result directory Default=data_dir+"/../"')
     parser.add_argument('--resamples', default=None, type=str,
                         help='Resample directory. Default=data_dir+"/../"')
-    parser.add_argument('--noresample', help='Resample output', default=True,
-                        action="store_false")
+    parser.add_argument('--noresample', help='Resample output', default=False,
+                        action="store_true")
+    parser.add_argument('--normalize', help='Normalize for wavelength step', default=False,
+                        action="store_true")
 
     args = parser.parse_args()
     return args
 
+
 def main(spectrum, vsini, resolution, band, data_dir=None, results=None,
-         resamples=None, sample_rate=3.0, noresample=False):
+         resamples=None, sample_rate=3.0, noresample=False, normalize=False):
 
         # vsini, resolution, band and sample_rate can all be a series of values
     pass
