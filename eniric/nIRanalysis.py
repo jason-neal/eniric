@@ -179,7 +179,7 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True,
         # Only return values - don't save to file
         print("Not Saving results...")
         return wav_band, flux_conv_res
-        
+
     else:
         print("Saving results...")
 
@@ -187,9 +187,9 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True,
         if output_name is None:
             name_model = name_assignment(spectrum)
             if normalize:
-                filename = results_dir+"Spectrum_"+name_model+"_"+band+"band_vsini"+str(vsini)+"_R"+str(int(R/1000))+"k_conv_normalized.txt"
+                filename = results_dir + "Spectrum_{0}_{1}band_vsini{2}_R{3}k_conv_normalized.txt".format(name_model, band, str(vsini), str(int(R/1000)))
             else:
-                filename = results_dir+"Spectrum_"+name_model+"_"+band+"band_vsini"+str(vsini)+"_R"+str(int(R/1000))+"k.txt"
+                filename = results_dir+"Spectrum_{0}_{1}band_vsini{2}_R{3}k.txt".format(name_model, band, str(vsini), str(int(R/1000)))
         else:
             filename = results_dir + output_name
         write_3col(filename, wav_band, flux_band, flux_conv_res)
