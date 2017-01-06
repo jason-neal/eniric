@@ -2,14 +2,20 @@
 """Convolutions on unity for rotation and resolution.
 
 Perform rotational and resolution convolutions on a vector of ones.
-This was used to normalize for the effect of convolution in the original paper
+This was used to normalize for the effect of convolution in the original paper.
+
+Was given some updated code of Pedros in which he does this in nIRanalysis_CONT, saves the result to file and then divides the results in the resampler.
 
 """
 import numpy as np
+import matplotlib.pyplot as plt
 from astropy.io import fits
-from eniric.nIRanalysis import convolution, write_2col
+from eniric.nIRanalysis import convolution, write_2col, write_3col, read_spectrum
 from eniric.nIRanalysis import rotational_convolution, resolution_convolution
 from eniric.IOmodule import read_2col
+
+# New code from PEDRO
+from eniric.updated_code.nIRanalysis_CONT import convolution_CONT
 
 base_dir = "../data/nIRmodels/"   # relative to script location in bin
 
@@ -37,12 +43,14 @@ else:
 name_model = "UNITARY"
 
 bands = ["VIS", "GAP", "Z", "Y", "J", "H", "K"]
-bands = ["H"]    # single run with a known band (in current develop version)
 vsini = [1.0, 5.0, 10.0]
 R = [60000, 80000, 100000]
 
 sampling = ["3"]
 
+bands = ["K"]    # single run with a known band (in current develop version)
+vsini = [1.0]
+R = [100000]
 """ Applying convolution stage of nIRanalysis for all bands vsini and
 resolution of paper.
 
@@ -58,8 +66,28 @@ for band in bands:
                         name_model + "_" + band + "band_vsini" + str(vel) +
                         "_R" + str(int(Res/1000)) + "k.txt")
 
-            convolution(unitary_name, band, vel, Res, plot=False,
-                        output_name=filename)
+            # without normalization
+            new_wav, new_flux = convolution(unitary_name, band, vel, Res,
+                                            plot=False, output_name=filename)
+
+            # With normalization (should be 1s only)
+            new_wav_norm, new_flux_norm = convolution(unitary_name, band, vel,
+                                                      Res, plot=False,
+                                                      normalize=True,
+                                                      output_name=filename, return_only=True)
+
+            cont_wav, cont_flux = convolution_CONT(unitary_name, band, vel,
+                                                   Res, plot=False,
+                                                   return_only=True)
+            write_2col("/home/jneal/Phd/Codes/eniric/data/unitary_convolution/result_from_convolution_CONT.txt", cont_wav, cont_flux)
+
+            plot.plot(new_wav, new_flux, "new")
+            plot.plot(new_wav_norm, new_flux_norm, "norm")
+            plot.plot(cont_wav, cont_flux, "cont")
+            plt.legend()
+            plt.show()
+            assert new_wav == cont_wav
+            assert new_flux == cont_flux
 
 """
 Unitary value over full Phoenix Spectrum wavelength range.
