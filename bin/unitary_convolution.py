@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 from eniric.nIRanalysis import convolution, write_2col, write_3col, read_spectrum
 from eniric.nIRanalysis import rotational_convolution, resolution_convolution
-from eniric.IOmodule import read_2col
+from eniric.IOmodule import pdread_2col, pdread_3col
 
 # New code from PEDRO
 from eniric.updated_code.nIRanalysis_CONT import convolution_CONT
@@ -55,39 +55,52 @@ R = [100000]
 resolution of paper.
 
 """
-
+do_convolutions = False
 # Applying Rotational and Resolution convolution to unitary spectum
+results_dir = base_dir + "../unitary_convolution/"
 for band in bands:
     for vel in vsini:
         for Res in R:
-            # Provide own path as this model does not convolve to the phoenix
-            # name assignment
-            filename = (base_dir + "../unitary_convolution/" + "Spectrum_" +
+                # Provide own path as this model does not convolve to the phoenix
+                # name assignment
+
+            filename = ("Spectrum_" +
                         name_model + "_" + band + "band_vsini" + str(vel) +
                         "_R" + str(int(Res/1000)) + "k.txt")
+            filename_norm = ("Spectrum_" +
+                        name_model + "_" + band + "band_vsini" + str(vel) +
+                        "_R" + str(int(Res/1000)) + "k_conv_normalized.txt")
+            if do_convolutions:
 
-            # without normalization
-            new_wav, new_flux = convolution(unitary_name, band, vel, Res,
-                                            plot=False, output_name=filename)
 
-            # With normalization (should be 1s only)
-            new_wav_norm, new_flux_norm = convolution(unitary_name, band, vel,
-                                                      Res, plot=False,
-                                                      normalize=True,
-                                                      output_name=filename, return_only=True)
+                # without normalization
+                new_wav, new_flux = convolution(unitary_name, band, vel, Res,
+                                                plot=False, output_name=filename, results_dir=results_dir, return_only=False)
 
-            cont_wav, cont_flux = convolution_CONT(unitary_name, band, vel,
-                                                   Res, plot=False,
-                                                   return_only=True)
-            write_2col("/home/jneal/Phd/Codes/eniric/data/unitary_convolution/result_from_convolution_CONT.txt", cont_wav, cont_flux)
+                # With normalization (should be 1s only)
+                new_wav_norm, new_flux_norm = convolution(unitary_name, band, vel,
+                                                          Res, plot=False,
+                                                          normalize=True,
+                                                          output_name=filename_norm, results_dir=results_dir, return_only=False)
 
-            plot.plot(new_wav, new_flux, "new")
-            plot.plot(new_wav_norm, new_flux_norm, "norm")
-            plot.plot(cont_wav, cont_flux, "cont")
+                #cont_wav, cont_flux = convolution_CONT(unitary_name, band, vel,
+                #                                       Res, plot=False,
+                #                                       return_only=True)
+                #write_2col(result_dir + "result_from_convolution_CONT.txt", cont_wav, cont_flux)
+
+            else:
+    # Just load data from files
+                new_wav, __, new_flux = pdread_3col(results_dir + filename, noheader=True)
+                new_wav_norm, __, new_flux_norm = pdread_3col(results_dir + filename_norm, noheader=True)
+                cont_wav, cont_flux = pdread_2col(results_dir + "result_from_convolution_CONT.txt", noheader=True)
+
+            plt.plot(new_wav, new_flux, label="new")
+            plt.plot(new_wav_norm, new_flux_norm, "o-", label="norm")
+            plt.plot(cont_wav, cont_flux, label="cont")
             plt.legend()
             plt.show()
-            assert new_wav == cont_wav
-            assert new_flux == cont_flux
+            # assert np.all(new_wav == cont_wav)
+            # assert np.all(new_flux == cont_flux)
 
 """
 Unitary value over full Phoenix Spectrum wavelength range.
