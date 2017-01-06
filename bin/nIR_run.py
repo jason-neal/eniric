@@ -64,6 +64,15 @@ def main(spectrum, vsini, resolution, band, data_dir=None, results=None,
     if not isinstance(sample_rate, list):
             sample_rate = [sample_rate]
 
+    for vel in vsini:
+        for R in resolution:
+            for b in band:
+                for sample in sample_rate:
+
+                    convolution(data_dir+spectrum, b, vel, R, epsilon=0.6, plot=False,
+                    FWHM_lim=5.0, numProcs=None, data_rep=data_dir,
+                    results_dir=results_dir, normalize=normalize, output_name=None,
+                    return_only=False)
 
 if __name__ == '__main__':
     args = vars(_parser())
