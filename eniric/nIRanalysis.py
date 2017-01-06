@@ -6,6 +6,7 @@ Created on Sun Dec 14 15:43:13 2014
 Adapted December 2016 by Jason Neal
 """
 from __future__ import division, print_function
+import re
 import sys
 import numpy as np
 from tqdm import tqdm
@@ -238,6 +239,7 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
             unitary_rot_val = np.sum(rotation_profile * np.ones_like(flux_2convolve))  # Affects precision
             return sum_val / unitary_rot_val
         else:
+
             return sum_val
 
     if numProcs != 0:
@@ -447,12 +449,10 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
 
     wavelength_start = wavelength[1]  # because of border effects
     wavelength_end = wavelength[-2]   # because of border effects
-    resolution_string = spectrum_name[-8:-5]
 
-    if(resolution_string[0] == "R"):
-        resolution = int(resolution_string[1:])*1000
-    else:
-        resolution = int(resolution_string)*1000
+    #match = re.match("Spectrum_(M\d)-PHOENIX-ACES_([A-Z]{1,4})band_vsini(\d{1,2}.?\d?)_R(\d{2,3})k(_conv_normalize)?.txt", spectrum_name)
+    match = re.search("_R(\d{2,3})k", spectrum_name)
+    resolution = int(match.group(1))*1000
 
     # wav_grid = [wavelength_start]
     # while(wav_grid[-1] < wavelength_end):
