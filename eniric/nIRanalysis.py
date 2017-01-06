@@ -181,7 +181,7 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True,
         name_model = name_assignment(spectrum)
         filename = results_dir+"Spectrum_"+name_model+"_"+band+"band_vsini"+str(vsini)+"_R"+str(int(R/1000))+"k.txt"
     else:
-        filename = output_name
+        filename = results_dir + output_name
     write_3col(filename, wav_band, flux_band, flux_conv_res)
     print("Done.")
 
