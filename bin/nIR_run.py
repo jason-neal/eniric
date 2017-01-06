@@ -2,7 +2,7 @@
 # Script to perform a convolution on a spectrum.
 # Can take a number of parameters if needed
 from __future__ import division, print_function
-from eniric.nIRanalysis import convolution, resample_allfiles
+from eniric.nIRanalysis import convolution, resampler
 
 import argparse
 
@@ -13,7 +13,7 @@ def _parser():
     :returns: the args
     """
     parser = argparse.ArgumentParser(description='Helpful discription')
-    parser.add_argument('spectrum', help='Spectrum name', type=str)
+    parser.add_argument('startype', help='Spectral Type e.g "MO"', type=str)
     parser.add_argument("-v", "--vsini", help="Rotational velocity of source",
                         type=float)
     parser.add_argument("-R", "--resolution", help="Observational resolution",
@@ -36,14 +36,30 @@ def _parser():
     args = parser.parse_args()
     return args
 
+def get_spectrum_name(startype, logg="4.50", feh="0.0"):
+    """ Return correct spectrum filename for a given spectral type.
 
-def main(spectrum, vsini, resolution, band, data_dir=None, results=None,
+    Ability to add logg and metalicity (feh) later on
+    """
+
+    temps = {"M0": "03900", "M3": "03500", "M6": "02800", "M9": "02600"}
+    base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+    if startype in temps.keys():
+        spectrum_name = "PHOENIX-ACES_spectra/lte{}-{}-{}.{}".format(temps[startype], logg, feh, base)
+    else:
+        raise NotImplemented("This spectral type is not implemented yet")
+
+    return spectrum_name
+
+def main(startype, vsini, resolution, band, data_dir=None, results=None,
          resamples=None, sample_rate=3.0, noresample=False, normalize=False):
 
         # vsini, resolution, band and sample_rate can all be a series of values
+
+    spectrum_name = get_spectrum_name(startype)
+
     if data_dir is None:
         data_dir = "../data/"
-    pass
 
     if results is None:
         results_dir = data_dir + "results/"
@@ -68,16 +84,28 @@ def main(spectrum, vsini, resolution, band, data_dir=None, results=None,
         for R in resolution:
             for b in band:
                 for sample in sample_rate:
-
-                    convolution(data_dir+spectrum, b, vel, R, epsilon=0.6, plot=False,
+                    if normalize:
+                        # when normalize ation is confirmed then can
+                        result_name = "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}k_conv_normalized.txt".format(startype, b, vel, int(R/1000))
+                    else:
+                        result_name = "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}k.txt".format(startype, b, vel, int(R/1000))
+                    print("Name to be result file", result_name)
+                    convolution(data_dir+spectrum_name, b, vel, R, epsilon=0.6, plot=False,
                     FWHM_lim=5.0, numProcs=None, data_rep=data_dir,
-                    results_dir=results_dir, normalize=normalize, output_name=None,
-                    return_only=False)
+                    results_dir=results_dir, normalize=normalize, output_name=result_name)
+
+                # Resample only the file just made
+                if noresample:
+                    pass
+                else:
+                    resampler(result_name, results_dir=results_dir,
+                               resampled_dir=resampled_dir, sampling=sample)
+
 
 if __name__ == '__main__':
     args = vars(_parser())
-    spectrum_name = args.pop('spectrum')  # positional arguments
+    startype = args.pop("startype")  # positional arguments
 
     opts = {k: args[k] for k in args}
 
-    main(spectrum_name, **opts)
+    main(startype, **opts)
