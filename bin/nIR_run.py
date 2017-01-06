@@ -55,6 +55,14 @@ def main(spectrum, vsini, resolution, band, data_dir=None, results=None,
     else:
         resampled_dir = resamples
 
+    if not isinstance(vsini, list):
+        vsini = [vsini]
+    if not isinstance(resolution, list):
+        resolution = [resolution]
+    if not isinstance(band, list):
+        band = [band]
+    if not isinstance(sample_rate, list):
+            sample_rate = [sample_rate]
 
 
 if __name__ == '__main__':
