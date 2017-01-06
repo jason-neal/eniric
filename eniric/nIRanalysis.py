@@ -181,7 +181,7 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True,
         name_model = name_assignment(spectrum)
         filename = results_dir+"Spectrum_"+name_model+"_"+band+"band_vsini"+str(vsini)+"_R"+str(int(R/1000))+"k.txt"
     else:
-        filename = output_name
+        filename = results_dir + output_name
     write_3col(filename, wav_band, flux_band, flux_conv_res)
     print("Done.")
 
@@ -413,7 +413,7 @@ def rotation_kernel(delta_lambdas, delta_lambda_L, vsini, epsilon):
 
 
 ###############################################################################
-def resample_allfiles(results_dir=results_dir, resampled_dir=resampled_dir):
+def resample_allfiles(results_dir=results_dir, resampled_dir=resampled_dir, sampling=3.0):
     """
     reample all files inside folder
     Parameters
@@ -425,7 +425,7 @@ def resample_allfiles(results_dir=results_dir, resampled_dir=resampled_dir):
     onlyfiles = [f for f in listdir(results_dir) if isfile(join(results_dir, f))]
 
     [resampler(spectrum_file, results_dir=results_dir,
-               resampled_dir=resampled_dir) for spectrum_file in onlyfiles
+               resampled_dir=resampled_dir, sampling=sampling) for spectrum_file in onlyfiles
      if spectrum_file[-4:] == ".txt"]
 
 
