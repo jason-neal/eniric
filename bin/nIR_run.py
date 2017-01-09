@@ -36,20 +36,37 @@ def _parser():
     args = parser.parse_args()
     return args
 
-def get_spectrum_name(startype, logg="4.50", feh="0.0"):
+def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None):
     """ Return correct spectrum filename for a given spectral type.
+
+    Based off phoenix_utils module.
 
     Ability to add logg and metalicity (feh) later on
     """
+    if feh == 0:
+        feh = -0.0    # make zero negative to signed integer.
 
-    temps = {"M0": "03900", "M3": "03500", "M6": "02800", "M9": "02600"}
+    temps = {"M0": 3900, "M3": 3500, "M6": 2800, "M9": 2600}
     base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
     if startype in temps.keys():
-        spectrum_name = "PHOENIX-ACES_spectra/lte{}-{}-{}.{}".format(temps[startype], logg, feh, base)
+        if (alpha is not None) and (alpha != 0.0):
+            if abs(alpha) > 0.2:
+                print("Warning! Alpha is outside acceptable range -0.2->0.2")
+            phoenix_name = ("PHOENIX-ACES_spectra/Z{2:+4.1f}.Alpha={3:+5.2f}/"
+                            "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}."
+                            "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+                            "").format(temps[startype], logg, feh, alpha)
+        else:
+            phoenix_name = ("PHOENIX-ACES_spectra/Z{2:+4.1f}/lte{0:05d}-{1:4.2f}"
+                            "{2:+4.1f}.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+                            "").format(temps[startype], logg, feh)
+
+        spectrum_name = phoenix_name
     else:
         raise NotImplemented("This spectral type is not implemented yet")
 
     return spectrum_name
+
 
 def main(startype, vsini, resolution, band, data_dir=None, results=None,
          resamples=None, sample_rate=3.0, noresample=False, normalize=False):
