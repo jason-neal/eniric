@@ -115,18 +115,74 @@ def read_3col(filename):
 ################################################################################
 
 
+def pdwrite_2col(filename, data1, data2, sep="\t", header=False):
+    """ Write out a 2 column file with pandas.
+
+    Faster then write_2col, uses pandas.DataFrame.to_csv()
+
+    Parameters
+    ----------
+    filename: str
+        Name of file to write.
+    data1: ndarray or list, array-like
+        The data for the first column
+    data2: ndarray or list, array-like
+        The data for the second column
+    sep: str
+        Character separation between values.
+    header: list of strings or bool, default False
+        Header strings to apply to columns.
+
+    Returns
+    -------
+    flag: bool
+        Returns 0 if successful.
+    """
+    if header:
+        df = pd.DataFrame({"# " + header[0]: data1, header[1]: data2})
+    else:
+        df = pd.DataFrame({"# x": data1, "y": data2})
+
+    # Write dataframe to file
+    df.to_csv(output_filename, sep=sep, header=header, index=False)  # header=False
+
+    return 0
 
 
+def pdwrite_3col(filename, data1, data2, data3, sep="\t", header=False):
+    """ Write out a 3 column file with pandas.
 
+    Faster then write_3col, uses pandas.DataFrame.to_csv()
 
+    Parameters
+    ----------
+    filename: str
+        Name of file to write.
+    data1: ndarray or list, array-like
+        The data for the first column
+    data2: ndarray or list, array-like
+        The data for the second column
+    data3: ndarray or list, array-like
+        The data for the third column
+    sep: str
+        Character separation between values.
+    header: list of strings or bool, default False
+        Header strings to apply to columns.
 
+    Returns
+    -------
+    flag: bool
+        Returns 0 if successful.
+    """
+    if header:
+        df = pd.DataFrame({"# " + header[0]: data1, header[1]: data2, header[2]: data3})
+    else:
+        df = pd.DataFrame({"# x": data1, "y": data2, "z": data3})
 
+    # Write dataframe to file
+    df.to_csv(output_filename, sep=sep, header=header, index=False)  # header=False
 
-
-
-
-
-
+    return 0
 
 def write_2col(filename, data1, data2):
     # Writes data in 2 columns separated by tabs in a "filename" file.
