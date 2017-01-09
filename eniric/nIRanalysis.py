@@ -426,7 +426,7 @@ def resample_allfiles(results_dir=results_dir, resampled_dir=resampled_dir):
 
     [resampler(spectrum_file, results_dir=results_dir,
                resampled_dir=resampled_dir) for spectrum_file in onlyfiles
-     if spectrum_file[-4:] == ".txt"]
+     spectrum_file.endswith(".txt")]
 
 
 def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
