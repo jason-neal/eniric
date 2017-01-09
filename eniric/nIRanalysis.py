@@ -16,6 +16,7 @@ from os.path import isfile, join
 
 # from eniric.IOmodule import read_2col, read_3col
 from eniric.IOmodule import pdread_2col, pdread_3col
+from eniric.IOmodule import write_e_2col, write_e_3col
 # from eniric.Qcalculator import RVprec_calc, SqrtSumWis
 
 import matplotlib.pyplot as plt
@@ -182,7 +183,7 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True,
         filename = results_dir+"Spectrum_"+name_model+"_"+band+"band_vsini"+str(vsini)+"_R"+str(int(R/1000))+"k.txt"
     else:
         filename = output_name
-    write_3col(filename, wav_band, flux_band, flux_conv_res)
+    write_e_3col(filename, wav_band, flux_band, flux_conv_res)
     print("Done.")
 
     if(plot):
@@ -463,7 +464,7 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
     interpolated_flux = np.interp(wav_grid, wavelength, spectrum)
     filetowrite = "{0}{1}_res{2}.txt".format(resampled_dir, spectrum_name[:-4],
                                              int(sampling))
-    write_2col(filetowrite, wav_grid, interpolated_flux)
+    write_e_2col(filetowrite, wav_grid, interpolated_flux)
 
     if(plottest):
         plt.figure(1)
@@ -501,29 +502,6 @@ def name_assignment(spectrum):
         exit(1)
     return name
 
-
-def write_2col(filename, data1, data2):
-    # Writes data in 2 columns separated by tabs in a "filename" file.
-
-    f = open(filename, "w")
-
-    for i in range(len(data1)):
-        # f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
-        f.write("\t%e\t\t%e\n" % (data1[i], data2[i]))
-
-    f.close()
-
-
-def write_3col(filename, data1, data2, data3):
-    # Writes data in 3 columns separated by tabs in a "filename" file.
-
-    f = open(filename, "w")
-
-    for i in range(len(data1)):
-        # f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
-        f.write("\t%e\t\t%e\t\t%e\n" % (data1[i], data2[i], data3[i]))
-
-    f.close()
 ###############################################################################
 
 
