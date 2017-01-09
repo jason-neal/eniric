@@ -18,7 +18,7 @@ from os.path import isfile, join
 from eniric.IOmodule import pdread_2col, pdread_3col
 from eniric.IOmodule import write_e_2col, write_e_3col
 # from eniric.Qcalculator import RVprec_calc, SqrtSumWis
-
+from eniric.utilities import wav_selector, unitary_Gauss, rotation_kernel, plotter
 import matplotlib.pyplot as plt
 from matplotlib import rc
 # set stuff for latex usage
@@ -89,20 +89,6 @@ def band_selector(wav, flux, band):
         print("Unrecognized band tag.")
         exit(1)
 
-
-def plotter(spectrum, band, vsini=0, R=0):
-    """
-    Reads and plots the selected spectrum in a given band
-    """
-    wav, flux = read_spectrum(spectrum)
-    wav_band, flux_band = band_selector(wav, flux, band)
-
-    plt.figure(1)
-    plt.xlabel(r"wavelength [$\mu$m])")
-    plt.ylabel(r"flux [counts] ")
-    plt.plot(wav_band, flux_band, color='k', marker="o", linestyle="-")
-    plt.show()
-    plt.close()
 
 def run_convolutions(spectrum_string, band):
     """
@@ -318,165 +304,6 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim,
     return flux_conv_res
 
 
-###############################################################################
-#
-#   Auxiliary functions
-#
-###############################################################################
-
-def wav_selector(wav, flux, wav_min, wav_max):
-    """
-    function that returns wavelength and flux withn a giving range
-
-    Parameters
-    ----------
-    wav: array-like
-        Wavelength array.
-    flux: array-like
-        Flux array.
-    wav_min: float
-        Lower bound wavelength value.
-    wav_max: float
-        Upper bound wavelength value.
-
-    Returns
-    -------
-    wav_sel: array
-        New wavelength array within bounds wav_min, wav_max
-    flux_sel: array
-        New wavelength array within bounds wav_min, wav_max
-        """
-    wav = np.asarray(wav, dtype="float64")
-    flux = np.asarray(flux, dtype="float64")
-
-    mask = (wav > wav_min) & (wav < wav_max)
-    flux_sel = flux[mask]
-    wav_sel = wav[mask]
-
-    return wav_sel, flux_sel
-
-
-def unitary_Gauss(x, center, FWHM):
-    """ Gaussian function of area = 1.
-
-    Parameters
-    ----------
-    x: array-like
-        Position array
-    center: float
-        Central postion of Gaussian
-    FHWM: float
-        Full Width at Half Maximum
-
-    Returns
-    -------
-    result: array-like
-        Result of gaussian function sampled at x values.
-    """
-
-    sigma = np.abs(FWHM) / (2 * np.sqrt(2 * np.log(2)))
-    Amp = 1.0 / (sigma * np.sqrt(2 * np.pi))
-    tau = -((x - center)**2) / (2 * (sigma**2))
-    result = Amp * np.exp(tau)
-
-    return result
-
-
-def rotation_kernel(delta_lambdas, delta_lambda_L, vsini, epsilon):
-    """ Calculate the rotation kernel for a given wavelength
-
-    Parameters
-    ----------
-    delta_lambdas: array
-        Wavelength values selected within delta_lambda_L around central value. (check)
-    delta_lambda_L: float
-        FWHM of rotational broading. (check)
-    vsini: float
-        Projected rotational velocity [km/s]
-    epsilon: float
-        Linear limb-darkening coefficient (0-1).
-
-    Returns
-    -------
-        Rotational kernal
-
-    Notes:
-    Equations * from .... book.
-
-    """
-    denominator = (np.pi * vsini * (1.0 - epsilon / 3.0))
-    lambda_ratio_sqr = (delta_lambdas / delta_lambda_L)**2.0
-
-    c1 = 2.0 * (1.0 - epsilon) / denominator
-    c2 = 0.5 * np.pi * epsilon / denominator
-
-    return (c1 * np.sqrt(1.0-lambda_ratio_sqr) + c2 * (1.0-lambda_ratio_sqr))
-
-
-###############################################################################
-def resample_allfiles(results_dir=results_dir, resampled_dir=resampled_dir):
-    """
-    reample all files inside folder
-    Parameters
-    ----------
-    results_dir: str
-        Directory containing results to resample.
-    """
-    # getting a list of all the files
-    onlyfiles = [f for f in listdir(results_dir) if isfile(join(results_dir, f))]
-
-    [resampler(spectrum_file, results_dir=results_dir,
-               resampled_dir=resampled_dir) for spectrum_file in onlyfiles
-     if spectrum_file.endswith(".txt")]
-
-
-def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
-              results_dir=results_dir, resampled_dir=resampled_dir,
-              sampling=3.0, plottest=False):
-    """
-    resamples a spectrum by interpolation onto a grid with a sampling of 3 pixels per resolution element
-    """
-    # wavelength, theoretical_spectrum, spectrum = read_3col(spectrum_name)
-    read_name = results_dir + spectrum_name
-    # theoretical_spectrum = data["model"].values
-    wavelength, __, spectrum = pdread_3col(read_name, noheader=True)
-
-    wavelength_start = wavelength[1]  # because of border effects
-    wavelength_end = wavelength[-2]   # because of border effects
-    resolution_string = spectrum_name[-8:-5]
-
-    if(resolution_string[0] == "R"):
-        resolution = int(resolution_string[1:])*1000
-    else:
-        resolution = int(resolution_string)*1000
-
-    # wav_grid = [wavelength_start]
-    # while(wav_grid[-1] < wavelength_end):
-    #     wav_grid.append(wav_grid[-1]*(1.0+1.0/(sampling*resolution)))
-    # wav_grid = np.array(wav_grid)
-
-    # Create grid using logarithms with base of (1.0+1.0/(sampling*resolution))
-    base = 1.0 + 1.0 / (sampling * resolution)
-    n = np.log(wavelength_end / wavelength_start) / np.log(base)
-    powers = np.arange(np.ceil(n))
-    wav_grid = wavelength_start * base ** powers
-
-    interpolated_flux = np.interp(wav_grid, wavelength, spectrum)
-    filetowrite = "{0}{1}_res{2}.txt".format(resampled_dir, spectrum_name[:-4],
-                                             int(sampling))
-    write_e_2col(filetowrite, wav_grid, interpolated_flux)
-
-    if(plottest):
-        plt.figure(1)
-        plt.xlabel(r"wavelength [$\mu$m])")
-        plt.ylabel(r"flux [counts] ")
-        plt.plot(wavelength, spectrum, color='k', linestyle="-", label="Original spectrum")
-        plt.plot(wav_grid, interpolated_flux, color='b', linestyle="-", label="Interpolated spectrum")
-        plt.legend(loc='best')
-        plt.show()
-
-        plt.close()
-
 
 ###############################################################################
 def name_assignment(spectrum):
@@ -502,37 +329,9 @@ def name_assignment(spectrum):
         exit(1)
     return name
 
-###############################################################################
-
-
-def list_creator(spectrum, band):
-    """
-    creates a list of potential lines from a brute-force analysis of the band
-    """
-    wav, flux = read_spectrum(spectrum)
-    wav_band, flux_band = band_selector(wav, flux, band)
-
-    print(band + " band list:")
-    short_flux = flux_band[2:-2]
-    left_mask = ((short_flux < flux_band[:-4]) &
-                 (short_flux < flux_band[1:-3]) &
-                 (flux_band[:-4] > flux_band[1:-3]))
-
-    right_mask = mask_right = ((short_flux < flux_band[3:-1]) &
-                               (short_flux < flux_band[4:]) &
-                               (flux_band[4:] > flux_band[3:-1]))
-
-    line_centers = wav_band[2:-2][left_mask * right_mask]  # find peaks using masking
-    print("Line centers", line_centers * 1.0e4)
-    print("In a spectrum with {} points".format(len(wav_band)),
-          ", {} lines were found.".format(len(line_centers)))
-    return line_centers
-
-
-###############################################################################
 
 if __name__ == "__main__":
-    if len(sys.argv) == 3 :
+    if len(sys.argv) == 3:
         run_convolutions(sys.argv[1], sys.argv[2])
     else:
         print("Arguments not compatible with called functtion.")
