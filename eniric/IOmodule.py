@@ -1015,23 +1015,26 @@ def write_3col(filename, data1, data2, data3):
     f.close()
 
 
-def write_4col(filename, data1, data2, data3, data4):
+
+def write_e_2col(filename, data1, data2):
     # Writes data in 2 columns separated by tabs in a "filename" file.
 
     f = open(filename, "w")
 
     for i in range(len(data1)):
-        f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\t\t"+str(data4[i])+"\n")
+        # f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
+        f.write("\t{0:e}\t\t{1:e}\n".format(data1[i], data2[i]))
 
     f.close()
 
 
-def write_5col(filename, data1, data2, data3, data4, data5):
-    # Writes data in 5 columns separated by tabs in a "filename" file.
+def write_e_3col(filename, data1, data2, data3):
+    # Writes data in 3 columns separated by tabs in a "filename" file.
 
     f = open(filename, "w")
 
     for i in range(len(data1)):
-        f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\t\t"+str(data4[i])+"\t\t"+str(data5[i])+"\n")
+        # f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
+        f.write("\t{0:e}\t\t{1:e}\t\t{2:e}\n".format(data1[i], data2[i], data3[i]))
 
     f.close()
