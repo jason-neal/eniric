@@ -2,6 +2,7 @@
 data/original_code/*
 data/resampled/*
 data/results/*
+data/PHOENIX-ACES_spectra/Z*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
