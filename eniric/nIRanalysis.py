@@ -454,9 +454,12 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
     wavelength_end = wavelength[-2]   # because of border effects
 
     #match = re.match("Spectrum_(M\d)-PHOENIX-ACES_([A-Z]{1,4})band_vsini(\d{1,2}.?\d?)_R(\d{2,3})k(_conv_normalize)?.txt", spectrum_name)
-    match = re.search("_R(\d{2,3})k", spectrum_name)
-    resolution = int(match.group(1))*1000
-
+    try:
+        match = re.search("_R(\d{1,3})k", spectrum_name)
+        resolution = int(match.group(1))*1000
+    except:
+        print("Failed to get Resolution from ", spectrum_name)
+        raise
     # wav_grid = [wavelength_start]
     # while(wav_grid[-1] < wavelength_end):
     #     wav_grid.append(wav_grid[-1]*(1.0+1.0/(sampling*resolution)))
