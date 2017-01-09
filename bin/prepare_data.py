@@ -5,6 +5,8 @@ Code to take all phoenix-aces fits files and create .dat files with wavelength
 and flux.
 Adds them to the data directory of eniric for convolutions etc.
 
+This wastes alot of memory duplicating wavelemgth vector.
+
 Jason Neal Janurary 2017
 """
 import os
