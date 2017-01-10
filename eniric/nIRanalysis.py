@@ -121,31 +121,44 @@ def save_convolution_results(filename, wavelength, flux, convolved_flux):
     write_e_3col(filename, wavelength, flux, convolved_flux)
     print("Done.")
     return 0
-def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True,
-                numProcs=None, data_rep=data_rep, results_dir=results_dir,
-                normalize=False, output_name=None):
     """
     function that convolves a given spectra to a resolution of R
     R = 60 000 , R = 80 000, R = 100 000
     save_convolution_results(filename, wav_band, flux_band, convolved_flux)
 
 
+def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, FWHM_lim=5.0,
+                plot=True, numProcs=None, normalize=False, output_name=None):
+    """ Perform convolution of spectrum.
+
+    Rotational convolution followed by a guassian a a specified resolution R.
+
     Parameters
     ----------
+    wav: ndarray
+        Wavelength in microns
+    flux: ndarray
+        Photon flux
+    vsini: float
+        Rotational velocity in km/s.
+    R: int
+        Resolution of instrumental profile.
+    band: str
+        Wavelength band to choose, default="All"
     numProcs: int, None
         Number of processes to use with multiprocess. If None it is asigned to 1 less then total number of cores.
         If numProcs = 0, then multiprocess is not used.
 
     Returns
     -------
-    Saves figures to results_dir.
-
+    wav_band: ndarray
+        Wavelength for the selected band.
+    flux_band: ndarray
+        Original flux for the selected band.
+    flux_conv: ndarray
+        Convolved flux for the selected band.
     """
-
-    print("Reading the data...")
-    wav, flux = read_spectrum(spectrum)
     wav_band, flux_band = band_selector(wav, flux, band)
-    print("Done.")
 
     # We need to calculate the FWHM at this value in order to set the starting point for the convolution
     FWHM_min = wav_band[0] / R    # FWHM at the extremes of vector
@@ -191,7 +204,7 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True,
         fig.savefig(filename[:-3]+"pdf", facecolor='w', format='pdf', bbox_inches='tight')
         plt.close()
 
-    return wav_band, flux_conv_res
+    return wav_band, flux_band, flux_conv_res
 
 
 def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
