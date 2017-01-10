@@ -22,7 +22,7 @@ def _parser():
     parser.add_argument("-b", "--band", type=str, default="ALL",
                         choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
                         help="Wavelength band to select")
-    parser.add_argument('-d', '--data_dir', help='Data directory', type=str)
+    parser.add_argument('-d', '--data_dir', help='Data directory', type=str, default=None)
     parser.add_argument('--sample_rate', default=3.0, type=float,
                         help="Resample rate, pixels per FWHM. Default=3.0")
     parser.add_argument('--results', default=None, type=str,
