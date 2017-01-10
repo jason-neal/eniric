@@ -105,12 +105,30 @@ def run_convolutions(spectrum_string, band):
             convolution(spectrum, band, vel, res, plot=False)
 
 
+def save_convolution_results(filename, wavelength, flux, convolved_flux):
+    """ Saves covolution results to a file.
+
+    Parameters
+    ----------
+    filename: str
+    wavelength: array-like
+     flux, convolved_flux
+    """
+    print("Saving results...")
+
+    # Note: difference in sampling at 1.0 and 1.5 microns makes jumps
+    # in the beginning of Y and H bands
+    write_e_3col(filename, wavelength, flux, convolved_flux)
+    print("Done.")
+    return 0
 def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True,
                 numProcs=None, data_rep=data_rep, results_dir=results_dir,
                 normalize=False, output_name=None):
     """
     function that convolves a given spectra to a resolution of R
     R = 60 000 , R = 80 000, R = 100 000
+    save_convolution_results(filename, wav_band, flux_band, convolved_flux)
+
 
     Parameters
     ----------
@@ -160,17 +178,6 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True,
                                            flux_conv_rot, R, FWHM_lim,
                                            numProcs=numProcs,
                                            normalize=normalize)
-
-    print("Saving results...")
-
-    # Note: difference in sampling at 1.0 and 1.5 microns makes jumps in the beginning of Y and H bands
-    if output_name is None:
-        name_model = name_assignment(spectrum)
-        filename = results_dir+"Spectrum_"+name_model+"_"+band+"band_vsini"+str(vsini)+"_R"+str(int(R/1000))+"k.txt"
-    else:
-        filename = output_name
-    write_e_3col(filename, wav_band, flux_band, flux_conv_res)
-    print("Done.")
 
     if(plot):
         fig = plt.figure(1)
