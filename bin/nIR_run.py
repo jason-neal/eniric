@@ -2,7 +2,7 @@
 # Script to perform a convolution on a spectrum.
 # Can take a number of parameters if needed
 from __future__ import division, print_function
-from eniric.nIRanalysis import convolution, resample_allfiles
+from eniric.nIRanalysis import convolve_spectra, resample_allfiles
 
 import argparse
 
