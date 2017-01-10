@@ -15,6 +15,7 @@ import multiprocess as mprocess
 from eniric.IOmodule import pdread_2col,  write_e_3col
 # from eniric.Qcalculator import RVprec_calc, SqrtSumWis
 from eniric.utilities import wav_selector, unitary_Gauss, rotation_kernel
+from eniric.utilities import band_selector, read_spectrum
 import matplotlib.pyplot as plt
 from matplotlib import rc
 # set stuff for latex usage
@@ -29,61 +30,6 @@ M0_ACES = data_rep+"lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat
 M3_ACES = data_rep+"lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 M6_ACES = data_rep+"lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 M9_ACES = data_rep+"lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-
-
-def read_spectrum(spec_name):
-    """ Function that reads spectra from the database and converts to photons!.
-
-    Parameters
-    ----------
-    spec_name: str
-        Location and name of model spectrum file.
-
-    Returns
-    -------
-    wav: array-like, float64
-        Wavelength in microns.
-    flux_photons: array-like, float64
-        Spectral flux converted into photons.
-
-    """
-    wav, flux = pdread_2col(spec_name)
-    wav *= 1.0e-4  # conversion to microns
-
-    flux_photons = flux * wav   # Convert to photons
-
-    return wav, flux_photons
-
-
-def band_selector(wav, flux, band):
-    """ Select a specific wavelength band.
-
-    Parameters
-    ----------
-    wav: array-like
-        Wavelength values.
-    flux: array-like
-        Flux values.
-    band: str
-        Band letter to select, upper or lower case is supported. Options
-        are ("ALL" or ""), "VIS", "GAP", "Z", "Y", "J", "H", "K".
-    """
-    band = band.upper()
-
-    bands = {"VIS": (0.38, 0.78), "GAP": (0.78, 0.83), "Z": (0.83, 0.93),
-             "Y": (1.0, 1.1), "J": (1.17, 1.33), "H": (1.5, 1.75),
-             "K": (2.07, 2.35), "CONT": (0.45, 1.05), "NIR": (0.83, 2.35)}
-    if(band in ["ALL", ""]):
-        return wav, flux
-    elif band in bands:
-        # select values form the band
-        bandmin = bands[band][0]
-        bandmax = bands[band][1]
-
-        return wav_selector(wav, flux, bandmin, bandmax)
-    else:
-        print("Unrecognized band tag.")
-        exit(1)
 
 
 def run_convolutions(spectrum_string, band):
