@@ -23,7 +23,7 @@ def test_convolution_indexing():
     flux_extended = np.random.random(size=wav_extended.size)
     wav_val = 145
     R = 8
-    FWHM = wav_val/R
+    FWHM = wav_val / R
     FWHM_lim = 5
     # Replace this code
     indexes = [i for i in range(len(wav_extended))
@@ -32,8 +32,6 @@ def test_convolution_indexing():
 
     old_flux_2convolve = flux_extended[indexes[0]:indexes[-1]+1]
     old_wav_2convolve = wav_extended[indexes[0]:indexes[-1]+1]
-
-    # With this code
 
     # Mask of wavelength range within 5 FWHM of wav
     index_mask = ((wav_extended > (wav_val - FWHM_lim*FWHM)) &
@@ -111,13 +109,17 @@ def test_resampled_RVprec_equal():
     assert np.allclose(new_RVprec.value, old_RVprec)
     assert new_RVprec.unit == "m / s"  # Check unit of precision
 
+
 def test_list_creator():
     """ Test new masking in list creator is equivalent"""
     # test a couple of single bands only for speed
 
+    # for band in ["H", "J", "K"]:
     for band in ["K"]:
-        spectrum = "data/PHOENIX-ACES_spectra/test_sample/{}_band_test_sample_lte03900-PHOENIX-ACES.dat".format(band)
-        assert np.allclose(np.array(oldnIR.list_creator(spectrum, band)), eniric_utils.list_creator(spectrum, band))
+        spectrum = "data/test_data/{}_band_test_sample_lte03900-PHOENIX-ACES.dat".format(band)
+        assert np.allclose(np.array(oldnIR.list_creator(spectrum, band)),
+                           eniric_utils.list_creator(spectrum, band))
+
 
 def test_pdread_2col():
     """ Test reading 2cols with pandas"""
