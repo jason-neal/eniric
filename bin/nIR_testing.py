@@ -4,7 +4,7 @@
 # Jason Neal
 # December 2016
 from __future__ import division, print_function
-from eniric.nIRanalysis import convolution, resample_allfiles
+from eniric.nIRanalysis import convolve_spectra, resample_allfiles
 from eniric.original_code.nIRanalysis import convolution as old_convolution
 from eniric.original_code.nIRanalysis import resample_allfiles as old_resample_allfiles
 import matplotlib.pyplot as plt
@@ -27,19 +27,19 @@ plot = False
 numProcs = 4
 do_old = False
 
-#for band in ["GAP", "Y", "J", "K"]:
+# for band in ["GAP", "Y", "J", "K"]:
 for band in ["K"]:
     # New version
     start_time = datetime.datetime.now()
     print("Time at start of {} band, {}".format(band, start_time))
-    wav_band, flux_conv_res = convolution(spectrum_path, band, vsini, R, epsilon, FWHM_lim, plot, numProcs=numProcs)
+    wav_band, flux_band, flux_conv_res = convolve_spectra(spectrum_path, band, vsini, R, epsilon, FWHM_lim, plot, numProcs=numProcs)
     end_time = datetime.datetime.now()
     print("Time at end, ", end_time)
     print("Time to run {} band  convolution = {}".format(band, (end_time-start_time)))
 
     resample_allfiles()
 
-#for band in ["GAP", "Y", "J", "K"]:
+# for band in ["GAP", "Y", "J", "K"]:
 for band in ["K"]:
     # The unchanged version
     if do_old:

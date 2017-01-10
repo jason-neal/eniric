@@ -102,7 +102,7 @@ def run_convolutions(spectrum_string, band):
     print("Running the convolutions for spectra of %s in band %s\n." % (spectrum, band))
     for vel in vsini:
         for res in R:
-            convolution(spectrum, band, vel, res, plot=False)
+            convolve_spectra(spectrum, band, vel, res, plot=False)
 
 
 def save_convolution_results(filename, wavelength, flux, convolved_flux):
@@ -121,10 +121,32 @@ def save_convolution_results(filename, wavelength, flux, convolved_flux):
     write_e_3col(filename, wavelength, flux, convolved_flux)
     print("Done.")
     return 0
+
+
+def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0,
+                     plot=True, numProcs=None, results_dir=results_dir,
+                     data_rep=data_rep, normalize=False, output_name=None):
+    """ Load Spectrum, apply convolution and then save results.
+
     """
-    function that convolves a given spectra to a resolution of R
-    R = 60 000 , R = 80 000, R = 100 000
+    print("Reading the data...")
+    wav, flux = read_spectrum(spectrum)
+    print("Done.")
+
+    wav_band, flux_band, convolved_flux = convolution(wav, flux, vsini, R, band,
+                                 epsilon=epsilon, FWHM_lim=FWHM_lim, plot=plot,
+                                 numProcs=numProcs, normalize=False)
+
+    if output_name is None:
+        name_model = name_assignment(spectrum)
+        filename = ("{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k.txt"
+                    "").format(results_dir, name_model, band, vsini, R/1000)
+    else:
+        filename = output_name
+
     save_convolution_results(filename, wav_band, flux_band, convolved_flux)
+
+    return 0
 
 
 def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, FWHM_lim=5.0,
