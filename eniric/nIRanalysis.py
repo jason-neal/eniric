@@ -84,7 +84,7 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0,
         filename = ("{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k.txt"
                     "").format(results_dir, name_model, band, vsini, R/1000)
     else:
-        filename = output_name
+        filename = results_dir + output_name
 
     save_convolution_results(filename, wav_band, flux_band, convolved_flux)
 
