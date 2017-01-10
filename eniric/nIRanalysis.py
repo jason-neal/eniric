@@ -9,16 +9,12 @@ from __future__ import division, print_function
 import sys
 import numpy as np
 from tqdm import tqdm
-import pandas as pd
 import multiprocess as mprocess
-from os import listdir
-from os.path import isfile, join
 
 # from eniric.IOmodule import read_2col, read_3col
-from eniric.IOmodule import pdread_2col, pdread_3col
-from eniric.IOmodule import write_e_2col, write_e_3col
+from eniric.IOmodule import pdread_2col,  write_e_3col
 # from eniric.Qcalculator import RVprec_calc, SqrtSumWis
-from eniric.utilities import wav_selector, unitary_Gauss, rotation_kernel, plotter
+from eniric.utilities import wav_selector, unitary_Gauss, rotation_kernel
 import matplotlib.pyplot as plt
 from matplotlib import rc
 # set stuff for latex usage
