@@ -93,7 +93,7 @@ def run_convolutions(spectrum_string, band):
     vsini = [1.0, 5.0, 10.0]
     R = [60000, 80000, 100000]
 
-    exec('spectrum = ' + spectrum_string)        #note: warnings to be dismissed, due to exec usage
+    exec('spectrum = ' + spectrum_string)        # note: warnings to be dismissed, due to exec usage
     print(spectrum)
     print("Running the convolutions for spectra of %s in band %s\n." % (spectrum, band))
     for vel in vsini:
@@ -130,8 +130,8 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0,
     print("Done.")
 
     wav_band, flux_band, convolved_flux = convolution(wav, flux, vsini, R, band,
-                                 epsilon=epsilon, FWHM_lim=FWHM_lim, plot=plot,
-                                 numProcs=numProcs, normalize=False)
+                                                      epsilon=epsilon, FWHM_lim=FWHM_lim,
+                                                      numProcs=numProcs, normalize=False)
 
     if output_name is None:
         name_model = name_assignment(spectrum)
@@ -142,11 +142,23 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0,
 
     save_convolution_results(filename, wav_band, flux_band, convolved_flux)
 
+    if plot:
+        fig = plt.figure(1)
+        plt.xlabel(r"wavelength [$\mu$m])")
+        plt.ylabel(r"flux [counts] ")
+        plt.plot(wav_band, flux_band/np.max(flux_band), color='k', linestyle="-", label="Original spectra")
+        plt.plot(wav_band, convolved_flux/np.max(convolved_flux), color='b', linestyle="-", label="%s spectrum observed at vsini=%.2f and R=%d ." % (name_model, vsini, R))
+        plt.legend(loc='best')
+        plt.show()
+
+        fig.savefig(filename[:-3]+"pdf", facecolor='w', format='pdf', bbox_inches='tight')
+        plt.close()
+
     return 0
 
 
 def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, FWHM_lim=5.0,
-                plot=True, numProcs=None, normalize=False, output_name=None):
+                numProcs=None, normalize=False, output_name=None):
     """ Perform convolution of spectrum.
 
     Rotational convolution followed by a guassian a a specified resolution R.
@@ -209,18 +221,6 @@ def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, FWHM_lim=5.0,
                                            flux_conv_rot, R, FWHM_lim,
                                            numProcs=numProcs,
                                            normalize=normalize)
-
-    if(plot):
-        fig = plt.figure(1)
-        plt.xlabel(r"wavelength [$\mu$m])")
-        plt.ylabel(r"flux [counts] ")
-        plt.plot(wav_band, flux_band/np.max(flux_band), color='k', linestyle="-", label="Original spectra")
-        plt.plot(wav_band, flux_conv_res/np.max(flux_conv_res), color='b', linestyle="-", label="%s spectrum observed at vsini=%.2f and R=%d ." % (name_model, vsini, R))
-        plt.legend(loc='best')
-        plt.show()
-
-        fig.savefig(filename[:-3]+"pdf", facecolor='w', format='pdf', bbox_inches='tight')
-        plt.close()
 
     return wav_band, flux_band, flux_conv_res
 
@@ -339,7 +339,6 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim,
                                                         flux_conv_rot, FWHM_lim)
         print("Done.\n")
     return flux_conv_res
-
 
 
 ###############################################################################
