@@ -56,8 +56,8 @@ if False:
 
     if plot:
         # Plot results together
-        plt.plot(wav_band, flux_band, label='Unnormalized')
-        plt.plot(wav_band_norm, flux_band_norm, label='Normalized (res only)')
+        plt.plot(wav_band, flux_conv, label='Unnormalized')
+        plt.plot(wav_band_norm, flux_conv_norm, label='Normalized (res only)')
         plt.legend(loc=0)
         plt.show()
 
