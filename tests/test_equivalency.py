@@ -12,6 +12,7 @@ from eniric.original_code.IOmodule import read_3col as old_read_3col
 
 import eniric.original_code.nIRanalysis as oldnIR
 import eniric.nIRanalysis as nIR
+import eniric.utilities as eniric_utils
 # To test the equivalence of code to check if it does the same thing:
 
 
@@ -115,7 +116,7 @@ def test_list_creator():
 
     for band in ["K"]:
         spectrum = "data/PHOENIX-ACES_spectra/test_sample/{}_band_test_sample_lte03900-PHOENIX-ACES.dat".format(band)
-        assert np.allclose(np.array(oldnIR.list_creator(spectrum, band)), nIR.list_creator(spectrum, band))
+        assert np.allclose(np.array(oldnIR.list_creator(spectrum, band)), eniric_utils.list_creator(spectrum, band))
 
 def test_pdread_2col():
     """ Test reading 2cols with pandas"""
@@ -134,7 +135,7 @@ def test_pdread_2col():
 
 
 def test_pdread_3col():
-    """ Test reading 3cols  with pandas"""
+    """ Test reading 3cols with pandas"""
     filename = "data/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
 
     wav_1_pd, theoretical_1_pd, flux_1_pd = pdread_3col(filename, noheader=True)
