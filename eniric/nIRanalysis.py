@@ -54,7 +54,7 @@ def read_spectrum(spec_name):
     wav, flux = pdread_2col(spec_name)
     wav *= 1.0e-4  # conversion to microns
 
-    flux_photons = flux * wav
+    flux_photons = flux * wav   # Convert to photons
 
     return wav, flux_photons
 
@@ -147,12 +147,12 @@ def convolution(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0, plot=True,
     wav_band, flux_band = band_selector(wav, flux, band)
     print("Done.")
 
-    # we need to calculate the FWHM at this value in order to set the starting point for the convolution
+    # We need to calculate the FWHM at this value in order to set the starting point for the convolution
     FWHM_min = wav_band[0] / R    # FWHM at the extremes of vector
     FWHM_max = wav_band[-1] / R
 
     # performing convolution with rotation kernel
-    print("Starting the Rotation convolution for vsini=%.2f..." % (vsini))
+    print("Starting the Rotation convolution for vsini={:.2f}...".format(vsini))
 
     delta_lambda_min = wav_band[0]*vsini/3.0e5
     delta_lambda_max = wav_band[-1]*vsini/3.0e5
@@ -254,7 +254,6 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
                                                         normalize)
         print("Done.\n")
     return flux_conv_rot
-
 
 
 def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim,
