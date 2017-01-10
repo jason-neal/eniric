@@ -1,16 +1,15 @@
 language: python
-matrix:
-    include:
-        -python: "2.7"
-        env: TOXENV=py27
-        -python: "3.5"
-        env: TOXENV=py35
+python:
+    - "2.7"
+    - "3.4"
+    - "3.5"
+    - "3.6"
 
 sudo: false # Use container-based infrastructure
 
 # command to install dependencies
 install:
-    pip install tox
+    pip install tox-travis
 
 # command to run tests
 script:
