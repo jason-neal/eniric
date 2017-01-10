@@ -197,17 +197,14 @@ def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, FWHM_lim=5.0,
     # performing convolution with rotation kernel
     print("Starting the Rotation convolution for vsini={:.2f}...".format(vsini))
 
-    delta_lambda_min = wav_band[0]*vsini/3.0e5
-    delta_lambda_max = wav_band[-1]*vsini/3.0e5
+    delta_lambda_min = wav_band[0] * vsini / 3.0e5
+    delta_lambda_max = wav_band[-1] * vsini / 3.0e5
+
     # widest wavelength bin for the rotation convolution
     wav_ext_rotation, flux_ext_rotation = wav_selector(wav, flux, wav_band[0]-delta_lambda_min-FWHM_lim*FWHM_min, wav_band[-1]+delta_lambda_max+FWHM_lim*FWHM_max)
-    wav_ext_rotation = np.array(wav_ext_rotation, dtype="float64")
-    flux_ext_rotation = np.array(flux_ext_rotation, dtype="float64")
 
     # wide wavelength bin for the resolution_convolution
     wav_extended, flux_extended = wav_selector(wav, flux, wav_band[0]-FWHM_lim*FWHM_min, wav_band[-1]+FWHM_lim*FWHM_max)
-    wav_extended = np.array(wav_extended, dtype="float64")
-    flux_extended = np.array(flux_extended, dtype="float64")
 
     # rotational convolution
     flux_conv_rot = rotational_convolution(wav_extended, wav_ext_rotation,
@@ -299,7 +296,7 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim,
         FWHM = wav / R
         # Mask of wavelength range within 5 FWHM of wav
         index_mask = ((wav_extended > (wav - FWHM_lim*FWHM)) &
-              (wav_extended < (wav + FWHM_lim*FWHM)))
+                      (wav_extended < (wav + FWHM_lim*FWHM)))
 
         flux_2convolve = flux_conv_rot[index_mask]
         # Gausian Instrument Profile for given resolution and wavelength
