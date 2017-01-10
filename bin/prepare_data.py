@@ -9,6 +9,7 @@ This wastes alot of memory duplicating wavelemgth vector.
 
 Jason Neal Janurary 2017
 """
+from __future__ import division, print_function
 import os
 import sys
 import pandas as pd

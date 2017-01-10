@@ -3,6 +3,13 @@ Functions for file resampling.
 
 """
 
+import numpy as np
+import matplotlib.pyplot as plt
+from os import listdir
+from os.path import isfile, join
+from eniric.IOmodule import pdread_3col, write_e_2col
+
+
 def resample_allfiles(results_dir=results_dir, resampled_dir=resampled_dir):
     """ Resample all files inside folder.
 

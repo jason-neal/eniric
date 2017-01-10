@@ -5,6 +5,7 @@ Perform rotational and resolution convolutions on a vector of ones.
 This was used to normalize for the effect of convolution in the original paper
 
 """
+from __future__ import division, print_function
 import numpy as np
 from astropy.io import fits
 from eniric.nIRanalysis import convolve_spectra, write_2col

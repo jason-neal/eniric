@@ -1,9 +1,13 @@
+
 """
 Auxiliary functions for nIRanalysis
 
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
+from eniric.nIRanalysis import band_selector, read_spectrum
+
 
 def wav_selector(wav, flux, wav_min, wav_max):
     """
