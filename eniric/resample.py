@@ -9,6 +9,9 @@ from os import listdir
 from os.path import isfile, join
 from eniric.IOmodule import pdread_3col, write_e_2col
 
+results_dir = "../data/results/"
+resampled_dir = "../data/resampled/"
+
 
 def resample_allfiles(results_dir=results_dir, resampled_dir=resampled_dir):
     """ Resample all files inside folder.
@@ -25,12 +28,14 @@ def resample_allfiles(results_dir=results_dir, resampled_dir=resampled_dir):
                resampled_dir=resampled_dir) for spectrum_file in onlyfiles
      if spectrum_file.endswith(".txt")]
 
+    return 0
 
 def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
               results_dir=results_dir, resampled_dir=resampled_dir,
               sampling=3.0, plottest=False):
     """
-    resamples a spectrum by interpolation onto a grid with a sampling of 3 pixels per resolution element.
+    resamples a spectrum by interpolation onto a grid with a
+    sampling of 3 pixels per resolution element.
     """
     # wavelength, theoretical_spectrum, spectrum = read_3col(spectrum_name)
     read_name = results_dir + spectrum_name
@@ -66,9 +71,13 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
         plt.figure(1)
         plt.xlabel(r"wavelength [$\mu$m])")
         plt.ylabel(r"flux [counts] ")
-        plt.plot(wavelength, spectrum, color='k', linestyle="-", label="Original spectrum")
-        plt.plot(wav_grid, interpolated_flux, color='b', linestyle="-", label="Interpolated spectrum")
+        plt.plot(wavelength, spectrum, color='k', linestyle="-",
+                 label="Original spectrum")
+        plt.plot(wav_grid, interpolated_flux, color='b', linestyle="-",
+                 label="Interpolated spectrum")
         plt.legend(loc='best')
         plt.show()
 
         plt.close()
+
+    return 0
