@@ -121,8 +121,8 @@ def test_list_creator():
 
 def test_pdread_2col():
     """ Test reading 2cols with pandas"""
-    spectrum_1 = "data/PHOENIX-ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-    spectrum_2 = "data/resampled/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k_res3.txt"
+    spectrum_1 = "data/test_data/Sample_input_phoenix.dat"
+    spectrum_2 = "data/test_data/Sample_resampled_spectrum_res3.txt"
 
     wav_1_pd, flux_1_pd = pdread_2col(spectrum_1)
     wav_1, flux_1 = read_2col(spectrum_1)
@@ -136,8 +136,11 @@ def test_pdread_2col():
 
 
 def test_pdread_3col():
-    """ Test reading 3cols with pandas"""
-    filename = "data/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
+    """ Test reading 3 cols with pandas.
+
+    Use small sample file to reduce time for test.
+    """
+    filename = "data/test_data/Sample_results_spectrum.txt"
 
     wav_1_pd, theoretical_1_pd, flux_1_pd = pdread_3col(filename, noheader=True)
     wav_1, theoretical_1, flux_1 = read_3col(filename)
