@@ -4,7 +4,8 @@
 # Jason Neal
 # December 2016
 from __future__ import division, print_function
-from eniric.nIRanalysis import convolution, resample_allfiles, read_spectrum
+from eniric.nIRanalysis import convolution, resample_allfiles
+from eniric.utilities import read_spectrum
 from eniric.IOmodule import pdread_2col
 from eniric.Qcalculator import RVprec_calc
 import matplotlib.pyplot as plt

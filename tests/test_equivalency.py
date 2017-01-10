@@ -1,6 +1,5 @@
 
 import numpy as np
-import pandas as pd
 import pytest
 from hypothesis import given
 from eniric.Qcalculator import RVprec_calc
@@ -10,8 +9,10 @@ from eniric.original_code.Qcalculator import RVprec_calc as old_RVprec_calc
 from eniric.original_code.IOmodule import read_2col as old_read_2col
 from eniric.original_code.IOmodule import read_3col as old_read_3col
 
+from eniric.IOmodule import pdwrite_2col, pdwrite_3col, write_e_2col, write_e_3col
+
 import eniric.original_code.nIRanalysis as oldnIR
-import eniric.nIRanalysis as nIR
+# import eniric.nIRanalysis as nIR
 import eniric.utilities as eniric_utils
 # To test the equivalence of code to check if it does the same thing:
 
