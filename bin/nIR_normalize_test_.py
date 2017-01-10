@@ -36,7 +36,7 @@ if False:
     wav, flux = read_spectrum(spectrum_path)
 
     wav_band, flux_band, flux_conv = convolution(wav, flux, vsini, R, epsilon,
-                                                      FWHM_lim, plot, band=band,
+                                                      FWHM_lim, band=band,
                                                       numProcs=numProcs,
                                                       results_dir="../data/results/unnorm/",
                                                       normalize=False)
@@ -45,7 +45,7 @@ if False:
                       resampled_dir="../data/resampled/unnorm/")
 
     wav_band_norm, flux_band_norm, flux_conv_norm = convolution(wav, flux, vsini, R,
-                                                epsilon, FWHM_lim, plot, band=band,
+                                                epsilon, FWHM_lim, band=band,
                                                 numProcs=numProcs,
                                                 results_dir="../data/results/norm/",
                                                 normalize=True)
