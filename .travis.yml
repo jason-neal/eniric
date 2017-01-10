@@ -5,7 +5,7 @@ python:
     - "3.5"
     - "3.6"
 
-sudo: false # Use container-based infrastructure
+# sudo: false  # Use container-based infrastructure
 
 before_install:
   # http://conda.pydata.org/docs/travis.html
