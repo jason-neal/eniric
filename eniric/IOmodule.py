@@ -30,11 +30,11 @@ def pdread_2col(filename, noheader=False):
     """
     if noheader:
         data = pd.read_table(filename, comment='#', names=["col1", "col2"],
-                         header=None, dtype=np.float64, delim_whitespace=True)
+                             header=None, dtype=np.float64,
+                             delim_whitespace=True)
     else:
         data = pd.read_table(filename, comment='#', names=["col1", "col2"],
-                         dtype=np.float64, delim_whitespace=True)
-
+                             dtype=np.float64, delim_whitespace=True)
 
     return data["col1"].values, data["col2"].values
 
@@ -68,6 +68,30 @@ def pdread_3col(filename, noheader=False):
                              dtype=np.float64, delim_whitespace=True)
 
     return data["col1"].values, data["col2"].values, data["col3"].values
+
+
+def read_col(filename):
+    # This program reads column formatted data from a file and
+    # returns a list in which each sublist correspond to the line's elements.
+    # THE RESULT IS A LIST OF STRINGS!
+
+    f = open(filename, "r")
+
+    list_data = []
+
+    while 1:
+        line = f.readline()
+
+        if line == "":
+                    break
+        if line[0] == '#':
+                    continue
+
+        list_data.append(line.strip().split())
+
+    f.close()
+
+    return list_data
 
 
 def read_2col(filename):
@@ -144,7 +168,7 @@ def pdwrite_2col(filename, data1, data2, sep="\t", header=False):
         df = pd.DataFrame({"# x": data1, "y": data2})
 
     # Write dataframe to file
-    df.to_csv(output_filename, sep=sep, header=header, index=False)  # header=False
+    df.to_csv(filename, sep=sep, header=header, index=False)  # header=False
 
     return 0
 
@@ -180,9 +204,10 @@ def pdwrite_3col(filename, data1, data2, data3, sep="\t", header=False):
         df = pd.DataFrame({"# x": data1, "y": data2, "z": data3})
 
     # Write dataframe to file
-    df.to_csv(output_filename, sep=sep, header=header, index=False)  # header=False
+    df.to_csv(filename, sep=sep, header=header, index=False)  # header=False
 
     return 0
+
 
 def write_2col(filename, data1, data2):
     # Writes data in 2 columns separated by tabs in a "filename" file.
@@ -204,7 +229,6 @@ def write_3col(filename, data1, data2, data3):
         f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
 
     f.close()
-
 
 
 def write_e_2col(filename, data1, data2):
