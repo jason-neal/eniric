@@ -211,7 +211,7 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
     if(plot_atm):
 
         # identify non-masked pixels
-        selected_transmission = wav_atm[np.where(mask_atm)]
+        selected_transmission = wav_atm[mask_atm]
         dummy_vector = [1.0 for value in selected_transmission]
         """
         plt.figure(1)
@@ -358,7 +358,7 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
                         if(plot_ste or plot_ste == id_string):
                             # Plot the stellar spectr as considered
 
-                            selected_transmission_stellar = wav_atm_selected[np.where(mask_atm_selected)]
+                            selected_transmission_stellar = wav_atm_selected[mask_atm_selected]
 
                             plt.figure(1)
                             plt.xlabel(r"wavelength [$\mu$m])")
@@ -410,7 +410,7 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
                         # test section
                         print("check that lengths are the same", len(wav_stellar), len(mask_atm_selected))
                         print("size of spectra %d vs number of chunks %d" % (len(wav_stellar), len(wav_stellar_chunks)))
-                        print("number of true elements in all chunks: %d" % (len(mask_atm_selected[np.where(mask_atm_selected)])))
+                        print("number of true elements in all chunks: %d" % (len(mask_atm_selected[mask_atm_selected])))
                         """
 
                         flux_stellar_chunks_unformated = np.array_split(flux_stellar, np.where(np.diff(mask_atm_selected))[0]+1)[::2]
@@ -1628,7 +1628,7 @@ def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plo
     if(plot_atm):
 
         # identify non-masked pixels
-        selected_transmission = wav_atm[np.where(mask_atm)]
+        selected_transmission = wav_atm[mask_atm]
 
         plt.figure(1)
         plt.xlabel(r"wavelength [$\mu$m])")
@@ -1751,7 +1751,7 @@ def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plo
                         if(plot_ste or plot_ste == id_string):
                             # Plot the stellar spectr as considered
 
-                            selected_transmission_stellar = wav_atm_selected[np.where(mask_atm_selected)]
+                            selected_transmission_stellar = wav_atm_selected[mask_atm_selected]
 
                             plt.figure(1)
                             plt.xlabel(r"wavelength [$\mu$m])")
@@ -1802,7 +1802,7 @@ def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plo
                         # test section
                         print("check that lengths are the same", len(wav_stellar), len(mask_atm_selected))
                         print("size of spectra %d vs number of chunks %d" % (len(wav_stellar), len(wav_stellar_chunks)))
-                        print("number of true elements in all chunks: %d" % (len(mask_atm_selected[np.where(mask_atm_selected)])))
+                        print("number of true elements in all chunks: %d" % (len(mask_atm_selected[mask_atm_selected])))
                         """
 
                         flux_stellar_chunks_unformated = np.array_split(flux_stellar, np.where(np.diff(mask_atm_selected))[0]+1)[::2]
