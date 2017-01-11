@@ -212,7 +212,7 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
 
         # identify non-masked pixels
         selected_transmission = wav_atm[mask_atm]
-        dummy_vector = [1.0 for value in selected_transmission]
+        dummy_vector = np.ones_like(selected_transmission)
         """
         plt.figure(1)
         plt.xlabel(r"wavelength [$\mu$m])")
@@ -232,11 +232,11 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
         wav_atm_H, flux_atm_H = band_selector(wav_atm, flux_atm, "H")
         wav_atm_K, flux_atm_K = band_selector(wav_atm, flux_atm, "K")
 
-        wav_mask_Z, dummy = band_selector(selected_transmission, dummy_vector, "Z")
-        wav_mask_Y, dummy = band_selector(selected_transmission, dummy_vector, "Y")
-        wav_mask_J, dummy = band_selector(selected_transmission, dummy_vector, "J")
-        wav_mask_H, dummy = band_selector(selected_transmission, dummy_vector, "H")
-        wav_mask_K, dummy = band_selector(selected_transmission, dummy_vector, "K")
+        wav_mask_Z, __ = band_selector(selected_transmission, dummy_vector, "Z")
+        wav_mask_Y, __ = band_selector(selected_transmission, dummy_vector, "Y")
+        wav_mask_J, __ = band_selector(selected_transmission, dummy_vector, "J")
+        wav_mask_H, __ = band_selector(selected_transmission, dummy_vector, "H")
+        wav_mask_K, __ = band_selector(selected_transmission, dummy_vector, "K")
 
         print("Z:", len(wav_mask_Z)/float(len(wav_atm_Z)), np.average(flux_atm_Z), np.median(flux_atm_Z))
         print("Y:", len(wav_mask_Y)/float(len(wav_atm_Y)), np.average(flux_atm_Y), np.median(flux_atm_Y))
