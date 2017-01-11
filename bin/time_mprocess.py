@@ -3,7 +3,7 @@
 # Jason Neal
 # December 2016
 from __future__ import division, print_function
-from eniric.nIRanalysis import convolution
+from eniric.nIRanalysis import convolve_spectra
 import datetime
 
 spectrum_name = "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
@@ -28,7 +28,7 @@ def time_diff_procs(numProcs):
     conv_times = dict()
     for proc in numProcs:
         start_time = datetime.datetime.now()
-        __, __ = convolution(spectrum_path, band, vsini, R, epsilon, FWHM_lim, plot, numProcs=proc)
+        convolve_spectra(spectrum_path, band, vsini, R, epsilon, FWHM_lim, plot, numProcs=proc)
         end_time = datetime.datetime.now()
         conv_times[proc] = end_time - start_time
     return conv_times

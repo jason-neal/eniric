@@ -5,6 +5,7 @@
 # December 2016
 from __future__ import division, print_function
 from eniric.nIRanalysis import convolution, resample_allfiles
+from eniric.utilities import read_spectrum
 from eniric.IOmodule import pdread_2col
 from eniric.Qcalculator import RVprec_calc
 import matplotlib.pyplot as plt
@@ -33,16 +34,19 @@ for band in bands:
 if False:
     print("Starting band", band)
 # New version
-    wav_band, flux_band = convolution(spectrum_path, band, vsini, R, epsilon,
-                                          FWHM_lim, plot, numProcs=numProcs,
-                                          results_dir="../data/results/unnorm/",
-                                          normalize=False)
+    wav, flux = read_spectrum(spectrum_path)
+
+    wav_band, flux_band, flux_conv = convolution(wav, flux, vsini, R, epsilon,
+                                                      FWHM_lim, band=band,
+                                                      numProcs=numProcs,
+                                                      results_dir="../data/results/unnorm/",
+                                                      normalize=False)
 
     resample_allfiles(results_dir="../data/results/unnorm/",
                       resampled_dir="../data/resampled/unnorm/")
 
-    wav_band_norm, flux_band_norm = convolution(spectrum_path, band, vsini, R,
-                                                epsilon, FWHM_lim, plot,
+    wav_band_norm, flux_band_norm, flux_conv_norm = convolution(wav, flux, vsini, R,
+                                                epsilon, FWHM_lim, band=band,
                                                 numProcs=numProcs,
                                                 results_dir="../data/results/norm/",
                                                 normalize=True)
@@ -53,8 +57,8 @@ if False:
 
     if plot:
         # Plot results together
-        plt.plot(wav_band, flux_band, label='Unnormalized')
-        plt.plot(wav_band_norm, flux_band_norm, label='Normalized (res only)')
+        plt.plot(wav_band, flux_conv, label='Unnormalized')
+        plt.plot(wav_band_norm, flux_conv_norm, label='Normalized (res only)')
         plt.legend(loc=0)
         plt.show()
 

@@ -5,9 +5,10 @@ Perform rotational and resolution convolutions on a vector of ones.
 This was used to normalize for the effect of convolution in the original paper
 
 """
+from __future__ import division, print_function
 import numpy as np
 from astropy.io import fits
-from eniric.nIRanalysis import convolution, write_2col
+from eniric.nIRanalysis import convolve_spectra, write_2col
 from eniric.nIRanalysis import rotational_convolution, resolution_convolution
 from eniric.IOmodule import read_2col
 
@@ -58,7 +59,7 @@ for band in bands:
                         name_model + "_" + band + "band_vsini" + str(vel) +
                         "_R" + str(int(Res/1000)) + "k.txt")
 
-            convolution(unitary_name, band, vel, Res, plot=False,
+            convolve_spectra(unitary_name, band, vel, Res, plot=False,
                         output_name=filename)
 
 """
