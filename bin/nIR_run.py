@@ -2,7 +2,8 @@
 # Script to perform a convolution on a spectrum.
 # Can take a number of parameters if needed
 from __future__ import division, print_function
-from eniric.nIRanalysis import convolution, resampler
+from eniric.nIRanalysis import convolve_spectra
+from eniric.resample import resampler
 
 import argparse
 
@@ -21,7 +22,7 @@ def _parser():
     parser.add_argument("-b", "--band", type=str, default="ALL",
                         choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
                         help="Wavelength band to select")
-    parser.add_argument('-d', '--data_dir', help='Data directory', type=str)
+    parser.add_argument('-d', '--data_dir', help='Data directory', type=str, default=None)
     parser.add_argument('--sample_rate', default=3.0, type=float,
                         help="Resample rate, pixels per FWHM. Default=3.0")
     parser.add_argument('--results', default=None, type=str,
@@ -90,9 +91,9 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
                     else:
                         result_name = "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}k.txt".format(startype, b, vel, int(R/1000))
                     print("Name to be result file", result_name)
-                    convolution(data_dir+spectrum_name, b, vel, R, epsilon=0.6, plot=False,
-                    FWHM_lim=5.0, numProcs=None, data_rep=data_dir,
-                    results_dir=results_dir, normalize=normalize, output_name=result_name)
+                    convolve_spectra(data_dir + spectrum_name, b, vel, R, epsilon=0.6, plot=False,
+                                     FWHM_lim=5.0, numProcs=None, data_rep=data_dir,
+                                     results_dir=results_dir, normalize=normalize, output_name=result_name)
 
                 # Resample only the file just made
                 if noresample:
