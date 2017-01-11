@@ -301,16 +301,19 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
             for vel in vsini:
                 for resolution in R:
                     for smpl in sampling:
-                        file_to_read = "Spectrum_"+star+"-PHOENIX-ACES_"+band+"band_vsini"+vel+"_R"+resolution+"_res"+smpl+".txt"
+                        file_to_read = ("Spectrum_{}-PHOENIX-ACES_{}band_vsini"
+                                        "{}_R{}_res{}.txt").format(star, band,
+                                                                   vel,
+                                                                   resolution,
+                                                                   smpl)
                         # print("Working on "+file_to_read+".")
-                        wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir+file_to_read)
+                        wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir + file_to_read)
                         # removing boundary effects
                         wav_stellar = wav_stellar[2:-2]
                         flux_stellar = flux_stellar[2:-2]
 
-                        id_string = star+"-"+band+"-"+vel+"-"+resolution    # sample was left aside because only one value existed
-
-                        # gettin the wav, flux and mask from the atm model closes to the stellar
+                        id_string = "{}-{}-{}-{}".format(star, band, vel,
+                                                         resolution)   # sample was left aside because only one value existed
 
                         # Getting the wav, flux and mask values from the atm model
                         # that are the closest to the stellar wav values, see
