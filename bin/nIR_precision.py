@@ -138,11 +138,14 @@ def prepare_atmopshere():
     return wav_atm, flux_atm, std_flux_atm, mask_atm
 
 
-def Barycenter_shift(wave_atm, mask_atm, offset_RV=0.0):
+def Barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
     """ Calculating impact of Barycentric movement on mask...
 
     Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
     """
+
+    pixels_start = np.sum(mask_atm)
+    pixels_total = len(mask_atm)
 
     mask_atm_30kms = []
     for value in zip(wav_atm, mask_atm):
@@ -175,7 +178,9 @@ def Barycenter_shift(wave_atm, mask_atm, offset_RV=0.0):
             mask_atm_30kms.append(tester)
 
     mask_atm = np.array(mask_atm_30kms, dtype=bool)
-    print("There were %d unmasked pixels out of %d." % (np.sum(mask_atm), len(mask_atm)))
+    pixels_end = np.sum(mask_atm)
+    print(("Barycentric impact masks out {:04.1}\% more of the atmospheric"
+          " spectrum").format((pixels_end-pixels_start)/pixels_total))
     return mask_atm
 
 
