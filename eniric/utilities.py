@@ -4,6 +4,8 @@ Auxiliary functions for nIRanalysis
 
 """
 
+import os
+import errno
 import numpy as np
 import matplotlib.pyplot as plt
 from eniric.IOmodule import pdread_2col
@@ -190,3 +192,12 @@ def list_creator(spectrum, band):
     print("In a spectrum with {} points".format(len(wav_band)),
           ", {} lines were found.".format(len(line_centers)))
     return line_centers
+
+
+def silentremove(filename):
+    """ Remove file without failing when it doesn't exist."""
+    try:
+        os.remove(filename)
+    except OSError as e:  # this would be "except OSError, e:" before Python 2.6
+        if e.errno != errno.ENOENT:  # errno.ENOENT = no such file or directory
+            raise  # re-raise exception if a different error occured
