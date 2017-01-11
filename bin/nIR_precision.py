@@ -1596,14 +1596,10 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
 def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=True):
 
     print("Reading atmospheric model...")
-    wav_atm, flux_atm, std_flux_atm, mask_atm = IOmodule.pdread_4col(atmmodel)
-
-    wav_atm = np.array(wav_atm)/1000.0  # conversion from nanometers to micrometers
-    flux_atm = np.array(flux_atm)
-    std_flux_atm = np.array(std_flux_atm)
-    mask_atm = np.array(mask_atm, dtype=bool)
-    print("There were %d unmasked pixels out of %d." % (len(mask_atm[np.where(mask_atm)]), len(mask_atm)))
-    print("The model ranges from %4.2f to %4.2f micron." % (wav_atm[0], wav_atm[-1]))
+    wav_atm, flux_atm, std_flux_atm, mask_atm = prepare_atmopshere()
+    print(("There were {:d} unmasked pixels out of {:d}., or {:.1%}."
+          "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)))
+    print("The model ranges from {:4.2f} to {:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
     print("Done.")
 
     print("Calculating impact of Barycentric movement on mask...")
