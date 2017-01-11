@@ -126,9 +126,6 @@ def flux_bin(flux, index_left, index_right):
 
 def prepare_atmopshere():
     """ Read in atmopheric model"""
-def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=True, offset_RV=0.0):
-
-    print("Reading atmospheric model...")
     wav_atm, flux_atm, std_flux_atm, mask_atm = IOmodule.pdread_4col(atmmodel)
     # pandas lready returns numpy arrays
     wav_atm = wav_atm / 1000.0  # conversion from nanometers to micrometers
@@ -140,7 +137,13 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
     print("Done.")
     return wav_atm, flux_atm, std_flux_atm, mask_atm
 
-    print("Calculating impact of Barycentric movement on mask...")
+
+def Barycenter_shift(wave_atm, mask_atm, offset_RV=0.0):
+    """ Calculating impact of Barycentric movement on mask...
+
+    Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
+    """
+
     mask_atm_30kms = []
     for value in zip(wav_atm, mask_atm):
         if (value[1] is False and offset_RV == 666.0):    # if the mask is false and the offset is equal to zero
@@ -173,9 +176,16 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
 
     mask_atm = np.array(mask_atm_30kms, dtype=bool)
     print("There were %d unmasked pixels out of %d." % (np.sum(mask_atm), len(mask_atm)))
+    return mask_atm
+
+
+def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=True, offset_RV=0.0):
+
     print("Reading atmospheric model...")
     wav_atm, flux_atm, std_flux_atm, mask_atm = prepare_atmopshere()
 
+    print("Calculating impact of Barycentric movement on mask...")
+    mask_atm = Barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)  # Extend masked regions
 
     # calculating the number of pixels inside the mask
     wav_Z, mask_Z = band_selector(wav_atm, mask_atm, "Z")
