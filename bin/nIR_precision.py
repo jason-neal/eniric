@@ -199,7 +199,8 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
     wav_H, mask_H = band_selector(wav_atm, mask_atm, "H")
     wav_K, mask_K = band_selector(wav_atm, mask_atm, "K")
 
-    bands_masked = np.array(list(mask_Z) + list(mask_Y) + list(mask_J) + list(mask_H) + list(mask_K))
+    bands_masked = np.concatenate((mask_Z, mask_Y, mask_J, mask_H, mask_K))
+
     print("Inside the bands, there were %d unmasked pixels out of %d." % (len(mask_atm[np.where(bands_masked)]), len(bands_masked)))
     if(plot_atm):
 
