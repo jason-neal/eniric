@@ -125,16 +125,11 @@ def flux_bin(flux, index_left, index_right):
 
 
 def prepare_atmopshere():
-    """ Read in atmopheric model"""
+    """ Read in atmopheric model and prepare. """
     wav_atm, flux_atm, std_flux_atm, mask_atm = IOmodule.pdread_4col(atmmodel)
     # pandas lready returns numpy arrays
     wav_atm = wav_atm / 1000.0  # conversion from nanometers to micrometers
-    flux_atm = flux_atm
-    std_flux_atm = std_flux_atm
     mask_atm = np.array(mask_atm, dtype=bool)
-    print("There were {:d} unmasked pixels out of {:d}.".format(np.sum(mask_atm), len(mask_atm)))
-    print("The model ranges from {:4.2f} to {:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
-    print("Done.")
     return wav_atm, flux_atm, std_flux_atm, mask_atm
 
 
@@ -188,9 +183,14 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
 
     print("Reading atmospheric model...")
     wav_atm, flux_atm, std_flux_atm, mask_atm = prepare_atmopshere()
+    print("There were {:d} unmasked pixels out of {:d}.".format(np.sum(mask_atm), len(mask_atm)))
+    print("The model ranges from {:4.2f} to {:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
+    print("Done.")
 
     print("Calculating impact of Barycentric movement on mask...")
     mask_atm = Barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)  # Extend masked regions
+    print("There were {:d} unmasked pixels out of {:d}.".format(np.sum(mask_atm), len(mask_atm)))
+
 
     # calculating the number of pixels inside the mask
     wav_Z, mask_Z = band_selector(wav_atm, mask_atm, "Z")
