@@ -161,14 +161,22 @@ def plotter(spectrum, band, vsini=0, R=0):
     """
     wav, flux = read_spectrum(spectrum)
     wav_band, flux_band = band_selector(wav, flux, band)
+    flux_counts = flux_band
 
     plt.figure(1)
-    plt.xlabel(r"wavelength [$\mu$m])")
+    plt.xlabel(r"wavelength [ $\mu$m ])")
     plt.ylabel(r"flux [counts] ")
-    plt.plot(wav_band, flux_band, color='k', marker="o", linestyle="-")
+    plt.plot(wav_band, flux_counts, color='k', marker="o", linestyle="-")
     plt.show()
     plt.close()
 
+    delta_wav = np.array(wav_band[1:]) - np.array(wav_band[:-1])
+    plt.figure(1)
+    plt.xlabel(r"wavelength [ $\mu$m ])")
+    plt.ylabel(r"Step [$\Delta\,\mu$m] ")
+    plt.plot(wav_band[1:], delta_wav, color='k', marker="o", linestyle="-")
+    plt.show()
+    plt.close()
 
 def calculate_ratios(spectrum):
     """ Calculate ratios between the different bands.
