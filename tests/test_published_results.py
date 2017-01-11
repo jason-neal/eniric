@@ -3,10 +3,11 @@ from __future__ import division, print_function
 import pytest
 import numpy as np
 import eniric.original_code.exorunner.nIRanalysis as exonIR
-#import eniric.original_code.nIRanalysis as orgnIR
+# import eniric.original_code.nIRanalysis as orgnIR
 import eniric.original_code.exorunner.Qcalculator as exoQ
 import eniric.original_code.Qcalculator as orgQ
-import eniric.nIRanalysis as nIR
+# import eniric.nIRanalysis as nIR
+from eniric.IOmodule import pdread_2col
 import eniric.Qcalculator as Q
 # To test if the new code produces the same precision values on the published results.
 
@@ -20,7 +21,7 @@ def test_RVprec_using_pd_load():
     for vsini in [1, 5, 10]:
         name = "Spectrum_M0-PHOENIX-ACES_Yband_vsini{}.0_R100k_res3.txt".format(int(vsini))
 
-        wav, flux = nIR.pdread_2col(path+name, noheader=True)
+        wav, flux = pdread_2col(path+name, noheader=True)
         wav = np.array(wav)
         flux = np.array(flux)
 
