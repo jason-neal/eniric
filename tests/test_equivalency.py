@@ -149,3 +149,38 @@ def test_pdread_3col():
     assert np.allclose(wav_1_pd, np.array(wav_1))
     assert np.allclose(theoretical_1_pd, np.array(theoretical_1))
     assert np.allclose(flux_1_pd, np.array(flux_1))
+
+
+def test_pdwriter():
+    """ Check pd_writer same write_col with with exponential flag."""
+    filedir = "data/test_data/"
+    data = np.random.randn(3, 100) * 10000000
+    pd2col_name = filedir + "pd2col_test.txt"
+    pd3col_name = filedir + "pd3col_test.txt"
+    twocol_name = filedir + "2col_test.txt"
+    threecol_name = filedir + "3col_test.txt"
+
+    # write files
+    pdwrite_2col(pd2col_name, data[0], data[1])
+    pdwrite_3col(pd3col_name, data[0], data[1],  data[2])
+    write_e_2col(twocol_name, data[0], data[1])
+    write_e_3col(threecol_name, data[0], data[1], data[2])
+
+    # re-read files
+    a = pdread_2col(pd2col_name)
+    b = pdread_2col(twocol_name)
+    c = pdread_3col(pd3col_name)
+    d = pdread_3col(threecol_name)
+
+    # check results the same
+    assert np.allclose(a[0], b[0])
+    assert np.allclose(a[1], b[1])
+    assert np.allclose(c[0], d[0])
+    assert np.allclose(c[1], d[1])
+    assert np.allclose(c[2], d[2])
+
+    # clean-up
+    eniric_utils.silentremove(pd2col_name)
+    eniric_utils.silentremove(pd3col_name)
+    eniric_utils.silentremove(twocol_name)
+    eniric_utils.silentremove(threecol_name)
