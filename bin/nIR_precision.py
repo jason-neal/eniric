@@ -23,7 +23,7 @@ from matplotlib import rc
 # set stuff for latex usage
 rc('text', usetex=True)
 
-atmmodel = "atmmodel/Average_TAPAS_2014_visible.txt"
+atmmodel = "../data/atmmodel/Average_TAPAS_2014.txt"
 resampled_dir = "resampled_cont/"
 resampled_dir_OLD = "resampled/"
 
