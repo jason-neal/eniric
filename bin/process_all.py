@@ -7,7 +7,7 @@ Includes adding metalicity and logg parameters
 Jason Neal, Janurary 2017
 
 """
-
+from __future__ import division, print_function
 import numpy as np
 import itertools
 
