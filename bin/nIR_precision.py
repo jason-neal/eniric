@@ -43,10 +43,10 @@ def read_contfit():
     M6_contfit = "PHOENIX_ACES_spectra/M6_nIRcont.txt"
     M9_contfit = "PHOENIX_ACES_spectra/M9_nIRcont.txt"
 
-    wav_M0, flux_M0 = IOmodule.read_2col(M0_contfit)
-    wav_M3, flux_M3 = IOmodule.read_2col(M3_contfit)
-    wav_M6, flux_M6 = IOmodule.read_2col(M6_contfit)
-    wav_M9, flux_M9 = IOmodule.read_2col(M9_contfit)
+    wav_M0, flux_M0 = IOmodule.pdread_2col(M0_contfit)
+    wav_M3, flux_M3 = IOmodule.pdread_2col(M3_contfit)
+    wav_M6, flux_M6 = IOmodule.pdread_2col(M6_contfit)
+    wav_M9, flux_M9 = IOmodule.pdread_2col(M9_contfit)
 
     wav_M0 = np.array(wav_M0, dtype="float64")*1.0e-4  # conversion to microns
     flux_M0 = np.array(flux_M0, dtype="float64")*wav_M0
@@ -70,10 +70,10 @@ def read_nIRspectra():
     M9_contfit = "PHOENIX_ACES_spectra/lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
 
     print("Reading PHOENIX original spectrum...")
-    wav_M0, flux_M0 = IOmodule.read_2col(M0_contfit)
-    wav_M3, flux_M3 = IOmodule.read_2col(M3_contfit)
-    wav_M6, flux_M6 = IOmodule.read_2col(M6_contfit)
-    wav_M9, flux_M9 = IOmodule.read_2col(M9_contfit)
+    wav_M0, flux_M0 = IOmodule.pdread_2col(M0_contfit)
+    wav_M3, flux_M3 = IOmodule.pdread_2col(M3_contfit)
+    wav_M6, flux_M6 = IOmodule.pdread_2col(M6_contfit)
+    wav_M9, flux_M9 = IOmodule.pdread_2col(M9_contfit)
     print("Done.")
 
     wav_M0 = np.array(wav_M0, dtype="float64")*1.0e-4  # conversion to microns
@@ -127,7 +127,7 @@ def flux_bin(flux, index_left, index_right):
 def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=True, offset_RV=0.0):
 
     print("Reading atmospheric model...")
-    wav_atm, flux_atm, std_flux_atm, mask_atm = IOmodule.read_4col(atmmodel)
+    wav_atm, flux_atm, std_flux_atm, mask_atm = IOmodule.pdread_4col(atmmodel)
 
     wav_atm = np.array(wav_atm)/1000.0  # conversion from nanometers to micrometers
     flux_atm = np.array(flux_atm)
@@ -275,7 +275,7 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
                     for smpl in sampling:
                         file_to_read = "Spectrum_"+star+"-PHOENIX-ACES_"+band+"band_vsini"+vel+"_R"+resolution+"_res"+smpl+".txt"
                         # print("Working on "+file_to_read+".")
-                        wav_stellar, flux_stellar = IOmodule.read_2col(resampled_dir+file_to_read)
+                        wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir+file_to_read)
                         # removing boundary effects
                         wav_stellar = np.array(wav_stellar[2:-2])
                         flux_stellar = np.array(flux_stellar[2:-2])
@@ -1574,7 +1574,7 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
 def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=True):
 
     print("Reading atmospheric model...")
-    wav_atm, flux_atm, std_flux_atm, mask_atm = IOmodule.read_4col(atmmodel)
+    wav_atm, flux_atm, std_flux_atm, mask_atm = IOmodule.pdread_4col(atmmodel)
 
     wav_atm = np.array(wav_atm)/1000.0  # conversion from nanometers to micrometers
     flux_atm = np.array(flux_atm)
@@ -1633,7 +1633,7 @@ def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plo
                     for smpl in sampling:
                         file_to_read = "Spectrum_"+star+"-PHOENIX-ACES_"+band+"band_vsini"+vel+"_R"+resolution+"_res"+smpl+".txt"
                         # print("Working on "+file_to_read+".")
-                        wav_stellar, flux_stellar = IOmodule.read_2col(resampled_dir+file_to_read)
+                        wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir+file_to_read)
                         # removing boundary effects
                         wav_stellar = np.array(wav_stellar[2:-2])
                         flux_stellar = np.array(flux_stellar[2:-2])  # / ((1.634e4)**2.0)
@@ -2046,11 +2046,11 @@ def compare_runs():
                     for smpl in sampling:
                         file_to_read = "Spectrum_"+star+"-PHOENIX-ACES_"+band+"band_vsini"+vel+"_R"+resolution+"_res"+smpl+".txt"
                         # print "Working on "+file_to_read+"."
-                        wav_stellar, flux_stellar = IOmodule.read_2col(resampled_dir+file_to_read)
+                        wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir+file_to_read)
                         wav_stellar = np.array(wav_stellar)
                         flux_stellar = np.array(flux_stellar) / ((1.634e4)**2.0)
 
-                        wav_stellar_OLD, flux_stellar_OLD = IOmodule.read_2col(resampled_dir_OLD+file_to_read)
+                        wav_stellar_OLD, flux_stellar_OLD = IOmodule.pdread_2col(resampled_dir_OLD+file_to_read)
                         flux_stellar_OLD = np.array(flux_stellar_OLD) / ((1.634e4)**2.0)
 
                         plt.figure(1)
@@ -2067,15 +2067,15 @@ def compare_output():
     """
 
     pre_convolution = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
-    pre_wav, pre_flux = IOmodule.read_2col(pre_convolution)
+    pre_wav, pre_flux = IOmodule.pdread_2col(pre_convolution)
     pre_wav = np.array(pre_wav, dtype="float64")*1.0e-4  # conversion to microns
     pre_flux = np.array(pre_flux, dtype="float64")*pre_wav
 
     convolved = "results_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k.txt"
     sampled = "resampled_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt"
 
-    conv_wav, theor_flux, conv_flux = IOmodule.read_3col(convolved)
-    sampled_wav, sampled_flux = IOmodule.read_2col(sampled)
+    conv_wav, theor_flux, conv_flux = IOmodule.pdread_3col(convolved)
+    sampled_wav, sampled_flux = IOmodule.pdread_2col(sampled)
 
     theor_flux = np.array(theor_flux)
     conv_flux = np.array(conv_flux)
