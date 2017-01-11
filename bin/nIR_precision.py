@@ -305,8 +305,8 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
                         # print("Working on "+file_to_read+".")
                         wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir+file_to_read)
                         # removing boundary effects
-                        wav_stellar = np.array(wav_stellar[2:-2])
-                        flux_stellar = np.array(flux_stellar[2:-2])
+                        wav_stellar = wav_stellar[2:-2]
+                        flux_stellar = flux_stellar[2:-2]
 
                         id_string = star+"-"+band+"-"+vel+"-"+resolution    # sample was left aside because only one value existed
 
@@ -1661,8 +1661,8 @@ def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plo
                         # print("Working on "+file_to_read+".")
                         wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir+file_to_read)
                         # removing boundary effects
-                        wav_stellar = np.array(wav_stellar[2:-2])
-                        flux_stellar = np.array(flux_stellar[2:-2])  # / ((1.634e4)**2.0)
+                        wav_stellar = wav_stellar[2:-2]
+                        flux_stellar = flux_stellar[2:-2]  # / ((1.634e4)**2.0)
 
                         id_string = star+"-"+band+"-"+vel+"-"+resolution    # sample was left aside because only one value existed
 
@@ -2073,8 +2073,8 @@ def compare_runs():
                         file_to_read = "Spectrum_"+star+"-PHOENIX-ACES_"+band+"band_vsini"+vel+"_R"+resolution+"_res"+smpl+".txt"
                         # print "Working on "+file_to_read+"."
                         wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir+file_to_read)
-                        wav_stellar = np.array(wav_stellar)
-                        flux_stellar = np.array(flux_stellar) / ((1.634e4)**2.0)
+                        wav_stellar = wav_stellar
+                        flux_stellar = flux_stellar / ((1.634e4)**2.0)
 
                         wav_stellar_OLD, flux_stellar_OLD = IOmodule.pdread_2col(resampled_dir_OLD+file_to_read)
                         flux_stellar_OLD = np.array(flux_stellar_OLD) / ((1.634e4)**2.0)
