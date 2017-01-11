@@ -133,8 +133,8 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
     flux_atm = np.array(flux_atm)
     std_flux_atm = np.array(std_flux_atm)
     mask_atm = np.array(mask_atm, dtype=bool)
-    print("There were %d unmasked pixels out of %d." % (len(mask_atm[np.where(mask_atm)]), len(mask_atm)))
-    print("The model ranges from %4.2f to %4.2f micron." % (wav_atm[0], wav_atm[-1]))
+    print("There were {:d} unmasked pixels out of {:d}.".format(np.sum(mask_atm), len(mask_atm)))
+    print("The model ranges from {:4.2f} to {:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
     print("Done.")
 
     print("Calculating impact of Barycentric movement on mask...")
@@ -169,7 +169,7 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
             mask_atm_30kms.append(tester)
 
     mask_atm = np.array(mask_atm_30kms, dtype=bool)
-    print("There were %d unmasked pixels out of %d." % (len(mask_atm[np.where(mask_atm)]), len(mask_atm)))
+    print("There were %d unmasked pixels out of %d." % (np.sum(mask_atm), len(mask_atm)))
 
     # calculating the number of pixels inside the mask
     wav_Z, mask_Z = band_selector(wav_atm, mask_atm, "Z")
