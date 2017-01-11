@@ -4,13 +4,18 @@
 Perform rotational and resolution convolutions on a vector of ones.
 This was used to normalize for the effect of convolution in the original paper.
 
-Was given some updated code of Pedros in which he does this in nIRanalysis_CONT, saves the result to file and then divides the results in the resampler.
+Was given some updated code of Pedros in which he does this in
+nIRanalysis_CONT, saves the result to file and then divides the
+results in the resampler.
 
 """
+from __future__ import division, print_function
 import numpy as np
 import matplotlib.pyplot as plt
 from astropy.io import fits
-from eniric.nIRanalysis import convolution, write_2col, write_3col, read_spectrum
+from eniric.nIRanalysis import convolution, write_2col, write_3col, \
+                               read_spectrum, save_convolution_results
+
 from eniric.nIRanalysis import rotational_convolution, resolution_convolution
 from eniric.IOmodule import pdread_2col, pdread_3col
 
@@ -18,7 +23,6 @@ from eniric.IOmodule import pdread_2col, pdread_3col
 from eniric.updated_code.nIRanalysis_CONT import convolution_CONT
 
 base_dir = "../data/nIRmodels/"   # relative to script location in bin
-
 
 create_dat = True
 unitary_name = base_dir + "spectrum_of_ones.dat"
@@ -67,36 +71,39 @@ for band in bands:
             filename = ("Spectrum_" +
                         name_model + "_" + band + "band_vsini" + str(vel) +
                         "_R" + str(int(Res/1000)) + "k.txt")
-            filename_norm = ("Spectrum_" +
-                        name_model + "_" + band + "band_vsini" + str(vel) +
-                        "_R" + str(int(Res/1000)) + "k_conv_normalized.txt")
+
+            filename_norm = ("Spectrum_" + name_model + "_" + band +
+                             "band_vsini" + str(vel) + "_R" +
+                             str(int(Res/1000)) + "k_conv_normalized.txt")
             if do_convolutions:
 
-
+                wav, flux = read_spectrum(unitary_name)
                 # without normalization
-                new_wav, new_flux = convolution(unitary_name, band, vel, Res,
-                                                plot=False, output_name=filename, results_dir=results_dir, return_only=False)
+                wav1, flux1, flux1_conv = convolution(wav, flux, vel, Res,
+                                                      band=band)
+                save_convolution_results(results_dir + filename, wav1, flux1,
+                                         flux1_conv)
 
                 # With normalization (should be 1s only)
-                new_wav_norm, new_flux_norm = convolution(unitary_name, band, vel,
-                                                          Res, plot=False,
-                                                          normalize=True,
-                                                          output_name=filename_norm, results_dir=results_dir, return_only=False)
-
+                wav2, flux2, flux2_conv = convolution(wav, flux, vel, Res,
+                                                      band=band, normalize=True)
+                save_convolution_results(results_dir + filename_norm, wav2,
+                                         flux2, flux2_conv)
 
                 cont_wav, cont_flux = convolution_CONT(unitary_name, band, vel,
                                                        Res, plot=False,
                                                        return_only=True)
-                write_2col(result_dir + "result_from_convolution_CONT.txt", cont_wav, cont_flux)
+                write_2col(results_dir + "result_from_convolution_CONT.txt",
+                           cont_wav, cont_flux)
 
             else:
     # Just load data from files
-                new_wav, __, new_flux = pdread_3col(results_dir + filename, noheader=True)
-                new_wav_norm, __, new_flux_norm = pdread_3col(results_dir + filename_norm, noheader=True)
+                wav1, flux1, flux1_conv = pdread_3col(results_dir + filename, noheader=True)
+                wav2, flux2, flux2_conv = pdread_3col(results_dir + filename_norm, noheader=True)
                 cont_wav, cont_flux = pdread_2col(results_dir + "result_from_convolution_CONT.txt", noheader=True)
 
-            plt.plot(new_wav, new_flux, label="new")
-            plt.plot(new_wav_norm, new_flux_norm, "o-", label="norm")
+            plt.plot(wav1, flux1_conv, label="new")
+            plt.plot(wav2, flux2_conv, "o-", label="norm")
             plt.plot(cont_wav, cont_flux, label="cont")
             plt.legend()
             plt.show()
