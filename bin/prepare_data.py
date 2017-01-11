@@ -5,12 +5,16 @@ Code to take all phoenix-aces fits files and create .dat files with wavelength
 and flux.
 Adds them to the data directory of eniric for convolutions etc.
 
+This wastes alot of memory duplicating wavelemgth vector.
+
 Jason Neal Janurary 2017
 """
+from __future__ import division, print_function
 import os
 import sys
 import pandas as pd
 from astropy.io import fits
+from eniric.IOmodule import pdwrite_2col
 
 data_dir = "../data/PHOENIX-ACES_spectra/"
 phoenix_dir = "../../../data/fullphoenix/"
@@ -24,7 +28,8 @@ def main():
     for (path, dirs, files) in os.walk(phoenix_dir):
         # print(path)
         # print(dirs)
-        phoenix_files = [f for f in files if f.endswith("PHOENIX-ACES-AGSS-COND-2011-HiRes.fits")]
+        phoenix_files = [f for f in files if
+                         f.endswith("PHOENIX-ACES-AGSS-COND-2011-HiRes.fits")]
 
         for phoenix_file in phoenix_files:
             if int(phoenix_file[3:8]) > 4000:
@@ -38,12 +43,13 @@ def main():
 
                 spectra = fits.getdata(os.path.join(path, phoenix_file))
 
-                df = pd.DataFrame({"# Wavelength": wavelength, "Flux": spectra})
+                # Need to add conversions pedro preformed to flux!
 
-                # Write dataframe to file
-                df.to_csv(output_filename, sep="\t", index=False)  # header=False
-
-                print("Wrote out", output_filename)
+                if not pdwrite_2col(output_filename, wavelength, spectra,
+                                header=["# Wavelength", "Flux"]):
+                    print("Successfully wrote to ", output_filename)
+                else:
+                    print("Failed to write to ", output_filename)
 
     print("Done")
     return 0
