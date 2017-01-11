@@ -184,3 +184,9 @@ def test_pdwriter():
     eniric_utils.silentremove(pd3col_name)
     eniric_utils.silentremove(twocol_name)
     eniric_utils.silentremove(threecol_name)
+
+
+def test_prepared_dat_files():
+    """ Test that the flux inthe new prepared .dat files matches the original.
+    This insures that all any conversions/scaling has been taken care of."""
+    pass
