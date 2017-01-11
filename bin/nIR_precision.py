@@ -17,6 +17,8 @@ from matplotlib.ticker import MaxNLocator
 import eniric.IOmodule as IOmodule
 import eniric.Qcalculator as Qcalculator
 
+from eniric.utilities import band_selector
+
 from matplotlib import rc
 # set stuff for latex usage
 rc('text', usetex=True)
@@ -2124,53 +2126,6 @@ def moving_average(x, window_size):
     window= np.ones(int(window_size))/float(window_size)
     return np.convolve(x, window, 'same')
 
-def band_selector(wav, flux, band):
-    if(band.upper() in ["ALL", ""]):
-        return [wav, flux]
-    elif(band.upper() == "VIS"):
-        bandmin = 0.38
-        bandmax = 0.78
-    elif(band.upper() == "GAP"):
-        bandmin = 0.78
-        bandmax = 0.83
-    elif(band.upper() == "Z"):
-        bandmin = 0.83
-        bandmax = 0.93
-    elif(band.upper() == "Y"):
-        bandmin = 1.0
-        bandmax = 1.1
-    elif(band.upper() == "J"):
-        bandmin = 1.17
-        bandmax = 1.33
-    elif(band.upper() == "H"):
-        bandmin = 1.5
-        bandmax = 1.75
-    elif(band.upper() == "K"):
-        bandmin = 2.07
-        bandmax = 2.35
-    elif(band.upper() == "NIR"):
-        bandmin = 0.83
-        bandmax = 2.35
-    elif(band.upper() == "CONT"):
-        bandmin = 0.45
-        bandmax = 1.05
-    else:
-        print("Unrecognized band tag.")
-        exit()
-
-    # select values form the band
-    wav_band, flux_band = wav_selector(wav, flux, bandmin, bandmax)
-
-    return [wav_band, flux_band]
-
-def wav_selector(wav, flux, wav_min, wav_max):
-    """
-    function that returns wavelength and flux withn a giving range
-    """
-    wav_sel = np.array([value for value in wav if(wav_min < value < wav_max)], dtype="float64")
-    flux_sel = np.array([value[1] for value in zip(wav,flux) if(wav_min < value[0] < wav_max)], dtype="float64")
-
-    return [wav_sel, flux_sel]
 
 ###############################################################################
 
