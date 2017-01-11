@@ -140,7 +140,7 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
     print("Calculating impact of Barycentric movement on mask...")
     mask_atm_30kms = []
     for value in zip(wav_atm, mask_atm):
-        if (value[1] == False and offset_RV == 666.0):    # if the mask is false and the offset is equal to zero
+        if (value[1] is False and offset_RV == 666.0):    # if the mask is false and the offset is equal to zero
             mask_atm_30kms.append(value[1])
 
         else:
@@ -1587,7 +1587,7 @@ def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plo
     print("Calculating impact of Barycentric movement on mask...")
     mask_atm_30kms = []
     for value in zip(wav_atm, mask_atm):
-        if (value[1] == False):
+        if (value[1] is False):
             mask_atm_30kms.append(value[1])
         else:
             delta_lambda = value[0] * 3.0e4/Qcalculator.c
