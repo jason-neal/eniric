@@ -312,9 +312,14 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
 
                         # gettin the wav, flux and mask from the atm model closes to the stellar
 
+                        # Getting the wav, flux and mask values from the atm model
+                        # that are the closest to the stellar wav values, see
+                        # https://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
                         index_atm = np.searchsorted(wav_atm, wav_stellar)
                         # replace indexes outside the array, at the very end, by the value at the very end
-                        index_atm = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in index_atm]
+                        # index_atm = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in index_atm]
+                        indx_mask = (index_atm >= len(wav_atm))  # find broken indexs
+                        index_atm[indx_mask] = len(wav_atm) - 1  # replace with index of end.
 
                         wav_atm_selected = wav_atm[index_atm]
                         flux_atm_selected = flux_atm[index_atm]
