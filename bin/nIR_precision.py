@@ -183,13 +183,16 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
 
     print("Reading atmospheric model...")
     wav_atm, flux_atm, std_flux_atm, mask_atm = prepare_atmopshere()
-    print("There were {:d} unmasked pixels out of {:d}.".format(np.sum(mask_atm), len(mask_atm)))
+    print(("There were {:d} unmasked pixels out of {:d}., or {:.1%}."
+          "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)))
     print("The model ranges from {:4.2f} to {:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
     print("Done.")
 
     print("Calculating impact of Barycentric movement on mask...")
     mask_atm = Barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)  # Extend masked regions
-    print("There were {:d} unmasked pixels out of {:d}.".format(np.sum(mask_atm), len(mask_atm)))
+    print(("There were {:d} unmasked pixels out of {:d}, or {:.1%}."
+           "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) /
+                      len(mask_atm)))
 
 
     # calculating the number of pixels inside the mask
@@ -201,7 +204,10 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
 
     bands_masked = np.concatenate((mask_Z, mask_Y, mask_J, mask_H, mask_K))
 
-    print("Inside the bands, there were %d unmasked pixels out of %d." % (len(mask_atm[np.where(bands_masked)]), len(bands_masked)))
+    print(("Inside the bands, there were {:.0f} unmasked pixels out of {:d}"
+           ", or {:.1%}.").format(np.sum(bands_masked), len(bands_masked),
+            np.sum(bands_masked) / len(bands_masked)))
+
     if(plot_atm):
 
         # identify non-masked pixels
@@ -1615,7 +1621,9 @@ def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plo
             mask_atm_30kms.append(all(mask_atm_30kmslice))
 
     mask_atm = np.array(mask_atm_30kms, dtype=bool)
-    print("There were %d unmasked pixels out of %d." % (len(mask_atm[np.where(mask_atm)]), len(mask_atm)))
+    print(("There were {:d} unmasked pixels out of {:d}, or {:.1%}."
+           "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) /
+                      len(mask_atm)))
 
     if(plot_atm):
 
