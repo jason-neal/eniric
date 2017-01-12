@@ -6,7 +6,6 @@ Created on Sun Dec 14 15:43:13 2014
 Adapted December 2016 by Jason Neal
 """
 from __future__ import division, print_function
-import re
 import sys
 import numpy as np
 from tqdm import tqdm
