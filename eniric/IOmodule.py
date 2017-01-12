@@ -70,6 +70,39 @@ def pdread_3col(filename, noheader=False):
     return data["col1"].values, data["col2"].values, data["col3"].values
 
 
+def pdread_4col(filename, noheader=False):
+    """ Read in a 4 column file with pandas.
+
+    Faster then read_3col
+
+    Parameters
+    ----------
+    filename: str
+        Name of file to read.
+    noheader: bool
+        Flag indicating if there is no column names given in file
+
+    Returns
+    -------
+    col1: ndarray
+        First column as float64.
+    col2: ndarray
+        Second column as float64.
+    col3: ndarray
+        Third column as float64.
+    col4: ndarray
+        Fourth column as float64.
+    """
+    if noheader:
+        data = pd.read_table(filename, comment='#', names=["col1", "col2", "col3", "col4"],
+                             header=None, dtype=np.float64, delim_whitespace=True)
+    else:
+        data = pd.read_table(filename, comment='#', names=["col1", "col2", "col3", "col4"],
+                             dtype=np.float64, delim_whitespace=True)
+
+    return data["col1"].values, data["col2"].values, data["col3"].values, data["col4"].values
+
+
 def read_col(filename):
     # This program reads column formatted data from a file and
     # returns a list in which each sublist correspond to the line's elements.
@@ -130,6 +163,27 @@ def read_3col(filename):
             col3.append(float(list_data[i][2]))
 
     return [col1, col2, col3]
+
+
+def read_4col(filename):
+    # The same as the previous, but returns 4 columns
+
+    list_data = read_col(filename)
+
+    col1 = []
+    col2 = []
+    col3 = []
+    col4 = []
+
+    for i in range(len(list_data)):
+        # checking if the line is valid
+        if(list_data[i][0][0] != '#'):
+            col1.append(float(list_data[i][0]))
+            col2.append(float(list_data[i][1]))
+            col3.append(float(list_data[i][2]))
+            col4.append(float(list_data[i][3]))
+
+    return [col1, col2, col3, col4]
 
 
 ################################################################################
