@@ -53,7 +53,7 @@ def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False):
     base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
     if startype in temps.keys():
         if org:
-            phoenix_name = "PHOENIX-ACES_spectra/lte{0}-{1}-{2}.{3}".format(temps[startype], "4.50", "0.0", base)
+            phoenix_name = "PHOENIX-ACES_spectra/lte{0:05d}-{1}-{2}.{3}".format(temps[startype], "4.50", "0.0", base)
         elif (alpha is not None) and (alpha != 0.0):
             if abs(alpha) > 0.2:
                 print("Warning! Alpha is outside acceptable range -0.2->0.2")
