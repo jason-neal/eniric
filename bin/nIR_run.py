@@ -97,13 +97,13 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
                                          FWHM_lim=5.0, numProcs=None, data_rep=data_dir,
                                          results_dir=results_dir, normalize=normalize, output_name=result_name)
 
-                    # Resample only the file just made
-                    if noresample:
-                        pass
-                    else:
-                        resampler(result_name, results_dir=results_dir,
-                                   resampled_dir=resampled_dir, sampling=sample)
-
+                        # Resample only the file just made
+                        if noresample:
+                            pass
+                        else:
+                            resampler(result_name, results_dir=results_dir,
+                                      resampled_dir=resampled_dir, sampling=sample)
+                        counter += 1
 
 if __name__ == '__main__':
     args = vars(_parser())
