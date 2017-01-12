@@ -46,7 +46,8 @@ def get_spectrum_name(startype, logg="4.50", feh="0.0"):
     temps = {"M0": "03900", "M3": "03500", "M6": "02800", "M9": "02600"}
     base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
     if startype in temps.keys():
-        spectrum_name = "PHOENIX-ACES_spectra/lte{}-{}-{}.{}".format(temps[startype], logg, feh, base)
+        spectrum_name = "PHOENIX-ACES_spectra/lte{0}-{1}-{2}.{3}".format(temps[startype], logg, feh, base)
+        # spectrum_name = "PHOENIX-ACES_spectra/Z-{2}/lte{0}-{1}-{2}.{3}".format(temps[startype], logg, feh, base)
     else:
         raise NotImplemented("This spectral type is not implemented yet")
 
@@ -75,7 +76,7 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
     sample_rate: list of floats default=[3.0]
     noresample: bool default=False
     normalize: bool default=False
-    
+
     """
         # vsini, resolution, band and sample_rate can all be a series of values
 
