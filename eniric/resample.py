@@ -3,6 +3,7 @@ Functions for file resampling.
 
 """
 
+import re
 import numpy as np
 import matplotlib.pyplot as plt
 from os import listdir
@@ -44,13 +45,11 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
 
     wavelength_start = wavelength[1]  # because of border effects
     wavelength_end = wavelength[-2]   # because of border effects
-    resolution_string = spectrum_name[-8:-5]
 
-    if(resolution_string[0] == "R"):
-        resolution = int(resolution_string[1:])*1000
-    else:
-        resolution = int(resolution_string)*1000
-
+    # match = re.match("Spectrum_(M\d)-PHOENIX-ACES_([A-Z]{1,4})band_vsini
+    # (\d{1,2}.?\d?)_R(\d{2,3})k(_conv_normalize)?.txt", spectrum_name)
+    match = re.search("_R(\d{2,3})k", spectrum_name)
+    resolution = int(match.group(1)) * 1000
     # wav_grid = [wavelength_start]
     # while(wav_grid[-1] < wavelength_end):
     #     wav_grid.append(wav_grid[-1]*(1.0+1.0/(sampling*resolution)))
