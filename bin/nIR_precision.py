@@ -301,8 +301,7 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
                             SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
                             print("\tSanity Check: The S/N for the {:s} non-reference model was of {:4.2f}.".format(id_string, SN_estimate))
 
-
-                        # precision given by the first method:
+                        # Precision given by the first method:
                         print("Performing analysis for: ", id_string)
                         prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar)
 
@@ -344,11 +343,12 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
 
                         prec_2 = Qcalculator.RVprec_calc_chunks(wav_stellar_chunks, flux_stellar_chunks)
 
-                        # precision as given by the third_method
+                        # Precision as given by the third_method
                         prec_3 = Qcalculator.RV_prec_calc_Trans(wav_stellar, flux_stellar, flux_atm_selected)
 
-                        # adding result to the dictionary
+                        # Adding Precision results to the dictionary
                         results[id_string] = [prec_1, prec_2, prec_3]
+
                         # Prepare/Do for the ploting.
                         if(plot_ste or plot_ste == id_string):
                             plot_stellar_spectum(wav_stellar, flux_stellar, wav_atm_selected, mask_atm_selected)
