@@ -5,6 +5,8 @@
 data/original_code/*
 data/resampled/*
 data/results/*
+data/PHOENIX-ACES_spectra/Z*
+
 
 # updated_files data
 eniric/updated_code/resampled_cont/*
