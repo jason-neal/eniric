@@ -196,10 +196,9 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
 
         if normalize:
             # Correct for the effect of non-equidistant sampling
-            unitary_rot_val = np.sum(rotation_profile * np.ones_like(flux_2convolve))  # Affects precision
+            unitary_rot_val = np.sum(rotation_profile)  # Affects precision
             return sum_val / unitary_rot_val
         else:
-
             return sum_val
 
     if numProcs != 0:
@@ -250,7 +249,7 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim,
         sum_val = np.sum(IP * flux_2convolve)
         if normalize:
             # Correct for the effect of convolution with non-equidistant postions
-            unitary_val = np.sum(IP * np.ones_like(flux_2convolve))  # Affects precision
+            unitary_val = np.sum(IP)  # Affects precision
             return sum_val / unitary_val
         else:
             return sum_val
