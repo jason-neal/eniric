@@ -3,6 +3,7 @@
 # Can take a number of parameters if needed
 from __future__ import division, print_function
 import sys
+from datetime import datetime as dt
 from eniric.nIRanalysis import convolve_spectra
 from eniric.resample import resampler
 from eniric.utilities import get_spectrum_name
@@ -66,8 +67,8 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
     normalize: bool default=False
 
     """
-        # vsini, resolution, band and sample_rate can all be a series of values
-
+    # vsini, resolution, band and sample_rate can all be a series of values
+    start_time = dt.now()
     if data_dir is None:
         data_dir = "../data/"
 
@@ -81,6 +82,7 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
     else:
         resampled_dir = resamples
 
+    counter = 0
     for star in startype:
         spectrum_name = get_spectrum_name(star, org=org)
 
@@ -88,12 +90,14 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
             for vel in vsini:
                 for R in resolution:
                     for sample in sample_rate:
+
                         if normalize:
                             # when normalize ation is confirmed then can
                             result_name = "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}k_conv_normalized.txt".format(star, b, vel, int(R/1000))
                         else:
                             result_name = "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}k.txt".format(star, b, vel, int(R/1000))
                         print("Name to be result file", result_name)
+
                         convolve_spectra(data_dir + spectrum_name, b, vel, R, epsilon=0.6, plot=False,
                                          FWHM_lim=5.0, numProcs=None, data_rep=data_dir,
                                          results_dir=results_dir, normalize=normalize, output_name=result_name)
@@ -106,7 +110,11 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
                                       resampled_dir=resampled_dir, sampling=sample)
                         counter += 1
 
+    print("Time to convolve {:d} combinations = {}".format(counter,
+                                                           dt.now()-start_time))
     return 0
+
+
 if __name__ == '__main__':
     args = vars(_parser())
     startype = args.pop("startype")  # positional arguments
