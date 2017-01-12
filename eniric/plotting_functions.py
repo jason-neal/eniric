@@ -93,3 +93,20 @@ def plot_atmopshere_model(wav_atm, flux_atm, mask_atm):
 
     plt.close()
     exit(0)
+
+def plot_stellar_spectum(wav_stellar, flux_stellar, wav_atm_selected, mask_atm_selected):
+    # Plot the stellar spectrum as considered
+    selected_transmission_stellar = wav_atm_selected[mask_atm_selected]
+
+    plt.figure(1)
+    plt.xlabel(r"wavelength [$\mu$m])")
+    plt.ylabel(r"Flux_stellar [ ] ")
+    plt.plot(wav_stellar, flux_stellar, color='k')
+    plt.vlines(selected_transmission_stellar, np.min(flux_stellar),
+               0.3*np.max(flux_stellar), colors="b")
+    plt.xlim(wav_stellar[0], wav_stellar[-1])
+    plt.ylim(np.min(flux_stellar) - 0.1*(np.max(flux_stellar) - np.min(flux_stellar)),
+             np.max(flux_stellar) + 0.1*(np.max(flux_stellar) - np.min(flux_stellar)))
+    # plt.legend(loc='best')
+    plt.show()
+    plt.close()
