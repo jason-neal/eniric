@@ -181,6 +181,37 @@ def Barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
     return mask_atm
 
 
+def normalize_flux(flux_stellar, id_string):
+    """Normalize flux to have SNR of 100 in middle of J band."""
+
+    if("M0" in id_string):
+        norm_constant = 1607
+
+    elif("M3" in id_string):
+        norm_constant = 1373
+
+    elif("M6" in id_string):
+        if("1.0" in id_string):
+            norm_constant = 933
+        elif("5.0" in id_string):
+            norm_constant = 967
+        else:
+            norm_constant = 989
+
+    elif("M9" in id_string):
+        if("1.0" in id_string):
+            norm_constant = 810
+        elif("5.0" in id_string):
+            norm_constant = 853
+        else:
+            norm_constant = 879
+    else:
+        print("Constant not defined. Aborting...")
+        exit()
+
+    return flux_stellar / ((norm_constant / 100.0)**2.0)
+
+
 def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=True, offset_RV=0.0):
 
     print("Reading atmospheric model...")
@@ -258,41 +289,17 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
                         flux_atm_selected = flux_atm[index_atm]
                         mask_atm_selected = mask_atm[index_atm]
 
-                        if("M0" in id_string):
-                            norm_constant = 1607
-
-                        elif("M3" in id_string):
-                            norm_constant = 1373
-
-                        elif("M6" in id_string):
-                            if("1.0" in id_string):
-                                norm_constant = 933
-                            elif("5.0" in id_string):
-                                norm_constant = 967
-                            else:
-                                norm_constant = 989
-
-                        elif("M9" in id_string):
-                            if("1.0" in id_string):
-                                norm_constant = 810
-                            elif("5.0" in id_string):
-                                norm_constant = 853
-                            else:
-                                norm_constant = 879
-                        else:
-                            print("Constant not defined. Aborting...")
-                            exit()
-
-                        flux_stellar = flux_stellar / ((norm_constant/100.0)**2.0)
+                        # Normaize to SNR 100 in middle of J band 1.25 micron!
+                        flux_stellar = normalize_flux(flux_stellar, id_string)
 
                         if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k", "M6-J-1.0-100k", "M9-J-1.0-100k"]):
                             index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
                             SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-                            print("\tSanity Check: The S/N for the %s reference model was of %4.2f." % (id_string, SN_estimate))
+                            print("\tSanity Check: The S/N for the {:s} reference model was of {:4.2f}.".format(id_string, SN_estimate))
                         elif("J" in id_string):
                             index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
                             SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-                            print("\tSanity Check: The S/N for the %s non-reference model was of %4.2f." % (id_string, SN_estimate))
+                            print("\tSanity Check: The S/N for the {:s} non-reference model was of {:4.2f}.".format(id_string, SN_estimate))
 
                         if(plot_ste or plot_ste == id_string):
                             plot_stellar_spectum(wav_stellar, flux_stellar, wav_atm_selected, mask_atm_selected)
