@@ -301,21 +301,6 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
                             SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
                             print("\tSanity Check: The S/N for the {:s} non-reference model was of {:4.2f}.".format(id_string, SN_estimate))
 
-                        if(plot_ste or plot_ste == id_string):
-                            plot_stellar_spectum(wav_stellar, flux_stellar, wav_atm_selected, mask_atm_selected)
-
-                        if(plot_flux and id_string in ["M0-Z-1.0-100k", "M0-Y-1.0-100k", "M0-J-1.0-100k", "M0-H-1.0-100k", "M0-K-1.0-100k"]):
-                            wav_plot_M0.append(wav_stellar)
-                            flux_plot_M0.append(flux_stellar)
-                        if(plot_flux and id_string in ["M3-Z-1.0-100k", "M3-Y-1.0-100k", "M3-J-1.0-100k", "M3-H-1.0-100k", "M3-K-1.0-100k"]):
-                            wav_plot_M3.append(wav_stellar)
-                            flux_plot_M3.append(flux_stellar)
-                        if(plot_flux and id_string in ["M6-Z-1.0-100k", "M6-Y-1.0-100k", "M6-J-1.0-100k", "M6-H-1.0-100k", "M6-K-1.0-100k"]):
-                            wav_plot_M6.append(wav_stellar)
-                            flux_plot_M6.append(flux_stellar)
-                        if(plot_flux and id_string in ["M9-Z-1.0-100k", "M9-Y-1.0-100k", "M9-J-1.0-100k", "M9-H-1.0-100k", "M9-K-1.0-100k"]):
-                            wav_plot_M9.append(wav_stellar)
-                            flux_plot_M9.append(flux_stellar)
 
                         # precision given by the first method:
                         print("Performing analysis for: ", id_string)
@@ -364,6 +349,23 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
 
                         # adding result to the dictionary
                         results[id_string] = [prec_1, prec_2, prec_3]
+                        # Prepare/Do for the ploting.
+                        if(plot_ste or plot_ste == id_string):
+                            plot_stellar_spectum(wav_stellar, flux_stellar, wav_atm_selected, mask_atm_selected)
+
+                        if(plot_flux and id_string in ["M0-Z-1.0-100k", "M0-Y-1.0-100k", "M0-J-1.0-100k", "M0-H-1.0-100k", "M0-K-1.0-100k"]):
+                            wav_plot_M0.append(wav_stellar)
+                            flux_plot_M0.append(flux_stellar)
+                        if(plot_flux and id_string in ["M3-Z-1.0-100k", "M3-Y-1.0-100k", "M3-J-1.0-100k", "M3-H-1.0-100k", "M3-K-1.0-100k"]):
+                            wav_plot_M3.append(wav_stellar)
+                            flux_plot_M3.append(flux_stellar)
+                        if(plot_flux and id_string in ["M6-Z-1.0-100k", "M6-Y-1.0-100k", "M6-J-1.0-100k", "M6-H-1.0-100k", "M6-K-1.0-100k"]):
+                            wav_plot_M6.append(wav_stellar)
+                            flux_plot_M6.append(flux_stellar)
+                        if(plot_flux and id_string in ["M9-Z-1.0-100k", "M9-Y-1.0-100k", "M9-J-1.0-100k", "M9-H-1.0-100k", "M9-K-1.0-100k"]):
+                            wav_plot_M9.append(wav_stellar)
+                            flux_plot_M9.append(flux_stellar)
+
     if(plot_flux):
 
         # print the plot for flux comparison
