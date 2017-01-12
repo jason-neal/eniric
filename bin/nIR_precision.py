@@ -19,7 +19,7 @@ import eniric.Qcalculator as Qcalculator
 
 from eniric.utilities import band_selector
 
-from eniric.plotting_functions import plot_atmopshere_model
+from eniric.plotting_functions import plot_atmopshere_model, plot_stellar_spectum
 
 from matplotlib import rc
 # set stuff for latex usage
@@ -293,21 +293,9 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
                             index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
                             SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
                             print("\tSanity Check: The S/N for the %s non-reference model was of %4.2f." % (id_string, SN_estimate))
+
                         if(plot_ste or plot_ste == id_string):
-                            # Plot the stellar spectr as considered
-
-                            selected_transmission_stellar = wav_atm_selected[mask_atm_selected]
-
-                            plt.figure(1)
-                            plt.xlabel(r"wavelength [$\mu$m])")
-                            plt.ylabel(r"Flux_stellar [ ] ")
-                            plt.plot(wav_stellar, flux_stellar, color='k')
-                            plt.vlines(selected_transmission_stellar, np.min(flux_stellar), 0.3*np.max(flux_stellar), colors="b")
-                            plt.xlim(wav_stellar[0], wav_stellar[-1])
-                            plt.ylim(np.min(flux_stellar)-0.1*(np.max(flux_stellar)-np.min(flux_stellar)), np.max(flux_stellar)+0.1*(np.max(flux_stellar)-np.min(flux_stellar)))
-                            # plt.legend(loc='best')
-                            plt.show()
-                            plt.close()
+                            plot_stellar_spectum(wav_stellar, flux_stellar, wav_atm_selected, mask_atm_selected)
 
                         if(plot_flux and id_string in ["M0-Z-1.0-100k", "M0-Y-1.0-100k", "M0-J-1.0-100k", "M0-H-1.0-100k", "M0-K-1.0-100k"]):
                             wav_plot_M0.append(wav_stellar)
