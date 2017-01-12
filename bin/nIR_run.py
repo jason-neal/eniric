@@ -2,6 +2,7 @@
 # Script to perform a convolution on a spectrum.
 # Can take a number of parameters if needed
 from __future__ import division, print_function
+import sys
 from eniric.nIRanalysis import convolve_spectra
 from eniric.resample import resampler
 from eniric.utilities import get_spectrum_name
@@ -105,10 +106,11 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
                                       resampled_dir=resampled_dir, sampling=sample)
                         counter += 1
 
+    return 0
 if __name__ == '__main__':
     args = vars(_parser())
     startype = args.pop("startype")  # positional arguments
 
     opts = {k: args[k] for k in args}
 
-    main(startype, **opts)
+    sys.exit(main(startype, **opts))
