@@ -33,8 +33,8 @@ def _parser():
                         help='Resample directory. Default=data_dir+"/../"')
     parser.add_argument('--noresample', help='Resample output', default=False,
                         action="store_true")
-    parser.add_argument('--normalize', help='Normalize for wavelength step', default=False,
-                        action="store_true")
+    parser.add_argument('--normalize', help='Normalize for wavelength step', default=True,
+                        action="store_false")
     parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
                         default=False, action="store_true")
     args = parser.parse_args()
@@ -42,7 +42,7 @@ def _parser():
 
 
 def main(startype, vsini, resolution, band, data_dir=None, results=None,
-         resamples=None, sample_rate=3.0, noresample=False, normalize=False,
+         resamples=None, sample_rate=3.0, noresample=False, normalize=True,
          org=False):
     """ Run convolutions of NIR spectra for the range of given parameters.
 
@@ -64,7 +64,7 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
     resample: str, default=None
     sample_rate: list of floats default=[3.0]
     noresample: bool default=False
-    normalize: bool default=False
+    normalize: bool default=True
 
     """
     # vsini, resolution, band and sample_rate can all be a series of values
@@ -93,9 +93,9 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
 
                         if normalize:
                             # when normalize ation is confirmed then can
-                            result_name = "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}k_conv_normalized.txt".format(star, b, vel, int(R/1000))
-                        else:
                             result_name = "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}k.txt".format(star, b, vel, int(R/1000))
+                        else:
+                            result_name = "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}k_unnormalized.txt".format(star, b, vel, int(R/1000))
                         print("Name to be result file", result_name)
 
                         convolve_spectra(data_dir + spectrum_name, b, vel, R, epsilon=0.6, plot=False,
