@@ -77,7 +77,7 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0,
 
     wav_band, flux_band, convolved_flux = convolution(wav, flux, vsini, R, band,
                                                       epsilon=epsilon, FWHM_lim=FWHM_lim,
-                                                      numProcs=numProcs, normalize=False)
+                                                      numProcs=numProcs, normalize=normalize)
 
     if output_name is None:
         name_model = name_assignment(spectrum)
