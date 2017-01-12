@@ -28,18 +28,16 @@ from bin.nIR_precision import normalize_flux
 resampled_dir = "../data/resampled/"
 
 
-def calc_prec1(star, band,  vel,  resolution,  smpl, norm=False):
+def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True):
     """ Just caluclate precision for 1st cas."""
-    if norm:
-        file_to_read = ("Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}_res{}"
-                        "conv_normalized.txt").format(star, band, vel,
-                                                      resolution,  smpl)
+    if normalize:
+        file_to_read = ("Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}"
+                        "_res{}.txt").format(star, band, vel, resolution,  smpl)
     else:
         file_to_read = ("Spectrum_{}-PHOENIX-ACES_{}band_vsini"
-                                    "{}_R{}_res{}.txt").format(star, band,
-                                                               vel,
-                                                               resolution,
-                                                               smpl)
+                        "{}_R{}_unnormalized_res{}.txt").format(star, band, vel,
+                                                                resolution,
+                                                                smpl)
     # print("Working on "+file_to_read+".")
     wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir + file_to_read)
 
@@ -47,7 +45,10 @@ def calc_prec1(star, band,  vel,  resolution,  smpl, norm=False):
     wav_stellar = wav_stellar[2:-2]
     flux_stellar = flux_stellar[2:-2]
 
-    id_string = "{}-{}-{}-{}".format(star, band, vel, resolution)   # sample was left aside because only one value existed
+    if normalize:
+        id_string = "{}-{}-{}-{}".format(star, band, vel, resolution)   # sample was left aside because only one value existed
+    else:
+        id_string = "{}-{}-{}-{}-unnorm".format(star, band, vel, resolution)   # sample was left aside because only one value existed
 
     # Normaize to SNR 100 in middle of J band 1.25 micron!
     flux_stellar = normalize_flux(flux_stellar, id_string)
