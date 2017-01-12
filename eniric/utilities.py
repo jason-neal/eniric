@@ -34,6 +34,40 @@ def read_spectrum(spec_name):
 
     return wav, flux_photons
 
+def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False):
+    """ Return correct phoenix spectrum filename for a given spectral type.
+
+    Based off phoenix_utils module.
+
+    Ability to select logg and metalicity (feh) later on.
+    org = original locations (without Z folder option)
+    """
+    if feh == 0:
+        feh = -0.0    # make zero negative to signed integer.
+
+    temps = {"M0": 3900, "M3": 3500, "M6": 2800, "M9": 2600}
+    base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+    if startype in temps.keys():
+        if org:
+            phoenix_name = "PHOENIX-ACES_spectra/lte{0:05d}-{1}-{2}.{3}".format(temps[startype], "4.50", "0.0", base)
+        elif (alpha is not None) and (alpha != 0.0):
+            if abs(alpha) > 0.2:
+                print("Warning! Alpha is outside acceptable range -0.2->0.2")
+            phoenix_name = ("PHOENIX-ACES_spectra/Z{2:+4.1f}.Alpha={3:+5.2f}/"
+                            "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}."
+                            "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+                            "").format(temps[startype], logg, feh, alpha)
+        else:
+            phoenix_name = ("PHOENIX-ACES_spectra/Z{2:+4.1f}/lte{0:05d}-{1:4.2f}"
+                            "{2:+4.1f}.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+                            "").format(temps[startype], logg, feh)
+
+        spectrum_name = phoenix_name
+    else:
+        raise NotImplementedError("The spectral type '{:s}' is not implemented yet.".format(startype))
+
+    return spectrum_name
+
 
 def band_selector(wav, flux, band):
     """ Select a specific wavelength band.
