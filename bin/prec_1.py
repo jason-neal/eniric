@@ -6,7 +6,7 @@ precision is working.
 
 
 import numpy as np
-# from sys import exit
+import sys
 # import matplotlib.pyplot as plt
 
 # to remove labels in one tick
@@ -23,31 +23,68 @@ from bin.nIR_precision import normalize_flux
 # from matplotlib import rc
 # set stuff for latex usage
 # rc('text', usetex=True)
+import argparse
+
+
+def _parser():
+    """Take care of all the argparse stuff.
+
+    :returns: the args
+    """
+    parser = argparse.ArgumentParser(description='Calculate perfect precision of all convolved spectra.')
+
+    parser.add_argument('-s', '--startype', help='Spectral Type e.g "MO"', type=str, nargs="*", default=None)
+    parser.add_argument("-v", "--vsini", help="Rotational velocity of source",
+                        type=float, nargs="*", default=None)
+    parser.add_argument("-R", "--resolution", help="Observational resolution",
+                        type=float, nargs="*", default=None)
+    parser.add_argument("-b", "--band", type=str, default="ALL",
+                        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
+                        help="Wavelength band to select", nargs="+")
+    parser.add_argument('-d', '--data_dir', help='Data directory', type=str, default=None)
+    parser.add_argument('--sample_rate', default=None, type=float, nargs="*",
+                        help="Resample rate, pixels per FWHM. Default=3.0")
+    parser.add_argument('--results', default=None, type=str,
+                        help='Result directory Default=data_dir+"/results/"')
+    parser.add_argument('--resamples', default=None, type=str,
+                        help='Resample directory. Default=data_dir+"/resampled/"')
+    parser.add_argument('--noresample', help='Resample output', default=False,
+                        action="store_true")
+    parser.add_argument('--normalize', help='Use convolution normalized spectra', default=True,
+                        action="store_false")
+    parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
+                        default=False, action="store_true")
+    args = parser.parse_args()
+    return args
 
 #atmmodel = "../data/atmmodel/Average_TAPAS_2014.txt"
 resampled_dir = "../data/resampled/"
 
 
-def calc_prec1(star, band,  vel,  resolution,  smpl, norm=False):
-    """ Just caluclate precision for 1st cas."""
-    if norm:
-        file_to_read = ("Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}_res{}"
-                        "conv_normalized.txt").format(star, band, vel,
-                                                      resolution,  smpl)
+def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True):
+    """ Just caluclate precision for 1st case.
+
+    resolution in short form e.g 100k
+    """
+    if normalize:
+        file_to_read = ("Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}"
+                        "_res{}.txt").format(star, band, vel, resolution,  smpl)
     else:
         file_to_read = ("Spectrum_{}-PHOENIX-ACES_{}band_vsini"
-                                    "{}_R{}_res{}.txt").format(star, band,
-                                                               vel,
-                                                               resolution,
-                                                               smpl)
-    # print("Working on "+file_to_read+".")
+                        "{}_R{}_unnormalized_res{}.txt").format(star, band, vel,
+                                                                resolution,
+                                                                smpl)
+    # print("Working on " + file_to_read)
     wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir + file_to_read)
 
     # removing boundary effects
     wav_stellar = wav_stellar[2:-2]
     flux_stellar = flux_stellar[2:-2]
 
-    id_string = "{}-{}-{}-{}".format(star, band, vel, resolution)   # sample was left aside because only one value existed
+    if normalize:
+        id_string = "{}-{}-{}-{}".format(star, band, vel, resolution)   # sample was left aside because only one value existed
+    else:
+        id_string = "{}-{}-{}-{}-unnorm".format(star, band, vel, resolution)   # sample was left aside because only one value existed
 
     # Normaize to SNR 100 in middle of J band 1.25 micron!
     flux_stellar = normalize_flux(flux_stellar, id_string)
@@ -65,29 +102,72 @@ def calc_prec1(star, band,  vel,  resolution,  smpl, norm=False):
     # print("Performing analysis for: ", id_string)
     prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar)
 
-    print("{}: \t{}".format(id_string, prec_1))
+    # print("{}: \t{}".format(id_string, prec_1))
+    return id_string, prec_1
 
-spectral_types = ["M0", "M3", "M6", "M9"]
-bands = ["Z", "Y", "J", "H", "K"]
-vsini = ["1.0", "5.0", "10.0"]
-R = ["60k", "80k", "100k"]
-sampling = ["3"]
 
-precision = {}  # dict for storing precision value
-for star in spectral_types:
-    for band in bands:
-        for vel in vsini:
-            for resolution in R:
-                for smpl in sampling:
-                    for norm in [False, True]:
-                        try:
-                            id_string, prec_1 = calc_prec1(star, band, vel, resolution, smpl, norm=norm)
-                            if norm:
-                                id_string += "-norm"
-                            precision[id_string] = prec_1
-                        except:
-                            pass
+def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, results=None,
+         resamples=None, sample_rate=3.0, noresample=False, normalize=True,
+         org=False):
+    if data_dir is None:
+        data_dir = "../data/"
 
-print("id_string\t\tprec_1")
-for key in precision:
-    print("{:s} {:02.2f}".format(key, precision[key]))
+    if results is None:
+        results_dir = data_dir + "results/"
+    else:
+        results_dir = results
+
+    if resamples is None:
+        resampled_dir = data_dir + "resampled/"
+    else:
+        resampled_dir = resamples
+
+    if startype is None:
+        spectral_types = ["M0", "M3", "M6", "M9"]
+    else:
+        spectral_types = startype
+    if band is None:
+        bands = ["Z", "Y", "J", "H", "K"]
+    else:
+        bands = band
+    if vsini is None:
+        vsini = ["1.0", "5.0", "10.0"]
+    if resolution is None:
+        resolution = ["60k", "80k", "100k"]
+    else:
+        resolution = ["{:.0f}k".format(R/1000) for R in resolution]
+
+    if sample_rate is None:
+        sampling = ["3"]
+    else:
+        sampling = sample_rate
+
+    precision = {}  # dict for storing precision value
+    for star in spectral_types:
+        for band in bands:
+            for vel in vsini:
+                for R in resolution:
+                    for smpl in sampling:
+                        for normalize in [True, False]:
+                            # print(star, band, vel, R, smpl)
+                            try:
+                                id_string, prec_1 = calc_prec1(star, band, vel, R, smpl, normalize=normalize)
+                                precision[id_string] = prec_1
+                            except:
+                                print(star, band, vel, R, smpl, "with norm = {} Failed".format(normalize))
+
+
+    print("id_string\t\tprec_1")
+    for key in precision:
+        print("{:s} \t\t{:02.1f}".format(key, precision[key]))
+
+    return 0
+
+
+if __name__ == '__main__':
+    args = vars(_parser())
+    #startype = args.pop("startype")  # positional arguments
+
+    opts = {k: args[k] for k in args}
+
+    sys.exit(main(**opts))
