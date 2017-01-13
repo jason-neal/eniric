@@ -59,7 +59,7 @@ def _parser():
 
 #atmmodel = "../data/atmmodel/Average_TAPAS_2014.txt"
 resampled_dir = "../data/resampled/"
-
+error_to_catch = getattr(__builtins__,'FileNotFoundError', IOError)
 
 def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True, resampled_dir=resampled_dir):
     """ Just caluclate precision for 1st case.
@@ -153,8 +153,10 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
                             try:
                                 id_string, prec_1 = calc_prec1(star, band, vel, R, smpl, normalize=normalize)
                                 precision[id_string] = prec_1
+                            except error_to_catch:
+                                pass  # When file not found skip
                             except:
-                                print(star, band, vel, R, smpl, "with norm = {} Failed".format(normalize))
+                                print(star, band, vel, R, smpl, "normalized"*normalize, "Failed!")
 
 
     print("id_string\t\tprec_1")
