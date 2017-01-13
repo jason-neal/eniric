@@ -61,17 +61,17 @@ def _parser():
 resampled_dir = "../data/resampled/"
 
 
-def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True):
+def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True, resampled_dir=resampled_dir):
     """ Just caluclate precision for 1st case.
 
     resolution in short form e.g 100k
     """
     if normalize:
-        file_to_read = ("Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}"
+        file_to_read = ("Spectrum_{}-PHOENIX-ACES_{}band_vsini{:.1f}_R{}"
                         "_res{}.txt").format(star, band, vel, resolution,  smpl)
     else:
         file_to_read = ("Spectrum_{}-PHOENIX-ACES_{}band_vsini"
-                        "{}_R{}_unnormalized_res{}.txt").format(star, band, vel,
+                        "{:.1f}_R{}_unnormalized_res{}.txt").format(star, band, vel,
                                                                 resolution,
                                                                 smpl)
     # print("Working on " + file_to_read)
