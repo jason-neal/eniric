@@ -50,6 +50,13 @@ def test_RVprec_using_exo_load():
         assert new_rv == org_rv
         assert exo_rv == new_rv
 
-
+from bin.prec_1 import calc_prec1
+def test_presicion_1():
+    """ New precision 1 test that works."""
     Published_Results = {1: 3.8, 5: 9.1, 10: 20.7}
+    path = "data/resampled/"
+    for vsini in [1, 5, 10]:
+        #name = "Spectrum_M0-PHOENIX-ACES_Yband_vsini{}.0_R100k_res3.txt".format(vsini)
+        __, p1 = calc_prec1("M0", "Y", vsini, "100k", 3, resampled_dir=path)
 
+        assert np.round(p1,1).value == Published_Results[vsini]
