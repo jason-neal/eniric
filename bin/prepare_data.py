@@ -10,6 +10,7 @@ This wastes alot of memory duplicating wavelemgth vector.
 Jason Neal Janurary 2017
 """
 from __future__ import division, print_function
+import re
 import os
 import sys
 import pandas as pd
@@ -28,8 +29,8 @@ def main():
     for (path, dirs, files) in os.walk(phoenix_dir):
         # print(path)
         # print(dirs)
-        phoenix_files = [f for f in files if
-                         f.endswith("PHOENIX-ACES-AGSS-COND-2011-HiRes.fits")]
+        phoenix_files = [f for f in files if (
+                         f.endswith("PHOENIX-ACES-AGSS-COND-2011-HiRes.fits") and (re.search("03900-4.50-0.0", f) is not None))]
 
         for phoenix_file in phoenix_files:
             if int(phoenix_file[3:8]) > 4000:
