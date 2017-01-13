@@ -16,7 +16,7 @@ def _parser():
     :returns: the args
     """
     parser = argparse.ArgumentParser(description='Helpful discription')
-    parser.add_argument('startype', help='Spectral Type e.g "MO"', type=str, nargs="+")
+    parser.add_argument("-s", '--startype', help='Spectral Type e.g "MO"', type=str, nargs="+")
     parser.add_argument("-v", "--vsini", help="Rotational velocity of source",
                         type=float, nargs="+")
     parser.add_argument("-R", "--resolution", help="Observational resolution",
@@ -117,8 +117,9 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
 
 if __name__ == '__main__':
     args = vars(_parser())
-    startype = args.pop("startype")  # positional arguments
+    # startype = args.pop("startype")  # positional arguments
 
     opts = {k: args[k] for k in args}
 
-    sys.exit(main(startype, **opts))
+    # sys.exit(main(startype, **opts))
+    sys.exit(main(**opts))
