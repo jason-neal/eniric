@@ -68,11 +68,12 @@ def test_rotational_convolution_indexing():
     assert np.all(old_wav_2convolve == new_wav_2convolve)
 
 
+@pytest.mark.xfail(raises=FileNotFoundError)
 def test_result_files_the_same():
     """ Test the result files are equal """
 
     print("Reading the data...")
-    new_spectrum = "data/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
+    new_spectrum = "data/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R100k_unnormalized.txt"
     old_spectrum = "data/original_code/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
 
     new_wavelength, new_ts, new_flux = pdread_3col(new_spectrum)
@@ -83,10 +84,11 @@ def test_result_files_the_same():
     assert np.allclose(new_flux, np.array(old_spectrum, dtype="float64"))
 
 
+@pytest.mark.xfail(raises=FileNotFoundError)    # Data file may not exist
 def test_resampled_files_the_same():
     """ Test the resampled files are the same"""
     band = "GAP"
-    new_spectrum = "data/resampled/Spectrum_M0-PHOENIX-ACES_{}band_vsini1_R100k_res3.txt".format(band)
+    new_spectrum = "data/resampled/Spectrum_M0-PHOENIX-ACES_{}band_vsini1.0_R100k_unnormalized_res3.txt".format(band)
     old_spectrum = "data/original_code/resampled/original_code/results/Spectrum_M0-PHOENIX-ACES_{}band_vsini1_R100k_res3.txt".format(band)
     new_wavelength, new_flux = pdread_2col(new_spectrum, noheader=True)
     old_wavelength, old_flux = old_read_2col(old_spectrum)
@@ -94,15 +96,18 @@ def test_resampled_files_the_same():
     assert np.allclose(old_flux, new_flux)
 
 
+@pytest.mark.xfail(raises=FileNotFoundError)   # Data file may not exist
 def test_resampled_RVprec_equal():
     """ Test quality of new and old spectra"""
     band = "GAP"
-    new_spectrum = "data/resampled/Spectrum_M0-PHOENIX-ACES_{}band_vsini1_R100k_res3.txt".format(band)
+    new_spectrum = "data/resampled/Spectrum_M0-PHOENIX-ACES_{}band_vsini1.0_R100k_unnormalized_res3.txt".format(band)
     old_spectrum = "data/original_code/resampled/original_code/results/Spectrum_M0-PHOENIX-ACES_{}band_vsini1_R100k_res3.txt".format(band)
 
     new_wavelength, new_flux = pdread_2col(new_spectrum, noheader=True)
 
     old_wavelength, old_flux = old_read_2col(old_spectrum)
+
+    # Scale with correct value
 
     new_RVprec = RVprec_calc(new_wavelength, new_flux)
     old_RVprec = old_RVprec_calc(old_wavelength, old_flux)
@@ -110,6 +115,7 @@ def test_resampled_RVprec_equal():
     assert new_RVprec.unit == "m / s"  # Check unit of precision
 
 
+@pytest.mark.xfail(raises=FileNotFoundError)   # Data file may not exist
 def test_list_creator():
     """ Test new masking in list creator is equivalent"""
     # test a couple of single bands only for speed

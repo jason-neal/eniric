@@ -9,13 +9,14 @@ import eniric.original_code.Qcalculator as orgQ
 # import eniric.nIRanalysis as nIR
 from eniric.IOmodule import pdread_2col
 import eniric.Qcalculator as Q
+from bin.prec_1 import calc_prec1
 # To test if the new code produces the same precision values on the published results.
 
 # Test with and without fudge factor
 
 path = "data/Published_Results/resampled/"
 
-
+@pytest.mark.xfail(raises=FileNotFoundError)   # Data file may not exist
 def test_RVprec_using_pd_load():
     """Test with data loaded with pandas """
     for vsini in [1, 5, 10]:
@@ -33,7 +34,7 @@ def test_RVprec_using_pd_load():
         assert new_rv == org_rv
         assert exo_rv == new_rv
 
-
+@pytest.mark.xfail(raises=FileNotFoundError)   # Data file may not exist
 def test_RVprec_using_exo_load():
     """Test  with data loaded with exorunner IOmodule  """
     for vsini in [1, 5, 10]:
@@ -50,7 +51,8 @@ def test_RVprec_using_exo_load():
         assert new_rv == org_rv
         assert exo_rv == new_rv
 
-from bin.prec_1 import calc_prec1
+
+@pytest.mark.xfail(raises=FileNotFoundError)   # Data file may not exist
 def test_presicion_1():
     """ New precision 1 test that works."""
     Published_Results = {1: 3.8, 5: 9.1, 10: 20.7}
