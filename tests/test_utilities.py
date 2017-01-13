@@ -10,26 +10,29 @@ import hypothesis.strategies as st
 
 
 def test_get_spectrum_name():
-    """ """
+    """ Test specifing file names with stellar parameters."""
     test = ("PHOENIX-ACES_spectra/Z-0.0/lte02800-4.50"
             "-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
-
     assert get_spectrum_name("M6") == test
 
     test_alpha = ("PHOENIX-ACES_spectra/Z-0.0.Alpha=+0.20/"
                   "lte02600-6.00-0.0.Alpha=+0.20.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
-
     assert get_spectrum_name("M9", logg=6, alpha=0.2) == test_alpha
 
     test_pos_feh = ("PHOENIX-ACES_spectra/Z+0.5/"
                     "lte03500-0.00+0.5.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
-
     assert get_spectrum_name("M3", logg=0, feh=0.5, alpha=0.0) == test_pos_feh
-    # Catch Spectrum not implemented error
+
+    # Catch Errors
     with pytest.raises(NotImplementedError):
-        get_spectrum_name("K1")   # Stellar type not added
+        get_spectrum_name("K1")       # Stellar type not added
     with pytest.raises(NotImplementedError):
-        get_spectrum_name("MO")  # Miss spelled M0
+        get_spectrum_name("A8")       # Stellar type not added
+    with pytest.raises(ValueError):
+        get_spectrum_name("MO")       # Miss spelled M0
+    with pytest.raises(ValueError):
+        get_spectrum_name("X10")      # Not valid spectral type in [OBAFGKML]
+
 
 def test_org_name():
     """ Test org flag of get_spectrum_name, suposed to be temporary."""
