@@ -28,9 +28,9 @@ def _parser():
     parser.add_argument('--sample_rate', default=[3.0], type=float, nargs="+",
                         help="Resample rate, pixels per FWHM. Default=3.0")
     parser.add_argument('--results', default=None, type=str,
-                        help='Result directory Default=data_dir+"/../"')
+                        help='Result directory Default=data_dir+"/results/"')
     parser.add_argument('--resamples', default=None, type=str,
-                        help='Resample directory. Default=data_dir+"/../"')
+                        help='Resample directory. Default=data_dir+"/resampled/"')
     parser.add_argument('--noresample', help='Resample output', default=False,
                         action="store_true")
     parser.add_argument('--normalize', help='Normalize for wavelength step', default=True,
