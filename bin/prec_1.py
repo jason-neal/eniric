@@ -61,7 +61,7 @@ def _parser():
 resampled_dir = "../data/resampled/"
 
 
-def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True):
+def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True, resampled_dir=resampled_dir):
     """ Just caluclate precision for 1st case.
 
     resolution in short form e.g 100k
