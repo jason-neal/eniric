@@ -67,20 +67,20 @@ def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_
         base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
     else:
         base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+
     if startype in temps.keys():
         if org:
             phoenix_name = "PHOENIX-ACES_spectra/lte{0:05d}-{1}-{2}.{3}".format(temps[startype], "4.50", "0.0", base)
         elif (alpha is not None) and (alpha != 0.0):
             if abs(alpha) > 0.2:
                 print("Warning! Alpha is outside acceptable range -0.2->0.2")
+
             phoenix_name = ("PHOENIX-ACES_spectra/Z{2:+4.1f}.Alpha={3:+5.2f}/"
-                            "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}."
-                            "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-                            "").format(temps[startype], logg, feh, alpha)
+                            "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}.{4:s}"
+                            "").format(temps[startype], logg, feh, alpha, base)
         else:
             phoenix_name = ("PHOENIX-ACES_spectra/Z{2:+4.1f}/lte{0:05d}-{1:4.2f}"
-                            "{2:+4.1f}.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-                            "").format(temps[startype], logg, feh)
+                            "{2:+4.1f}.{3:s}").format(temps[startype], logg, feh, base)
 
         spectrum_name = phoenix_name
     elif re.match(r"^[OBAFGKML][0-9]$", startype):   # Valid spectral types
