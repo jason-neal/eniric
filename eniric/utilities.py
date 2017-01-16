@@ -40,10 +40,21 @@ def read_spectrum(spec_name):
     return wav_micron, flux_photons
 
 
-def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False):
+def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_type="photon"):
     """ Return correct phoenix spectrum filename for a given spectral type.
 
     Based off phoenix_utils module.
+
+    Parameters
+    ----------
+    flux_type: str
+        Indicate which filetype to try find. e.g. "photon", "wave", ("fits" Not Implemented yet)
+
+    Returns
+    -------
+    spectrum_name: str
+        The name of spectrum with choosen Parameters
+
 
     Ability to select logg and metalicity (feh) later on.
     org = original locations (without Z folder option)
@@ -52,7 +63,10 @@ def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False):
         feh = -0.0    # make zero negative to signed integer.
 
     temps = {"M0": 3900, "M3": 3500, "M6": 2800, "M9": 2600}
-    base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+    if (flux_type == "photon") and (not org):
+        base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
+    else:
+        base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
     if startype in temps.keys():
         if org:
             phoenix_name = "PHOENIX-ACES_spectra/lte{0:05d}-{1}-{2}.{3}".format(temps[startype], "4.50", "0.0", base)
