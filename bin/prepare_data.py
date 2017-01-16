@@ -13,16 +13,52 @@ from __future__ import division, print_function
 import re
 import os
 import sys
+import argparse
 import pandas as pd
 from astropy.io import fits
 from eniric.IOmodule import pdwrite_2col
+from eniric.utilities import wav_selector
 
 data_dir = "../data/PHOENIX-ACES_spectra/"
 phoenix_dir = "../../../data/fullphoenix/"
 
 wavelength_file = "WAVE_PHOENIX-ACES-AGSS-COND-2011.fits"
 
-def main():
+
+def _parser():
+    """Take care of all the argparse stuff.
+
+    :returns: the args
+    """
+    parser = argparse.ArgumentParser(description='Helpful discription')
+    parser.add_argument("-s", '--startype', help='Spectral Type e.g "MO"', type=str, nargs="+")
+    parser.add_argument("-v", "--vsini", help="Rotational velocity of source",
+                        type=float, nargs="+")
+    parser.add_argument("-R", "--resolution", help="Observational resolution",
+                        type=float, nargs="+")
+    parser.add_argument("-b", "--band", type=str, default=["ALL"],
+                        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
+                        help="Wavelength band to select", nargs="+")
+    parser.add_argument('-d', '--data_dir', help='Data directory', type=str, default=None)
+    parser.add_argument('--sample_rate', default=[3.0], type=float, nargs="+",
+                        help="Resample rate, pixels per FWHM. Default=3.0")
+    parser.add_argument('--results', default=None, type=str,
+                        help='Result directory Default=data_dir+"/results/"')
+    parser.add_argument('--resamples', default=None, type=str,
+                        help='Resample directory. Default=data_dir+"/resampled/"')
+    parser.add_argument('--noresample', help='Resample output', default=False,
+                        action="store_true")
+    parser.add_argument('--normalize', help='Normalize for wavelength step', default=True,
+                        action="store_false")
+    parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
+                        default=False, action="store_true")
+    args = parser.parse_args()
+    return args
+
+
+def main(startype, vsini, resolution, band, data_dir=None, results=None,
+         resamples=None, sample_rate=3.0, noresample=False, normalize=True,
+         org=False):
     wavelength = fits.getdata(data_dir + wavelength_file)  # Phoenix wavelength
 
     # get all phoenix fits files we want to convert
@@ -57,4 +93,6 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    args = vars(_parser())
+    opts = {k: args[k] for k in args}
+    sys.exit(main(**opts))
