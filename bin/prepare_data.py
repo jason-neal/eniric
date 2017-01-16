@@ -58,8 +58,14 @@ def _parser():
 
 def main(startype, vsini, resolution, band, data_dir=None, results=None,
          resamples=None, sample_rate=3.0, noresample=False, normalize=True,
-         org=False):
+         org=False, flux_type="photon"):
+
     wavelength = fits.getdata(data_dir + wavelength_file)  # Phoenix wavelength
+
+    if flux_type == "photon":
+        file_suffix = "_wave_photon.dat"
+    else:
+        file_suffix = "_wave.dat"
 
     # get all phoenix fits files we want to convert
     for (path, dirs, files) in os.walk(phoenix_dir):
@@ -76,14 +82,39 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
                 Z_folder = path.split("/")[-1]
                 os.makedirs(os.path.join(data_dir, Z_folder), exist_ok=True)  # make folder if doesn't exit
                 output_filename = os.path.join(data_dir, Z_folder,
-                                               phoenix_file[:-5] + "_wave.dat")  # Name of .dat file
+                                               phoenix_file[:-5] + file_suffix)  # Name of .dat file
 
                 spectra = fits.getdata(os.path.join(path, phoenix_file))
 
                 # Need to add conversions pedro preformed to flux!
+                """ The energy units of Phoenix fits files is erg/s/cm**2/cm
+                We transform the flux into photons in the read_spectrum()
+                function by multiplying the flux result by the wavelength (lambda)
 
-                if not pdwrite_2col(output_filename, wavelength, spectra,
-                                header=["# Wavelength", "Flux"]):
+                    Flux_photon = Flux_energy/Energy_photon
+                with
+                    Energy_photon = h*c/lambda
+                Flux_photon = Flux_energy * lambda / (h * c)
+
+                Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/\mum
+                Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
+                """
+
+                spectra_micron = spectra * 10**-4              # Convert   /cm    to  /micron
+
+                if flux_type == "photon":
+                    wavelength_micron = wavelength * 10**-4    # Convert Angstrom to   micron
+
+                    spectra_photon = spectra_micron * wavelength_micron  # Ignoring constants h*c in photon energy equation
+
+                    result = pdwrite_2col(output_filename, wavelength_micron, spectra_photon,
+                                          header=["# Wavelength (micron)", r"Flux (photon/s/cm^2)"])
+
+                else:
+                    result = pdwrite_2col(output_filename, wavelength, spectra_micron,
+                                          header=["# Wavelength (Angstom)", r"Flux (erg/s/cm^2/micron)"])
+
+                if not result:
                     print("Successfully wrote to ", output_filename)
                 else:
                     print("Failed to write to ", output_filename)

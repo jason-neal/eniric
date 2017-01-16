@@ -12,7 +12,9 @@ from eniric.IOmodule import pdread_2col
 
 
 def read_spectrum(spec_name):
-    """ Function that reads spectra from the database and converts to photons!.
+    """ Function that reads a flux spectra from the database!.
+
+    If a energy flux spectra is read then it converts it to photons.
 
     Parameters
     ----------
@@ -24,20 +26,35 @@ def read_spectrum(spec_name):
     wav: array-like, float64
         Wavelength in microns.
     flux_photons: array-like, float64
-        Spectral flux converted into photons.
+        Photon flux.
 
     """
-    wav, flux = pdread_2col(spec_name)
-    wav *= 1.0e-4  # conversion to microns
+    if "photon" in spec_name:
+        wav_micron, flux_photons = pdread_2col(spec_name)
+    else:
+        wav, flux = pdread_2col(spec_name)
 
-    flux_photons = flux * wav   # Convert to photons
+        wav_micron = wav * 1.0e-4  # conversion to microns
+        flux_photons = flux * wav_micron   # Convert to photons
 
-    return wav, flux_photons
+    return wav_micron, flux_photons
 
-def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False):
+
+def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_type="photon"):
     """ Return correct phoenix spectrum filename for a given spectral type.
 
     Based off phoenix_utils module.
+
+    Parameters
+    ----------
+    flux_type: str
+        Indicate which filetype to try find. e.g. "photon", "wave", ("fits" Not Implemented yet)
+
+    Returns
+    -------
+    spectrum_name: str
+        The name of spectrum with choosen Parameters
+
 
     Ability to select logg and metalicity (feh) later on.
     org = original locations (without Z folder option)
@@ -46,21 +63,24 @@ def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False):
         feh = -0.0    # make zero negative to signed integer.
 
     temps = {"M0": 3900, "M3": 3500, "M6": 2800, "M9": 2600}
-    base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+    if (flux_type == "photon") and (not org):
+        base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
+    else:
+        base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+
     if startype in temps.keys():
         if org:
             phoenix_name = "PHOENIX-ACES_spectra/lte{0:05d}-{1}-{2}.{3}".format(temps[startype], "4.50", "0.0", base)
         elif (alpha is not None) and (alpha != 0.0):
             if abs(alpha) > 0.2:
                 print("Warning! Alpha is outside acceptable range -0.2->0.2")
+
             phoenix_name = ("PHOENIX-ACES_spectra/Z{2:+4.1f}.Alpha={3:+5.2f}/"
-                            "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}."
-                            "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-                            "").format(temps[startype], logg, feh, alpha)
+                            "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}.{4:s}"
+                            "").format(temps[startype], logg, feh, alpha, base)
         else:
             phoenix_name = ("PHOENIX-ACES_spectra/Z{2:+4.1f}/lte{0:05d}-{1:4.2f}"
-                            "{2:+4.1f}.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-                            "").format(temps[startype], logg, feh)
+                            "{2:+4.1f}.{3:s}").format(temps[startype], logg, feh, base)
 
         spectrum_name = phoenix_name
     elif re.match(r"^[OBAFGKML][0-9]$", startype):   # Valid spectral types
