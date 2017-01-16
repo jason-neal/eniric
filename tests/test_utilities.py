@@ -9,6 +9,7 @@ from hypothesis import given, example
 import hypothesis.strategies as st
 
 
+@pytest.mark.xfail(raises=FileNotFoundError)
 def test_read_spectrum():
     """Test reading in a _wave_photon.dat is the same as a _wave.dat.
     """
@@ -20,7 +21,7 @@ def test_read_spectrum():
     assert np.allclose(photon_wav, wave_wav)
     assert np.allclose(photon_flux, wave_flux)
 
-
+@pytest.mark.xfail(raises=FileNotFoundError)
 def test_get_spectrum_name():
     """ Test specifing file names with stellar parameters."""
     test = ("PHOENIX-ACES_spectra/Z-0.0/lte02800-4.50"
@@ -50,7 +51,7 @@ def test_get_spectrum_name():
     with pytest.raises(ValueError):
         get_spectrum_name("X10")      # Not valid spectral type in [OBAFGKML]
 
-
+@pytest.mark.xfail(raises=FileNotFoundError)
 def test_org_name():
     """ Test org flag of get_spectrum_name, suposed to be temporary."""
     test_org = "PHOENIX-ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
