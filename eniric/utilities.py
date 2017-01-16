@@ -12,7 +12,9 @@ from eniric.IOmodule import pdread_2col
 
 
 def read_spectrum(spec_name):
-    """ Function that reads spectra from the database and converts to photons!.
+    """ Function that reads a flux spectra from the database!.
+
+    If a energy flux spectra is read then it converts it to photons.
 
     Parameters
     ----------
@@ -24,15 +26,19 @@ def read_spectrum(spec_name):
     wav: array-like, float64
         Wavelength in microns.
     flux_photons: array-like, float64
-        Spectral flux converted into photons.
+        Photon flux.
 
     """
-    wav, flux = pdread_2col(spec_name)
-    wav *= 1.0e-4  # conversion to microns
+    if "photon" in spec_name:
+        wav_micron, flux_photons = pdread_2col(spec_name)
+    else:
+        wav, flux = pdread_2col(spec_name)
 
-    flux_photons = flux * wav   # Convert to photons
+        wav_micron = wav * 1.0e-4  # conversion to microns
+        flux_photons = flux * wav_micron   # Convert to photons
 
-    return wav, flux_photons
+    return wav_micron, flux_photons
+
 
 def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False):
     """ Return correct phoenix spectrum filename for a given spectral type.
