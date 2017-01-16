@@ -72,7 +72,7 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0,
 
     """
     print("Reading the data...")
-    wav, flux = read_spectrum(spectrum)
+    wav, flux = read_spectrum(spectrum)    # In microns and  photon flux.
     print("Done.")
 
     wav_band, flux_band, convolved_flux = convolution(wav, flux, vsini, R, band,
