@@ -50,6 +50,18 @@ def main(flux_type="photon"):
                 spectra = fits.getdata(os.path.join(path, phoenix_file))
 
                 # Need to add conversions pedro preformed to flux!
+                """ The energy units of Phoenix fits files is erg/s/cm**2/cm
+                We transform the flux into photons in the read_spectrum()
+                function by multiplying the flux result by the wavelength (lambda)
+
+                    Flux_photon = Flux_energy/Energy_photon
+                with
+                    Energy_photon = h*c/lambda
+                Flux_photon = Flux_energy * lambda / (h * c)
+
+                Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/\mum
+                Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
+                """
 
                 spectra_micron = spectra * 10**-4              # Convert   /cm    to  /micron
 
