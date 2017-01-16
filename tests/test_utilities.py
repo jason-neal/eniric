@@ -19,19 +19,26 @@ def test_read_spectrum():
 
     assert np.allclose(photon_wav, wave_wav)
     assert np.allclose(photon_flux, wave_flux)
+
+
 def test_get_spectrum_name():
     """ Test specifing file names with stellar parameters."""
     test = ("PHOENIX-ACES_spectra/Z-0.0/lte02800-4.50"
             "-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
-    assert get_spectrum_name("M6") == test
+
+    assert get_spectrum_name("M6", flux_type="wave") == test
 
     test_alpha = ("PHOENIX-ACES_spectra/Z-0.0.Alpha=+0.20/"
-                  "lte02600-6.00-0.0.Alpha=+0.20.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
+                  "lte02600-6.00-0.0.Alpha=+0.20.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
     assert get_spectrum_name("M9", logg=6, alpha=0.2) == test_alpha
 
     test_pos_feh = ("PHOENIX-ACES_spectra/Z+0.5/"
-                    "lte03500-0.00+0.5.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
+                    "lte03500-0.00+0.5.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
     assert get_spectrum_name("M3", logg=0, feh=0.5, alpha=0.0) == test_pos_feh
+
+    test_photon = ("PHOENIX-ACES_spectra/Z-0.0/lte02800-4.50"
+                   "-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
+    assert get_spectrum_name("M6") == test_photon
 
     # Catch Errors
     with pytest.raises(NotImplementedError):
