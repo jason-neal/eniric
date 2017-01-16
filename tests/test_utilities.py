@@ -3,12 +3,22 @@
 import pytest
 import numpy as np
 from eniric.utilities import get_spectrum_name, wav_selector
-
+import eniric.utilities as utils
 # Test using hypothesis
 from hypothesis import given, example
 import hypothesis.strategies as st
 
 
+def test_read_spectrum():
+    """Test reading in a _wave_photon.dat is the same as a _wave.dat.
+    """
+    photon = "data/test_data/sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
+    wave = "data/test_data/sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+    wave_wav, wave_flux = utils.read_spectrum(wave)
+    photon_wav, photon_flux = utils.read_spectrum(photon)
+
+    assert np.allclose(photon_wav, wave_wav)
+    assert np.allclose(photon_flux, wave_flux)
 def test_get_spectrum_name():
     """ Test specifing file names with stellar parameters."""
     test = ("PHOENIX-ACES_spectra/Z-0.0/lte02800-4.50"
