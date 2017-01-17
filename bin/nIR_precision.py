@@ -151,8 +151,8 @@ def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
 
         else:
 
-            delta_lambda = value[0] * 3.0e4/Qcalculator.c
-            starting_lambda = value[0] * offset_RV*1.0e3/Qcalculator.c
+            delta_lambda = value[0] * 3.0e4/Qcalculator.c.value
+            starting_lambda = value[0] * offset_RV*1.0e3/Qcalculator.c.value
             indexes_30kmslice = np.searchsorted(wav_atm, [starting_lambda+value[0]-delta_lambda, starting_lambda+value[0]+delta_lambda])
             indexes_30kmslice = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in indexes_30kmslice]
             mask_atm_30kmslice = np.array(mask_atm[indexes_30kmslice[0]:indexes_30kmslice[1]], dtype=bool)    # selecting only the slice in question
