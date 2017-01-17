@@ -110,3 +110,209 @@ def plot_stellar_spectum(wav_stellar, flux_stellar, wav_atm_selected, mask_atm_s
     # plt.legend(loc='best')
     plt.show()
     plt.close()
+
+
+
+def plot_nIR_flux():
+    """Plot_flux code from nIR_precision"""
+    # print the plot for flux comparison
+    f, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex=True, sharey=True)
+
+    ax1.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
+
+    ax1.plot(wav_plot_M0[0], np.array(flux_plot_M0[0]), color='0.1')
+    ax1.plot(wav_plot_M0[1], np.array(flux_plot_M0[1]), color='0.1')
+    ax1.plot(wav_plot_M0[2], np.array(flux_plot_M0[2]), color='0.1')
+    ax1.plot(wav_plot_M0[3], np.array(flux_plot_M0[3]), color='0.1')
+    ax1.plot(wav_plot_M0[4], np.array(flux_plot_M0[4]), color='0.1')
+    ax1.text(0.9, 0.8, 'M0', horizontalalignment='center', verticalalignment='center', transform=ax1.transAxes, size=12)
+    ax1.plot(wav_M0, (flux_M0/flux_M0[0])*flux_plot_M0[0][1000], color='0.1', linestyle='--')
+
+    ax2.plot(wav_plot_M3[0], np.array(flux_plot_M3[0]), color='0.3')
+    ax2.plot(wav_plot_M3[1], np.array(flux_plot_M3[1]), color='0.3')
+    ax2.plot(wav_plot_M3[2], np.array(flux_plot_M3[2]), color='0.3')
+    ax2.plot(wav_plot_M3[3], np.array(flux_plot_M3[3]), color='0.3')
+    ax2.plot(wav_plot_M3[4], np.array(flux_plot_M3[4]), color='0.3')
+    ax2.text(0.9, 0.8, 'M3', horizontalalignment='center', verticalalignment='center', transform=ax2.transAxes, size=12)
+    ax2.plot(wav_M3, (flux_M3/flux_M3[0])*flux_plot_M3[0][1000], color='0.1', linestyle='--')
+
+    ax2.get_yaxis().get_offset_text().set_visible(False)            # remove offset from the yaxis
+    ax2.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='upper'))   # remove upper element from yaxis
+    # ax2.yaxis.set_major_locator(MaxNLocator(nbins=len(ax2.get_yticklabels()), prune='upper'))   # remove upper element from yaxis
+
+    ax3.plot(wav_plot_M6[0], np.array(flux_plot_M6[0]), color='0.4')
+    ax3.plot(wav_plot_M6[1], np.array(flux_plot_M6[1]), color='0.4')
+    ax3.plot(wav_plot_M6[2], np.array(flux_plot_M6[2]), color='0.4')
+    ax3.plot(wav_plot_M6[3], np.array(flux_plot_M6[3]), color='0.4')
+    ax3.plot(wav_plot_M6[4], np.array(flux_plot_M6[4]), color='0.4')
+    ax3.text(0.9, 0.8, 'M6', horizontalalignment='center', verticalalignment='center', transform=ax3.transAxes, size=12)
+    ax3.plot(wav_M6, (flux_M6/flux_M6[0])*flux_plot_M6[0][1000]*1.2, color='0.1', linestyle='--')
+
+    ax3.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
+
+    ax4.plot(wav_plot_M9[0], np.array(flux_plot_M9[0]), color='0.6')
+    ax4.plot(wav_plot_M9[1], np.array(flux_plot_M9[1]), color='0.6')
+    ax4.plot(wav_plot_M9[2], np.array(flux_plot_M9[2]), color='0.6')
+    ax4.plot(wav_plot_M9[3], np.array(flux_plot_M9[3]), color='0.6')
+    ax4.plot(wav_plot_M9[4], np.array(flux_plot_M9[4]), color='0.6')
+    ax4.text(0.9, 0.8, 'M9', horizontalalignment='center', verticalalignment='center', transform=ax4.transAxes, size=12)
+    ax4.plot(wav_M9, (flux_M9/flux_M9[0])*flux_plot_M9[0][1000]*1.4, color='0.1', linestyle='--')
+
+    ax4.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
+
+    f.subplots_adjust(hspace=0)
+    plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
+    f.text(0.06, 0.5, r'Flux [ ]', ha='center', va='center', rotation='vertical')
+    plt.xlabel(r"wavelength [$\mu$m]")
+
+    plt.show()
+    plt.close()
+
+    # print the Z band spectra
+    f, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex=True, sharey=True)
+    plt.xlabel(r"wavelength [$\mu$m]")
+    f.text(0.06, 0.5, r"Flux in Z band [ ]", ha='center', va='center', rotation='vertical')
+
+    ax1.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
+    ax1.set_xlim(np.min(wav_plot_M0[0]), np.max(wav_plot_M0[0]))
+    ax1.set_ylim(0.0, 5.0e3)
+
+    ax1.plot(wav_plot_M0[0], np.array(flux_plot_M0[0]), color='0.1', label="M0")
+    ax1.text(0.9, 0.8, 'M0', horizontalalignment='center', verticalalignment='center', transform=ax1.transAxes, size=12)
+    ax1.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='both'))
+
+    ax2.plot(wav_plot_M3[0], np.array(flux_plot_M3[0]), color='0.3', label="M3")
+    ax2.text(0.9, 0.8, 'M3', horizontalalignment='center', verticalalignment='center', transform=ax2.transAxes, size=12)
+    ax2.get_yaxis().get_offset_text().set_visible(False)            # remove offset from the yaxis
+    ax2.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='both'))   # remove upper element from yaxis
+
+    ax3.plot(wav_plot_M6[0], np.array(flux_plot_M6[0]), color='0.4', label="M6")
+    ax3.text(0.9, 0.8, 'M6', horizontalalignment='center', verticalalignment='center', transform=ax3.transAxes, size=12)
+    ax3.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
+    ax3.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='both'))
+
+    ax4.plot(wav_plot_M9[0], np.array(flux_plot_M9[0]), color='0.6', label="M9")
+    ax4.text(0.9, 0.8, 'M9', horizontalalignment='center', verticalalignment='center', transform=ax4.transAxes, size=12)
+    ax4.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
+    ax4.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='both'))
+
+    f.subplots_adjust(hspace=0)
+    plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
+    plt.show()
+    plt.close()
+
+    # print the Y band spectra
+    f, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex=True, sharey=True)
+    plt.xlabel(r"wavelength [$\mu$m]")
+    f.text(0.06, 0.5, r"Flux in Y band [ ]", ha='center', va='center', rotation='vertical')
+
+    ax1.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
+
+    ax1.plot(wav_plot_M0[1], np.array(flux_plot_M0[1]), color='0.1', label="M0")
+    ax1.text(0.9, 0.8, 'M0', horizontalalignment='center', verticalalignment='center', transform=ax1.transAxes, size=12)
+
+    ax2.plot(wav_plot_M3[1], np.array(flux_plot_M3[1]), color='0.3', label="M3")
+    ax2.text(0.9, 0.8, 'M3', horizontalalignment='center', verticalalignment='center', transform=ax2.transAxes, size=12)
+    ax2.get_yaxis().get_offset_text().set_visible(False)            # remove offset from the yaxis
+    ax2.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='upper'))   # remove upper element from yaxis
+
+    ax3.plot(wav_plot_M6[1], np.array(flux_plot_M6[1]), color='0.4', label="M6")
+    ax3.text(0.9, 0.8, 'M6', horizontalalignment='center', verticalalignment='center', transform=ax3.transAxes, size=12)
+    ax3.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
+
+    ax4.plot(wav_plot_M9[1], np.array(flux_plot_M9[1]), color='0.6', label="M9")
+    ax4.text(0.9, 0.8, 'M9', horizontalalignment='center', verticalalignment='center', transform=ax4.transAxes, size=12)
+    ax4.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
+
+    f.subplots_adjust(hspace=0)
+    plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
+    plt.show()
+    plt.close()
+
+    # print the J band spectra
+    f, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex=True, sharey=True)
+    plt.xlabel(r"wavelength [$\mu$m]")
+    f.text(0.06, 0.5, r"Flux in J band [ ]", ha='center', va='center', rotation='vertical')
+
+    ax1.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
+    ax1.set_xlim(np.min(wav_plot_M0[2]), np.max(wav_plot_M0[2]))
+
+    ax1.plot(wav_plot_M0[2], np.array(flux_plot_M0[2]), color='0.1', label="M0")
+    ax1.text(0.9, 0.8, 'M0', horizontalalignment='center', verticalalignment='center', transform=ax1.transAxes, size=12)
+
+    ax2.plot(wav_plot_M3[2], np.array(flux_plot_M3[2]), color='0.3', label="M3")
+    ax2.text(0.9, 0.8, 'M3', horizontalalignment='center', verticalalignment='center', transform=ax2.transAxes, size=12)
+    ax2.get_yaxis().get_offset_text().set_visible(False)            # remove offset from the yaxis
+    ax2.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='upper'))   # remove upper element from yaxis
+
+    ax3.plot(wav_plot_M6[2], np.array(flux_plot_M6[2]), color='0.4', label="M6")
+    ax3.text(0.9, 0.8, 'M6', horizontalalignment='center', verticalalignment='center', transform=ax3.transAxes, size=12)
+    ax3.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
+
+    ax4.plot(wav_plot_M9[2], np.array(flux_plot_M9[2]), color='0.6', label="M9")
+    ax4.text(0.9, 0.8, 'M9', horizontalalignment='center', verticalalignment='center', transform=ax4.transAxes, size=12)
+    ax4.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
+
+    f.subplots_adjust(hspace=0)
+    plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
+    plt.show()
+    plt.close()
+
+    # print the H band spectra
+    f, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex=True, sharey=True)
+    plt.xlabel(r"wavelength [$\mu$m]")
+    f.text(0.06, 0.5, r"Flux in H band [ ]", ha='center', va='center', rotation='vertical')
+
+    ax1.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
+
+    ax1.plot(wav_plot_M0[3], np.array(flux_plot_M0[3]), color='0.1', label="M0")
+    ax1.text(0.9, 0.8, 'M0', horizontalalignment='center', verticalalignment='center', transform=ax1.transAxes, size=12)
+
+    ax2.plot(wav_plot_M3[3], np.array(flux_plot_M3[3]), color='0.3', label="M3")
+    ax2.text(0.9, 0.8, 'M3', horizontalalignment='center', verticalalignment='center', transform=ax2.transAxes, size=12)
+    ax2.get_yaxis().get_offset_text().set_visible(False)            # remove offset from the yaxis
+    ax2.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='upper'))   # remove upper element from yaxis
+
+    ax3.plot(wav_plot_M6[3], np.array(flux_plot_M6[3]), color='0.4', label="M6")
+    ax3.text(0.9, 0.8, 'M6', horizontalalignment='center', verticalalignment='center', transform=ax3.transAxes, size=12)
+    ax3.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
+
+    ax4.plot(wav_plot_M9[3], np.array(flux_plot_M9[3]), color='0.6', label="M9")
+    ax4.text(0.9, 0.8, 'M9', horizontalalignment='center', verticalalignment='center', transform=ax4.transAxes, size=12)
+    ax4.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
+
+    f.subplots_adjust(hspace=0)
+    plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
+    plt.show()
+    plt.close()
+
+# print the K band spectra
+    f, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex=True, sharey=True)
+    plt.xlabel(r"wavelength [$\mu$m]")
+    f.text(0.06, 0.5, r"Flux in K band [ ]", ha='center', va='center', rotation='vertical')
+
+    ax1.set_xlim([np.min(wav_plot_M0[4]), np.max(wav_plot_M0[4])])
+    ax1.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
+
+    ax1.plot(wav_plot_M0[4], np.array(flux_plot_M0[4]), color='0.1', label="M0")
+    ax1.text(0.9, 0.8, 'M0', horizontalalignment='center', verticalalignment='center', transform=ax1.transAxes, size=12)
+
+    ax2.plot(wav_plot_M3[4], np.array(flux_plot_M3[4]), color='0.3', label="M3")
+    ax2.text(0.9, 0.8, 'M3', horizontalalignment='center', verticalalignment='center', transform=ax2.transAxes, size=12)
+    ax2.get_yaxis().get_offset_text().set_visible(False)            # remove offset from the yaxis
+    ax2.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='upper'))   # remove upper element from yaxis
+
+    ax3.plot(wav_plot_M6[4], np.array(flux_plot_M6[4]), color='0.4', label="M6")
+    ax3.text(0.9, 0.8, 'M6', horizontalalignment='center', verticalalignment='center', transform=ax3.transAxes, size=12)
+    ax3.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
+
+    ax4.plot(wav_plot_M9[4], np.array(flux_plot_M9[4]), color='0.6', label="M9")
+    ax4.text(0.9, 0.8, 'M9', horizontalalignment='center', verticalalignment='center', transform=ax4.transAxes, size=12)
+    ax4.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
+
+    f.subplots_adjust(hspace=0)
+    plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
+
+    plt.show()
+    plt.close()
+
