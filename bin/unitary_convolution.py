@@ -72,9 +72,9 @@ for band in bands:
                         name_model + "_" + band + "band_vsini" + str(vel) +
                         "_R" + str(int(Res/1000)) + "k.txt")
 
-            filename_norm = ("Spectrum_" + name_model + "_" + band +
+            filename_unnorm = ("Spectrum_" + name_model + "_" + band +
                              "band_vsini" + str(vel) + "_R" +
-                             str(int(Res/1000)) + "k_conv_normalized.txt")
+                             str(int(Res/1000)) + "k_unnormalized.txt")
             if do_convolutions:
 
                 wav, flux = read_spectrum(unitary_name)
@@ -86,8 +86,8 @@ for band in bands:
 
                 # With normalization (should be 1s only)
                 wav2, flux2, flux2_conv = convolution(wav, flux, vel, Res,
-                                                      band=band, normalize=True)
-                save_convolution_results(results_dir + filename_norm, wav2,
+                                                      band=band, normalize=False)
+                save_convolution_results(results_dir + filename_unnorm, wav2,
                                          flux2, flux2_conv)
 
                 cont_wav, cont_flux = convolution_CONT(unitary_name, band, vel,
@@ -99,12 +99,12 @@ for band in bands:
             else:
     # Just load data from files
                 wav1, flux1, flux1_conv = pdread_3col(results_dir + filename, noheader=True)
-                wav2, flux2, flux2_conv = pdread_3col(results_dir + filename_norm, noheader=True)
+                wav2, flux2, flux2_conv = pdread_3col(results_dir + filename_unnorm, noheader=True)
                 cont_wav, cont_flux = pdread_2col(results_dir + "result_from_convolution_CONT.txt", noheader=True)
 
-            plt.plot(wav1, flux1_conv, label="new")
-            plt.plot(wav2, flux2_conv, "o-", label="norm")
-            plt.plot(cont_wav, cont_flux, label="cont")
+            plt.plot(wav1, flux1_conv, label="Normalized")
+            plt.plot(wav2, flux2_conv, "o-", label="Unnormalized")
+            plt.plot(cont_wav, cont_flux, label="Pedros CONT")
             plt.legend()
             plt.show()
             # assert np.all(new_wav == cont_wav)
