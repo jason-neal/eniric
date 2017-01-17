@@ -67,22 +67,26 @@ def save_convolution_results(filename, wavelength, flux, convolved_flux):
 
 def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0,
                      plot=True, numProcs=None, results_dir=results_dir,
-                     data_rep=data_rep, normalize=False, output_name=None):
+                     data_rep=data_rep, normalize=True, output_name=None):
     """ Load Spectrum, apply convolution and then save results.
 
     """
     print("Reading the data...")
-    wav, flux = read_spectrum(spectrum)
+    wav, flux = read_spectrum(spectrum)    # In microns and  photon flux.
     print("Done.")
 
     wav_band, flux_band, convolved_flux = convolution(wav, flux, vsini, R, band,
                                                       epsilon=epsilon, FWHM_lim=FWHM_lim,
-                                                      numProcs=numProcs, normalize=False)
+                                                      numProcs=numProcs, normalize=normalize)
 
     if output_name is None:
         name_model = name_assignment(spectrum)
-        filename = ("{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k.txt"
-                    "").format(results_dir, name_model, band, vsini, R/1000)
+        if normalize:
+            filename = ("{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k.txt"
+                        "").format(results_dir, name_model, band, vsini, R/1000)
+        else:
+            filename = ("{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k_unnormalized.txt"
+                        "").format(results_dir, name_model, band, vsini, R/1000)
     else:
         filename = results_dir + output_name
 
@@ -104,7 +108,7 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0,
 
 
 def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, FWHM_lim=5.0,
-                numProcs=None, normalize=False, output_name=None):
+                numProcs=None, normalize=True, output_name=None):
     """ Perform convolution of spectrum.
 
     Rotational convolution followed by a guassian a a specified resolution R.
@@ -134,6 +138,7 @@ def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, FWHM_lim=5.0,
     flux_conv: ndarray
         Convolved flux for the selected band.
     """
+
     wav_band, flux_band = band_selector(wav, flux, band)
 
     # We need to calculate the FWHM at this value in order to set the starting point for the convolution
@@ -169,7 +174,7 @@ def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, FWHM_lim=5.0,
 
 
 def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
-                           vsini, epsilon, numProcs=None, normalize=False):
+                           vsini, epsilon, numProcs=None, normalize=True):
     """ Perform Rotational convolution part of convolution.
     """
 
@@ -196,10 +201,9 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
 
         if normalize:
             # Correct for the effect of non-equidistant sampling
-            unitary_rot_val = np.sum(rotation_profile * np.ones_like(flux_2convolve))  # Affects precision
+            unitary_rot_val = np.sum(rotation_profile)  # Affects precision
             return sum_val / unitary_rot_val
         else:
-
             return sum_val
 
     if numProcs != 0:
@@ -230,7 +234,7 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
 
 
 def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim,
-                           numProcs=1, normalize=False):
+                           numProcs=1, normalize=True):
     """ Perform Resolution convolution part of convolution.
     """
 
@@ -250,7 +254,7 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, FWHM_lim,
         sum_val = np.sum(IP * flux_2convolve)
         if normalize:
             # Correct for the effect of convolution with non-equidistant postions
-            unitary_val = np.sum(IP * np.ones_like(flux_2convolve))  # Affects precision
+            unitary_val = np.sum(IP)  # Affects precision
             return sum_val / unitary_val
         else:
             return sum_val
