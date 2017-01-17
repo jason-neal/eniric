@@ -19,7 +19,7 @@ import eniric.Qcalculator as Qcalculator
 
 from eniric.utilities import band_selector
 
-import eniric.plotting_functions import plt_functions
+import eniric.plotting_functions as plt_functions
 
 from matplotlib import rc
 # set stuff for latex usage
