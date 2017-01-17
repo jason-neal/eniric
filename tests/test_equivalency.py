@@ -16,6 +16,10 @@ import eniric.original_code.nIRanalysis as oldnIR
 import eniric.utilities as eniric_utils
 # To test the equivalence of code to check if it does the same thing:
 
+# For python2.X compatibility
+file_error_to_catch = getattr(__builtins__,'FileNotFoundError', IOError)
+
+
 
 def test_convolution_indexing():
     """ To test equivalence of code to repalce for speed"""
@@ -68,7 +72,7 @@ def test_rotational_convolution_indexing():
     assert np.all(old_wav_2convolve == new_wav_2convolve)
 
 
-@pytest.mark.xfail(raises=FileNotFoundError)
+@pytest.mark.xfail(raises=file_error_to_catch)
 def test_result_files_the_same():
     """ Test the result files are equal """
 
@@ -84,7 +88,7 @@ def test_result_files_the_same():
     assert np.allclose(new_flux, np.array(old_spectrum, dtype="float64"))
 
 
-@pytest.mark.xfail(raises=FileNotFoundError)    # Data file may not exist
+@pytest.mark.xfail(raises=file_error_to_catch)    # Data file may not exist
 def test_resampled_files_the_same():
     """ Test the resampled files are the same"""
     band = "GAP"
@@ -96,7 +100,7 @@ def test_resampled_files_the_same():
     assert np.allclose(old_flux, new_flux)
 
 
-@pytest.mark.xfail(raises=FileNotFoundError)   # Data file may not exist
+@pytest.mark.xfail(raises=file_error_to_catch)   # Data file may not exist
 def test_resampled_RVprec_equal():
     """ Test quality of new and old spectra"""
     band = "GAP"
@@ -115,7 +119,7 @@ def test_resampled_RVprec_equal():
     assert new_RVprec.unit == "m / s"  # Check unit of precision
 
 
-@pytest.mark.xfail(raises=FileNotFoundError)   # Data file may not exist
+@pytest.mark.xfail(raises=file_error_to_catch)   # Data file may not exist
 def test_list_creator():
     """ Test new masking in list creator is equivalent"""
     # test a couple of single bands only for speed

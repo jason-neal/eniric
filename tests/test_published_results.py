@@ -13,10 +13,12 @@ from bin.prec_1 import calc_prec1
 # To test if the new code produces the same precision values on the published results.
 
 # Test with and without fudge factor
+# For python2.X compatibility
+file_error_to_catch = getattr(__builtins__,'FileNotFoundError', IOError)
 
 path = "data/Published_Results/resampled/"
 
-@pytest.mark.xfail(raises=FileNotFoundError)   # Data file may not exist
+@pytest.mark.xfail(raises=file_error_to_catch)   # Data file may not exist
 def test_RVprec_using_pd_load():
     """Test with data loaded with pandas """
     for vsini in [1, 5, 10]:
@@ -34,7 +36,7 @@ def test_RVprec_using_pd_load():
         assert new_rv == org_rv
         assert exo_rv == new_rv
 
-@pytest.mark.xfail(raises=FileNotFoundError)   # Data file may not exist
+@pytest.mark.xfail(raises=file_error_to_catch)   # Data file may not exist
 def test_RVprec_using_exo_load():
     """Test  with data loaded with exorunner IOmodule  """
     for vsini in [1, 5, 10]:
@@ -52,7 +54,7 @@ def test_RVprec_using_exo_load():
         assert exo_rv == new_rv
 
 
-@pytest.mark.xfail(raises=FileNotFoundError)   # Data file may not exist
+@pytest.mark.xfail(raises=file_error_to_catch)   # Data file may not exist
 def test_presicion_1():
     """ New precision 1 test that works."""
     Published_Results = {1: 3.8, 5: 9.1, 10: 20.7}
