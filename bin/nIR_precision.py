@@ -19,7 +19,7 @@ import eniric.Qcalculator as Qcalculator
 
 from eniric.utilities import band_selector
 
-from eniric.plotting_functions import plot_atmopshere_model, plot_stellar_spectum
+import eniric.plotting_functions import plt_functions
 
 from matplotlib import rc
 # set stuff for latex usage
@@ -243,7 +243,7 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
 
     if plot_atom:
         # moved ploting code to separate code, eniric.plotting_functions.py
-        plot_atmopshere_model(wav_atm, flux_atm, mask_atm)
+        plt_functions.plot_atmopshere_model(wav_atm, flux_atm, mask_atm)
 
     # theoretical ratios calculation
     wav_M0, flux_M0, wav_M3, flux_M3, wav_M6, flux_M6, wav_M9, flux_M9 = read_nIRspectra()
@@ -351,7 +351,7 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
 
                         # Prepare/Do for the ploting.
                         if(plot_ste or plot_ste == id_string):
-                            plot_stellar_spectum(wav_stellar, flux_stellar, wav_atm_selected, mask_atm_selected)
+                            plt_functions.plot_stellar_spectum(wav_stellar, flux_stellar, wav_atm_selected, mask_atm_selected)
 
                         if(plot_flux and id_string in ["M0-Z-1.0-100k", "M0-Y-1.0-100k", "M0-J-1.0-100k", "M0-H-1.0-100k", "M0-K-1.0-100k"]):
                             wav_plot_M0.append(wav_stellar)
