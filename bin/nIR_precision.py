@@ -135,7 +135,7 @@ def prepare_atmopshere():
     return wav_atm, flux_atm, std_flux_atm, mask_atm
 
 
-def Barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
+def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
     """ Calculating impact of Barycentric movement on mask...
 
     Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
@@ -222,7 +222,7 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
     print("Done.")
 
     print("Calculating impact of Barycentric movement on mask...")
-    mask_atm = Barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)  # Extend masked regions
+    mask_atm = barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)  # Extend masked regions
     print(("There were {:d} unmasked pixels out of {:d}, or {:.1%}."
            "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) /
                       len(mask_atm)))
