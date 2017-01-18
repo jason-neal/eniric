@@ -257,6 +257,10 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
     flux_plot_M6 = []
     wav_plot_M9 = []
     flux_plot_M9 = []
+
+    # TODO: iterate over band last so that the J band normalization value can be
+    # obtained first and applied to each band.
+
     for star in spectral_types:
         for band in bands:
             for vel in vsini:
