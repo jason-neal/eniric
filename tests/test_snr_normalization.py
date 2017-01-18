@@ -41,8 +41,7 @@ def test_band_snr_norm():
     test_data = ("data/PHOENIX-ACES_spectra/Z-0.0/lte02800-4.50"
                 "-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
     wav, flux = utils.read_spectrum(test_data)
-    assert snr_constant_band(wav, flux, band="J", SNR=100) == snr_constant_wav(wav, flux, wav_snr=1.25, SNR=100)
-
+    assert snr_constant_band(wav, flux, band="J", SNR=100) == snr_constant_wav(wav, flux, wav_ref=1.25, SNR=100)
 
 
 def test_sampling_index():
