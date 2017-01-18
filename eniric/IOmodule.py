@@ -340,7 +340,7 @@ def pdwrite_cols(filename, *data, **kwargs):
     index = kwargs.pop('index', False)
     # TODO: See about passing any extra keywords into pandas call
     if kwargs:   # check for unwanted kewords
-        raise TypeError('Unexpected **kwargs: {:r}'.format(kwargs))
+        raise TypeError('Unexpected **kwargs: {!r}'.format(kwargs))
 
     if header:
         if len(header) != len(data):
