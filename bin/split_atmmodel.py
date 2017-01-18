@@ -22,15 +22,6 @@ def _parser():
     :returns: the args
     """
 
-    def check_positive(value):
-        """Function for checking input is positive.
-        http://stackoverflow.com/questions/14117415/in-python-using-argparse-allow-only-positive-integers.
-        """
-        ivalue = float(value)
-        if ivalue <= 0:
-             raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
-        return ivalue
-
     parser = argparse.ArgumentParser(description='Band separate out atmopsheric model.')
 
     parser.add_argument('-m', '--model', help='Model name', type=str, default="Average_TAPAS_2014.txt")
@@ -46,6 +37,32 @@ def _parser():
 
     args = parser.parse_args()
     return args
+
+
+def check_positive(value):
+    """Function to check if input is positive.
+
+    http://stackoverflow.com/questions/14117415/in-python-using-argparse-allow-only-positive-integers.
+
+    Parameters
+    ----------
+    value: "str"
+        A input string from argparse to check if it is a positive number.
+
+    Returns
+    -------
+    ivalue: float
+        The value if it is positive as a float.
+
+    Raises
+    ------
+    ArgumentTypeError:
+        If value is not a positive number.
+    """
+    ivalue = float(value)
+    if ivalue <= 0:
+        raise argparse.ArgumentTypeError("{:s} is an invalid positive int value".format(value))
+    return ivalue
 
 
 def main(model="Average_TAPAS_2014.txt", bands=None, new_name=None, data_dir="../data/atmmodel/", rv_extend=100):
