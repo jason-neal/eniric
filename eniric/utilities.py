@@ -273,8 +273,8 @@ def list_creator(spectrum, band):
 
     line_centers = wav_band[2:-2][left_mask * right_mask]  # find peaks using masking
     print("Line centers", line_centers * 1.0e4)
-    print("In a spectrum with {} points".format(len(wav_band)),
-          ", {} lines were found.".format(len(line_centers)))
+    print("In a spectrum with {0} points".format(len(wav_band)),
+          ", {0} lines were found.".format(len(line_centers)))
     return line_centers
 
 
