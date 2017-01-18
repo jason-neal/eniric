@@ -61,3 +61,39 @@ def determine_constant(wav, flux, SNR=100, band="J"):
     print("\tSanity Check: The S/N for the {:s} normalized result was of {:4.2f}.".format(id_string, SN_estimate))
 
     return norm_constant
+def sampling_index(index, sampling=3, array_length=None):
+    """ Get a small number of index values around the given index value.
+
+    Parameters
+    ----------
+    index: int
+        The index value which to select values around.
+    sampling: int
+        Number of index values to return (sampling per resolution element)
+    array_length: int or None, default = None
+        Length of array the indexes will be used in. To not exceed array length.
+
+    Returns
+    -------
+    indexes: ndarray of int64
+        The index values.
+        """
+    if sampling % 2 == 0:    # even sampling
+        # index values must be integer
+        indexes = np.arange(index - sampling/2, index + sampling/2, dtype=int)
+        assert len(indexes) % 2 == 0  # confirm even
+        assert len(indexes) == sampling
+    else:
+        indexes = index + np.arange(-np.floor(sampling / 2), sampling - np.floor(sampling / 2), dtype=int)
+        assert len(indexes) % 2 != 0  # confirm odd
+        assert len(indexes) == sampling
+
+    if array_length is not None:
+        if np.any(indexes >= array_length):
+            # This may need fixed up in the future.
+            raise ValueError("Indexes has values greater than the length of array.")
+
+    if np.any(indexes < 0):
+        raise ValueError("Indexes has values less than 0.")
+
+    return indexes
