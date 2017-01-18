@@ -176,7 +176,7 @@ def Barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
 
     mask_atm = np.array(mask_atm_30kms, dtype=bool)
     pixels_end = np.sum(mask_atm)
-    print(("Barycentric impact masks out {:04.1}\% more of the atmospheric"
+    print(("Barycentric impact masks out {0:04.1}\% more of the atmospheric"
           " spectrum").format((pixels_end-pixels_start)/pixels_total))
     return mask_atm
 
@@ -216,14 +216,14 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
 
     print("Reading atmospheric model...")
     wav_atm, flux_atm, std_flux_atm, mask_atm = prepare_atmopshere()
-    print(("There were {:d} unmasked pixels out of {:d}., or {:.1%}."
+    print(("There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}."
           "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)))
-    print("The model ranges from {:4.2f} to {:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
+    print("The model ranges from {0:4.2f} to {1:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
     print("Done.")
 
     print("Calculating impact of Barycentric movement on mask...")
     mask_atm = Barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)  # Extend masked regions
-    print(("There were {:d} unmasked pixels out of {:d}, or {:.1%}."
+    print(("There were {0:d} unmasked pixels out of {1:d}, or {2:.1%}."
            "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) /
                       len(mask_atm)))
 
@@ -237,8 +237,8 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
 
     bands_masked = np.concatenate((mask_Z, mask_Y, mask_J, mask_H, mask_K))
 
-    print(("Inside the bands, there were {:.0f} unmasked pixels out of {:d}"
-           ", or {:.1%}.").format(np.sum(bands_masked), len(bands_masked),
+    print(("Inside the bands, there were {0:.0f} unmasked pixels out of {1:d}"
+           ", or {2:.1%}.").format(np.sum(bands_masked), len(bands_masked),
             np.sum(bands_masked) / len(bands_masked)))
 
     if plot_atom:
@@ -295,11 +295,11 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
                         if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k", "M6-J-1.0-100k", "M9-J-1.0-100k"]):
                             index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
                             SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-                            print("\tSanity Check: The S/N for the {:s} reference model was of {:4.2f}.".format(id_string, SN_estimate))
+                            print("\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(id_string, SN_estimate))
                         elif("J" in id_string):
                             index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
                             SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-                            print("\tSanity Check: The S/N for the {:s} non-reference model was of {:4.2f}.".format(id_string, SN_estimate))
+                            print("\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string, SN_estimate))
 
                         # Precision given by the first method:
                         print("Performing analysis for: ", id_string)
@@ -326,8 +326,8 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
                         """
                         # test section
                         print("check that lengths are the same", len(wav_stellar), len(mask_atm_selected))
-                        print("size of spectra %d vs number of chunks %d" % (len(wav_stellar), len(wav_stellar_chunks)))
-                        print("number of true elements in all chunks: %d" % (len(mask_atm_selected[mask_atm_selected])))
+                        print("size of spectra {0:d} vs number of chunks {1:d}".format(len(wav_stellar), len(wav_stellar_chunks)))
+                        print("number of true elements in all chunks: {0:d}".format(len(mask_atm_selected[mask_atm_selected])))
                         """
 
                         flux_stellar_chunks_unformated = np.array_split(flux_stellar, np.where(np.diff(mask_atm_selected))[0]+1)[::2]
@@ -1524,7 +1524,7 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
                         for smpl in sampling:
                             id_string = star+"-"+band+"-"+vel+"-"+resolution    # sample was left aside because only one value existed
                             precision = results[id_string]
-                            print("%s: & %.1f\t & %.1f\t & %.1f \\\\" % (id_string, precision[0], precision[1], precision[2]))
+                            print("{0:s}: & {1:.1f}\t & {2:.1f}\t & {3:.1f} \\\\".format(id_string, precision[0], precision[1], precision[2]))
     else:
         return results
 
@@ -1538,9 +1538,9 @@ def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plo
 
     print("Reading atmospheric model...")
     wav_atm, flux_atm, std_flux_atm, mask_atm = prepare_atmopshere()
-    print(("There were {:d} unmasked pixels out of {:d}., or {:.1%}."
+    print(("There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}."
           "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)))
-    print("The model ranges from {:4.2f} to {:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
+    print("The model ranges from {0:4.2f} to {1:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
     print("Done.")
 
     print("Calculating impact of Barycentric movement on mask...")
@@ -1556,7 +1556,7 @@ def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plo
             mask_atm_30kms.append(all(mask_atm_30kmslice))
 
     mask_atm = np.array(mask_atm_30kms, dtype=bool)
-    print(("There were {:d} unmasked pixels out of {:d}, or {:.1%}."
+    print(("There were {0:d} unmasked pixels out of {1:d}, or {2:.1%}."
            "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) /
                       len(mask_atm)))
 
@@ -1678,11 +1678,11 @@ def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plo
                         if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k", "M6-J-1.0-100k", "M9-J-1.0-100k"]):
                             index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
                             SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-                            print("\tSanity Check: The S/N for the %s reference model was of %4.2f." % (id_string, SN_estimate))
+                            print("\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(id_string, SN_estimate))
                         elif("J" in id_string):
                             index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
                             SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-                            print("\tSanity Check: The S/N for the %s non-reference model was of %4.2f." % (id_string, SN_estimate))
+                            print("\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string, SN_estimate))
                         if(plot_ste or plot_ste == id_string):
                             # Plot the stellar spectr as considered
 
@@ -1736,8 +1736,8 @@ def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plo
                         """
                         # test section
                         print("check that lengths are the same", len(wav_stellar), len(mask_atm_selected))
-                        print("size of spectra %d vs number of chunks %d" % (len(wav_stellar), len(wav_stellar_chunks)))
-                        print("number of true elements in all chunks: %d" % (len(mask_atm_selected[mask_atm_selected])))
+                        print("size of spectra {0:d} vs number of chunks {1:d}".format(len(wav_stellar), len(wav_stellar_chunks)))
+                        print("number of true elements in all chunks: {0:d}".format(len(mask_atm_selected[mask_atm_selected])))
                         """
 
                         flux_stellar_chunks_unformated = np.array_split(flux_stellar, np.where(np.diff(mask_atm_selected))[0]+1)[::2]
@@ -1990,7 +1990,7 @@ def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plo
                         for smpl in sampling:
                             id_string = star+"-"+band+"-"+vel+"-"+resolution    # sample was left aside because only one value existed
                             precision = results[id_string]
-                            print("%s: & %.1f\t & %.1f\t & %.1f \\\\" % (id_string, precision[0], precision[1], precision[2]))
+                            print("{0:s}: & {1:.1f}\t & {2:.1f}\t & {3:.1f} \\\\".format(id_string, precision[0], precision[1], precision[2]))
     else:
         return results
 

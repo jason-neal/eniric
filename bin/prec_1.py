@@ -92,11 +92,11 @@ def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True, resampled_d
     if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k", "M6-J-1.0-100k", "M9-J-1.0-100k"]):
         index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
         SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-        print("\tSanity Check: The S/N for the {:s} reference model was of {:4.2f}.".format(id_string, SN_estimate))
+        print("\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(id_string, SN_estimate))
     elif("J" in id_string):
         index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
         SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-        print("\tSanity Check: The S/N for the {:s} non-reference model was of {:4.2f}.".format(id_string, SN_estimate))
+        print("\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string, SN_estimate))
 
 
     # print("Performing analysis for: ", id_string)
@@ -135,7 +135,7 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
     if resolution is None:
         resolution = ["60k", "80k", "100k"]
     else:
-        resolution = ["{:.0f}k".format(R/1000) for R in resolution]
+        resolution = ["{0:.0f}k".format(R/1000) for R in resolution]
 
     if sample_rate is None:
         sampling = ["3"]
@@ -161,7 +161,7 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
 
     print("id_string\t\tprec_1")
     for key in precision:
-        print("{:s} \t\t{:02.1f}".format(key, precision[key]))
+        print("{0:s} \t\t{1:02.1f}".format(key, precision[key]))
 
     return 0
 
