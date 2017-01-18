@@ -42,6 +42,11 @@ def normalize_flux(flux_stellar, id_string):
     return flux_stellar / ((norm_constant / 100.0)**2.0)
 
 
+def get_reference_spectrum(id_string, ref_band="J"):
+    """ From the id_string find the correct Spectrum to
+    calculate norm_constant from"""
+    # TODO: add option for Alpha into ID-String
+    pass
 
 
 def snr_constant_band(wav, flux, SNR=100, band="J"):
