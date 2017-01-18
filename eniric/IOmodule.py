@@ -307,3 +307,46 @@ def write_e_3col(filename, data1, data2, data3):
         f.write("\t{0:e}\t\t{1:e}\t\t{2:e}\n".format(data1[i], data2[i], data3[i]))
 
     f.close()
+
+
+def pdwrite_cols(filename, *data, sep="\t", header=False):
+    """ Write out a csv file with pandas, variable columns possible.
+
+    Uses pandas.DataFrame.to_csv()
+
+    Parameters
+    ----------
+    filename: str
+        Name of file to write.
+    data1: ndarray or list, array-like
+        The data for the first column
+    data2: ndarray or list, array-like
+        The data for the second column
+    data3: ndarray or list, array-like
+        The data for the third column
+    sep: str
+        Character separation between values.
+    header: list of strings or bool, default False
+        Header strings to apply to columns.
+
+    Returns
+    -------
+    flag: bool
+        Returns 0 if successful.
+    """
+    if header:
+        if len(header) != len(data):
+            raise ValueError("Size of data and header does not match.")
+
+    data_dict = {}
+    for i, data_i in enumerate(data):
+        data_dict[i] = data[i]    # keys are assigned the index value from enumerate
+
+    df = pd.DataFrame(data_dict)
+
+    write_sequence = range(len(data))  # key values  to write data in order
+
+    # Write dataframe to file
+    df.to_csv(filename, columns=write_sequence, sep=sep, header=header, index=False)  # header=False
+
+    return 0
