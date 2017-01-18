@@ -38,6 +38,7 @@ def _parser():
 
 
 def check_positive(value):
+    # type: (str) -> float
     """Function to check if input is positive.
 
     http://stackoverflow.com/questions/14117415/in-python-using-argparse-allow-only-positive-integers.
@@ -57,9 +58,12 @@ def check_positive(value):
     ArgumentTypeError:
         If value is not a positive number.
     """
+    if not isinstance(value, str):
+        raise ValueError("Input value is not a string.")
+
     ivalue = float(value)
     if ivalue <= 0:
-        raise argparse.ArgumentTypeError("{:s} is an invalid positive int value".format(value))
+        raise argparse.ArgumentTypeError("{0:s} is an invalid positive value".format(value))
     return ivalue
 
 
