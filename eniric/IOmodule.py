@@ -137,7 +137,7 @@ def read_2col(filename):
     col1 = []
     col2 = []
 
-    for i in range(len(list_data)):
+    for i, __ in enumerate(list_data):
         # checking if the line is valid
         if(list_data[i][0][0] != '#'):
             col1.append(float(list_data[i][0]))
@@ -155,7 +155,7 @@ def read_3col(filename):
     col2 = []
     col3 = []
 
-    for i in range(len(list_data)):
+    for i, __ in enumerate(list_data):
         # checking if the line is valid
         if(list_data[i][0][0] != '#'):
             col1.append(float(list_data[i][0]))
@@ -175,7 +175,7 @@ def read_4col(filename):
     col3 = []
     col4 = []
 
-    for i in range(len(list_data)):
+    for i, __ in enumerate(list_data):
         # checking if the line is valid
         if(list_data[i][0][0] != '#'):
             col1.append(float(list_data[i][0]))
@@ -268,7 +268,7 @@ def write_2col(filename, data1, data2):
 
     f = open(filename, "w")
 
-    for i in range(len(data1)):
+    for i, __ in enumerate(data1):
         f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\n")
 
     f.close()
@@ -279,7 +279,7 @@ def write_3col(filename, data1, data2, data3):
 
     f = open(filename, "w")
 
-    for i in range(len(data1)):
+    for i, __ in enumerate(data1):
         f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
 
     f.close()
@@ -290,7 +290,7 @@ def write_e_2col(filename, data1, data2):
 
     f = open(filename, "w")
 
-    for i in range(len(data1)):
+    for i, __ in enumerate(data1):
         # f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
         f.write("\t{0:e}\t\t{1:e}\n".format(data1[i], data2[i]))
 
@@ -302,7 +302,7 @@ def write_e_3col(filename, data1, data2, data3):
 
     f = open(filename, "w")
 
-    for i in range(len(data1)):
+    for i, __ in enumerate(data1):
         # f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
         f.write("\t{0:e}\t\t{1:e}\t\t{2:e}\n".format(data1[i], data2[i], data3[i]))
 
