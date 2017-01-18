@@ -34,14 +34,13 @@ def _parser():
     parser = argparse.ArgumentParser(description='Band separate out atmopsheric model.')
 
     parser.add_argument('-m', '--model', help='Model name', type=str, default="Average_TAPAS_2014.txt")
-    parser.add_argument("-b", "--bands", type=str, default="ALL",  nargs="+",
+    parser.add_argument("-b", "--bands", type=str, default=None,  nargs="+",
                         choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
-                        help="Wavelength band to select")
+                        help="Wavelength band to select, Default='All'")
     parser.add_argument('-d', '--data_dir', help='Model data directory', type=str,
                         default="../data/atmmodel/")
     parser.add_argument('--new_name', default=None, type=str,
                         help='Base name for new files. Default is the original model name.')
-
     parser.add_argument('--rv_extend', default=100, type=check_positive,
                         help='Doopler RV (km/s) to extend the wavelength limits of the band. Default=100 km/s')
 
@@ -49,7 +48,9 @@ def _parser():
     return args
 
 
-def main(model="Average_TAPAS_2014.txt", bands=["ALL"], new_name=None, data_dir="../data/atmmodel/", rv_extend=100):
+def main(model="Average_TAPAS_2014.txt", bands=None, new_name=None, data_dir="../data/atmmodel/", rv_extend=100):
+    if bands is None:
+        bands = ["All"]
     if new_name is None:
         new_name = model.split(".")[0]
     model_name = os.path.join(data_dir, model)
