@@ -99,7 +99,7 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
                         print("Name to be result file", result_name)
 
                         convolve_spectra(data_dir + spectrum_name, b, vel, R, epsilon=0.6, plot=False,
-                                         FWHM_lim=5.0, numProcs=None, data_rep=data_dir,
+                                         FWHM_lim=5.0, num_procs=None, data_rep=data_dir,
                                          results_dir=results_dir, normalize=normalize, output_name=result_name)
 
                         # Resample only the file just made

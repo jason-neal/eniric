@@ -154,7 +154,7 @@ def wav_selector(wav, flux, wav_min, wav_max):
     return wav_sel, flux_sel
 
 
-def unitary_Gauss(x, center, FWHM):
+def unitary_Gauss(x, center, fwhm):
     """ Gaussian function of area = 1.
 
     Parameters
@@ -172,22 +172,22 @@ def unitary_Gauss(x, center, FWHM):
         Result of gaussian function sampled at x values.
     """
 
-    sigma = np.abs(FWHM) / (2 * np.sqrt(2 * np.log(2)))
-    Amp = 1.0 / (sigma * np.sqrt(2 * np.pi))
+    sigma = np.abs(fwhm) / (2 * np.sqrt(2 * np.log(2)))
+    amp = 1.0 / (sigma * np.sqrt(2 * np.pi))
     tau = -((x - center)**2) / (2 * (sigma**2))
-    result = Amp * np.exp(tau)
+    result = amp * np.exp(tau)
 
     return result
 
 
-def rotation_kernel(delta_lambdas, delta_lambda_L, vsini, epsilon):
+def rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon):
     """ Calculate the rotation kernel for a given wavelength
 
     Parameters
     ----------
     delta_lambdas: array
-        Wavelength values selected within delta_lambda_L around central value. (check)
-    delta_lambda_L: float
+        Wavelength values selected within delta_lambda_l around central value. (check)
+    delta_lambda_l: float
         FWHM of rotational broading. (check)
     vsini: float
         Projected rotational velocity [km/s]
@@ -203,7 +203,7 @@ def rotation_kernel(delta_lambdas, delta_lambda_L, vsini, epsilon):
 
     """
     denominator = (np.pi * vsini * (1.0 - epsilon / 3.0))
-    lambda_ratio_sqr = (delta_lambdas / delta_lambda_L)**2.0
+    lambda_ratio_sqr = (delta_lambdas / delta_lambda_l)**2.0
 
     c1 = 2.0 * (1.0 - epsilon) / denominator
     c2 = 0.5 * np.pi * epsilon / denominator

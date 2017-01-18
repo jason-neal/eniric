@@ -22,10 +22,10 @@ def test_rotational_kernal(delta_lambdas, vsini, epsilon):
     """ Test that the new and original code produces the same output."""
     delta_lambdas = np.sort(np.asarray(delta_lambdas), kind='quicksort')
     delta_lambdas = np.append(np.flipud(delta_lambdas), np.insert(delta_lambdas, 0, 0))
-    delta_lambda_L = np.max(delta_lambdas) * 2
+    delta_lambda_l = np.max(delta_lambdas) * 2
 
-    org_profile = nir_org.rotation_kernel(delta_lambdas, delta_lambda_L, vsini, epsilon)
-    new_profile = eniric_utils.rotation_kernel(delta_lambdas, delta_lambda_L, vsini, epsilon)
+    org_profile = nir_org.rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon)
+    new_profile = eniric_utils.rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon)
 
     assert np.allclose(org_profile, new_profile)
 
