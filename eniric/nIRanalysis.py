@@ -41,7 +41,7 @@ def run_convolutions(spectrum_string, band):
 
     spectrum = spectrum_string  # removed exec usage
     print(spectrum)
-    print("Running the convolutions for spectra of %s in band %s\n." % (spectrum, band))
+    print("Running the convolutions for spectra of {0:s} in band {1:s}\n.".format(spectrum, band))
     for vel in vsini:
         for res in R:
             convolve_spectra(spectrum, band, vel, res, plot=False)
@@ -97,7 +97,7 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, FWHM_lim=5.0,
         plt.xlabel(r"wavelength [$\mu$m])")
         plt.ylabel(r"flux [counts] ")
         plt.plot(wav_band, flux_band/np.max(flux_band), color='k', linestyle="-", label="Original spectra")
-        plt.plot(wav_band, convolved_flux/np.max(convolved_flux), color='b', linestyle="-", label="%s spectrum observed at vsini=%.2f and R=%d ." % (name_model, vsini, R))
+        plt.plot(wav_band, convolved_flux/np.max(convolved_flux), color='b', linestyle="-", label="{0:s} spectrum observed at vsini={1:.2f} and R={2:d} .".format(name_model, vsini, R))
         plt.legend(loc='best')
         plt.show()
 
@@ -146,7 +146,7 @@ def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, FWHM_lim=5.0,
     FWHM_max = wav_band[-1] / R
 
     # performing convolution with rotation kernel
-    print("Starting the Rotation convolution for vsini={:.2f}...".format(vsini))
+    print("Starting the Rotation convolution for vsini={0:.2f}...".format(vsini))
 
     delta_lambda_min = wav_band[0] * vsini / 3.0e5
     delta_lambda_max = wav_band[-1] * vsini / 3.0e5
