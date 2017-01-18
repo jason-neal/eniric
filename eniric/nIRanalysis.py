@@ -39,7 +39,7 @@ def run_convolutions(spectrum_string, band):
     vsini = [1.0, 5.0, 10.0]
     R = [60000, 80000, 100000]
 
-    exec('spectrum = ' + spectrum_string)        # note: warnings to be dismissed, due to exec usage
+    spectrum = spectrum_string  # removed exec usage
     print(spectrum)
     print("Running the convolutions for spectra of %s in band %s\n." % (spectrum, band))
     for vel in vsini:
