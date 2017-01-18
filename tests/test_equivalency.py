@@ -92,8 +92,8 @@ def test_result_files_the_same():
 def test_resampled_files_the_same():
     """ Test the resampled files are the same"""
     band = "GAP"
-    new_spectrum = "data/resampled/Spectrum_M0-PHOENIX-ACES_{}band_vsini1.0_R100k_unnormalized_res3.txt".format(band)
-    old_spectrum = "data/original_code/resampled/original_code/results/Spectrum_M0-PHOENIX-ACES_{}band_vsini1_R100k_res3.txt".format(band)
+    new_spectrum = "data/resampled/Spectrum_M0-PHOENIX-ACES_{0}band_vsini1.0_R100k_unnormalized_res3.txt".format(band)
+    old_spectrum = "data/original_code/resampled/original_code/results/Spectrum_M0-PHOENIX-ACES_{0}band_vsini1_R100k_res3.txt".format(band)
     new_wavelength, new_flux = pdread_2col(new_spectrum, noheader=True)
     old_wavelength, old_flux = old_read_2col(old_spectrum)
     assert np.allclose(old_wavelength, new_wavelength)
@@ -104,8 +104,8 @@ def test_resampled_files_the_same():
 def test_resampled_RVprec_equal():
     """ Test quality of new and old spectra"""
     band = "GAP"
-    new_spectrum = "data/resampled/Spectrum_M0-PHOENIX-ACES_{}band_vsini1.0_R100k_unnormalized_res3.txt".format(band)
-    old_spectrum = "data/original_code/resampled/original_code/results/Spectrum_M0-PHOENIX-ACES_{}band_vsini1_R100k_res3.txt".format(band)
+    new_spectrum = "data/resampled/Spectrum_M0-PHOENIX-ACES_{0}band_vsini1.0_R100k_unnormalized_res3.txt".format(band)
+    old_spectrum = "data/original_code/resampled/original_code/results/Spectrum_M0-PHOENIX-ACES_{0}band_vsini1_R100k_res3.txt".format(band)
 
     new_wavelength, new_flux = pdread_2col(new_spectrum, noheader=True)
 
@@ -126,7 +126,7 @@ def test_list_creator():
 
     # for band in ["H", "J", "K"]:
     for band in ["K"]:
-        spectrum = "data/test_data/{}_band_test_sample_lte03900-PHOENIX-ACES.dat".format(band)
+        spectrum = "data/test_data/{0}_band_test_sample_lte03900-PHOENIX-ACES.dat".format(band)
         assert np.allclose(np.array(oldnIR.list_creator(spectrum, band)),
                            eniric_utils.list_creator(spectrum, band))
 
