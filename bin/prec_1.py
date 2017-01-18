@@ -67,11 +67,11 @@ def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True, resampled_d
     resolution in short form e.g 100k
     """
     if normalize:
-        file_to_read = ("Spectrum_{}-PHOENIX-ACES_{}band_vsini{:.1f}_R{}"
-                        "_res{}.txt").format(star, band, vel, resolution,  smpl)
+        file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2:.1f}_R{3}"
+                        "_res{4}.txt").format(star, band, vel, resolution,  smpl)
     else:
-        file_to_read = ("Spectrum_{}-PHOENIX-ACES_{}band_vsini"
-                        "{:.1f}_R{}_unnormalized_res{}.txt").format(star, band, vel,
+        file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini"
+                        "{2:.1f}_R{3}_unnormalized_res{4}.txt").format(star, band, vel,
                                                                 resolution,
                                                                 smpl)
     # print("Working on " + file_to_read)
@@ -82,9 +82,9 @@ def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True, resampled_d
     flux_stellar = flux_stellar[2:-2]
 
     if normalize:
-        id_string = "{}-{}-{}-{}".format(star, band, vel, resolution)   # sample was left aside because only one value existed
+        id_string = "{0}-{1}-{2}-{3}".format(star, band, vel, resolution)   # sample was left aside because only one value existed
     else:
-        id_string = "{}-{}-{}-{}-unnorm".format(star, band, vel, resolution)   # sample was left aside because only one value existed
+        id_string = "{0}-{1}-{2}-{3}-unnorm".format(star, band, vel, resolution)   # sample was left aside because only one value existed
 
     # Normaize to SNR 100 in middle of J band 1.25 micron!
     flux_stellar = normalize_flux(flux_stellar, id_string)
@@ -102,7 +102,7 @@ def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True, resampled_d
     # print("Performing analysis for: ", id_string)
     prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar)
 
-    # print("{}: \t{}".format(id_string, prec_1))
+    # print("{0}: \t{1}".format(id_string, prec_1))
     return id_string, prec_1
 
 

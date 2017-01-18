@@ -307,7 +307,7 @@ def name_assignment(spectrum):
     elif(M9_ACES in spectrum) and (base in spectrum):
         name = "M9-PHOENIX-ACES"
     else:
-        print("Name {} not found!".format(spectrum))
+        print("Name {0} not found!".format(spectrum))
         exit(1)
     return name
 
