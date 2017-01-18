@@ -84,9 +84,9 @@ def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_
 
         spectrum_name = phoenix_name
     elif re.match(r"^[OBAFGKML][0-9]$", startype):   # Valid spectral types
-        raise NotImplementedError("The spectral type '{:s}' is not implemented yet.".format(startype))
+        raise NotImplementedError("The spectral type '{0:s}' is not implemented yet.".format(startype))
     else:
-        raise ValueError("'{:s}' is not a valid spectral type.".format(startype))
+        raise ValueError("'{0:s}' is not a valid spectral type.".format(startype))
 
     return spectrum_name
 
