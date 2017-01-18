@@ -17,7 +17,7 @@ band = "K"
 R = 100000
 vsini = 1
 epsilon = 0.6
-FWHM_lim = 5
+fwhm_lim = 5
 plot = False
 numProcs = 0
 
@@ -28,7 +28,7 @@ def time_diff_procs(numProcs):
     conv_times = dict()
     for proc in numProcs:
         start_time = datetime.datetime.now()
-        convolve_spectra(spectrum_path, band, vsini, R, epsilon, FWHM_lim, plot, numProcs=proc)
+        convolve_spectra(spectrum_path, band, vsini, R, epsilon, fwhm_lim, plot, numProcs=proc)
         end_time = datetime.datetime.now()
         conv_times[proc] = end_time - start_time
     return conv_times

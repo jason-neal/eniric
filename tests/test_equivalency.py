@@ -2,10 +2,10 @@
 import numpy as np
 import pytest
 from hypothesis import given
-from eniric.Qcalculator import RVprec_calc
+from eniric.Qcalculator import RVprec_calc as rvprec_calc
 from eniric.IOmodule import pdread_2col, pdread_3col, read_2col, read_3col
 
-from eniric.original_code.Qcalculator import RVprec_calc as old_RVprec_calc
+from eniric.original_code.Qcalculator import RVprec_calc as old_rvprec_calc
 from eniric.original_code.IOmodule import read_2col as old_read_2col
 from eniric.original_code.IOmodule import read_3col as old_read_3col
 
@@ -27,19 +27,19 @@ def test_convolution_indexing():
     flux_extended = np.random.random(size=wav_extended.size)
     wav_val = 145
     R = 8
-    FWHM = wav_val / R
-    FWHM_lim = 5
+    fwhm = wav_val / R
+    fwhm_lim = 5
     # Replace this code
     indexes = [i for i in range(len(wav_extended))
-               if ((wav_val - FWHM_lim*FWHM) < wav_extended[i] <
-               (wav_val + FWHM_lim*FWHM))]
+               if ((wav_val - fwhm_lim*fwhm) < wav_extended[i] <
+               (wav_val + fwhm_lim*fwhm))]
 
     old_flux_2convolve = flux_extended[indexes[0]:indexes[-1]+1]
     old_wav_2convolve = wav_extended[indexes[0]:indexes[-1]+1]
 
-    # Mask of wavelength range within 5 FWHM of wav
-    index_mask = ((wav_extended > (wav_val - FWHM_lim*FWHM)) &
-                  (wav_extended < (wav_val + FWHM_lim*FWHM)))
+    # Mask of wavelength range within 5 fwhm of wav
+    index_mask = ((wav_extended > (wav_val - fwhm_lim*fwhm)) &
+                  (wav_extended < (wav_val + fwhm_lim*fwhm)))
 
     new_flux_2convolve = flux_extended[index_mask]
     new_wav_2convolve = wav_extended[index_mask]
@@ -52,18 +52,18 @@ def test_rotational_convolution_indexing():
     wav_ext_rotation = np.arange(100, 200)
     flux_ext_rotation = np.random.random(size=wav_ext_rotation.size)
     wav = 145
-    delta_lambda_L = 35
+    delta_lambda_l = 35
 
     # Old Code
     indexes = [i for i in range(len(wav_ext_rotation))
-               if ((wav - delta_lambda_L) < wav_ext_rotation[i] <
-               (wav + delta_lambda_L))]
+               if ((wav - delta_lambda_l) < wav_ext_rotation[i] <
+               (wav + delta_lambda_l))]
     old_flux_2convolve = flux_ext_rotation[indexes[0]:indexes[-1]+1]
     old_wav_2convolve = wav_ext_rotation[indexes[0]:indexes[-1]+1]
 
     # New code
-    index_mask = ((wav_ext_rotation > (wav - delta_lambda_L)) &
-                  (wav_ext_rotation < (wav + delta_lambda_L)))
+    index_mask = ((wav_ext_rotation > (wav - delta_lambda_l)) &
+                  (wav_ext_rotation < (wav + delta_lambda_l)))
 
     new_flux_2convolve = flux_ext_rotation[index_mask]
     new_wav_2convolve = wav_ext_rotation[index_mask]
@@ -101,7 +101,7 @@ def test_resampled_files_the_same():
 
 
 @pytest.mark.xfail(raises=file_error_to_catch)   # Data file may not exist
-def test_resampled_RVprec_equal():
+def test_resampled_rvprec_equal():
     """ Test quality of new and old spectra"""
     band = "GAP"
     new_spectrum = "data/resampled/Spectrum_M0-PHOENIX-ACES_{0}band_vsini1.0_R100k_unnormalized_res3.txt".format(band)
@@ -113,10 +113,10 @@ def test_resampled_RVprec_equal():
 
     # Scale with correct value
 
-    new_RVprec = RVprec_calc(new_wavelength, new_flux)
-    old_RVprec = old_RVprec_calc(old_wavelength, old_flux)
-    assert np.allclose(new_RVprec.value, old_RVprec)
-    assert new_RVprec.unit == "m / s"  # Check unit of precision
+    new_rvprec = rvprec_calc(new_wavelength, new_flux)
+    old_rvprec = old_rvprec_calc(old_wavelength, old_flux)
+    assert np.allclose(new_rvprec.value, old_rvprec)
+    assert new_rvprec.unit == "m / s"  # Check unit of precision
 
 
 @pytest.mark.xfail(raises=file_error_to_catch)   # Data file may not exist
