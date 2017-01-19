@@ -1,13 +1,15 @@
 """test_eniric.py"""
 
+from __future__ import division, print_function
 import pytest
 import numpy as np
 from eniric.utilities import get_spectrum_name, wav_selector
 import eniric.utilities as utils
 
 # Test using hypothesis
-from hypothesis import given, example, settings
 import hypothesis.strategies as st
+from hypothesis import given, example, settings
+
 
 # For python2.X compatibility
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)

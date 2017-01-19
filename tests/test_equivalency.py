@@ -1,22 +1,18 @@
 
+""" To test the equivalence of old and newcode to check if it does the same thing"""
+
+from __future__ import division, print_function
 import os
 import numpy as np
 import pytest
 from hypothesis import given
+import hypothesis.strategies as st
 
-from eniric.Qcalculator import RVprec_calc as rvprec_calc
 import eniric.IOmodule as IO
-
-from eniric.IOmodule import pdread_2col, pdread_3col, read_2col, read_3col
-
-from eniric.IOmodule import pdwrite_2col, pdwrite_3col, write_e_2col, write_e_3col
-
-# import eniric.nIRanalysis as nIR
-import eniric.utilities as eniric_utils
-# To test the equivalence of code to check if it does the same thing:
+import eniric.utilities as utils
 
 # For python2.X compatibility
-file_error_to_catch = getattr(__builtins__,'FileNotFoundError', IOError)
+file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
 def test_pdread_2col():
@@ -24,13 +20,13 @@ def test_pdread_2col():
     spectrum_1 = "data/test_data/Sample_input_phoenix.dat"
     spectrum_2 = "data/test_data/Sample_resampled_spectrum_res3.txt"
 
-    wav_1_pd, flux_1_pd = pdread_2col(spectrum_1)
-    wav_1, flux_1 = read_2col(spectrum_1)
+    wav_1_pd, flux_1_pd = IO.pdread_2col(spectrum_1)
+    wav_1, flux_1 = IO.read_2col(spectrum_1)
     assert np.allclose(wav_1_pd, np.array(wav_1))
     assert np.allclose(flux_1_pd, np.array(flux_1))
 
-    wav_2_pd, flux_2_pd = pdread_2col(spectrum_2, noheader=True)
-    wav_2, flux_2 = read_2col(spectrum_2)
+    wav_2_pd, flux_2_pd = IO.pdread_2col(spectrum_2, noheader=True)
+    wav_2, flux_2 = IO.read_2col(spectrum_2)
     assert np.allclose(wav_2_pd, np.array(wav_2))
     assert np.allclose(flux_2_pd, np.array(flux_2))
 
@@ -42,8 +38,8 @@ def test_pdread_3col():
     """
     filename = "data/test_data/Sample_results_spectrum.txt"
 
-    wav_1_pd, theoretical_1_pd, flux_1_pd = pdread_3col(filename, noheader=True)
-    wav_1, theoretical_1, flux_1 = read_3col(filename)
+    wav_1_pd, theoretical_1_pd, flux_1_pd = IO.pdread_3col(filename, noheader=True)
+    wav_1, theoretical_1, flux_1 = IO.read_3col(filename)
     assert np.allclose(wav_1_pd, np.array(wav_1))
     assert np.allclose(theoretical_1_pd, np.array(theoretical_1))
     assert np.allclose(flux_1_pd, np.array(flux_1))
@@ -52,23 +48,23 @@ def test_pdread_3col():
 def test_pdwriter():
     """ Check pd_writer same write_col with with exponential flag."""
     filedir = "data/test_data/"
-    data = np.random.randn(3, 100) * 10000000
+    data = np.random.randn(3, 100) * 1e7
     pd2col_name = filedir + "pd2col_test.txt"
     pd3col_name = filedir + "pd3col_test.txt"
     twocol_name = filedir + "2col_test.txt"
     threecol_name = filedir + "3col_test.txt"
 
     # write files
-    pdwrite_2col(pd2col_name, data[0], data[1])
-    pdwrite_3col(pd3col_name, data[0], data[1],  data[2])
-    write_e_2col(twocol_name, data[0], data[1])
-    write_e_3col(threecol_name, data[0], data[1], data[2])
+    IO.pdwrite_2col(pd2col_name, data[0], data[1])
+    IO.pdwrite_3col(pd3col_name, data[0], data[1],  data[2])
+    IO.write_e_2col(twocol_name, data[0], data[1])
+    IO.write_e_3col(threecol_name, data[0], data[1], data[2])
 
     # re-read files
-    a = pdread_2col(pd2col_name)
-    b = pdread_2col(twocol_name)
-    c = pdread_3col(pd3col_name)
-    d = pdread_3col(threecol_name)
+    a = IO.pdread_2col(pd2col_name)
+    b = IO.pdread_2col(twocol_name)
+    c = IO.pdread_3col(pd3col_name)
+    d = IO.pdread_3col(threecol_name)
 
     # check results the same
     assert np.allclose(a[0], b[0])
@@ -78,10 +74,10 @@ def test_pdwriter():
     assert np.allclose(c[2], d[2])
 
     # clean-up
-    eniric_utils.silentremove(pd2col_name)
-    eniric_utils.silentremove(pd3col_name)
-    eniric_utils.silentremove(twocol_name)
-    eniric_utils.silentremove(threecol_name)
+    utils.silentremove(pd2col_name)
+    utils.silentremove(pd3col_name)
+    utils.silentremove(twocol_name)
+    utils.silentremove(threecol_name)
 
 
 def test_prepared_dat_files():
@@ -118,4 +114,4 @@ def test_pdwrire_cols():
         IO.pdwrite_cols(pd_multicol_name, data1, bad="keyword")
 
     # clean-up
-    eniric_utils.silentremove(pd_multicol_name)
+    utils.silentremove(pd_multicol_name)
