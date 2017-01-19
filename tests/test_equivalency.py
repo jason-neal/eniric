@@ -1,8 +1,12 @@
 
+import os
 import numpy as np
 import pytest
 from hypothesis import given
+
 from eniric.Qcalculator import RVprec_calc as rvprec_calc
+import eniric.IOmodule as IO
+
 from eniric.IOmodule import pdread_2col, pdread_3col, read_2col, read_3col
 
 from eniric.original_code.Qcalculator import RVprec_calc as old_rvprec_calc
@@ -200,3 +204,34 @@ def test_prepared_dat_files():
     """ Test that the flux inthe new prepared .dat files matches the original.
     This insures that all any conversions/scaling has been taken care of."""
     pass
+
+
+def test_pdwrire_cols():
+    """Test writer that can take variable column numbers"""
+    filedir = "data/test_data"
+    pd_multicol_name = os.path.join(filedir, "pd_multicol_test.txt")
+
+    data1 = range(5)
+    data2 = range(5, 10)
+    bad_data = range(6)   # Different length
+
+    # 0 means successful write
+    assert 0 == IO.pdwrite_cols(pd_multicol_name, data1, data2, data1)
+    assert 0 == IO.pdwrite_cols(pd_multicol_name, data1)
+    assert 0 == IO.pdwrite_cols(pd_multicol_name, data1, data2, data1, data2,
+                             header=["headers", "for", "column", "labels"])
+    assert 0 == IO.pdwrite_cols(pd_multicol_name, data1, data2, sep=",", index=True)
+
+    # test uneven dats lengths
+    with pytest.raises(ValueError):
+        IO.pdwrite_cols(pd_multicol_name, data1, data2, bad_data)
+
+    # test bad header
+    with pytest.raises(ValueError):
+        IO.pdwrite_cols(pd_multicol_name, data1, data2, bad_data, header=["too", "many", "values"])
+
+    with pytest.raises(TypeError):
+        IO.pdwrite_cols(pd_multicol_name, data1, bad="keyword")
+
+    # clean-up
+    eniric_utils.silentremove(pd_multicol_name)
