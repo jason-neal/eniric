@@ -1,7 +1,9 @@
 
 """ Tests for functions and bits of code from the scripts in bin."""
-import argparse
+
+from __future__ import division, print_function
 import pytest
+import argparse
 from bin.split_atmmodel import check_positive
 
 
