@@ -2,10 +2,6 @@
 from __future__ import division, print_function
 import pytest
 import numpy as np
-import eniric.original_code.exorunner.nIRanalysis as exonIR
-# import eniric.original_code.nIRanalysis as orgnIR
-import eniric.original_code.exorunner.Qcalculator as exoQ
-import eniric.original_code.Qcalculator as orgQ
 # import eniric.nIRanalysis as nIR
 from eniric.IOmodule import pdread_2col
 import eniric.Qcalculator as Q
@@ -17,41 +13,6 @@ from bin.prec_1 import calc_prec1
 file_error_to_catch = getattr(__builtins__,'FileNotFoundError', IOError)
 
 path = "data/Published_Results/resampled/"
-
-@pytest.mark.xfail(raises=file_error_to_catch)   # Data file may not exist
-def test_RVprec_using_pd_load():
-    """Test with data loaded with pandas """
-    for vsini in [1, 5, 10]:
-        name = "Spectrum_M0-PHOENIX-ACES_Yband_vsini{0}.0_R100k_res3.txt".format(int(vsini))
-
-        wav, flux = pdread_2col(path+name, noheader=True)
-        wav = np.array(wav)
-        flux = np.array(flux)
-
-        exo_rv = exoQ.RVprec_calc(wav, flux)
-        org_rv = orgQ.RVprec_calc(wav, flux)
-        new_rv = Q.RVprec_calc(wav, flux).value
-
-        assert exo_rv == org_rv
-        assert new_rv == org_rv
-        assert exo_rv == new_rv
-
-@pytest.mark.xfail(raises=file_error_to_catch)   # Data file may not exist
-def test_RVprec_using_exo_load():
-    """Test  with data loaded with exorunner IOmodule  """
-    for vsini in [1, 5, 10]:
-        name = "Spectrum_M0-PHOENIX-ACES_Yband_vsini{0}.0_R100k_res3.txt".format(vsini)
-
-        wav, flux = exonIR.read_2col(path+name)
-        wav = np.array(wav)
-        flux = np.array(flux)
-
-        exo_rv = exoQ.RVprec_calc(wav, flux)
-        org_rv = orgQ.RVprec_calc(wav, flux)
-        new_rv = Q.RVprec_calc(wav, flux).value
-        assert exo_rv == org_rv
-        assert new_rv == org_rv
-        assert exo_rv == new_rv
 
 
 @pytest.mark.xfail(raises=file_error_to_catch)   # Data file may not exist
