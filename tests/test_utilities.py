@@ -9,7 +9,7 @@ from hypothesis import given, example
 import hypothesis.strategies as st
 
 # For python2.X compatibility
-file_error_to_catch = getattr(__builtins__,'FileNotFoundError', IOError)
+file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
 @pytest.mark.xfail(raises=file_error_to_catch)

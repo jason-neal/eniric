@@ -93,13 +93,13 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
 
                         if normalize:
                             # when normalize ation is confirmed then can
-                            result_name = "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}k.txt".format(star, b, vel, int(R/1000))
+                            result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k.txt".format(star, b, vel, int(R/1000))
                         else:
-                            result_name = "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}k_unnormalized.txt".format(star, b, vel, int(R/1000))
+                            result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k_unnormalized.txt".format(star, b, vel, int(R/1000))
                         print("Name to be result file", result_name)
 
                         convolve_spectra(data_dir + spectrum_name, b, vel, R, epsilon=0.6, plot=False,
-                                         FWHM_lim=5.0, numProcs=None, data_rep=data_dir,
+                                         FWHM_lim=5.0, num_procs=None, data_rep=data_dir,
                                          results_dir=results_dir, normalize=normalize, output_name=result_name)
 
                         # Resample only the file just made
@@ -110,7 +110,7 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
                                       resampled_dir=resampled_dir, sampling=sample)
                         counter += 1
 
-    print("Time to convolve {:d} combinations = {}".format(counter,
+    print("Time to convolve {0:d} combinations = {1}".format(counter,
                                                            dt.now()-start_time))
     return 0
 
