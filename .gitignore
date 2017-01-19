@@ -6,7 +6,8 @@ data/original_code/*
 data/resampled/*
 data/results/*
 data/PHOENIX-ACES_spectra/Z*
-
+data/atmmodel/Average_TAPAS_2014_visible.txt
+data/atmmodel/Average_TAPAS_2014.txt
 
 # updated_files data
 eniric/updated_code/resampled_cont/*
