@@ -22,7 +22,7 @@ path = "data/Published_Results/resampled/"
 def test_RVprec_using_pd_load():
     """Test with data loaded with pandas """
     for vsini in [1, 5, 10]:
-        name = "Spectrum_M0-PHOENIX-ACES_Yband_vsini{}.0_R100k_res3.txt".format(int(vsini))
+        name = "Spectrum_M0-PHOENIX-ACES_Yband_vsini{0}.0_R100k_res3.txt".format(int(vsini))
 
         wav, flux = pdread_2col(path+name, noheader=True)
         wav = np.array(wav)
@@ -40,7 +40,7 @@ def test_RVprec_using_pd_load():
 def test_RVprec_using_exo_load():
     """Test  with data loaded with exorunner IOmodule  """
     for vsini in [1, 5, 10]:
-        name = "Spectrum_M0-PHOENIX-ACES_Yband_vsini{}.0_R100k_res3.txt".format(vsini)
+        name = "Spectrum_M0-PHOENIX-ACES_Yband_vsini{0}.0_R100k_res3.txt".format(vsini)
 
         wav, flux = exonIR.read_2col(path+name)
         wav = np.array(wav)
@@ -57,10 +57,10 @@ def test_RVprec_using_exo_load():
 @pytest.mark.xfail(raises=file_error_to_catch)   # Data file may not exist
 def test_presicion_1():
     """ New precision 1 test that works."""
-    Published_Results = {1: 3.8, 5: 9.1, 10: 20.7}
+    published_results = {1: 3.8, 5: 9.1, 10: 20.7}
     path = "data/resampled/"
     for vsini in [1, 5, 10]:
-        #name = "Spectrum_M0-PHOENIX-ACES_Yband_vsini{}.0_R100k_res3.txt".format(vsini)
+        #name = "Spectrum_M0-PHOENIX-ACES_Yband_vsini{0}.0_R100k_res3.txt".format(vsini)
         __, p1 = calc_prec1("M0", "Y", vsini, "100k", 3, resampled_dir=path)
 
-        assert np.round(p1,1).value == Published_Results[vsini]
+        assert np.round(p1, 1).value == published_results[vsini]
