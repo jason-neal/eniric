@@ -4,8 +4,9 @@ import pytest
 import numpy as np
 from eniric.utilities import get_spectrum_name, wav_selector
 import eniric.utilities as utils
+
 # Test using hypothesis
-from hypothesis import given, example
+from hypothesis import given, example, settings
 import hypothesis.strategies as st
 
 # For python2.X compatibility
@@ -74,3 +75,19 @@ def test_wav_selector(x, y, wav_min, wav_max):
     assert len(x1) == len(y1)
     assert isinstance(x1, np.ndarray)
     assert isinstance(y1, np.ndarray)
+
+
+@settings(max_examples=100)
+@given(st.lists(st.floats(min_value=1e-7, max_value=1e-5, allow_infinity=False,
+       allow_nan=False), unique=True, min_size=3, max_size=25),
+       st.floats(min_value=1e-2, max_value=200), st.floats(min_value=1e-4, max_value=1))
+def test_rotational_kernal(delta_lambdas, vsini, epsilon):
+    """ Test that the new and original code produces the same output."""
+    delta_lambdas = np.sort(np.asarray(delta_lambdas), kind='quicksort')
+    delta_lambdas = np.append(np.flipud(delta_lambdas), np.insert(delta_lambdas, 0, 0))
+    delta_lambda_l = np.max(delta_lambdas) * 2
+
+    new_profile = utils.rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon)
+
+    assert len(new_profile) == len(delta_lambdas)
+    # other properties to test?
