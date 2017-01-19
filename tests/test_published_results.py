@@ -1,16 +1,16 @@
 
+""" To test if the new code produces the same precision values on the published results."""
+
 from __future__ import division, print_function
 import pytest
 import numpy as np
-# import eniric.nIRanalysis as nIR
-from eniric.IOmodule import pdread_2col
-import eniric.Qcalculator as Q
-from bin.prec_1 import calc_prec1
-# To test if the new code produces the same precision values on the published results.
 
-# Test with and without fudge factor
+import eniric.Qcalculator as Q
+import eniric.IOmodule as IO
+from bin.prec_1 import calc_prec1
+
 # For python2.X compatibility
-file_error_to_catch = getattr(__builtins__,'FileNotFoundError', IOError)
+file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 path = "data/Published_Results/resampled/"
 
@@ -21,7 +21,7 @@ def test_presicion_1():
     published_results = {1: 3.8, 5: 9.1, 10: 20.7}
     path = "data/resampled/"
     for vsini in [1, 5, 10]:
-        #name = "Spectrum_M0-PHOENIX-ACES_Yband_vsini{0}.0_R100k_res3.txt".format(vsini)
+        # name = "Spectrum_M0-PHOENIX-ACES_Yband_vsini{0}.0_R100k_res3.txt".format(vsini)
         __, p1 = calc_prec1("M0", "Y", vsini, "100k", 3, resampled_dir=path)
 
         assert np.round(p1, 1).value == published_results[vsini]
