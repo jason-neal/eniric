@@ -9,130 +9,14 @@ import eniric.IOmodule as IO
 
 from eniric.IOmodule import pdread_2col, pdread_3col, read_2col, read_3col
 
-from eniric.original_code.Qcalculator import RVprec_calc as old_rvprec_calc
-from eniric.original_code.IOmodule import read_2col as old_read_2col
-from eniric.original_code.IOmodule import read_3col as old_read_3col
-
 from eniric.IOmodule import pdwrite_2col, pdwrite_3col, write_e_2col, write_e_3col
 
-import eniric.original_code.nIRanalysis as oldnIR
 # import eniric.nIRanalysis as nIR
 import eniric.utilities as eniric_utils
 # To test the equivalence of code to check if it does the same thing:
 
 # For python2.X compatibility
 file_error_to_catch = getattr(__builtins__,'FileNotFoundError', IOError)
-
-
-
-def test_convolution_indexing():
-    """ To test equivalence of code to repalce for speed"""
-    wav_extended = np.arange(100, 200)
-    flux_extended = np.random.random(size=wav_extended.size)
-    wav_val = 145
-    R = 8
-    fwhm = wav_val / R
-    fwhm_lim = 5
-    # Replace this code
-    indexes = [i for i in range(len(wav_extended))
-               if ((wav_val - fwhm_lim*fwhm) < wav_extended[i] <
-               (wav_val + fwhm_lim*fwhm))]
-
-    old_flux_2convolve = flux_extended[indexes[0]:indexes[-1]+1]
-    old_wav_2convolve = wav_extended[indexes[0]:indexes[-1]+1]
-
-    # Mask of wavelength range within 5 fwhm of wav
-    index_mask = ((wav_extended > (wav_val - fwhm_lim*fwhm)) &
-                  (wav_extended < (wav_val + fwhm_lim*fwhm)))
-
-    new_flux_2convolve = flux_extended[index_mask]
-    new_wav_2convolve = wav_extended[index_mask]
-
-    assert np.all(old_flux_2convolve == new_flux_2convolve)
-    assert np.all(old_wav_2convolve == new_wav_2convolve)
-
-
-def test_rotational_convolution_indexing():
-    wav_ext_rotation = np.arange(100, 200)
-    flux_ext_rotation = np.random.random(size=wav_ext_rotation.size)
-    wav = 145
-    delta_lambda_l = 35
-
-    # Old Code
-    indexes = [i for i in range(len(wav_ext_rotation))
-               if ((wav - delta_lambda_l) < wav_ext_rotation[i] <
-               (wav + delta_lambda_l))]
-    old_flux_2convolve = flux_ext_rotation[indexes[0]:indexes[-1]+1]
-    old_wav_2convolve = wav_ext_rotation[indexes[0]:indexes[-1]+1]
-
-    # New code
-    index_mask = ((wav_ext_rotation > (wav - delta_lambda_l)) &
-                  (wav_ext_rotation < (wav + delta_lambda_l)))
-
-    new_flux_2convolve = flux_ext_rotation[index_mask]
-    new_wav_2convolve = wav_ext_rotation[index_mask]
-
-    assert np.all(old_flux_2convolve == new_flux_2convolve)
-    assert np.all(old_wav_2convolve == new_wav_2convolve)
-
-
-@pytest.mark.xfail(raises=file_error_to_catch)
-def test_result_files_the_same():
-    """ Test the result files are equal """
-
-    print("Reading the data...")
-    new_spectrum = "data/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R100k_unnormalized.txt"
-    old_spectrum = "data/original_code/results/Spectrum_M0-PHOENIX-ACES_Yband_vsini1_R100k.txt"
-
-    new_wavelength, new_ts, new_flux = pdread_3col(new_spectrum)
-    old_wavelength, old_ts, old_spectrum = old_read_3col(old_spectrum)
-
-    assert np.allclose(new_wavelength, np.array(old_wavelength, dtype="float64"))
-    assert np.allclose(new_ts, np.array(old_ts, dtype="float64"))
-    assert np.allclose(new_flux, np.array(old_spectrum, dtype="float64"))
-
-
-@pytest.mark.xfail(raises=file_error_to_catch)    # Data file may not exist
-def test_resampled_files_the_same():
-    """ Test the resampled files are the same"""
-    band = "GAP"
-    new_spectrum = "data/resampled/Spectrum_M0-PHOENIX-ACES_{0}band_vsini1.0_R100k_unnormalized_res3.txt".format(band)
-    old_spectrum = "data/original_code/resampled/original_code/results/Spectrum_M0-PHOENIX-ACES_{0}band_vsini1_R100k_res3.txt".format(band)
-    new_wavelength, new_flux = pdread_2col(new_spectrum, noheader=True)
-    old_wavelength, old_flux = old_read_2col(old_spectrum)
-    assert np.allclose(old_wavelength, new_wavelength)
-    assert np.allclose(old_flux, new_flux)
-
-
-@pytest.mark.xfail(raises=file_error_to_catch)   # Data file may not exist
-def test_resampled_rvprec_equal():
-    """ Test quality of new and old spectra"""
-    band = "GAP"
-    new_spectrum = "data/resampled/Spectrum_M0-PHOENIX-ACES_{0}band_vsini1.0_R100k_unnormalized_res3.txt".format(band)
-    old_spectrum = "data/original_code/resampled/original_code/results/Spectrum_M0-PHOENIX-ACES_{0}band_vsini1_R100k_res3.txt".format(band)
-
-    new_wavelength, new_flux = pdread_2col(new_spectrum, noheader=True)
-
-    old_wavelength, old_flux = old_read_2col(old_spectrum)
-
-    # Scale with correct value
-
-    new_rvprec = rvprec_calc(new_wavelength, new_flux)
-    old_rvprec = old_rvprec_calc(old_wavelength, old_flux)
-    assert np.allclose(new_rvprec.value, old_rvprec)
-    assert new_rvprec.unit == "m / s"  # Check unit of precision
-
-
-@pytest.mark.xfail(raises=file_error_to_catch)   # Data file may not exist
-def test_list_creator():
-    """ Test new masking in list creator is equivalent"""
-    # test a couple of single bands only for speed
-
-    # for band in ["H", "J", "K"]:
-    for band in ["K"]:
-        spectrum = "data/test_data/{0}_band_test_sample_lte03900-PHOENIX-ACES.dat".format(band)
-        assert np.allclose(np.array(oldnIR.list_creator(spectrum, band)),
-                           eniric_utils.list_creator(spectrum, band))
 
 
 def test_pdread_2col():
