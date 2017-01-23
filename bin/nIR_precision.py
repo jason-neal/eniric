@@ -204,6 +204,51 @@ def old_barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
     return mask_atm
 
 
+def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
+    """ Calculating impact of Barycentric movement on mask...
+
+    Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
+    """
+
+    pixels_total = len(mask_atm)
+    masked_start = pixels_total - np.sum(mask_atm)
+
+    barycenter_rv =  30000           # 30 km/s in m/s
+    offset_rv = offset_RV * 1.0e3    # Convert to m/s
+
+    # Doppler shift  applied to the vectors
+    delta_lambdas = wav_atm * barycenter_rv / Qcalculator.c.value
+    offset_lambdas = wav_atm * offset_rv / Qcalculator.c.value   # offset lambda
+
+    # Dopler shift limits of each pixel
+    wav_lower_barys = wav_atm + offset_lambdas - delta_lambdas
+    wav_upper_barys = wav_atm + offset_lambdas + delta_lambdas
+
+    mask_atm_30kms = np.empty_like(mask_atm, dtype=bool)
+
+    for i, (wav_value, mask_val) in enumerate(zip(wav_atm, mask_atm)):
+        if (mask_val is False): # and offset_RV == 666.0):???    # if the mask is false and the offset is equal to zero
+            mask_atm_30kms.append(value[1])
+        else:
+            # np.searchsorted is faster then the boolean masking wavlength range
+            slice_limits = np.searchsorted(wav_atm, [wav_lower_barys[i], wav_upper_barys[i]]) # returns index to place the two shifted values
+            slice_limits = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in slice_limits]  # replace index if above lenght of array
+            mask_atm_slice = mask_atm[slice_limits[0]:slice_limits[1]]    # selecting only the slice in question
+
+            # If there is a zero in the mask_atm_slice then the new mask value is zero
+            # mask_atm_30kms[i] = ~np.any(~mask_atm_slice)  # if-else is faster here!
+            if False in mask_atm_slice:
+                mask_atm_30kms[i] = False
+            else:
+                mask_atm_30kms[i] = True
+
+    masked_end = pixels_total - np.sum(mask_atm_30kms)
+    print(("New Barycentric impact affects the number of masked pixels by {0:04.1%} due to the atmospheric"
+          " spectrum").format((masked_end-masked_start)/pixels_total))
+    print(("Masked Pixels start = {1}, masked_pixel_end = {0}, Total = {2}").format(masked_end, masked_start, pixels_total))
+    return mask_atm_30kms
+
+
 def normalize_flux(flux_stellar, id_string):
     """Normalize flux to have SNR of 100 in middle of J band."""
 
