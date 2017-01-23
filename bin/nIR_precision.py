@@ -244,7 +244,28 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
 
     print("Calculating impact of Barycentric movement on mask...")
 
-    mask_atm = barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)  # Extend masked regions
+
+    plot_bary = False
+    if plot_bary: # Ploting the two masks alongside the flux
+        # Shorten arrays to make quicker
+        __ , flux_atm = utils.wav_selector(wav_atm, flux_atm, 2.135, 2.137)
+        wav_atm, mask_atm = utils.wav_selector(wav_atm, mask_atm, 2.135, 2.137)
+
+        new_mask_atm = barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
+        old_mask_atm = old_barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)  # Extend masked regions
+
+        plt.plot(wav_atm, new_mask_atm + 0.01, "b.-", label="New Bary mask")
+        plt.plot(wav_atm, old_mask_atm + 0.02, "ko-", label="Pedro Bary mask")
+        plt.plot(wav_atm, mask_atm, "gs-", label="Orignal mask")
+        plt.plot(wav_atm * (1 - 3e4/Qcalculator.c.value), mask_atm-0.02, "y", label="-30km/s")
+        plt.plot(wav_atm * (1 + 3e4/Qcalculator.c.value), mask_atm-0.01, "m", label="+30km/s")
+        plt.plot(wav_atm, flux_atm/np.max(flux_atm),"r--", label="Flux atm")
+        plt.ylim([0.9,1.05])
+        plt.legend()
+        plt.show()
+        sys.exit(0)
+    else:
+        nmask_atm = barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
     print(("There were {0:d} unmasked pixels out of {1:d}, or {2:.1%}."
            "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) /
                       len(mask_atm)))
