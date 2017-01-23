@@ -293,7 +293,7 @@ def calculate_prec(bands, plot_bary=False, plot_atm=False, plot_ste=False, plot_
             plt_functions.plot_atmopshere_model(wav_atm, flux_atm, mask_atm)
 
         # theoretical ratios calculation
-        wav_M0, flux_M0, wav_M3, flux_M3, wav_M6, flux_M6, wav_M9, flux_M9 = read_nIRspectra()
+        # wav_M0, flux_M0, wav_M3, flux_M3, wav_M6, flux_M6, wav_M9, flux_M9 = read_nIRspectra()
 
         results = {}    # creating empty dictionary for the results
         wav_plot_M0 = []   # creating empty lists for the plots
