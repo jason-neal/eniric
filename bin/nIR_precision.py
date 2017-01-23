@@ -255,12 +255,16 @@ def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
             slice_limits = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in slice_limits]  # replace index if above lenght of array
             mask_atm_slice = mask_atm[slice_limits[0]:slice_limits[1]]    # selecting only the slice in question
 
-            # If there is a zero in the mask_atm_slice then the new mask value is zero
-            # mask_atm_30kms[i] = ~np.any(~mask_atm_slice)  # if-else is faster here!
-            if False in mask_atm_slice:
+            mask_atm_slice = np.asarray(mask_atm_slice, dtype=bool)    # Assuring type bool
+
+            # Make mask value false if there are 3 or more consecutive zeros in slice.
+            len_consec_zeros = consecutive_truths(mask_atm_slice == False)
+            if np.max(len_consec_zeros) >= 3:  # Invert mask to make zeros true with ~
                 mask_atm_30kms[i] = False
             else:
                 mask_atm_30kms[i] = True
+                if np.sum(~mask_atm_slice) > 3:
+                    print("There were {0} zeros in this barycentric shift but none were 3 consecutive!".format(np.sum(~mask_atm_slice)))
 
     masked_end = pixels_total - np.sum(mask_atm_30kms)
     print(("New Barycentric impact affects the number of masked pixels by {0:04.1%} due to the atmospheric"
