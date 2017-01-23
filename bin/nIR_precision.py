@@ -288,19 +288,6 @@ def calculate_prec(bands, plot_bary=False, plot_atm=False, plot_ste=False, plot_
                           len(mask_atm)))
 
 
-        # calculating the number of pixels inside the mask
-        wav_Z, mask_Z = band_selector(wav_atm, mask_atm, "Z")
-        wav_Y, mask_Y = band_selector(wav_atm, mask_atm, "Y")
-        wav_J, mask_J = band_selector(wav_atm, mask_atm, "J")
-        wav_H, mask_H = band_selector(wav_atm, mask_atm, "H")
-        wav_K, mask_K = band_selector(wav_atm, mask_atm, "K")
-
-        bands_masked = np.concatenate((mask_Z, mask_Y, mask_J, mask_H, mask_K))
-
-        print(("Inside the bands, there were {0:.0f} unmasked pixels out of {1:d}"
-               ", or {2:.1%}.").format(np.sum(bands_masked), len(bands_masked),
-                np.sum(bands_masked) / len(bands_masked)))
-
         if plot_atm:
             # moved ploting code to separate code, eniric.plotting_functions.py
             plt_functions.plot_atmopshere_model(wav_atm, flux_atm, mask_atm)
@@ -481,6 +468,29 @@ def compare_output():
     plt.close()
 
 
+def calculate_all_masked():
+    """ Auxiliary function to calculate masked pixels in banded parts.
+
+    Needs the code to load the atmopsheric data in for each band.
+
+    Need to load a average_tapas file.
+    barycenter correct.
+    concatenate result.
+    """
+
+
+    # calculating the number of pixels inside the mask
+    wav_Z, mask_Z = band_selector(wav_atm, mask_atm, "Z")
+    wav_Y, mask_Y = band_selector(wav_atm, mask_atm, "Y")
+    wav_J, mask_J = band_selector(wav_atm, mask_atm, "J")
+    wav_H, mask_H = band_selector(wav_atm, mask_atm, "H")
+    wav_K, mask_K = band_selector(wav_atm, mask_atm, "K")
+
+    bands_masked = np.concatenate((mask_Z, mask_Y, mask_J, mask_H, mask_K))
+
+    print(("Inside the bands, there were {0:.0f} unmasked pixels out of {1:d}"
+           ", or {2:.1%}.").format(np.sum(bands_masked), len(bands_masked),
+            np.sum(bands_masked) / len(bands_masked)))
 def RV_cumulative(RV_vector):
     """
     funtion that calculates the cumulative RV vector weighted_error
