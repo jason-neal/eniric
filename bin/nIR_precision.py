@@ -6,7 +6,8 @@ Created on Fri Feb  6 15:42:03 2015
 Updated for eniric/python3 - Janurary 2017
 @author: Jason Neal
 """
-
+import sys
+import argparse
 import numpy as np
 from sys import exit
 import matplotlib.pyplot as plt
@@ -16,7 +17,7 @@ from matplotlib.ticker import MaxNLocator
 
 import eniric.IOmodule as IOmodule
 import eniric.Qcalculator as Qcalculator
-
+import eniric.utilities as utils
 from eniric.utilities import band_selector
 
 import eniric.plotting_functions as plt_functions
@@ -280,75 +281,77 @@ def normalize_flux(flux_stellar, id_string):
     return flux_stellar / ((norm_constant / 100.0)**2.0)
 
 
-def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=True, offset_RV=0.0):
+def calculate_prec(bands, plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=True, offset_RV=0.0):
 
-    print("Reading atmospheric model...")
-    wav_atm, flux_atm, std_flux_atm, mask_atm = prepare_atmopshere()
-    print(("There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}."
-          "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)))
-    print("The model ranges from {0:4.2f} to {1:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
-    print("Done.")
+    for band in bands:
+        atmmodel = "../data/atmmodel/Average_TAPAS_2014_{}.txt".format(band)
 
-    print("Calculating impact of Barycentric movement on mask...")
+        print("Reading atmospheric model...")
+        wav_atm, flux_atm, std_flux_atm, mask_atm = prepare_atmopshere()
+        print(("There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}."
+              "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)))
+        print("The model ranges from {0:4.2f} to {1:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
+        print("Done.")
 
-
-    plot_bary = False
-    if plot_bary: # Ploting the two masks alongside the flux
-        # Shorten arrays to make quicker
-        __ , flux_atm = utils.wav_selector(wav_atm, flux_atm, 2.135, 2.137)
-        wav_atm, mask_atm = utils.wav_selector(wav_atm, mask_atm, 2.135, 2.137)
-
-        new_mask_atm = barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
-        old_mask_atm = old_barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)  # Extend masked regions
-
-        plt.plot(wav_atm, new_mask_atm + 0.01, "b.-", label="New Bary mask")
-        plt.plot(wav_atm, old_mask_atm + 0.02, "ko-", label="Pedro Bary mask")
-        plt.plot(wav_atm, mask_atm, "gs-", label="Orignal mask")
-        plt.plot(wav_atm * (1 - 3e4/Qcalculator.c.value), mask_atm-0.02, "y", label="-30km/s")
-        plt.plot(wav_atm * (1 + 3e4/Qcalculator.c.value), mask_atm-0.01, "m", label="+30km/s")
-        plt.plot(wav_atm, flux_atm/np.max(flux_atm),"r--", label="Flux atm")
-        plt.ylim([0.9,1.05])
-        plt.legend()
-        plt.show()
-        sys.exit(0)
-    else:
-        nmask_atm = barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
-    print(("There were {0:d} unmasked pixels out of {1:d}, or {2:.1%}."
-           "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) /
-                      len(mask_atm)))
+        print("Calculating impact of Barycentric movement on mask...")
 
 
-    # calculating the number of pixels inside the mask
-    wav_Z, mask_Z = band_selector(wav_atm, mask_atm, "Z")
-    wav_Y, mask_Y = band_selector(wav_atm, mask_atm, "Y")
-    wav_J, mask_J = band_selector(wav_atm, mask_atm, "J")
-    wav_H, mask_H = band_selector(wav_atm, mask_atm, "H")
-    wav_K, mask_K = band_selector(wav_atm, mask_atm, "K")
+        plot_bary = False
+        if plot_bary: # Ploting the two masks alongside the flux
+            # Shorten arrays to make quicker
+            __ , flux_atm = utils.wav_selector(wav_atm, flux_atm, 2.135, 2.137)
+            wav_atm, mask_atm = utils.wav_selector(wav_atm, mask_atm, 2.135, 2.137)
 
-    bands_masked = np.concatenate((mask_Z, mask_Y, mask_J, mask_H, mask_K))
+            new_mask_atm = barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
+            old_mask_atm = old_barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)  # Extend masked regions
 
-    print(("Inside the bands, there were {0:.0f} unmasked pixels out of {1:d}"
-           ", or {2:.1%}.").format(np.sum(bands_masked), len(bands_masked),
-            np.sum(bands_masked) / len(bands_masked)))
+            plt.plot(wav_atm, new_mask_atm + 0.01, "b.-", label="New Bary mask")
+            plt.plot(wav_atm, old_mask_atm + 0.02, "ko-", label="Pedro Bary mask")
+            plt.plot(wav_atm, mask_atm, "gs-", label="Orignal mask")
+            plt.plot(wav_atm * (1 - 3e4/Qcalculator.c.value), mask_atm-0.02, "y", label="-30km/s")
+            plt.plot(wav_atm * (1 + 3e4/Qcalculator.c.value), mask_atm-0.01, "m", label="+30km/s")
+            plt.plot(wav_atm, flux_atm/np.max(flux_atm),"r--", label="Flux atm")
+            plt.ylim([0.9,1.05])
+            plt.legend()
+            plt.show()
+            sys.exit(0)
+        else:
+            nmask_atm = barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
+        print(("There were {0:d} unmasked pixels out of {1:d}, or {2:.1%}."
+               "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) /
+                          len(mask_atm)))
 
-    if plot_atm:
-        # moved ploting code to separate code, eniric.plotting_functions.py
-        plt_functions.plot_atmopshere_model(wav_atm, flux_atm, mask_atm)
 
-    # theoretical ratios calculation
-    wav_M0, flux_M0, wav_M3, flux_M3, wav_M6, flux_M6, wav_M9, flux_M9 = read_nIRspectra()
+        # calculating the number of pixels inside the mask
+        wav_Z, mask_Z = band_selector(wav_atm, mask_atm, "Z")
+        wav_Y, mask_Y = band_selector(wav_atm, mask_atm, "Y")
+        wav_J, mask_J = band_selector(wav_atm, mask_atm, "J")
+        wav_H, mask_H = band_selector(wav_atm, mask_atm, "H")
+        wav_K, mask_K = band_selector(wav_atm, mask_atm, "K")
 
-    results = {}    # creating empty dictionary for the results
-    wav_plot_M0 = []   # creating empty lists for the plots
-    flux_plot_M0 = []
-    wav_plot_M3 = []
-    flux_plot_M3 = []
-    wav_plot_M6 = []
-    flux_plot_M6 = []
-    wav_plot_M9 = []
-    flux_plot_M9 = []
-    for star in spectral_types:
-        for band in bands:
+        bands_masked = np.concatenate((mask_Z, mask_Y, mask_J, mask_H, mask_K))
+
+        print(("Inside the bands, there were {0:.0f} unmasked pixels out of {1:d}"
+               ", or {2:.1%}.").format(np.sum(bands_masked), len(bands_masked),
+                np.sum(bands_masked) / len(bands_masked)))
+
+        if plot_atm:
+            # moved ploting code to separate code, eniric.plotting_functions.py
+            plt_functions.plot_atmopshere_model(wav_atm, flux_atm, mask_atm)
+
+        # theoretical ratios calculation
+        wav_M0, flux_M0, wav_M3, flux_M3, wav_M6, flux_M6, wav_M9, flux_M9 = read_nIRspectra()
+
+        results = {}    # creating empty dictionary for the results
+        wav_plot_M0 = []   # creating empty lists for the plots
+        flux_plot_M0 = []
+        wav_plot_M3 = []
+        flux_plot_M3 = []
+        wav_plot_M6 = []
+        flux_plot_M6 = []
+        wav_plot_M9 = []
+        flux_plot_M9 = []
+        for star in spectral_types:
             for vel in vsini:
                 for resolution in R:
                     for smpl in sampling:
