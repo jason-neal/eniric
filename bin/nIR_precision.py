@@ -56,8 +56,7 @@ def main(bands="J", plot_bary=False):
         Flag to plot and test the barycentric masking then exit.
     """
 
-    resampled_dir = "resampled_cont/"
-    resampled_dir_OLD = "resampled/"
+    resampled_dir = "../data/resampled/"
 
     spectral_types = ["M0", "M3", "M6", "M9"]
     if isinstance(bands, str):
