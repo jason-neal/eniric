@@ -262,6 +262,31 @@ def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
     return mask_atm_30kms
 
 
+def consecutive_truths(condition):
+    """ Length of consecutive true values in an bool array.
+
+    Parameters
+    ----------
+    condition: ndarray of bool
+        True False array of a condition.
+
+    Returns
+    -------
+    len_consecutive: ndarray of ints
+        Array of lengths of consecutive true values of the condition.
+
+    Notes
+    -----
+    Solution found at http://stackoverflow.com/questions/24342047/count-consecutive-occurences-of-values-varying-in-length-in-a-numpy-array
+    """
+    if not np.any(condition):  # No match to condition
+        return np.array([0])
+    else:
+        unequal_consec = np.concatenate(([condition[0]], condition[:-1] != condition[1:], [True]))
+        where_changes = np.where(unequal_consec)[0]         # indices where condition changes
+        len_consecutive = np.diff(where_changes)[::2]       # step through every second to get the "True" lenghts.
+    return len_consecutive
+
 def normalize_flux(flux_stellar, id_string):
     """Normalize flux to have SNR of 100 in middle of J band."""
 
