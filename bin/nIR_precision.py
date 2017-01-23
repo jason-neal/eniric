@@ -34,15 +34,26 @@ def _parser():
     parser = argparse.ArgumentParser(description='Calculate radial velocity precision of model spectra.')
 
     parser.add_argument("-b", "--bands", type=str, default="J",
-                        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
-                        help="Wavelength bands to select", nargs="+")
+                        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", None],
+                        help="Wavelength bands to select. Default=J.", nargs="+")
+    parser.add_argument("--plot_bary", default=False, action="store_true",
+                        help="Plot the barycentric shift and exit.")
     args = parser.parse_args()
     return args
 
 
-def main(bands="J"):
-    """ Main function that calls calc_precision"""
+def main(bands="J", plot_bary=False):
+    """ Main function that calls calc_precision
 
+
+    Parameters
+    ----------
+
+    bands: str or list of str or None, Default="J"
+        Band letters to use. None does the bands Z through K.
+    plot_bary: bool
+        Flag to plot and test the barycentric masking then exit.
+    """
 
     resampled_dir = "resampled_cont/"
     resampled_dir_OLD = "resampled/"
@@ -50,13 +61,14 @@ def main(bands="J"):
     spectral_types = ["M0", "M3", "M6", "M9"]
     if isinstance(bands, str):
         bands = [bands]
-    else:
+    elif (bands is None) or (bands is "None"):
         bands = ["Z", "Y", "J", "H", "K"]
+
     vsini = ["1.0", "5.0", "10.0"]
     R = ["60k", "80k", "100k"]
     sampling = ["3"]
 
-    results = calculate_prec(bands, plot_atm=False, plot_ste=False, plot_flux=False, paper_plots=False, offset_RV=0.0)
+    results = calculate_prec(bands, plot_bary=plot_bary, plot_atm=False, plot_ste=False, plot_flux=False, paper_plots=False, offset_RV=0.0)
 
 def read_contfit():
     """
@@ -281,7 +293,7 @@ def normalize_flux(flux_stellar, id_string):
     return flux_stellar / ((norm_constant / 100.0)**2.0)
 
 
-def calculate_prec(bands, plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=True, offset_RV=0.0):
+def calculate_prec(bands, plot_bary=False, plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=True, offset_RV=0.0):
 
     for band in bands:
         atmmodel = "../data/atmmodel/Average_TAPAS_2014_{}.txt".format(band)
