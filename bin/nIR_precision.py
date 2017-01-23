@@ -156,26 +156,27 @@ def prepare_atmopshere():
     return wav_atm, flux_atm, std_flux_atm, mask_atm
 
 
-def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
-    """ Calculating impact of Barycentric movement on mask...
+def old_barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
+    """ Old version Calculating impact of Barycentric movement on mask...
 
     Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
     """
-
-    pixels_start = np.sum(mask_atm)
     pixels_total = len(mask_atm)
+    masked_start = pixels_total - np.sum(mask_atm)
 
     mask_atm_30kms = []
     for value in zip(wav_atm, mask_atm):
-        if (value[1] is False and offset_RV == 666.0):    # if the mask is false and the offset is equal to zero
+        if (value[1] == False) and (offset_RV == 666.0):    # if the mask is false and the offset is equal to zero
             mask_atm_30kms.append(value[1])
 
         else:
 
             delta_lambda = value[0] * 3.0e4/Qcalculator.c.value
             starting_lambda = value[0] * offset_RV*1.0e3/Qcalculator.c.value
-            indexes_30kmslice = np.searchsorted(wav_atm, [starting_lambda+value[0]-delta_lambda, starting_lambda+value[0]+delta_lambda])
+            indexes_30kmslice = np.searchsorted(wav_atm, [starting_lambda+value[0]-delta_lambda,
+                                                          starting_lambda+value[0]+delta_lambda])
             indexes_30kmslice = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in indexes_30kmslice]
+
             mask_atm_30kmslice = np.array(mask_atm[indexes_30kmslice[0]:indexes_30kmslice[1]], dtype=bool)    # selecting only the slice in question
 
             # if(False in mask_atm_30kmslice):
@@ -196,9 +197,10 @@ def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
             mask_atm_30kms.append(tester)
 
     mask_atm = np.array(mask_atm_30kms, dtype=bool)
-    pixels_end = np.sum(mask_atm)
-    print(("Barycentric impact masks out {0:04.1}\% more of the atmospheric"
-          " spectrum").format((pixels_end-pixels_start)/pixels_total))
+    masked_end = pixels_total - np.sum(mask_atm)
+    print(("Old Barycentric impact affects number of masked pixels by {0:04.1%} due to the atmospheric"
+          " spectrum").format((masked_end-masked_start)/pixels_total))
+    print(("Pedros Pixels start = {1}, Pixel_end = {0}, Total = {2}").format(masked_end, masked_start, pixels_total))
     return mask_atm
 
 
