@@ -71,95 +71,6 @@ def main(bands="J", plot_bary=False):
 
     results = calculate_prec(bands, plot_bary=plot_bary, plot_atm=False, plot_ste=False, plot_flux=False, paper_plots=False, offset_RV=0.0)
 
-def read_contfit():
-    """
-    function that reads continuum fitting
-    """
-    M0_contfit = "PHOENIX_ACES_spectra/M0_nIRcont.txt"
-    M3_contfit = "PHOENIX_ACES_spectra/M3_nIRcont.txt"
-    M6_contfit = "PHOENIX_ACES_spectra/M6_nIRcont.txt"
-    M9_contfit = "PHOENIX_ACES_spectra/M9_nIRcont.txt"
-
-    wav_M0, flux_M0 = IOmodule.pdread_2col(M0_contfit)
-    wav_M3, flux_M3 = IOmodule.pdread_2col(M3_contfit)
-    wav_M6, flux_M6 = IOmodule.pdread_2col(M6_contfit)
-    wav_M9, flux_M9 = IOmodule.pdread_2col(M9_contfit)
-
-    wav_M0 = np.array(wav_M0, dtype="float64")*1.0e-4  # conversion to microns
-    flux_M0 = np.array(flux_M0, dtype="float64")*wav_M0
-    wav_M3 = np.array(wav_M3, dtype="float64")*1.0e-4  # conversion to microns
-    flux_M3 = np.array(flux_M3, dtype="float64")*wav_M3
-    wav_M6 = np.array(wav_M6, dtype="float64")*1.0e-4  # conversion to microns
-    flux_M6 = np.array(flux_M6, dtype="float64")*wav_M6
-    wav_M9 = np.array(wav_M9, dtype="float64")*1.0e-4  # conversion to microns
-    flux_M9 = np.array(flux_M9, dtype="float64")*wav_M9
-
-    return [wav_M0, flux_M0, wav_M3, flux_M3, wav_M6, flux_M6, wav_M9, flux_M9]
-
-
-def read_nIRspectra():
-    """
-    function that reads nIR spectra
-    """
-    M0_contfit = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
-    M3_contfit = "PHOENIX_ACES_spectra/lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
-    M6_contfit = "PHOENIX_ACES_spectra/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
-    M9_contfit = "PHOENIX_ACES_spectra/lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
-
-    print("Reading PHOENIX original spectrum...")
-    wav_M0, flux_M0 = IOmodule.pdread_2col(M0_contfit)
-    wav_M3, flux_M3 = IOmodule.pdread_2col(M3_contfit)
-    wav_M6, flux_M6 = IOmodule.pdread_2col(M6_contfit)
-    wav_M9, flux_M9 = IOmodule.pdread_2col(M9_contfit)
-    print("Done.")
-
-    wav_M0 = np.array(wav_M0, dtype="float64")*1.0e-4  # conversion to microns
-    flux_M0 = np.array(flux_M0, dtype="float64")*wav_M0
-    wav_M3 = np.array(wav_M3, dtype="float64")*1.0e-4  # conversion to microns
-    flux_M3 = np.array(flux_M3, dtype="float64")*wav_M3
-    wav_M6 = np.array(wav_M6, dtype="float64")*1.0e-4  # conversion to microns
-    flux_M6 = np.array(flux_M6, dtype="float64")*wav_M6
-    wav_M9 = np.array(wav_M9, dtype="float64")*1.0e-4  # conversion to microns
-    flux_M9 = np.array(flux_M9, dtype="float64")*wav_M9
-
-    wav_M0 = wav_M0[1000:-1000]
-    wav_M3 = wav_M3[1000:-1000]
-    wav_M6 = wav_M6[1000:-1000]
-    wav_M9 = wav_M9[1000:-1000]
-
-    flux_M0 = moving_average(flux_M0, 2000)[1000:-1000]
-    flux_M3 = moving_average(flux_M3, 2000)[1000:-1000]
-    flux_M6 = moving_average(flux_M6, 2000)[1000:-1000]
-    flux_M9 = moving_average(flux_M9, 2000)[1000:-1000]
-
-    return [wav_M0, flux_M0, wav_M3, flux_M3, wav_M6, flux_M6, wav_M9, flux_M9]
-
-
-def ratios_calc(wav_bin):
-    """
-    funtion that calculates ratios as set in the continuum to apply to the spectrum
-    """
-    wav_M0, flux_M0, wav_M3, flux_M3, wav_M6, flux_M6, wav_M9, flux_M9 = read_contfit()
-
-    index_M0_l = np.searchsorted(wav_M0, [0.83, 1.0, 1.17, 1.5, 2.07])
-    index_M3_l = np.searchsorted(wav_M3, [0.83, 1.0, 1.17, 1.5, 2.07])
-    index_M6_l = np.searchsorted(wav_M6, [0.83, 1.0, 1.17, 1.5, 2.07])
-    index_M9_l = np.searchsorted(wav_M9, [0.83, 1.0, 1.17, 1.5, 2.07])
-
-    index_M0_r = np.searchsorted(wav_M0, [0.83+wav_bin, 1.0+wav_bin, 1.17+wav_bin, 1.5+wav_bin, 2.07+wav_bin])
-    index_M3_r = np.searchsorted(wav_M3, [0.83+wav_bin, 1.0+wav_bin, 1.17+wav_bin, 1.5+wav_bin, 2.07+wav_bin])
-    index_M6_r = np.searchsorted(wav_M6, [0.83+wav_bin, 1.0+wav_bin, 1.17+wav_bin, 1.5+wav_bin, 2.07+wav_bin])
-    index_M9_r = np.searchsorted(wav_M9, [0.83+wav_bin, 1.0+wav_bin, 1.17+wav_bin, 1.5+wav_bin, 2.07+wav_bin])
-
-    return [flux_bin(flux_M0, index_M0_l, index_M0_r), flux_bin(flux_M3, index_M3_l, index_M3_r), flux_bin(flux_M6, index_M6_l, index_M6_r), flux_bin(flux_M9, index_M9_l, index_M9_r)]
-
-
-def flux_bin(flux, index_left, index_right):
-    fluxes = []
-    for ind_l, ind_r in zip(index_left, index_right):
-        fluxes.append(np.average(flux[ind_l: ind_r]))
-    return fluxes
-
 
 def prepare_atmopshere(atmmodel):
     """ Read in atmopheric model and prepare. """
@@ -527,31 +438,6 @@ def calculate_prec(bands, plot_bary=False, plot_atm=False, plot_ste=False, plot_
 
 
 ###############################################################################
-def compare_runs():
-    """
-    Function that compares spectra as resampled in the two versions of the code
-    """
-    for star in spectral_types:
-        for band in bands:
-            for vel in vsini:
-                for resolution in R:
-                    for smpl in sampling:
-                        file_to_read = "Spectrum_"+star+"-PHOENIX-ACES_"+band+"band_vsini"+vel+"_R"+resolution+"_res"+smpl+".txt"
-                        # print "Working on "+file_to_read+"."
-                        wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir+file_to_read)
-                        wav_stellar = wav_stellar
-                        flux_stellar = flux_stellar / ((1.634e4)**2.0)
-
-                        wav_stellar_OLD, flux_stellar_OLD = IOmodule.pdread_2col(resampled_dir_OLD+file_to_read)
-                        flux_stellar_OLD = np.array(flux_stellar_OLD) / ((1.634e4)**2.0)
-
-                        plt.figure(1)
-                        plt.xlabel(r"wavelength [$\mu$m])")
-                        plt.ylabel(r"Flux_stellar difference [ ] ")
-                        plt.plot(wav_stellar, flux_stellar-flux_stellar_OLD, color='k')
-                        plt.show()
-                        plt.close()
-
 
 def compare_output():
     """
