@@ -222,6 +222,9 @@ def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
 
     Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
     """
+    # Mask values to the left and right side of mask_atm. To avoid indexing errors have padded with first and last values.
+    mask_iminus1 = np.concatenate(mask_atm[0], mask_atm[0], mask_atm[:-2])  # padding with first value
+    mask_iplus1 = np.concatenate(mask_atm[2:], mask_atm[-1], mask_atm[-1])  # padding with last value
 
     pixels_total = len(mask_atm)
     masked_start = pixels_total - np.sum(mask_atm)
@@ -240,8 +243,12 @@ def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
     mask_atm_30kms = np.empty_like(mask_atm, dtype=bool)
 
     for i, (wav_value, mask_val) in enumerate(zip(wav_atm, mask_atm)):
-        if (mask_val is False): # and offset_RV == 666.0):???    # if the mask is false and the offset is equal to zero
-            mask_atm_30kms.append(value[1])
+        """ If there are 3 consecutive zeros within +/-30km/s then make the value 0."""
+
+        # Offset_RV is the offset applied for the star RV.
+        if (mask_val is False) and (mask_iminus1[i] == False) and (mask_iplus1[i] == False) and (offset_RV == 0):    # if the mask is false and the offset is equal to zero
+        """ If the value and its friends are already zero don't do the barycenter shifts"""
+            mask_atm_30kms[i] = False
         else:
             # np.searchsorted is faster then the boolean masking wavlength range
             slice_limits = np.searchsorted(wav_atm, [wav_lower_barys[i], wav_upper_barys[i]]) # returns index to place the two shifted values
