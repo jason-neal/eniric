@@ -263,7 +263,7 @@ def calculate_prec(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=T
            ", or {2:.1%}.").format(np.sum(bands_masked), len(bands_masked),
             np.sum(bands_masked) / len(bands_masked)))
 
-    if plot_atom:
+    if plot_atm:
         # moved ploting code to separate code, eniric.plotting_functions.py
         plt_functions.plot_atmopshere_model(wav_atm, flux_atm, mask_atm)
 
