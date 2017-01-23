@@ -160,7 +160,7 @@ def flux_bin(flux, index_left, index_right):
     return fluxes
 
 
-def prepare_atmopshere():
+def prepare_atmopshere(atmmodel):
     """ Read in atmopheric model and prepare. """
     wav_atm, flux_atm, std_flux_atm, mask_atm = IOmodule.pdread_4col(atmmodel)
     # pandas lready returns numpy arrays
@@ -296,10 +296,10 @@ def normalize_flux(flux_stellar, id_string):
 def calculate_prec(bands, plot_bary=False, plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=True, offset_RV=0.0):
 
     for band in bands:
-        atmmodel = "../data/atmmodel/Average_TAPAS_2014_{}.txt".format(band)
 
+        atmmodel = "../data/atmmodel/Average_TAPAS_2014_{}.txt".format(band)
         print("Reading atmospheric model...")
-        wav_atm, flux_atm, std_flux_atm, mask_atm = prepare_atmopshere()
+        wav_atm, flux_atm, std_flux_atm, mask_atm = prepare_atmopshere(atmmodel)
         print(("There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}."
               "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)))
         print("The model ranges from {0:4.2f} to {1:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
