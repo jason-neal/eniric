@@ -248,7 +248,7 @@ def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
 
         # Offset_RV is the offset applied for the star RV.
         if (mask_val is False) and (mask_iminus1[i] == False) and (mask_iplus1[i] == False) and (offset_RV == 0):    # if the mask is false and the offset is equal to zero
-        """ If the value and its friends are already zero don't do the barycenter shifts"""
+            """ If the value and its friends are already zero don't do the barycenter shifts"""
             mask_atm_30kms[i] = False
         else:
             # np.searchsorted is faster then the boolean masking wavlength range
