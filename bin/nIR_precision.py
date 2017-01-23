@@ -139,8 +139,8 @@ def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
     Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
     """
     # Mask values to the left and right side of mask_atm. To avoid indexing errors have padded with first and last values.
-    mask_iminus1 = np.concatenate(mask_atm[0], mask_atm[0], mask_atm[:-2])  # padding with first value
-    mask_iplus1 = np.concatenate(mask_atm[2:], mask_atm[-1], mask_atm[-1])  # padding with last value
+    mask_iminus1 = np.concatenate(([mask_atm[0], mask_atm[0]], mask_atm[:-2]))  # padding with first value
+    mask_iplus1 = np.concatenate((mask_atm[2:], [mask_atm[-1], mask_atm[-1]]))  # padding with last value
 
     pixels_total = len(mask_atm)
     masked_start = pixels_total - np.sum(mask_atm)
