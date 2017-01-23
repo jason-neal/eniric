@@ -342,7 +342,7 @@ def pdwrite_cols(filename, *data, **kwargs):
     header = kwargs.pop('header', False)
     sep = kwargs.pop('sep', "\t")
     index = kwargs.pop('index', False)
-    float_format = kwargs.pop('float_format', '{0:.6f}'.format)
+    float_format = kwargs.pop('float_format', '%.6f')
     # TODO: See about passing any extra keywords into pandas call
     if kwargs:   # check for unwanted kewords
         raise TypeError('Unexpected **kwargs: {!r}'.format(kwargs))
