@@ -25,16 +25,37 @@ from matplotlib import rc
 # set stuff for latex usage
 rc('text', usetex=True)
 
-atmmodel = "../data/atmmodel/Average_TAPAS_2014_visible.txt"
-resampled_dir = "resampled_cont/"
-resampled_dir_OLD = "resampled/"
+def _parser():
+    """Take care of all the argparse stuff.
 
-spectral_types = ["M0", "M3", "M6", "M9"]
-bands = ["Z", "Y", "J", "H", "K"]
-vsini = ["1.0", "5.0", "10.0"]
-R = ["60k", "80k", "100k"]
-sampling = ["3"]
+    :returns: the args
+    """
+    parser = argparse.ArgumentParser(description='Calculate radial velocity precision of model spectra.')
 
+    parser.add_argument("-b", "--bands", type=str, default="J",
+                        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
+                        help="Wavelength bands to select", nargs="+")
+    args = parser.parse_args()
+    return args
+
+
+def main(bands="J"):
+    """ Main function that calls calc_precision"""
+
+
+    resampled_dir = "resampled_cont/"
+    resampled_dir_OLD = "resampled/"
+
+    spectral_types = ["M0", "M3", "M6", "M9"]
+    if isinstance(bands, str):
+        bands = [bands]
+    else:
+        bands = ["Z", "Y", "J", "H", "K"]
+    vsini = ["1.0", "5.0", "10.0"]
+    R = ["60k", "80k", "100k"]
+    sampling = ["3"]
+
+    results = calculate_prec(bands, plot_atm=False, plot_ste=False, plot_flux=False, paper_plots=False, offset_RV=0.0)
 
 def read_contfit():
     """
@@ -477,4 +498,7 @@ def moving_average(x, window_size):
 ###############################################################################
 
 if __name__ == "__main__":
-    calculate_prec()
+    calculate_prec(band)
+    args = vars(_parser())
+    opts = {k: args[k] for k in args}
+    sys.exit(main(**opts))
