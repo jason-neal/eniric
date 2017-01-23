@@ -65,11 +65,16 @@ def main(bands="J", plot_bary=False):
         bands = ["Z", "Y", "J", "H", "K"]
 
     vsini = ["1.0", "5.0", "10.0"]
-    R = ["60k", "80k", "100k"]
+    resolution = ["60k", "80k", "100k"]
     sampling = ["3"]
 
-    results = calculate_prec(bands, plot_bary=plot_bary, plot_atm=False, plot_ste=False, plot_flux=False, paper_plots=False, offset_RV=0.0)
+    results = calculate_prec(spectral_types, bands, vsini, resolution, sampling,
+                             resampled_dir=resampled_dir, plot_bary=plot_bary,
+                             plot_atm=False, plot_ste=False, plot_flux=False,
+                             paper_plots=False, offset_RV=0.0)
 
+    # Save precision results
+    return results
 
 def prepare_atmopshere(atmmodel):
     """ Read in atmopheric model and prepare. """
@@ -240,7 +245,10 @@ def normalize_flux(flux_stellar, id_string):
     return flux_stellar / ((norm_constant / 100.0)**2.0)
 
 
-def calculate_prec(bands, plot_bary=False, plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=True, offset_RV=0.0):
+def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
+                   resampled_dir, plot_bary=False, plot_atm=False,
+                   plot_ste=False, plot_flux=True, paper_plots=True,
+                   offset_RV=0.0):
 
     for band in bands:
 
@@ -305,12 +313,12 @@ def calculate_prec(bands, plot_bary=False, plot_atm=False, plot_ste=False, plot_
         #iterations = itertools.product(spectral_types, vsini, R, sampling)
         for star in spectral_types:
             for vel in vsini:
-                for resolution in R:
                     for smpl in sampling:
+                for res in resolution:
                         file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini"
                                         "{2}_R{3}_res{4}.txt").format(star, band,
                                                                    vel,
-                                                                   resolution,
+                                                                   res,
                                                                    smpl)
                         # print("Working on "+file_to_read+".")
                         wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir + file_to_read)
@@ -319,7 +327,7 @@ def calculate_prec(bands, plot_bary=False, plot_atm=False, plot_ste=False, plot_
                         flux_stellar = flux_stellar[2:-2]
 
                         id_string = "{0}-{1}-{2}-{3}".format(star, band, vel,
-                                                         resolution)   # sample was left aside because only one value existed
+                                                         res)   # sample was left aside because only one value existed
 
                         # Getting the wav, flux and mask values from the atm model
                         # that are the closest to the stellar wav values, see
