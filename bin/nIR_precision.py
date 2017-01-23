@@ -310,114 +310,117 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
         flux_plot_M6 = []
         wav_plot_M9 = []
         flux_plot_M9 = []
-        #iterations = itertools.product(spectral_types, vsini, R, sampling)
-        for star in spectral_types:
-            for vel in vsini:
-                    for smpl in sampling:
-                for res in resolution:
-                        file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini"
-                                        "{2}_R{3}_res{4}.txt").format(star, band,
-                                                                   vel,
-                                                                   res,
-                                                                   smpl)
-                        # print("Working on "+file_to_read+".")
-                        wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir + file_to_read)
-                        # removing boundary effects
-                        wav_stellar = wav_stellar[2:-2]
-                        flux_stellar = flux_stellar[2:-2]
 
-                        id_string = "{0}-{1}-{2}-{3}".format(star, band, vel,
-                                                         res)   # sample was left aside because only one value existed
+        iterations = itertools.product(spectral_types, vsini, resolution, sampling)
+        for (star, vel, res, smpl) in iterations:
+        # for star in spectral_types:
+        #     for vel in vsini:
+        #         for res in resolution:
+        #             for smpl in sampling:
+            file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}"
+                            "_res{4}.txt").format(star, band, vel, res, smpl)
+            # print("Working on "+file_to_read+".")
+            wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir + file_to_read)
+            # removing boundary effects
+            wav_stellar = wav_stellar[2:-2]
+            flux_stellar = flux_stellar[2:-2]
 
-                        # Getting the wav, flux and mask values from the atm model
-                        # that are the closest to the stellar wav values, see
-                        # https://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
-                        index_atm = np.searchsorted(wav_atm, wav_stellar)
-                        # replace indexes outside the array, at the very end, by the value at the very end
-                        # index_atm = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in index_atm]
-                        indx_mask = (index_atm >= len(wav_atm))  # find broken indexs
-                        index_atm[indx_mask] = len(wav_atm) - 1  # replace with index of end.
+            # sample was left aside because only one value existed
+            id_string = "{0}-{1}-{2}-{3}".format(star, band, vel, res)
 
-                        wav_atm_selected = wav_atm[index_atm]
-                        flux_atm_selected = flux_atm[index_atm]
-                        mask_atm_selected = mask_atm[index_atm]
+            # Getting the wav, flux and mask values from the atm model
+            # that are the closest to the stellar wav values, see
+            # https://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
+            index_atm = np.searchsorted(wav_atm, wav_stellar)
+            # replace indexes outside the array, at the very end, by the value at the very end
+            # index_atm = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in index_atm]
+            indx_mask = (index_atm >= len(wav_atm))  # find broken indexs
+            index_atm[indx_mask] = len(wav_atm) - 1  # replace with index of end.
 
-                        # Normaize to SNR 100 in middle of J band 1.25 micron!
-                        flux_stellar = normalize_flux(flux_stellar, id_string)
+            wav_atm_selected = wav_atm[index_atm]
+            flux_atm_selected = flux_atm[index_atm]
+            mask_atm_selected = mask_atm[index_atm]
 
-                        if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k", "M6-J-1.0-100k", "M9-J-1.0-100k"]):
-                            index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
-                            SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-                            print("\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(id_string, SN_estimate))
-                        elif("J" in id_string):
-                            index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
-                            SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-                            print("\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string, SN_estimate))
+            # Normaize to SNR 100 in middle of J band 1.25 micron!
+            flux_stellar = normalize_flux(flux_stellar, id_string)
+            if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k",
+                             "M6-J-1.0-100k", "M9-J-1.0-100k"]):
+                index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
+                SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
+                print("\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(id_string, SN_estimate))
+            elif("J" in id_string):
+                index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
+                SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
+                print("\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string, SN_estimate))
 
-                        # Precision given by the first method:
-                        print("Performing analysis for: ", id_string)
-                        prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar)
+            # Precision given by the first method:
+            print("Performing analysis for: ", id_string)
+            prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar)
 
-                        # precision as given by the second_method
-                        """
-                        Example Joao
-                        a = np.array([1, 5, 6, 8, 16, 34, 5, 7, 10, 83, 12, 6, 17, 18])
-                        b = np.array([1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1], dtype=bool)
+            # precision as given by the second_method
+            """
+            Example Joao
+            a = np.array([1, 5, 6, 8, 16, 34, 5, 7, 10, 83, 12, 6, 17, 18])
+            b = np.array([1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1], dtype=bool)
 
-                        # this will give you a list of numpy arrays
-                        c = np.array_split(a, np.where(np.diff(b))[0]+1)[::2]
+            # this will give you a list of numpy arrays
+            c = np.array_split(a, np.where(np.diff(b))[0]+1)[::2]
 
-                        # this will give you a list of lists
-                        d = [list(cc) for cc in c]
-                        print(d)
-                        >>> [[1, 5], [16, 34, 5], [83, 12], [17, 18]]
-                        """
+            # this will give you a list of lists
+            d = [list(cc) for cc in c]
+            print(d)
+            >>> [[1, 5], [16, 34, 5], [83, 12], [17, 18]]
+            """
 
-                        wav_stellar_chunks_unformated = np.array_split(wav_stellar, np.where(np.diff(mask_atm_selected))[0]+1)[::2]
-                        wav_stellar_chunks = [list(chunk) for chunk in wav_stellar_chunks_unformated]
+            wav_stellar_chunks_unformated = np.array_split(wav_stellar, np.where(np.diff(mask_atm_selected))[0]+1)[::2]
+            wav_stellar_chunks = [list(chunk) for chunk in wav_stellar_chunks_unformated]
 
-                        """
-                        # test section
-                        print("check that lengths are the same", len(wav_stellar), len(mask_atm_selected))
-                        print("size of spectra {0:d} vs number of chunks {1:d}".format(len(wav_stellar), len(wav_stellar_chunks)))
-                        print("number of true elements in all chunks: {0:d}".format(len(mask_atm_selected[mask_atm_selected])))
-                        """
+            """
+            # test section
+            print("check that lengths are the same", len(wav_stellar), len(mask_atm_selected))
+            print("size of spectra {0:d} vs number of chunks {1:d}".format(len(wav_stellar), len(wav_stellar_chunks)))
+            print("number of true elements in all chunks: {0:d}".format(len(mask_atm_selected[mask_atm_selected])))
+            """
 
-                        flux_stellar_chunks_unformated = np.array_split(flux_stellar, np.where(np.diff(mask_atm_selected))[0]+1)[::2]
-                        flux_stellar_chunks = [list(chunk) for chunk in flux_stellar_chunks_unformated]
+            flux_stellar_chunks_unformated = np.array_split(flux_stellar, np.where(np.diff(mask_atm_selected))[0]+1)[::2]
+            flux_stellar_chunks = [list(chunk) for chunk in flux_stellar_chunks_unformated]
 
-                        """
-                        # histogram checking
-                        lengths = [len(chunk) for chunk in flux_stellar_chunks_unformated]
-                        n, bins, patches = plt.hist(lengths, 500, range=[0.5, 500.5], histtype='stepfilled')
-                        plt.title(id_string)
-                        plt.show()
-                        """
+            """
+            # histogram checking
+            lengths = [len(chunk) for chunk in flux_stellar_chunks_unformated]
+            n, bins, patches = plt.hist(lengths, 500, range=[0.5, 500.5], histtype='stepfilled')
+            plt.title(id_string)
+            plt.show()
+            """
 
-                        prec_2 = Qcalculator.RVprec_calc_chunks(wav_stellar_chunks, flux_stellar_chunks)
+            prec_2 = Qcalculator.RVprec_calc_chunks(wav_stellar_chunks, flux_stellar_chunks)
 
-                        # Precision as given by the third_method
-                        prec_3 = Qcalculator.RV_prec_calc_Trans(wav_stellar, flux_stellar, flux_atm_selected)
+            # Precision as given by the third_method
+            prec_3 = Qcalculator.RV_prec_calc_Trans(wav_stellar, flux_stellar, flux_atm_selected)
 
-                        # Adding Precision results to the dictionary
-                        results[id_string] = [prec_1, prec_2, prec_3]
+            # Adding Precision results to the dictionary
+            results[id_string] = [prec_1, prec_2, prec_3]
 
-                        # Prepare/Do for the ploting.
-                        if(plot_ste or plot_ste == id_string):
-                            plt_functions.plot_stellar_spectum(wav_stellar, flux_stellar, wav_atm_selected, mask_atm_selected)
+            # Prepare/Do for the ploting.
+            if(plot_ste or plot_ste == id_string):
+                plt_functions.plot_stellar_spectum(wav_stellar, flux_stellar,
+                                                   wav_atm_selected, mask_atm_selected)
 
-                        if(plot_flux and id_string in ["M0-Z-1.0-100k", "M0-Y-1.0-100k", "M0-J-1.0-100k", "M0-H-1.0-100k", "M0-K-1.0-100k"]):
-                            wav_plot_M0.append(wav_stellar)
-                            flux_plot_M0.append(flux_stellar)
-                        if(plot_flux and id_string in ["M3-Z-1.0-100k", "M3-Y-1.0-100k", "M3-J-1.0-100k", "M3-H-1.0-100k", "M3-K-1.0-100k"]):
-                            wav_plot_M3.append(wav_stellar)
-                            flux_plot_M3.append(flux_stellar)
-                        if(plot_flux and id_string in ["M6-Z-1.0-100k", "M6-Y-1.0-100k", "M6-J-1.0-100k", "M6-H-1.0-100k", "M6-K-1.0-100k"]):
-                            wav_plot_M6.append(wav_stellar)
-                            flux_plot_M6.append(flux_stellar)
-                        if(plot_flux and id_string in ["M9-Z-1.0-100k", "M9-Y-1.0-100k", "M9-J-1.0-100k", "M9-H-1.0-100k", "M9-K-1.0-100k"]):
-                            wav_plot_M9.append(wav_stellar)
-                            flux_plot_M9.append(flux_stellar)
+            plot_ids = ["M3-Z-1.0-100k", "M3-Y-1.0-100k", "M3-J-1.0-100k",
+                        "M3-H-1.0-100k", "M3-K-1.0-100k"]
+
+            if(plot_flux and id_string in plot_ids):
+                wav_plot_M0.append(wav_stellar)
+                flux_plot_M0.append(flux_stellar)
+            if(plot_flux and id_string in plot_ids):
+                wav_plot_M3.append(wav_stellar)
+                flux_plot_M3.append(flux_stellar)
+            if(plot_flux and id_string in plot_ids):
+                wav_plot_M6.append(wav_stellar)
+                flux_plot_M6.append(flux_stellar)
+            if(plot_flux and id_string in plot_ids):
+                wav_plot_M9.append(wav_stellar)
+                flux_plot_M9.append(flux_stellar)
 
     if(plot_flux):
         plt_functions.plot_nIR_flux()
