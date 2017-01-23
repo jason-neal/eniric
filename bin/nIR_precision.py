@@ -27,6 +27,7 @@ from matplotlib import rc
 # set stuff for latex usage
 rc('text', usetex=True)
 
+
 def _parser():
     """Take care of all the argparse stuff.
 
@@ -44,8 +45,7 @@ def _parser():
 
 
 def main(bands="J", plot_bary=False):
-    """ Main function that calls calc_precision
-
+    """ Main function that calls calc_precision.
 
     Parameters
     ----------
@@ -91,7 +91,7 @@ def old_barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
 
     mask_atm_30kms = []
     for value in zip(wav_atm, mask_atm):
-        if (value[1] == False) and (offset_RV == 666.0):    # if the mask is false and the offset is equal to zero
+        if (value[1] is False) and (offset_RV == 666.0):    # if the mask is false and the offset is equal to zero
             mask_atm_30kms.append(value[1])
 
         else:
@@ -141,7 +141,7 @@ def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
     pixels_total = len(mask_atm)
     masked_start = pixels_total - np.sum(mask_atm)
 
-    barycenter_rv =  30000           # 30 km/s in m/s
+    barycenter_rv = 30000           # 30 km/s in m/s
     offset_rv = offset_RV * 1.0e3    # Convert to m/s
 
     # Doppler shift  applied to the vectors
@@ -158,19 +158,19 @@ def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
         """ If there are 3 consecutive zeros within +/-30km/s then make the value 0."""
 
         # Offset_RV is the offset applied for the star RV.
-        if (mask_val is False) and (mask_iminus1[i] == False) and (mask_iplus1[i] == False) and (offset_RV == 0):    # if the mask is false and the offset is equal to zero
+        if (mask_val is False) and (mask_iminus1[i] is False) and (mask_iplus1[i] is False) and (offset_RV == 0):    # if the mask is false and the offset is equal to zero
             """ If the value and its friends are already zero don't do the barycenter shifts"""
             mask_atm_30kms[i] = False
         else:
             # np.searchsorted is faster then the boolean masking wavlength range
-            slice_limits = np.searchsorted(wav_atm, [wav_lower_barys[i], wav_upper_barys[i]]) # returns index to place the two shifted values
+            slice_limits = np.searchsorted(wav_atm, [wav_lower_barys[i], wav_upper_barys[i]])  # returns index to place the two shifted values
             slice_limits = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in slice_limits]  # replace index if above lenght of array
             mask_atm_slice = mask_atm[slice_limits[0]:slice_limits[1]]    # selecting only the slice in question
 
             mask_atm_slice = np.asarray(mask_atm_slice, dtype=bool)    # Assuring type bool
 
             # Make mask value false if there are 3 or more consecutive zeros in slice.
-            len_consec_zeros = consecutive_truths(mask_atm_slice == False)
+            len_consec_zeros = consecutive_truths(mask_atm_slice is False)
             if np.max(len_consec_zeros) >= 3:  # Invert mask to make zeros true with ~
                 mask_atm_30kms[i] = False
             else:
@@ -255,11 +255,11 @@ def calculate_prec(bands, plot_bary=False, plot_atm=False, plot_ste=False, plot_
 
         print("Calculating impact of Barycentric movement on mask...")
 
-        if plot_bary: # Ploting the two masks alongside the flux
+        if plot_bary:  # Ploting the two masks alongside the flux
             # Shorten arrays to make quicker
             save_results = True
             if not save_results:
-                __ , flux_atm = utils.wav_selector(wav_atm, flux_atm, 2.135, 2.137)
+                __, flux_atm = utils.wav_selector(wav_atm, flux_atm, 2.135, 2.137)
                 wav_atm, mask_atm = utils.wav_selector(wav_atm, mask_atm, 2.135, 2.137)
 
             new_mask_atm = barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
@@ -272,8 +272,8 @@ def calculate_prec(bands, plot_bary=False, plot_atm=False, plot_ste=False, plot_
             pos30kms = wav_atm * (1 - 3e4/Qcalculator.c.value)  # doppler shift
             plt.plot(neg30kms, mask_atm-0.02, "y", label="-30km/s")
             plt.plot(pos30kms, mask_atm-0.01, "m", label="+30km/s")
-            plt.plot(wav_atm, flux_atm/np.max(flux_atm),"r--", label="Flux atm")
-            plt.ylim([0.9,1.05])
+            plt.plot(wav_atm, flux_atm/np.max(flux_atm), "r--", label="Flux atm")
+            plt.ylim([0.9, 1.05])
             plt.legend()
             plt.show()
 
@@ -282,11 +282,10 @@ def calculate_prec(bands, plot_bary=False, plot_atm=False, plot_ste=False, plot_
 
             sys.exit(0)
         else:
-            nmask_atm = barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
+            mask_atm = barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
         print(("There were {0:d} unmasked pixels out of {1:d}, or {2:.1%}."
                "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) /
                           len(mask_atm)))
-
 
         if plot_atm:
             # moved ploting code to separate code, eniric.plotting_functions.py
@@ -414,18 +413,16 @@ def calculate_prec(bands, plot_bary=False, plot_atm=False, plot_ste=False, plot_
                             flux_plot_M9.append(flux_stellar)
 
     if(plot_flux):
-       plt_functions.plot_nIR_flux()
+        plt_functions.plot_nIR_flux()
 
-    if paper_plot:
+    if paper_plots:
         plt_functions.plot_paper_plots()
-
 
     else:
         return results
 
 
 ###############################################################################
-
 def compare_output():
     """
     function that compares a spectrum prior to convolution, after, and after resampling
@@ -491,12 +488,14 @@ def calculate_all_masked():
     print(("Inside the bands, there were {0:.0f} unmasked pixels out of {1:d}"
            ", or {2:.1%}.").format(np.sum(bands_masked), len(bands_masked),
             np.sum(bands_masked) / len(bands_masked)))
+
 def RV_cumulative(RV_vector):
     """
     funtion that calculates the cumulative RV vector weighted_error
     """
 
-    return[weighted_error(RV_vector[:2]), weighted_error(RV_vector[:3]), weighted_error(RV_vector[:4]), weighted_error(RV_vector)]
+    return [weighted_error(RV_vector[:2]), weighted_error(RV_vector[:3]),
+            weighted_error(RV_vector[:4]), weighted_error(RV_vector)]
 
 
 def weighted_error(RV_vector):
