@@ -625,7 +625,6 @@ def moving_average(x, window_size):
 ###############################################################################
 
 if __name__ == "__main__":
-    calculate_prec(band)
     args = vars(_parser())
     opts = {k: args[k] for k in args}
     sys.exit(main(**opts))
