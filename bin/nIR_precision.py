@@ -8,6 +8,7 @@ Updated for eniric/python3 - Janurary 2017
 """
 import sys
 import argparse
+import itertools
 import numpy as np
 from sys import exit
 import matplotlib.pyplot as plt
@@ -405,6 +406,7 @@ def calculate_prec(bands, plot_bary=False, plot_atm=False, plot_ste=False, plot_
         flux_plot_M6 = []
         wav_plot_M9 = []
         flux_plot_M9 = []
+        #iterations = itertools.product(spectral_types, vsini, R, sampling)
         for star in spectral_types:
             for vel in vsini:
                 for resolution in R:
