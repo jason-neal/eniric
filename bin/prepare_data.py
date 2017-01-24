@@ -76,7 +76,6 @@ def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=N
     stellar_dict = {"M0": 3900.0, "M3": 3500.0, "M6": 2800.0, "M9": 2600.0}
     # Add temperature of stellar_type to temp list
     for star in startype:
-        print(star)
         try:
             temp.append(stellar_dict[star])
         except KeyError:
