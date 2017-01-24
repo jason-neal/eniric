@@ -19,11 +19,6 @@ from astropy.io import fits
 from eniric.IOmodule import pdwrite_2col
 from eniric.utilities import wav_selector
 
-data_dir = "../data/PHOENIX-ACES_spectra/"
-phoenix_dir = "../../../data/fullphoenix/"
-
-wavelength_file = "WAVE_PHOENIX-ACES-AGSS-COND-2011.fits"
-
 
 def _parser():
     """Take care of all the argparse stuff.
@@ -56,8 +51,14 @@ def _parser():
 
 
 def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=None, phoenix_dir=None):
+    if data_dir is None:
+        data_dir = "../data/PHOENIX-ACES_spectra/"
+    if phoenix_dir is None:
+        phoenix_dir = "../../../data/fullphoenix/"
 
-    wavelength = fits.getdata(data_dir + wavelength_file)  # Phoenix wavelength
+    # Get Phoenix wavelength data
+    wavelength_file = "WAVE_PHOENIX-ACES-AGSS-COND-2011.fits"
+    wavelength = fits.getdata(data_dir + wavelength_file)
 
     if flux_type == "photon":
         file_suffix = "_wave_photon.dat"
