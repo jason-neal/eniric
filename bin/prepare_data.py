@@ -14,10 +14,11 @@ import re
 import os
 import sys
 import argparse
+import numpy as np
 import pandas as pd
 from astropy.io import fits
 from eniric.IOmodule import pdwrite_2col
-from eniric.utilities import wav_selector
+import eniric.utilities as utils
 
 
 def _parser():
@@ -81,16 +82,37 @@ def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=N
         except KeyError:
             print("Stellar type {0} is not implemented here (yet), submit and issue.".format(star))
 
-    # get all phoenix fits files we want to convert
+    # Get all phoenix fits files we want to convert
     for (path, dirs, files) in os.walk(phoenix_dir):
-        # print(path)
-        # print(dirs)
-        phoenix_files = [f for f in files if (
-                         f.endswith("PHOENIX-ACES-AGSS-COND-2011-HiRes.fits") and (re.search("03900-4.50-0.0", f) is not None))]
+
+        phoenix_files = []
+        for f in files:
+            # Test if filename meets conditions
+            end_cond = f.endswith("PHOENIX-ACES-AGSS-COND-2011-HiRes.fits")
+
+            try:
+                if "Alpha=" in f:
+                    (match_temp, match_logg, match_feh, match_alpha) = (
+                         re.search(r"(\d{5})\-(\d\.\d\d)([\+\-]\d\.\d)\.Alpha=([\+\-]\d\.\d\d)\.", f).groups())
+                    alpha_cond = float(match_alpha) in alpha
+                else:
+                    (match_temp, match_logg, match_feh) = re.search(r"(\d{5})\-(\d\.\d\d)([\+\-]\d\.\d)", f).groups()
+                    alpha_cond = True  # To make work
+            except AttributeError:
+                """ Trying to access NoneType when no match found."""
+                continue
+
+            temp_cond = float(match_temp) in temp
+            feh_cond = float(match_feh) in metalicity
+            logg_cond = float(match_logg) in logg
+
+            if np.all([end_cond, temp_cond, feh_cond, logg_cond, alpha_cond]):  # All conditions met
+                # Matching file found
+                phoenix_files.append(f)
+            else:
+                pass
 
         for phoenix_file in phoenix_files:
-            else:
-
 
             Z_folder = path.split("/")[-1]
             os.makedirs(os.path.join(data_dir, Z_folder), exist_ok=True)  # make folder if doesn't exit
