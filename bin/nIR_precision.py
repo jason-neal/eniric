@@ -269,7 +269,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
 
         if plot_bary:  # Ploting the two masks alongside the flux
             # Shorten arrays to make quicker
-            save_results = True
+            save_results = False
             if not save_results:
                 __, flux_atm = utils.wav_selector(wav_atm, flux_atm, 2.135, 2.137)
                 wav_atm, mask_atm = utils.wav_selector(wav_atm, mask_atm, 2.135, 2.137)
