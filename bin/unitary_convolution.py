@@ -131,7 +131,7 @@ for vel in vsini:
 # Resolution convolution on ones.
 for Res in R:
     flux_conv_res = resolution_convolution(wav, wav, ones_photons, Res,
-                                           FWHM_lim=5.0)
+                                           fwhm_lim=5.0)
     filename = (base_dir + "../unitary_convolution/" + "Spectrum_" +
                 name_model + "_R" + str(int(Res/1000)) + "k.txt")
 
