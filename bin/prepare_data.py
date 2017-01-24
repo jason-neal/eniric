@@ -31,34 +31,31 @@ def _parser():
     :returns: the args
     """
     parser = argparse.ArgumentParser(description='Helpful discription')
-    parser.add_argument("-s", '--startype', help='Spectral Type e.g "MO"', type=str, nargs="+")
-    parser.add_argument("-v", "--vsini", help="Rotational velocity of source",
-                        type=float, nargs="+")
-    parser.add_argument("-R", "--resolution", help="Observational resolution",
-                        type=float, nargs="+")
-    parser.add_argument("-b", "--band", type=str, default=["ALL"],
-                        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
-                        help="Wavelength band to select", nargs="+")
-    parser.add_argument('-d', '--data_dir', help='Data directory', type=str, default=None)
-    parser.add_argument('--sample_rate', default=[3.0], type=float, nargs="+",
-                        help="Resample rate, pixels per FWHM. Default=3.0")
-    parser.add_argument('--results', default=None, type=str,
-                        help='Result directory Default=data_dir+"/results/"')
-    parser.add_argument('--resamples', default=None, type=str,
-                        help='Resample directory. Default=data_dir+"/resampled/"')
-    parser.add_argument('--noresample', help='Resample output', default=False,
-                        action="store_true")
-    parser.add_argument('--normalize', help='Normalize for wavelength step', default=True,
-                        action="store_false")
-    parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
-                        default=False, action="store_true")
+    parser.add_argument("-s", '--startype', help='Spectral Type e.g "MO"', default=["M0"],
+                        type=str, nargs="+")
+    parser.add_argument("-t", "--temp", help="Temperature of stars to prepare",
+                        type=float, nargs="+", default=[3900.0], choices=list(np.arange(2300, 7000, 100.0))+list(np.arange(7000, 12001, 200.0)))
+    parser.add_argument("-l", "--logg", help="Logg for stellar models.", default=[4.50],
+                        type=float, nargs="+", choices=np.arange(0, 6.01, 0.5))
+    parser.add_argument("-m", "--metalicity", type=float, default=[0.0],
+                        help="Metalicity values.", nargs="+")
+                        # choices=[list(np.arange(-4.0, -2.0, 1))+list(np.arange(-2.0, 1.01, 0.5))]
+    parser.add_argument("-a", "--alpha", type=float, default=[0.0],
+                        choices=np.arange(-0.2,1.201, 0.2),
+                        help="Metalicity values.", nargs="+")
+    parser.add_argument("-f", "--flux_type", type=str, default="photon",
+                        choices=["photon", "energy"],
+                        help="Type of flux to use. Default converts it to photons.")
+    parser.add_argument('-d', '--data_dir', help='Data directory to save results.',
+                        type=str, default=None)
+    parser.add_argument('-p', '--phoenix_dir', default=None, type=str,
+                        help='Phoenix directory to find fits files')
+
     args = parser.parse_args()
     return args
 
 
-def main(startype, vsini, resolution, band, data_dir=None, results=None,
-         resamples=None, sample_rate=3.0, noresample=False, normalize=True,
-         org=False, flux_type="photon"):
+def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=None, phoenix_dir=None):
 
     wavelength = fits.getdata(data_dir + wavelength_file)  # Phoenix wavelength
 
