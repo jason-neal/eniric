@@ -174,13 +174,16 @@ def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
             mask_atm_slice = np.asarray(mask_atm_slice, dtype=bool)    # Assuring type bool
 
             # Make mask value false if there are 3 or more consecutive zeros in slice.
-            len_consec_zeros = consecutive_truths(mask_atm_slice is False)
-            if np.max(len_consec_zeros) >= 3:  # Invert mask to make zeros true with ~
+            len_consec_zeros = consecutive_truths(~mask_atm_slice)
+            if np.all(~mask_atm_slice):    # All pixels of slice is zeros (shouldn't get here)
+                mask_atm_30kms[i] = False
+            elif np.max(len_consec_zeros) >= 3:
                 mask_atm_30kms[i] = False
             else:
                 mask_atm_30kms[i] = True
                 if np.sum(~mask_atm_slice) > 3:
-                    print("There were {0} zeros in this barycentric shift but none were 3 consecutive!".format(np.sum(~mask_atm_slice)))
+                    # print(len_consec_zeros)
+                    print("There were {0} zeros out of {1} in this barycentric shift but none were 3 consecutive!".format(np.sum(~mask_atm_slice), len(mask_atm_slice)))
 
     masked_end = pixels_total - np.sum(mask_atm_30kms)
     print(("New Barycentric impact affects the number of masked pixels by {0:04.1%} due to the atmospheric"
