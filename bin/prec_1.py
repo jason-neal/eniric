@@ -132,6 +132,7 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
         bands = band
     if vsini is None:
         vsini = ["1.0", "5.0", "10.0"]
+        
     if resolution is None:
         resolution = ["60k", "80k", "100k"]
     else:
