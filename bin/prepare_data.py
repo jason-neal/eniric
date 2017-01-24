@@ -51,6 +51,12 @@ def _parser():
 
 
 def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=None, phoenix_dir=None):
+    """ Prepare datafiles for phoenix models that match the input parameters.
+
+    This add the wavelength information to each spectra and converts to microns/photons if the flux_tpye="photons" is given.
+    We do realise that this is a waste of space and it would be more storage efficent to just read in the phoenix raw fits files and wavelength file when needed.
+
+    """
     if data_dir is None:
         data_dir = "../data/PHOENIX-ACES_spectra/"
     if phoenix_dir is None:
@@ -61,7 +67,7 @@ def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=N
     wavelength = fits.getdata(data_dir + wavelength_file)
 
     if flux_type == "photon":
-        file_suffix = "_wave_photon.dat"
+        file_suffix = "_wave_photon.dat"  # For saving output
     else:
         file_suffix = "_wave.dat"
 
