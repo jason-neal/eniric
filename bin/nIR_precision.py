@@ -6,6 +6,7 @@ Created on Fri Feb  6 15:42:03 2015
 Updated for eniric/python3 - Janurary 2017
 @author: Jason Neal
 """
+import re
 import sys
 import argparse
 import itertools
@@ -43,6 +44,7 @@ def _parser():
     args = parser.parse_args()
     return args
 
+file_error_to_catch = getattr(__builtins__,'FileNotFoundError', IOError)
 
 def main(bands="J", plot_bary=False):
     """ Main function that calls calc_precision.
@@ -267,7 +269,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
 
         if plot_bary:  # Ploting the two masks alongside the flux
             # Shorten arrays to make quicker
-            save_results = True
+            save_results = False
             if not save_results:
                 __, flux_atm = utils.wav_selector(wav_atm, flux_atm, 2.135, 2.137)
                 wav_atm, mask_atm = utils.wav_selector(wav_atm, mask_atm, 2.135, 2.137)
@@ -323,7 +325,21 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}"
                             "_res{4}.txt").format(star, band, vel, res, smpl)
             # print("Working on "+file_to_read+".")
-            wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir + file_to_read)
+            try:
+                wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir + file_to_read)
+            except file_error_to_catch:
+                # Trun list of strings into strings without symbols  ["J", "K"] -> J K
+                spectral_str = re.sub(r"[\[\]\"\'\,]", "", str(spectral_types))
+                band_str = re.sub(r"[\[\]\"\'\,]", "", str(bands))
+                vsini_str = re.sub(r"[\[\]\"\'\,]", "", str(vsini))
+                res_str = re.sub(r"[\[\]\"\'\,]", "", str(resolution))
+                sampling_str = re.sub(r"[\[\]\"\'\,]", "", str(sampling))
+
+                print(("\nFor just this file I suggest you run\n\tpython nIR_run.py -s {0} -b {1} -v {2} -R {3} "
+                       "--sample_rate {4}\nOr for all the combinations you ran here\n\tpython nIR_run.py -s {5}"
+                       " -b {6} -v {7} -R {8} --sample_rate {9}"
+                       "").format(star, band, vel, res, smpl, spectral_str, band_str, vsini_str, res_str, sampling_str))
+                raise
             # removing boundary effects
             wav_stellar = wav_stellar[2:-2]
             flux_stellar = flux_stellar[2:-2]
