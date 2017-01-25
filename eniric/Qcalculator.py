@@ -15,10 +15,13 @@ from astropy.constants import c
 import astropy.units as u
 from astropy.units import Quantity
 
+
 def RVprec_test(spectrum_file="resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt"):
     """Test a RVprec_calc for a singal specturm.
     """
-    data = pd.read_table(spectrum_file, comment='#', header=None, names=["wavelength", "flux"], dtype=np.float64, delim_whitespace=True)
+    data = pd.read_table(spectrum_file, comment='#', header=None,
+                         names=["wavelength", "flux"], dtype=np.float64,
+                         delim_whitespace=True)
     wavelength, flux = data["wavelength"].values, data["flux"].values
 
     return RVprec_calc(wavelength, flux)
@@ -137,6 +140,7 @@ def RVprec_calc_chunks(wavelength, flux):
         Wavelength values of chunks.
     flux: list(array-like)
         Flux values of the chunks.
+
     Returns
     -------
     RV_value: Quantity scalar
@@ -181,7 +185,9 @@ def RV_prec_calc_Trans(wavelength, flux, transmission):
 
 
 def SqrtSumWisTrans(wavelength, flux, transmission):
-    """ Calculation of the SquareRoot of the sum of the Wis for a spectrum, considering transmission
+    """ Calculation of the SquareRoot of the sum of the Wis for a spectrum, considering transmission.
+
+    The transmission reduces the flux so has an affect on the variance.
 
     Parameters
     ----------
@@ -197,6 +203,7 @@ def SqrtSumWisTrans(wavelength, flux, transmission):
     SqrtSumWisTrans: array-like or Quantity
         Squarerooted sum of pixel weigths including effects of transmission.
     """
+
     if not isinstance(wavelength, np.ndarray):
         print("Your wavelength and flux should really be numpy arrays! Converting them here.")
         wavelength = np.asarray(wavelength)
@@ -205,10 +212,23 @@ def SqrtSumWisTrans(wavelength, flux, transmission):
     if not isinstance(transmission, np.ndarray):
         transmission = np.asarray(transmission)
 
+    # Check for units of transmission
+    if isinstance(transmission, u.Quantity):
+        if not transmission.unit == u.dimensionless_unscaled:
+            raise TypeError("transmission has a unit that is not dimensionless and unscaled!")
+
+        # Check for values of quantity transmission
+        if np.any(transmission.value > 1) or np.any(transmission.value < 0):
+            raise ValueError("Transmission should range from 0 to 1 only.")
+    else:
+        # Check for values of transmission
+        if np.any(transmission > 1) or np.any(transmission < 0):
+            raise ValueError("Transmission should range from 0 to 1 only.")
+
     delta_F = np.diff(flux)
     delta_l = np.diff(wavelength)
 
-    derivF_over_lambda = delta_F/delta_l
+    derivF_over_lambda = delta_F / delta_l
 
     if isinstance(flux, u.Quantity):
         """ Units of variance are squared """
