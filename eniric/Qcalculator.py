@@ -130,12 +130,16 @@ def RVprec_calc_chunks(wavelength, flux):
 
     """
 
-    RV_vector = np.array([RVprec_calc(wav_chunk, flux_chunk) for wav_chunk,
-                          flux_chunk in zip(wavelength, flux)])
 
-    RV_value = 1.0 / (np.sqrt(np.sum((1.0 / RV_vector)**2.0)))
+    slice_rvs = np.empty(len(wavelength), dtype=float) # Radial velocity of each slice
+    for i, (wav_slice, flux_slice) in enumerate(zip(wavelength, flux)):
+        wav_slice = np.array(wav_slice)
+        flux_slice = np.array(flux_slice)
+        rv_val = RVprec_calc(wav_slice, flux_slice)
+        slice_rvs[i] = rv_val # .value   # strip constants unit
+    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / slice_rvs)**2.0)))
 
-    return RV_value
+    return rv_value
 
 ###############################################################################
 
