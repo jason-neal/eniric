@@ -63,3 +63,18 @@ def test_SqrtSumWis():
 
     # Test relation to RVprec_calc
     assert Q.RVprec_calc(wav, flux) == const.c / sqrtsumwis
+
+@pytest.mark.skip(reason="Not Compeleted")
+def test_RV_prec_calc_Trans():
+
+    """ Trans should not have units """
+    # Value should be less then normal if trans <=1
+    assert False
+
+
+@pytest.mark.skip(reason="Not Compeleted")
+def test_SQRTSumWisTrans():
+
+    """ Trans should not have units """
+
+    assert False
