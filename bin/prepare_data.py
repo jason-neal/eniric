@@ -17,8 +17,7 @@ import argparse
 import numpy as np
 import pandas as pd
 from astropy.io import fits
-from eniric.IOmodule import pdwrite_2col
-import eniric.utilities as utils
+import eniric.IOmodule as IO
 
 
 def _parser():
@@ -141,12 +140,12 @@ def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=N
 
                 spectra_photon = spectra_micron * wavelength_micron  # Ignoring constants h*c in photon energy equation
 
-                result = pdwrite_2col(output_filename, wavelength_micron, spectra_photon,
-                                      header=["# Wavelength (micron)", r"Flux (photon/s/cm^2)"])
+                result = IO.pdwrite_cols(output_filename, wavelength_micron, spectra_photon,
+                                  header=["# Wavelength (micron)", r"Flux (photon/s/cm^2)"], float_format="%.7f")
 
             else:
-                result = pdwrite_2col(output_filename, wavelength, spectra_micron,
-                                      header=["# Wavelength (Angstom)", r"Flux (erg/s/cm^2/micron)"])
+                result = IO.pdwrite_cols(output_filename, wavelength, spectra_micron,
+                                  header=["# Wavelength (Angstom)", r"Flux (erg/s/cm^2/micron)"], float_format=None)
 
             if not result:
                 print("Successfully wrote to ", output_filename)
