@@ -197,11 +197,24 @@ def SqrtSumWisTrans(wavelength, flux, transmission):
     SqrtSumWisTrans: array-like or Quantity
         Squarerooted sum of pixel weigths including effects of transmission.
     """
+    if not isinstance(wavelength, np.ndarray):
+        print("Your wavelength and flux should really be numpy arrays! Converting them here.")
+        wavelength = np.asarray(wavelength)
+    if not isinstance(flux, np.ndarray):
+        flux = np.asarray(flux)
+    if not isinstance(transmission, np.ndarray):
+        transmission = np.asarray(transmission)
 
     delta_F = np.diff(flux)
     delta_l = np.diff(wavelength)
 
     derivF_over_lambda = delta_F/delta_l
 
+    if isinstance(flux, u.Quantity):
+        """ Units of variance are squared """
+        flux_variance = flux.value * (flux.unit)**2
+    else:
+        flux_variance = flux
+
     return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivF_over_lambda**2.0 /
-                          (flux[:-1] / transmission[:-1]**2.0)))
+                          (flux_variance[:-1] / transmission[:-1]**2.0)))
