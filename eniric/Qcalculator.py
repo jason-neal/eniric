@@ -112,8 +112,14 @@ def SqrtSumWis(wavelength, flux):
 
     derivF_over_lambda = delta_F / delta_l
 
+    if isinstance(flux, u.Quantity):
+        """ Units of variance are squared """
+        flux_variance = flux.value * (flux.unit)**2
+    else:
+        flux_variance = flux
+
     return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivF_over_lambda**2.0 /
-                          flux[:-1]))
+                          flux_variance[:-1]))
 
 
 def RVprec_calc_chunks(wavelength, flux):
