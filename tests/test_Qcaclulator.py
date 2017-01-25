@@ -2,9 +2,8 @@
 
 import pytest
 import numpy as np
-import eniric.Qcalculator as Q
-import eniric.IOmodule as IO
 import astropy.units as u
+import eniric.Qcalculator as Q
 import astropy.constants as const
 
 # test RVprec_calc retuns a single values
@@ -34,6 +33,7 @@ def test_RVprec_calc():
     assert rv == rv2
     assert rv2.unit == u.meter / u.second
 
+
 def test_RVprec_calc_with_lists():
     """ Test that it can hande list input also."""
     wav = list(np.arange(100))
@@ -46,7 +46,8 @@ def test_RVprec_calc_with_lists():
 
 
 def test_SqrtSumWis():
-    """ Test that SqrtSumWis can hande inputs as Quantities or unitless and returns a dimensionless unscaled Quantity. """
+    """ Test that SqrtSumWis can hande inputs as Quantities or unitless
+    and returns a dimensionless unscaled Quantity. """
     wav = np.arange(100)
     flux = np.random.random(100)
 
@@ -64,17 +65,75 @@ def test_SqrtSumWis():
     # Test relation to RVprec_calc
     assert Q.RVprec_calc(wav, flux) == const.c / sqrtsumwis
 
-@pytest.mark.skip(reason="Not Compeleted")
+
 def test_RV_prec_calc_Trans():
 
     """ Trans should not have units """
-    # Value should be less then normal if trans <=1
-    assert False
+    wav = np.arange(100)
+    flux = np.random.random(100)
+    trans = np.random.random(100)
+
+    rv_trans = Q.RV_prec_calc_Trans(wav, flux, trans)
+    assert not hasattr(rv_trans.value, '__len__')  # assert scalar
+    assert rv_trans.unit == u.meter / u.second
+
+    # dimensionless_unscaled unit is ok
+    rv_trans2 = Q.RV_prec_calc_Trans(wav, flux, trans * u.dimensionless_unscaled)
+    assert not hasattr(rv_trans2.value, '__len__')  # assert  scalar
+    assert rv_trans2.unit == u.meter / u.second
+
+    assert rv_trans == rv_trans2
+
+    with pytest.raises(TypeError):
+        # transmission mistakenly given as a flux unit
+        Q.RV_prec_calc_Trans(wav, flux, (trans/u.s)/(u.centimeter**2))
+
+    with pytest.raises(ValueError):
+        Q.RV_prec_calc_Trans(wav, flux, trans+1)
+
+    with pytest.raises(ValueError):
+        Q.RV_prec_calc_Trans(wav, flux, trans*-5)
 
 
-@pytest.mark.skip(reason="Not Compeleted")
 def test_SQRTSumWisTrans():
+    """ Test squareroot sum of weights when incuding change of variance due to atmospheric transmission."""
+    wav = np.arange(100)
+    flux = np.random.random(100)
+    trans = np.random.random(100)
 
-    """ Trans should not have units """
+    swrtsum_trans = Q.SqrtSumWisTrans(wav, flux, trans)
+    assert not isinstance(swrtsum_trans, u.Quantity)  # Doesn't turn into quantity if does not have to.
+    assert not hasattr(swrtsum_trans, '__len__')  # assert scalar
 
-    assert False
+    # dimensionless_unscaled unit is ok for transmission
+    sqrtsum_trans2 = Q.SqrtSumWisTrans(wav, flux, trans * u.dimensionless_unscaled)
+    assert not hasattr(sqrtsum_trans2.value, '__len__')   # assert scalar
+    assert isinstance(sqrtsum_trans2, u.Quantity)
+    assert sqrtsum_trans2.unit == u.dimensionless_unscaled  # unscaled and dimentionless quantitiy
+
+    sqrtsum_trans3 = Q.SqrtSumWisTrans(wav * u.micron, flux, trans)
+    assert not hasattr(sqrtsum_trans3.value, '__len__')  # assert value is a scalar
+    assert isinstance(sqrtsum_trans3, u.Quantity)
+    assert sqrtsum_trans3.unit == u.dimensionless_unscaled   # unscaled and dimentionless quantitiy
+
+    with pytest.raises(TypeError):
+        # transmission mistakenly given as a flux unit
+        Q.SqrtSumWisTrans(wav, flux, (trans/u.s)/(u.centimeter**2))
+
+    with pytest.raises(ValueError):
+        Q.SqrtSumWisTrans(wav, flux, trans+1)
+
+    with pytest.raises(ValueError):
+        Q.SqrtSumWisTrans(wav, flux, trans*-5)
+
+
+def test_transmission_reduces_precision():
+    """Check that a transmission vector reduces precision calcualtion."""
+    wav = np.arange(100)
+    flux = np.random.random(100)
+    transmission = np.random.random(100)
+    # Value should be less then normal if trans <=1
+    assert Q.RVprec_calc(wav, flux) < Q.RV_prec_calc_Trans(wav, flux, transmission)
+
+    # Unitary transmission should give equivalent result.
+    assert Q.RVprec_calc(wav, flux) == Q.RV_prec_calc_Trans(wav, flux, np.ones_like(wav))
