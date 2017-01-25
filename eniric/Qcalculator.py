@@ -29,14 +29,14 @@ def RVprec_calc(wavelength, flux):
 
     Parameters
     ----------
-    wavelength: array-like
+    wavelength: array-like or Quantity array
         Wavelength of spectrum.
-    flux: array-like
+    flux: array-like or Quantity array
         Flux of spectrum.
 
     Returns
     -------
-    RVrms : float
+    RVrms : Quantity scalar
        Radial velocity precision of spectra in m/s.
 
     Notes
@@ -76,14 +76,14 @@ def SqrtSumWis(wavelength, flux):
 
     Parameters
     ----------
-    wavelength: array-like
+    wavelength: array-like or Quantity array
         Wavelength of spectrum.
-    flux: array-like
+    flux: array-like or Quantity array
         Flux of spectrum.
 
     Returns
     -------
-    sqrt{sum{W(i)}}: float
+    sqrt{sum{W(i)}}: float or Quantity scalar
        Squareroot of the sum of the pixel weigths(Wis)
 
     Notes
@@ -102,7 +102,7 @@ def SqrtSumWis(wavelength, flux):
 
 """
     if not isinstance(wavelength, np.ndarray):
-        print("Your wavelength and flux should really be np.arrays! Converting them here.")
+        print("Your wavelength and flux should really be numpy arrays! Converting them here.")
         wavelength = np.asarray(wavelength)
     if not isinstance(flux, np.ndarray):
         flux = np.asarray(flux)
@@ -139,7 +139,7 @@ def RVprec_calc_chunks(wavelength, flux):
         Flux values of the chunks.
     Returns
     -------
-    RV_value: float
+    RV_value: Quantity scalar
         Weighted average RV value of spectral chunks.
 
     """
@@ -157,45 +157,44 @@ def RVprec_calc_chunks(wavelength, flux):
 
     return rv_value
 
-###############################################################################
 
+###############################################################################
 def RV_prec_calc_Trans(wavelength, flux, transmission):
-    """
-    The same as RV_prec_calc, but considering a transmission different than zero
+    """ The same as RV_prec_calc, but considering a transmission different than zero
 
     Parameters
     ----------
-    wavelength: array-like
+    wavelength: array-like or Quantity array
         Wavelength array
-    flux: array-like
+    flux: array-like or Quantity array
         Flux array
     transmission: array-like
         Transmission array
 
     Returns
     -------
-    RVrms: float
+    RVrms: Quantity scalar
         Radial velocity precision for a spectrum affected by atmospheric transmission
-"""
+    """
+
     return c / SqrtSumWisTrans(wavelength, flux, transmission)
 
 
 def SqrtSumWisTrans(wavelength, flux, transmission):
-    """
-    Calculation of the SquareRoot of the sum of the Wis for a spectrum, considering transmission
+    """ Calculation of the SquareRoot of the sum of the Wis for a spectrum, considering transmission
 
     Parameters
     ----------
-    wavelength: array-like
+    wavelength: array-like or Quantity array
         Wavelength array
-    flux: array-like
+    flux: array-like or Quantity array
         Flux array
     transmission: array-like
         Transmission array
 
     Returns
     -------
-    SqrtSumWisTrans: array-like
+    SqrtSumWisTrans: array-like or Quantity
         Squarerooted sum of pixel weigths including effects of transmission.
     """
 
