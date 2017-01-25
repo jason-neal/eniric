@@ -12,8 +12,10 @@ import numpy as np
 import pandas as pd
 # c = 299792458  # m/s
 from astropy.constants import c
+import astropy.units as u
+from astropy.units import Quantity
 
-def RVprec_test(spectrum_file= "resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt"):
+def RVprec_test(spectrum_file="resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt"):
     """Test a RVprec_calc for a singal specturm.
     """
     data = pd.read_table(spectrum_file, comment='#', header=None, names=["wavelength", "flux"], dtype=np.float64, delim_whitespace=True)
@@ -99,6 +101,12 @@ def SqrtSumWis(wavelength, flux):
     calculated following Connes (1985).
 
 """
+    if not isinstance(wavelength, np.ndarray):
+        print("Your wavelength and flux should really be np.arrays! Converting them here.")
+        wavelength = np.asarray(wavelength)
+    if not isinstance(flux, np.ndarray):
+        flux = np.asarray(flux)
+
     delta_F = np.diff(flux)
     delta_l = np.diff(wavelength)
 
@@ -130,13 +138,15 @@ def RVprec_calc_chunks(wavelength, flux):
 
     """
 
+    # Turn ndarray into quantity array.
+    slice_rvs = Quantity(np.empty(len(wavelength), dtype=float), unit=u.meter/u.second)  # Radial velocity of each slice
 
-    slice_rvs = np.empty(len(wavelength), dtype=float) # Radial velocity of each slice
     for i, (wav_slice, flux_slice) in enumerate(zip(wavelength, flux)):
         wav_slice = np.array(wav_slice)
         flux_slice = np.array(flux_slice)
-        rv_val = RVprec_calc(wav_slice, flux_slice)
-        slice_rvs[i] = rv_val # .value   # strip constants unit
+
+        slice_rvs[i] = RVprec_calc(wav_slice, flux_slice)
+
     rv_value = 1.0 / (np.sqrt(np.sum((1.0 / slice_rvs)**2.0)))
 
     return rv_value
