@@ -75,8 +75,12 @@ def main(bands="J", plot_bary=False):
                              plot_atm=False, plot_ste=False, plot_flux=False,
                              paper_plots=False, offset_RV=0.0)
 
+    print("{Combination\t\tPrec_1\t\tPrec_2\t\tPrec_3")
+    print("-"*20)
+    for key in results:
+        print("{0:s}\t\t{1:0.4f}\t{2:0.4f}\t{3:0.4f}".format(key, results[key][0], results[key][1], results[key][2]))
     # Save precision results
-    return results
+    # return results
 
 def prepare_atmopshere(atmmodel):
     """ Read in atmopheric model and prepare. """
