@@ -160,6 +160,11 @@ def RVprec_calc_masked(wavelength, flux, mask):
     A test for the failing condition is added so that if ever encountered we
     can investigate the effect on he previously published results.
     """
+    if mask is not None:
+        if mask[0] is False:  # First value of mask is False was a bug in original code
+            print(("{0:s}\nWarning\nA condition that would have given bad "
+                   "precision the by broken clumping function was found.\nNeed "
+                   "to pinpoint this result!\n{0:s}\n").format("#"*40))
     # numpy masked arrays consider 1 to be masked and zero to be unmasked. We want the 1s hence clump masked.
     wavelength_clumps = [wavelength[s] for s in np.ma.clump_masked(mask)]
     flux_clumps = [wavelength[s] for s in np.ma.clump_masked(mask)]
@@ -219,6 +224,11 @@ def bug_fixed_clumping_method(wav, flux, mask):
 
     There was a signifcant bug which was fixed.
     The returned values were dependant on the first value in the mask. """
+    if mask[0] is False:  # First value of mask is False was a bug in original code
+        print(("{0:s}\nWarning\nA condition that would have given bad "
+               "precision the by broken clumping function was found.\nNeed "
+               "to find the model parameters for this!\n{0:s}\n").format("#"*40))
+
     if mask[0] == 1:
         wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0]+1)[::2]
         flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0]+1)[::2]
