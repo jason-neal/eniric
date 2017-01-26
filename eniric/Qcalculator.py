@@ -12,11 +12,16 @@ import numpy as np
 import pandas as pd
 # c = 299792458  # m/s
 from astropy.constants import c
+import astropy.units as u
+from astropy.units import Quantity
 
-def RVprec_test(spectrum_file= "resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt"):
+
+def RVprec_test(spectrum_file="resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt"):
     """Test a RVprec_calc for a singal specturm.
     """
-    data = pd.read_table(spectrum_file, comment='#', header=None, names=["wavelength", "flux"], dtype=np.float64, delim_whitespace=True)
+    data = pd.read_table(spectrum_file, comment='#', header=None,
+                         names=["wavelength", "flux"], dtype=np.float64,
+                         delim_whitespace=True)
     wavelength, flux = data["wavelength"].values, data["flux"].values
 
     return RVprec_calc(wavelength, flux)
@@ -27,14 +32,14 @@ def RVprec_calc(wavelength, flux):
 
     Parameters
     ----------
-    wavelength: array-like
+    wavelength: array-like or Quantity array
         Wavelength of spectrum.
-    flux: array-like
+    flux: array-like or Quantity array
         Flux of spectrum.
 
     Returns
     -------
-    RVrms : float
+    RVrms : Quantity scalar
        Radial velocity precision of spectra in m/s.
 
     Notes
@@ -74,14 +79,14 @@ def SqrtSumWis(wavelength, flux):
 
     Parameters
     ----------
-    wavelength: array-like
+    wavelength: array-like or Quantity array
         Wavelength of spectrum.
-    flux: array-like
+    flux: array-like or Quantity array
         Flux of spectrum.
 
     Returns
     -------
-    sqrt{sum{W(i)}}: float
+    sqrt{sum{W(i)}}: float or Quantity scalar
        Squareroot of the sum of the pixel weigths(Wis)
 
     Notes
@@ -99,13 +104,25 @@ def SqrtSumWis(wavelength, flux):
     calculated following Connes (1985).
 
 """
+    if not isinstance(wavelength, np.ndarray):
+        print("Your wavelength and flux should really be numpy arrays! Converting them here.")
+        wavelength = np.asarray(wavelength)
+    if not isinstance(flux, np.ndarray):
+        flux = np.asarray(flux)
+
     delta_F = np.diff(flux)
     delta_l = np.diff(wavelength)
 
     derivF_over_lambda = delta_F / delta_l
 
+    if isinstance(flux, u.Quantity):
+        """ Units of variance are squared """
+        flux_variance = flux.value * (flux.unit)**2
+    else:
+        flux_variance = flux
+
     return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivF_over_lambda**2.0 /
-                          flux[:-1]))
+                          flux_variance[:-1]))
 
 
 def RVprec_calc_masked(wavelength, flux, mask):
@@ -128,7 +145,7 @@ def RVprec_calc_masked(wavelength, flux, mask):
 
     Returns
     -------
-    RV_value: float
+    RV_value: Quantity scalar
         Weighted average RV value of spectral chunks.
 
 
@@ -142,59 +159,93 @@ def RVprec_calc_masked(wavelength, flux, mask):
     wavelength_clumps = [wavelength[s] for s in np.ma.clump_masked(mask)]
     flux_clumps = [wavelength[s] for s in np.ma.clump_masked(mask)]
 
-    RV_vector = np.array([RVprec_calc(wav_chunk, flux_chunk) for wav_chunk,
-                          flux_chunk in zip(wavelength, flux)])
+    # Turn ndarray into quantity array.
+    slice_rvs = Quantity(np.empty(len(wavelength), dtype=float), unit=u.meter/u.second)  # Radial velocity of each slice
 
-    RV_value = 1.0 / (np.sqrt(np.sum((1.0 / RV_vector)**2.0)))
+    for i, (wav_slice, flux_slice) in enumerate(zip(wavelength, flux)):
+        wav_slice = np.array(wav_slice)
+        flux_slice = np.array(flux_slice)
 
-    return RV_value
+        slice_rvs[i] = RVprec_calc(wav_slice, flux_slice)
+
+    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / slice_rvs)**2.0)))
+
+    return rv_value
+
 
 ###############################################################################
-
 def RV_prec_calc_Trans(wavelength, flux, transmission):
-    """
-    The same as RV_prec_calc, but considering a transmission different than zero
+    """ The same as RV_prec_calc, but considering a transmission different than zero
 
     Parameters
     ----------
-    wavelength: array-like
+    wavelength: array-like or Quantity array
         Wavelength array
-    flux: array-like
+    flux: array-like or Quantity array
         Flux array
     transmission: array-like
         Transmission array
 
     Returns
     -------
-    RVrms: float
+    RVrms: Quantity scalar
         Radial velocity precision for a spectrum affected by atmospheric transmission
-"""
+    """
+
     return c / SqrtSumWisTrans(wavelength, flux, transmission)
 
 
 def SqrtSumWisTrans(wavelength, flux, transmission):
-    """
-    Calculation of the SquareRoot of the sum of the Wis for a spectrum, considering transmission
+    """ Calculation of the SquareRoot of the sum of the Wis for a spectrum, considering transmission.
+
+    The transmission reduces the flux so has an affect on the variance.
 
     Parameters
     ----------
-    wavelength: array-like
+    wavelength: array-like or Quantity array
         Wavelength array
-    flux: array-like
+    flux: array-like or Quantity array
         Flux array
     transmission: array-like
         Transmission array
 
     Returns
     -------
-    SqrtSumWisTrans: array-like
+    SqrtSumWisTrans: array-like or Quantity
         Squarerooted sum of pixel weigths including effects of transmission.
     """
+
+    if not isinstance(wavelength, np.ndarray):
+        print("Your wavelength and flux should really be numpy arrays! Converting them here.")
+        wavelength = np.asarray(wavelength)
+    if not isinstance(flux, np.ndarray):
+        flux = np.asarray(flux)
+    if not isinstance(transmission, np.ndarray):
+        transmission = np.asarray(transmission)
+
+    # Check for units of transmission
+    if isinstance(transmission, u.Quantity):
+        if not transmission.unit == u.dimensionless_unscaled:
+            raise TypeError("transmission has a unit that is not dimensionless and unscaled!")
+
+        # Check for values of quantity transmission
+        if np.any(transmission.value > 1) or np.any(transmission.value < 0):
+            raise ValueError("Transmission should range from 0 to 1 only.")
+    else:
+        # Check for values of transmission
+        if np.any(transmission > 1) or np.any(transmission < 0):
+            raise ValueError("Transmission should range from 0 to 1 only.")
 
     delta_F = np.diff(flux)
     delta_l = np.diff(wavelength)
 
-    derivF_over_lambda = delta_F/delta_l
+    derivF_over_lambda = delta_F / delta_l
+
+    if isinstance(flux, u.Quantity):
+        """ Units of variance are squared """
+        flux_variance = flux.value * (flux.unit)**2
+    else:
+        flux_variance = flux
 
     return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivF_over_lambda**2.0 /
-                          (flux[:-1] / transmission[:-1]**2.0)))
+                          (flux_variance[:-1] / transmission[:-1]**2.0)))
