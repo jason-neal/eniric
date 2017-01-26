@@ -207,6 +207,38 @@ def mask_clumping(wave, flux, mask):
     flux_clumps = [flux[s] for s in np.ma.clump_unmasked(masked_flux)]
 
     return wave_clumps, flux_clumps
+
+
+def bug_fixed_clumping_method(wav, flux, mask):
+    """ Old clumping method that is difficult to understand ...[0]+1)[::2].
+
+    There was a signifcant bug which was fixed.
+    The returned values were dependant on the first value in the mask. """
+    if mask[0] == 1:
+        wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0]+1)[::2]
+        flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0]+1)[::2]
+    else:
+        wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0]+1)[1::2]
+        flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0]+1)[1::2]
+
+    wav_chunks = [list(chunk) for chunk in wav_chunks_unformated]
+    flux_chunks = [list(chunk) for chunk in flux_chunks_unformated]
+
+    return wav_chunks, flux_chunks
+
+
+def bugged_clumping_method(wav, flux, mask):
+    """ Old clumping method that is difficult to understand ...[0]+1)[::2].
+    There was a signifcant bug in which the returned values depend on the first value in mask."""
+    wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0]+1)[::2]
+    wav_chunks = [list(chunk) for chunk in wav_chunks_unformated]
+
+    flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0]+1)[::2]
+    flux_chunks = [list(chunk) for chunk in flux_chunks_unformated]
+
+    return wav_chunks, flux_chunks
+
+
 ###############################################################################
 def RV_prec_calc_Trans(wavelength, flux, transmission):
     """ The same as RV_prec_calc, but considering a transmission different than zero
