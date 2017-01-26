@@ -136,11 +136,11 @@ def RVprec_calc_masked(wavelength, flux, mask):
 
     Parameters
     ----------
-    wavelength: array-like
+    wavelength: array-like or list(array-like)
         Wavelength values of chunks.
-    flux: array-like
+    flux: array-like or list(array-like)
         Flux values of the chunks.
-    mask: array-like of bool
+    mask: array-like of bool or None
         Mask of transmission cuts. Zero values are excluded and used to cut up spectrum.
 
     Returns
@@ -152,8 +152,13 @@ def RVprec_calc_masked(wavelength, flux, mask):
     Notes
     -----
     A "clump" is defined as a contiguous region of the array.
-    Solution for clumping comes from https://stackoverflow.com/questions/14605734/numpy-split-1d-array-of-chunks-separated-by-nans-into-a-list-of-the-chunks
+    Solution for clumping comes from
+    https://stackoverflow.com/questions/14605734/numpy-split-1d-array-of-chunks-separated-by-nans-into-a-list-of-the-chunks
 
+    There was a bug in the original clumping code which ment that chose the
+    clump depending on the first element of mask.
+    A test for the failing condition is added so that if ever encountered we
+    can investigate the effect on he previously published results.
     """
     # numpy masked arrays consider 1 to be masked and zero to be unmasked. We want the 1s hence clump masked.
     wavelength_clumps = [wavelength[s] for s in np.ma.clump_masked(mask)]
