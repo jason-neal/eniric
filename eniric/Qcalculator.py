@@ -164,17 +164,16 @@ def RVprec_calc_masked(wavelength, flux, mask):
         if mask[0] is False:  # First value of mask is False was a bug in original code
             print(("{0:s}\nWarning\nA condition that would have given bad "
                    "precision the by broken clumping function was found.\nNeed "
-                   "to pinpoint this result!\n{0:s}\n").format("#"*40))
-    # numpy masked arrays consider 1 to be masked and zero to be unmasked. We want the 1s hence clump masked.
-    wavelength_clumps = [wavelength[s] for s in np.ma.clump_masked(mask)]
-    flux_clumps = [wavelength[s] for s in np.ma.clump_masked(mask)]
+                   "to find the model parameters for this!\n{0:s}\n").format("#"*40))
+        # Turn wavelength and flux into masked arrays
+        wavelength_clumps, flux_clumps = mask_clumping(wavelength, flux, mask)
 
-    # Turn ndarray into quantity array.
-    slice_rvs = Quantity(np.empty(len(wavelength), dtype=float), unit=u.meter/u.second)  # Radial velocity of each slice
-
-    for i, (wav_slice, flux_slice) in enumerate(zip(wavelength, flux)):
-        wav_slice = np.array(wav_slice)
-        flux_slice = np.array(flux_slice)
+    else:
+        # When given a already clumped solution and no mask given.
+        assert isinstance(wavelength, list)
+        assert isinstance(flux, list)
+        wavelength_clumps = wavelength
+        flux_clumps = flux
 
         slice_rvs[i] = RVprec_calc(wav_slice, flux_slice)
 
