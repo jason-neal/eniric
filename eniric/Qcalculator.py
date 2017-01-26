@@ -175,7 +175,24 @@ def RVprec_calc_masked(wavelength, flux, mask):
         wavelength_clumps = wavelength
         flux_clumps = flux
 
-        slice_rvs[i] = RVprec_calc(wav_slice, flux_slice)
+    # Turn ndarray into quantity array.
+    # Need to use np.zeros instead of np.empty. Unassigned zeros are removed after with nonzero.
+    # The "empty" values (1e-300) do not get removed and effect precision
+    slice_rvs = Quantity(np.zeros(len(wavelength), dtype=float),
+                         unit=u.meter / u.second)  # Radial velocity of each slice
+
+    for i, (wav_slice, flux_slice) in enumerate(zip(wavelength_clumps, flux_clumps)):
+        if len(wav_slice) == 1:
+            """ Results in infinate rv, can not determine the slope of single point."""
+            continue
+
+        else:
+            wav_slice = np.asarray(wav_slice)
+            flux_slice = np.asarray(flux_slice)
+            slice_rvs[i] = RVprec_calc(wav_slice, flux_slice)
+
+    # Zeros created from the inital empty array, when skipping single element chunks)
+    slice_rvs = slice_rvs[np.nonzero(slice_rvs)]  # Only use nonzero values.
 
     rv_value = 1.0 / (np.sqrt(np.sum((1.0 / slice_rvs)**2.0)))
 
