@@ -173,6 +173,40 @@ def RVprec_calc_masked(wavelength, flux, mask):
     return rv_value
 
 
+def mask_clumping(wave, flux, mask):
+    """ Clump contiguous wavelength and flux sections into list.
+
+    Note: Our value of mask (0 = bad points) is opposite to usage in
+    np.ma.masked_array (1 = bad)
+    Separate function to enable through testing.
+
+    Parameters
+    ----------
+    wave: array-like of floats
+        The wavelength array to clump.
+    flux: array-like of floats
+        The glux array to clump.
+    mask: array-like of bool
+        Boolean array with True indicating the values to use/keep.
+
+    Returns
+    -------
+    wave_clumps: list(array)
+        List of the valid wavelength sections.
+    flux_clumps: list(array)
+       List of the valid flux sections.
+
+    """
+    # Turn into masked array to use clump_unmasked method.
+    mask = np.asarray(mask, dtype=bool)  # Make it bool so ~ works correctly
+
+    masked_wave = np.ma.masked_array(wave, mask=~mask)   # ma mask is inverted
+    masked_flux = np.ma.masked_array(flux, mask=~mask)   # ma mask is inverted
+
+    wave_clumps = [wave[s] for s in np.ma.clump_unmasked(masked_wave)]
+    flux_clumps = [flux[s] for s in np.ma.clump_unmasked(masked_flux)]
+
+    return wave_clumps, flux_clumps
 ###############################################################################
 def RV_prec_calc_Trans(wavelength, flux, transmission):
     """ The same as RV_prec_calc, but considering a transmission different than zero
