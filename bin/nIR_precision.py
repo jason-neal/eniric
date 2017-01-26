@@ -80,7 +80,15 @@ def main(bands="J", plot_bary=False):
     for key in results:
         print("{0:s}\t\t{1:0.4f}\t{2:0.4f}\t{3:0.4f}".format(key, results[key][0], results[key][1], results[key][2]))
     # Save precision results
+
     # return results
+
+def strip_result_quantities(results):
+    """ Remove the units from Quantity results."""
+    for key in results:
+        results[key] = [results[key][0].value, results[key][1].value, results[key][2].value]
+    return results
+
 
 def prepare_atmopshere(atmmodel):
     """ Read in atmopheric model and prepare. """
