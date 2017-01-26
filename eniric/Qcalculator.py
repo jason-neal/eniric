@@ -108,9 +108,9 @@ def SqrtSumWis(wavelength, flux):
                           flux[:-1]))
 
 
-def RVprec_calc_chunks(wavelength, flux):
+def RVprec_calc_masked(wavelength, flux, mask):
     """ The same as RVprec_calc, but now wavelength and flux are organized into
-    chunks and the weighted average formula is used
+    chunks according to the mask and the weighted average formula is used to calculate the combined precision.
 
     When considering the average RV as delivered by several slices of a
     spectrum, the error on the average is given by the error on a weighted
@@ -119,16 +119,28 @@ def RVprec_calc_chunks(wavelength, flux):
 
     Parameters
     ----------
-    wavelength: list(array-like)
+    wavelength: array-like
         Wavelength values of chunks.
-    flux: list(array-like)
+    flux: array-like
         Flux values of the chunks.
+    mask: array-like of bool
+        Mask of transmission cuts. Zero values are excluded and used to cut up spectrum.
+
     Returns
     -------
     RV_value: float
         Weighted average RV value of spectral chunks.
 
+
+    Notes
+    -----
+    A "clump" is defined as a contiguous region of the array.
+    Solution for clumping comes from https://stackoverflow.com/questions/14605734/numpy-split-1d-array-of-chunks-separated-by-nans-into-a-list-of-the-chunks
+
     """
+    # numpy masked arrays consider 1 to be masked and zero to be unmasked. We want the 1s hence clump masked.
+    wavelength_clumps = [wavelength[s] for s in np.ma.clump_masked(mask)]
+    flux_clumps = [wavelength[s] for s in np.ma.clump_masked(mask)]
 
     RV_vector = np.array([RVprec_calc(wav_chunk, flux_chunk) for wav_chunk,
                           flux_chunk in zip(wavelength, flux)])
