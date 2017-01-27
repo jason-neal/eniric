@@ -388,33 +388,13 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             print("Performing analysis for: ", id_string)
             prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar)
 
-            # precision as given by the second_method
-            """
-            Example Joao
-            a = np.array([1, 5, 6, 8, 16, 34, 5, 7, 10, 83, 12, 6, 17, 18])
-            b = np.array([1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1], dtype=bool)
+            # Precision as given by the second_method
+            wav_stellar_chunks, flux_stellar_chunks = Qcalculator.bug_fixed_clumping_method(wav_stellar, flux_stellar, mask_atm_selected)
 
-            # this will give you a list of numpy arrays
-            c = np.array_split(a, np.where(np.diff(b))[0]+1)[::2]
+            prec_2_old = Qcalculator.RVprec_calc_masked(wav_stellar_chunks, flux_stellar_chunks)
+            prec_2 = Qcalculator.RVprec_calc_masked(wav_stellar, flux_stellar, mask_atm_selected)
 
-            # this will give you a list of lists
-            d = [list(cc) for cc in c]
-            print(d)
-            >>> [[1, 5], [16, 34, 5], [83, 12], [17, 18]]
-            """
-
-            wav_stellar_chunks_unformated = np.array_split(wav_stellar, np.where(np.diff(mask_atm_selected))[0]+1)[::2]
-            wav_stellar_chunks = [list(chunk) for chunk in wav_stellar_chunks_unformated]
-
-            """
-            # test section
-            print("check that lengths are the same", len(wav_stellar), len(mask_atm_selected))
-            print("size of spectra {0:d} vs number of chunks {1:d}".format(len(wav_stellar), len(wav_stellar_chunks)))
-            print("number of true elements in all chunks: {0:d}".format(len(mask_atm_selected[mask_atm_selected])))
-            """
-
-            flux_stellar_chunks_unformated = np.array_split(flux_stellar, np.where(np.diff(mask_atm_selected))[0]+1)[::2]
-            flux_stellar_chunks = [list(chunk) for chunk in flux_stellar_chunks_unformated]
+            assert np.all(prec_2_old == prec_2)
 
             """
             # histogram checking
@@ -423,8 +403,6 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             plt.title(id_string)
             plt.show()
             """
-
-            prec_2 = Qcalculator.RVprec_calc_chunks(wav_stellar_chunks, flux_stellar_chunks)
 
             # Precision as given by the third_method
             prec_3 = Qcalculator.RV_prec_calc_Trans(wav_stellar, flux_stellar, flux_atm_selected)
