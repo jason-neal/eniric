@@ -24,4 +24,5 @@ def test_presicion_1():
         # name = "Spectrum_M0-PHOENIX-ACES_Yband_vsini{0}.0_R100k_res3.txt".format(vsini)
         __, p1 = calc_prec1("M0", "Y", vsini, "100k", 3, resampled_dir=path)
 
-        assert np.round(p1, 1).value == published_results[vsini]
+        # assert np.round(p1, 1).value == published_results[vsini]
+        assert np.round(100 * p1, 1).value == published_results[vsini]  # With incorect normalization
