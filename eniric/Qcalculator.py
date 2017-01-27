@@ -125,9 +125,9 @@ def SqrtSumWis(wavelength, flux):
                           flux_variance[:-1]))
 
 
-def RVprec_calc_chunks(wavelength, flux):
+def RVprec_calc_masked(wavelength, flux, mask):
     """ The same as RVprec_calc, but now wavelength and flux are organized into
-    chunks and the weighted average formula is used
+    chunks according to the mask and the weighted average formula is used to calculate the combined precision.
 
     When considering the average RV as delivered by several slices of a
     spectrum, the error on the average is given by the error on a weighted
@@ -136,30 +136,138 @@ def RVprec_calc_chunks(wavelength, flux):
 
     Parameters
     ----------
-    wavelength: list(array-like)
+    wavelength: array-like or list(array-like)
         Wavelength values of chunks.
-    flux: list(array-like)
+    flux: array-like or list(array-like)
         Flux values of the chunks.
+    mask: array-like of bool or None
+        Mask of transmission cuts. Zero values are excluded and used to cut up spectrum.
 
     Returns
     -------
     RV_value: Quantity scalar
         Weighted average RV value of spectral chunks.
 
+
+    Notes
+    -----
+    A "clump" is defined as a contiguous region of the array.
+    Solution for clumping comes from
+    https://stackoverflow.com/questions/14605734/numpy-split-1d-array-of-chunks-separated-by-nans-into-a-list-of-the-chunks
+
+    There was a bug in the original clumping code which ment that chose the
+    clump depending on the first element of mask.
+    A test for the failing condition is added so that if ever encountered we
+    can investigate the effect on he previously published results.
     """
+    if mask is not None:
+        if mask[0] is False:  # First value of mask is False was a bug in original code
+            print(("{0:s}\nWarning\nA condition that would have given bad "
+                   "precision the by broken clumping function was found.\nNeed "
+                   "to find the model parameters for this!\n{0:s}\n").format("#"*40))
+        # Turn wavelength and flux into masked arrays
+        wavelength_clumps, flux_clumps = mask_clumping(wavelength, flux, mask)
+
+    else:
+        # When given a already clumped solution and no mask given.
+        assert isinstance(wavelength, list)
+        assert isinstance(flux, list)
+        wavelength_clumps = wavelength
+        flux_clumps = flux
 
     # Turn ndarray into quantity array.
-    slice_rvs = Quantity(np.empty(len(wavelength), dtype=float), unit=u.meter/u.second)  # Radial velocity of each slice
+    # Need to use np.zeros instead of np.empty. Unassigned zeros are removed after with nonzero.
+    # The "empty" values (1e-300) do not get removed and effect precision
+    slice_rvs = Quantity(np.zeros(len(wavelength), dtype=float),
+                         unit=u.meter / u.second)  # Radial velocity of each slice
 
-    for i, (wav_slice, flux_slice) in enumerate(zip(wavelength, flux)):
-        wav_slice = np.array(wav_slice)
-        flux_slice = np.array(flux_slice)
+    for i, (wav_slice, flux_slice) in enumerate(zip(wavelength_clumps, flux_clumps)):
+        if len(wav_slice) == 1:
+            """ Results in infinate rv, can not determine the slope of single point."""
+            continue
 
-        slice_rvs[i] = RVprec_calc(wav_slice, flux_slice)
+        else:
+            wav_slice = np.asarray(wav_slice)
+            flux_slice = np.asarray(flux_slice)
+            slice_rvs[i] = RVprec_calc(wav_slice, flux_slice)
+
+    # Zeros created from the inital empty array, when skipping single element chunks)
+    slice_rvs = slice_rvs[np.nonzero(slice_rvs)]  # Only use nonzero values.
 
     rv_value = 1.0 / (np.sqrt(np.sum((1.0 / slice_rvs)**2.0)))
 
     return rv_value
+
+
+def mask_clumping(wave, flux, mask):
+    """ Clump contiguous wavelength and flux sections into list.
+
+    Note: Our value of mask (0 = bad points) is opposite to usage in
+    np.ma.masked_array (1 = bad)
+    Separate function to enable through testing.
+
+    Parameters
+    ----------
+    wave: array-like of floats
+        The wavelength array to clump.
+    flux: array-like of floats
+        The glux array to clump.
+    mask: array-like of bool
+        Boolean array with True indicating the values to use/keep.
+
+    Returns
+    -------
+    wave_clumps: list(array)
+        List of the valid wavelength sections.
+    flux_clumps: list(array)
+       List of the valid flux sections.
+
+    """
+    # Turn into masked array to use clump_unmasked method.
+    mask = np.asarray(mask, dtype=bool)  # Make it bool so ~ works correctly
+
+    masked_wave = np.ma.masked_array(wave, mask=~mask)   # ma mask is inverted
+    masked_flux = np.ma.masked_array(flux, mask=~mask)   # ma mask is inverted
+
+    wave_clumps = [wave[s] for s in np.ma.clump_unmasked(masked_wave)]
+    flux_clumps = [flux[s] for s in np.ma.clump_unmasked(masked_flux)]
+
+    return wave_clumps, flux_clumps
+
+
+def bug_fixed_clumping_method(wav, flux, mask):
+    """ Old clumping method that is difficult to understand ...[0]+1)[::2].
+
+    There was a signifcant bug which was fixed.
+    The returned values were dependant on the first value in the mask. """
+    if mask[0] is False:  # First value of mask is False was a bug in original code
+        print(("{0:s}\nWarning\nA condition that would have given bad "
+               "precision the by broken clumping function was found.\nNeed "
+               "to find the model parameters for this!\n{0:s}\n").format("#"*40))
+
+    if mask[0] == 1:
+        wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0]+1)[::2]
+        flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0]+1)[::2]
+    else:
+        wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0]+1)[1::2]
+        flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0]+1)[1::2]
+
+    wav_chunks = [list(chunk) for chunk in wav_chunks_unformated]
+    flux_chunks = [list(chunk) for chunk in flux_chunks_unformated]
+
+    return wav_chunks, flux_chunks
+
+
+def bugged_clumping_method(wav, flux, mask):
+    """ Old clumping method that is difficult to understand ...[0]+1)[::2].
+    There was a signifcant bug in which the returned values depend on the first value in mask."""
+    wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0]+1)[::2]
+    wav_chunks = [list(chunk) for chunk in wav_chunks_unformated]
+
+    flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0]+1)[::2]
+    flux_chunks = [list(chunk) for chunk in flux_chunks_unformated]
+
+    return wav_chunks, flux_chunks
 
 
 ###############################################################################
