@@ -125,9 +125,10 @@ def SqrtSumWis(wavelength, flux):
                           flux_variance[:-1]))
 
 
-def RVprec_calc_masked(wavelength, flux, mask):
+def RVprec_calc_masked(wavelength, flux, mask=None):
     """ The same as RVprec_calc, but now wavelength and flux are organized into
-    chunks according to the mask and the weighted average formula is used to calculate the combined precision.
+    chunks according to the mask and the weighted average formula is used to
+    calculate the combined precision.
 
     When considering the average RV as delivered by several slices of a
     spectrum, the error on the average is given by the error on a weighted
@@ -141,7 +142,8 @@ def RVprec_calc_masked(wavelength, flux, mask):
     flux: array-like or list(array-like)
         Flux values of the chunks.
     mask: array-like of bool or None
-        Mask of transmission cuts. Zero values are excluded and used to cut up spectrum.
+        Mask of transmission cuts. Zero values are excluded and used to cut up
+        the spectrum.
 
     Returns
     -------
