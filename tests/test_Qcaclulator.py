@@ -12,7 +12,7 @@ import astropy.constants as const
 
 
 def test_RVprec_calc():
-    """ Test that RVprec_calc can hande inputs as Quantities or unitless and returns a Quantity."""
+    """Test that RVprec_calc can hande inputs as Quantities or unitless and returns a Quantity."""
     wav = np.arange(1, 101)
     flux = np.random.random(100)
 
@@ -35,7 +35,7 @@ def test_RVprec_calc():
 
 
 def test_RVprec_calc_with_lists():
-    """ Test that it can hande list input also."""
+    """Test that it can hande list input also."""
     wav = list(np.arange(100))
     flux = list(np.random.random(100))
 
@@ -46,7 +46,7 @@ def test_RVprec_calc_with_lists():
 
 
 def test_SqrtSumWis():
-    """ Test that SqrtSumWis can hande inputs as Quantities or unitless
+    """Test that SqrtSumWis can hande inputs as Quantities or unitless
     and returns a dimensionless unscaled Quantity. """
     wav = np.arange(1, 101)
     flux = np.random.random(100)
@@ -68,7 +68,7 @@ def test_SqrtSumWis():
 
 def test_RV_prec_calc_Trans():
 
-    """ Trans should not have units """
+    """Trans should not have units """
     wav = np.arange(1, 101)
     flux = np.random.random(100)
     trans = np.random.random(100)
@@ -96,7 +96,7 @@ def test_RV_prec_calc_Trans():
 
 
 def test_SQRTSumWisTrans():
-    """ Test squareroot sum of weights when incuding change of variance due to atmospheric transmission."""
+    """Test squareroot sum of weights when incuding change of variance due to atmospheric transmission."""
     wav = np.arange(1, 101)
     flux = np.random.random(100)
     trans = np.random.random(100)
@@ -140,7 +140,7 @@ def test_transmission_reduces_precision():
 
 
 def test_RV_prec_masked():
-    """ Test same prections results between past pre-clumped version and mask version
+    """Test same prections results between past pre-clumped version and mask version
     """
     wav = np.arange(100)
     flux = np.random.random(100) * 10
@@ -214,7 +214,7 @@ def test_manual_clumping():
 
 
 def test_bugs_in_old_clumping_method():
-    """ Test that it actually works on small tests"""
+    """Test that it actually works on small tests"""
     val = np.arange(10)
 
     # Define masks and expected results from val

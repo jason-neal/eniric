@@ -1,5 +1,5 @@
 
-""" To test if the new code produces the same precision values on the published results."""
+"""To test if the new code produces the same precision values on the published results."""
 
 from __future__ import division, print_function
 import pytest
@@ -17,7 +17,7 @@ path = "data/Published_Results/resampled/"
 
 @pytest.mark.xfail(raises=file_error_to_catch)   # Data file may not exist
 def test_presicion_1():
-    """ New precision 1 test that works."""
+    """New precision 1 test that works."""
     published_results = {1: 3.8, 5: 9.1, 10: 20.7}
     path = "data/resampled/"
     for vsini in [1, 5, 10]:

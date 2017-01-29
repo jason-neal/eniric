@@ -17,7 +17,7 @@ rc('text', usetex=True)
 
 
 def plot_atmopshere_model(wav_atm, flux_atm, mask_atm):
-    """ Plot atmospheric transmission model for each band.
+    """Plot atmospheric transmission model for each band.
 
     This is run when plot_atom=True in calculate_prec()"""
     # identify non-masked pixels
@@ -318,9 +318,8 @@ def plot_nIR_flux():
 
 
 def plot_paper_plots():
-    """ """
-    # print the paper plots
-    """
+    """Print the paper plots.
+
     In every plot we will assume sample=3 and vsini=1
     y = RVprec between prec3 and prec2
     x = different bands

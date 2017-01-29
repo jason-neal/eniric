@@ -9,7 +9,7 @@ import numpy as np
 
 
 def pdread_2col(filename, noheader=False):
-    """ Read in a 2 column file with pandas.
+    """Read in a 2 column file with pandas.
 
     Faster then read_2col
 
@@ -44,7 +44,7 @@ def pdread_2col(filename, noheader=False):
 
 
 def pdread_3col(filename, noheader=False):
-    """ Read in a 3 column file with pandas.
+    """Read in a 3 column file with pandas.
 
     Faster then read_3col
 
@@ -79,7 +79,7 @@ def pdread_3col(filename, noheader=False):
 
 
 def pdread_4col(filename, noheader=False):
-    """ Read in a 4 column file with pandas.
+    """Read in a 4 column file with pandas.
 
     Faster then read_3col
 
@@ -206,7 +206,7 @@ def read_4col(filename):
 
 
 def pdwrite_2col(filename, data1, data2, sep="\t", header=False, float_format=None):
-    """ Write out a 2 column file with pandas.
+    """Write out a 2 column file with pandas.
 
     Faster then write_2col, uses pandas.DataFrame.to_csv()
 
@@ -242,7 +242,7 @@ def pdwrite_2col(filename, data1, data2, sep="\t", header=False, float_format=No
 
 
 def pdwrite_3col(filename, data1, data2, data3, sep="\t", header=False, float_format=None):
-    """ Write out a 3 column file with pandas.
+    """Write out a 3 column file with pandas.
 
     Faster then write_3col, uses pandas.DataFrame.to_csv()
 
@@ -326,7 +326,7 @@ def write_e_3col(filename, data1, data2, data3):
 
 
 def pdwrite_cols(filename, *data, **kwargs):
-    """ Write out a csv file with pandas, variable columns possible.
+    """Write out a csv file with pandas, variable columns possible.
 
     Uses pandas.DataFrame.to_csv()
 

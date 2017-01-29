@@ -44,7 +44,7 @@ def _parser():
 def main(startype, vsini, resolution, band, data_dir=None, results=None,
          resamples=None, sample_rate=3.0, noresample=False, normalize=True,
          org=False):
-    """ Run convolutions of NIR spectra for the range of given parameters.
+    """Run convolutions of NIR spectra for the range of given parameters.
 
     Multiple values of startype, vsini, resolution, band, and sample_rate can
     be provided.

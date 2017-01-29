@@ -1,5 +1,5 @@
 
-""" Split the large atmopsheric model transmission spectra into the separate bands.
+"""Split the large atmopsheric model transmission spectra into the separate bands.
 To be able to include the separate files and to speed up performances for
 calculations on individual bands only.
 """
@@ -68,7 +68,7 @@ def check_positive(value):
 
 
 def main(model="Average_TAPAS_2014.txt", bands=None, new_name=None, data_dir="../data/atmmodel/", rv_extend=100):
-    """ Split the large atmopsheric model transmission spectra into the separate bands.
+    """Split the large atmopsheric model transmission spectra into the separate bands.
 
     Keeps wavelength of atmopshere model as nanometers.
     """
