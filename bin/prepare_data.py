@@ -1,5 +1,5 @@
 
-""" Prepare_data.py
+"""Prepare_data.py
 
 Code to take all phoenix-aces fits files and create .dat files with wavelength
 and flux.
@@ -51,7 +51,7 @@ def _parser():
 
 
 def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=None, phoenix_dir=None):
-    """ Prepare datafiles for phoenix models that match the input parameters.
+    """Prepare datafiles for phoenix models that match the input parameters.
 
     This add the wavelength information to each spectra and converts to microns/photons if the flux_tpye="photons" is given.
     We do realise that this is a waste of space and it would be more storage efficent to just read in the phoenix raw fits files and wavelength file when needed.
@@ -97,7 +97,7 @@ def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=N
                     (match_temp, match_logg, match_feh) = re.search(r"(\d{5})\-(\d\.\d\d)([\+\-]\d\.\d)", f).groups()
                     alpha_cond = True  # To make work
             except AttributeError:
-                """ Trying to access NoneType when no match found."""
+                """Trying to access NoneType when no match found."""
                 continue
 
             temp_cond = float(match_temp) in temp
@@ -120,7 +120,7 @@ def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=N
             spectra = fits.getdata(os.path.join(path, phoenix_file))
 
             # Need to add conversions pedro preformed to flux!
-            """ The energy units of Phoenix fits files is erg/s/cm**2/cm
+            """The energy units of Phoenix fits files is erg/s/cm**2/cm
             We transform the flux into photons in the read_spectrum()
             function by multiplying the flux result by the wavelength (lambda)
 
