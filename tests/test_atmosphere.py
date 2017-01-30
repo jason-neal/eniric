@@ -1,3 +1,4 @@
+"""Test of atmopshere.py functions."""
 
 import pytest
 import numpy as np
