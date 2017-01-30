@@ -126,8 +126,8 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             print("The model ranges from {0:4.2f} to {1:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
             print("Done.")
             print("Calculating impact of Barycentric movement on mask...")
-            # mask_atm = atm.barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
-            mask_atm = atm.old_barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
+            # mask_atm = atm.old_barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
+            mask_atm = atm.barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
         else:
             shifted_atmmodel = "../data/atmmodel/Average_TAPAS_2014_{}_bary.txt".format(band)
             print("Reading pre-doppler-shifted atmospheric model...")
