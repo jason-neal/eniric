@@ -34,7 +34,7 @@ def _parser():
     parser.add_argument('--noresample', help='Resample output', default=False,
                         action="store_true")
     parser.add_argument('--normalize', help='Normalize for wavelength step', default=True,
-                        action="store_false")
+                        action="store_false")  # This logic needs fixed. (--flag shoud be "unnormalize" to turn normalization off)
     parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
                         default=False, action="store_true")
     args = parser.parse_args()
