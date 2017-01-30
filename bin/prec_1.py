@@ -62,7 +62,7 @@ resampled_dir = "../data/resampled/"
 file_error_to_catch = getattr(__builtins__,'FileNotFoundError', IOError)
 
 def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True, resampled_dir=resampled_dir):
-    """ Just caluclate precision for 1st case.
+    """Just caluclate precision for 1st case.
 
     resolution in short form e.g 100k
     """
@@ -132,7 +132,7 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
         bands = band
     if vsini is None:
         vsini = ["1.0", "5.0", "10.0"]
-        
+
     if resolution is None:
         resolution = ["60k", "80k", "100k"]
     else:

@@ -15,7 +15,7 @@ resampled_dir = "../data/resampled/"
 
 
 def resample_allfiles(results_dir=results_dir, resampled_dir=resampled_dir):
-    """ Resample all files inside folder.
+    """Resample all files inside folder.
 
     Parameters
     ----------
