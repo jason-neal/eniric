@@ -20,7 +20,8 @@ def _parser():
 
     :returns: the args
     """
-    parser = argparse.ArgumentParser(description='Calculate radial velocity precision of model spectra.')
+    parser = argparse.ArgumentParser(description=('Calculate radial velocity'
+                                                  'precision of model spectra.'))
 
     parser.add_argument("-b", "--bands", type=str, default="J",
                         choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", None, "visible"],
@@ -49,7 +50,6 @@ def main(bands=None, plot=False):
     for band in bands:
         unshifted_atmmodel = "../data/atmmodel/Average_TAPAS_2014_{}.txt".format(band)
         shifted_atmmodel = unshifted_atmmodel.replace(".txt", "_bary.txt")
-        mask_checks = unshifted_atmmodel.replace(".txt", "_mask_check.txt")
 
         print("Reading atmospheric model...", unshifted_atmmodel)
 
@@ -60,11 +60,8 @@ def main(bands=None, plot=False):
         print("Done.")
 
         print("Calculating impact of Barycentric movement on mask...")
-
-        # Pedros version - there might be a bug in this to find.
-        # py27 original version produces the "correct" precision
-        old_mask_atm = atm.old_barycenter_shift(wav_atm, mask_atm)
-        new_mask_atm = atm.barycenter_shift(wav_atm, mask_atm)
+        org_mask = mask_atm
+        mask_atm = atm.barycenter_shift(wav_atm, mask_atm)
 
         print("Saving doppler-shifted atmopshere model...", shifted_atmmodel)
 
@@ -72,17 +69,10 @@ def main(bands=None, plot=False):
 
         # Turn wav_atm back to nanometers for saving.
         IO.pdwrite_cols(shifted_atmmodel, wav_atm * 1000, flux_atm, std_flux_atm,
-                        new_mask_atm, header=header, float_format="%11.8f")
-
-        # Mask checking
-        header = ["# wavlength(nm)", "original mask", "old code mask", "new code mask"]
-        # Turn wav_atm back to nanometers for saving.
-        IO.pdwrite_cols(mask_checks, wav_atm * 1000, mask_atm, old_mask_atm,
-                        new_mask_atm, header=header, float_format="%10.4f")
+                        mask_atm, header=header, float_format="%11.8f")
 
         if plot:
-            atm.plot_atm_masks(wav_atm, flux_atm, mask_atm,
-                               old_mask=old_mask_atm, new_mask=new_mask_atm,
+            atm.plot_atm_masks(wav_atm, flux_atm, org_mask, new_mask=mask_atm,
                                block=True)
 
 
