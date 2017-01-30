@@ -22,48 +22,6 @@ def prepare_atmopshere(atmmodel):
     return wav_atm, flux_atm, std_flux_atm, mask_atm
 
 
-def old_barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
-    """Old version Calculating impact of Barycentric movement on mask...
-
-    Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
-    """
-    pixels_total = len(mask_atm)
-    masked_start = pixels_total - np.sum(mask_atm)
-
-    mask_atm_30kms = []
-    for value in zip(wav_atm, mask_atm):
-        if (value[1] is False) and (offset_RV == 666.0):    # if the mask is false and the offset is equal to zero
-            mask_atm_30kms.append(value[1])
-
-        else:
-            delta_lambda = value[0] * 3.0e4/Qcalculator.c.value
-            starting_lambda = value[0] * offset_RV*1.0e3/Qcalculator.c.value
-            indexes_30kmslice = np.searchsorted(wav_atm, [starting_lambda+value[0]-delta_lambda,
-                                                          starting_lambda+value[0]+delta_lambda])
-            indexes_30kmslice = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in indexes_30kmslice]
-
-            mask_atm_30kmslice = np.array(mask_atm[indexes_30kmslice[0]:indexes_30kmslice[1]], dtype=bool)    # selecting only the slice in question
-
-            mask_atm_30kmslice_reversed = [not i for i in mask_atm_30kmslice]
-
-            clump = np.array_split(mask_atm_30kmslice, np.where(np.diff(mask_atm_30kmslice_reversed))[0]+1)[::2]
-
-            tester = True
-            for block in clump:
-                if len(clump) >= 3:
-                    tester = False
-                    break
-
-            mask_atm_30kms.append(tester)
-
-    mask_atm = np.array(mask_atm_30kms, dtype=bool)
-    masked_end = pixels_total - np.sum(mask_atm)
-    print(("Old Barycentric impact affects number of masked pixels by {0:04.1%} due to the atmospheric"
-          " spectrum").format((masked_end-masked_start)/pixels_total))
-    print(("Pedros Pixels start = {1}, Pixel_end = {0}, Total = {2}").format(masked_end, masked_start, pixels_total))
-    return mask_atm
-
-
 def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
     """Calculating impact of Barycentric movement on mask...
 
@@ -170,3 +128,98 @@ def plot_atm_masks(wav, flux, mask, old_mask=None, new_mask=None, block=True):
     plt.show(block=block)
 
     return 0
+
+
+def bugged_old_barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
+    """Buggy Old version Calculating impact of Barycentric movement on mask...
+
+    Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
+    """
+    pixels_total = len(mask_atm)
+    masked_start = pixels_total - np.sum(mask_atm)
+
+    mask_atm_30kms = []
+    for value in zip(wav_atm, mask_atm):
+        if (value[1] is False) and (offset_RV == 666.0):    # if the mask is false and the offset is equal to zero
+            mask_atm_30kms.append(value[1])
+
+        else:
+            delta_lambda = value[0] * 3.0e4/Qcalculator.c.value
+            starting_lambda = value[0] * offset_RV*1.0e3/Qcalculator.c.value
+            indexes_30kmslice = np.searchsorted(wav_atm, [starting_lambda+value[0]-delta_lambda,
+                                                          starting_lambda+value[0]+delta_lambda])
+            indexes_30kmslice = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in indexes_30kmslice]
+
+            mask_atm_30kmslice = np.array(mask_atm[indexes_30kmslice[0]:indexes_30kmslice[1]], dtype=bool)    # selecting only the slice in question
+
+            mask_atm_30kmslice_reversed = [not i for i in mask_atm_30kmslice]
+
+            # Found suspected coulpit code
+            clump = np.array_split(mask_atm_30kmslice, np.where(np.diff(mask_atm_30kmslice_reversed))[0]+1)[::2]  # This code is the bug!
+
+            tester = True
+            for block in clump:
+                if len(clump) >= 3:   # This is the bug! should read len(block)
+                    tester = False
+                    break
+
+            mask_atm_30kms.append(tester)
+
+    mask_atm = np.array(mask_atm_30kms, dtype=bool)
+    masked_end = pixels_total - np.sum(mask_atm)
+    print(("Old Barycentric impact affects number of masked pixels by {0:04.1%} due to the atmospheric"
+          " spectrum").format((masked_end-masked_start)/pixels_total))
+    print(("Pedros Pixels start = {1}, Pixel_end = {0}, Total = {2}").format(masked_end, masked_start, pixels_total))
+    return mask_atm
+
+
+def old_barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
+    """Bug Fiexed old version Calculating impact of Barycentric movement on mask...
+
+    Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
+
+    This fixed verion is used to compare with the new version.
+    """
+    pixels_total = len(mask_atm)
+    masked_start = pixels_total - np.sum(mask_atm)
+
+    mask_atm_30kms = []
+    for value in zip(wav_atm, mask_atm):
+        if (value[1] is False) and (offset_RV == 666.0):    # if the mask is false and the offset is equal to zero
+            mask_atm_30kms.append(value[1])
+
+        else:
+            delta_lambda = value[0] * 3.0e4/Qcalculator.c.value
+            starting_lambda = value[0] * offset_RV*1.0e3/Qcalculator.c.value
+            indexes_30kmslice = np.searchsorted(wav_atm, [starting_lambda+value[0]-delta_lambda,
+                                                          starting_lambda+value[0]+delta_lambda])
+            indexes_30kmslice = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in indexes_30kmslice]
+
+            mask_atm_30kmslice = np.array(mask_atm[indexes_30kmslice[0]:indexes_30kmslice[1]], dtype=bool)    # selecting only the slice in question
+
+            # mask_atm_30kmslice_reversed = [not i for i in mask_atm_30kmslice] # Unneeded
+
+            # Found suspected coulpit code
+            # clump = np.array_split(mask_atm_30kmslice, np.where(np.diff(mask_atm_30kmslice_reversed))[0]+1)[::2]  # This code is the bug!
+            if mask_atm_30kmslice[0]:  # A true first value
+                clump = np.array_split(mask_atm_30kmslice, np.where(np.diff(mask_atm_30kmslice))[0]+1)[1::2]
+            else:
+                clump = np.array_split(mask_atm_30kmslice, np.where(np.diff(mask_atm_30kmslice))[0]+1)[::2]
+
+            tester = True
+            for block in clump:
+                if True in block:
+                    raise ValueError("There is a true value in False blocks!")
+
+                if len(block) >= 3:   # This is the bug! should read len(block)
+                    tester = False
+                    break
+
+            mask_atm_30kms.append(tester)
+
+    mask_atm = np.array(mask_atm_30kms, dtype=bool)
+    masked_end = pixels_total - np.sum(mask_atm)
+    print(("Old Barycentric impact affects number of masked pixels by {0:04.1%} due to the atmospheric"
+          " spectrum").format((masked_end-masked_start)/pixels_total))
+    print(("Pedros Pixels start = {1}, Pixel_end = {0}, Total = {2}").format(masked_end, masked_start, pixels_total))
+    return mask_atm
