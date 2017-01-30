@@ -26,21 +26,23 @@ def _parser():
     parser.add_argument("-b", "--bands", type=str, default="J",
                         choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", None],
                         help="Wavelength bands to select. Default=J.", nargs="+")
+    parser.add_argument("-u", "--use_unshifted", default=False, action="store_true",
+                        help="Start with the un-doppler-shifted atmmodel.")
     args = parser.parse_args()
     return args
 
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
-def main(bands="J", plot_bary=False):
-    """ Main function that calls calc_precision.
+
+def main(bands="J", use_unshifted=False):
+    """Main function that calls calc_precision.
 
     Parameters
     ----------
-
     bands: str or list of str or None, Default="J"
         Band letters to use. None does the bands Z through K.
-    plot_bary: bool
-        Flag to plot and test the barycentric masking then exit.
+    use_unshifted: bool default=False
+        Flag to start with the undopplershifted atmmodel.
     """
 
     resampled_dir = "../data/resampled/"
@@ -56,9 +58,9 @@ def main(bands="J", plot_bary=False):
     sampling = ["3"]
 
     results = calculate_prec(spectral_types, bands, vsini, resolution, sampling,
-                             resampled_dir=resampled_dir, plot_bary=plot_bary,
+                             resampled_dir=resampled_dir,
                              plot_atm=False, plot_ste=False, plot_flux=False,
-                             paper_plots=False, offset_RV=0.0)
+                             paper_plots=False, offset_RV=0.0, use_unshifted=use_unshifted)
 
     print("{Combination\t\tPrec_1\t\tPrec_2\t\tPrec_3")
     print("-"*20)
@@ -74,7 +76,6 @@ def strip_result_quantities(results):
     for key in results:
         results[key] = [results[key][0].value, results[key][1].value, results[key][2].value]
     return results
-
 
 
 def normalize_flux(flux_stellar, id_string):
@@ -109,24 +110,30 @@ def normalize_flux(flux_stellar, id_string):
 
 
 def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
-                   resampled_dir, plot_bary=False, plot_atm=False,
+                   resampled_dir, plot_atm=False,
                    plot_ste=False, plot_flux=True, paper_plots=True,
-                   offset_RV=0.0):
+                   offset_RV=0.0, use_unshifted=False):
 
     for band in bands:
 
-        atmmodel = "../data/atmmodel/Average_TAPAS_2014_{}.txt".format(band)
-        print("Reading atmospheric model...")
-        wav_atm, flux_atm, std_flux_atm, mask_atm = prepare_atmopshere(atmmodel)
-        print(("There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}."
-              "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)))
-        print("The model ranges from {0:4.2f} to {1:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
+        if use_unshifted:
+            atmmodel = "../data/atmmodel/Average_TAPAS_2014_{}.txt".format(band)
+            print("Reading atmospheric model...")
+            wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmopshere(atmmodel)
+            print(("There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}."
+                   "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)))
+
+            print("The model ranges from {0:4.2f} to {1:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
+            print("Done.")
+            print("Calculating impact of Barycentric movement on mask...")
+            # mask_atm = atm.barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
+            mask_atm = atm.old_barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
+        else:
+            shifted_atmmodel = "../data/atmmodel/Average_TAPAS_2014_{}_bary.txt".format(band)
+            print("Reading pre-doppler-shifted atmospheric model...")
+            wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmopshere(shifted_atmmodel)
         print("Done.")
 
-        print("Calculating impact of Barycentric movement on mask...")
-
-        else:
-            mask_atm = barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
         print(("There were {0:d} unmasked pixels out of {1:d}, or {2:.1%}."
                "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) /
                           len(mask_atm)))
