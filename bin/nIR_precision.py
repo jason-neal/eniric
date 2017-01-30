@@ -1,32 +1,19 @@
-"""
-Created on Fri Feb  6 15:42:03 2015
-
-@author: pfigueira
-
-Updated for eniric/python3 - Janurary 2017
-@author: Jason Neal
-"""
+"""Near-Infrared radial velocity precision"""
 import re
 import sys
 import argparse
 import itertools
 import numpy as np
-from sys import exit
 import matplotlib.pyplot as plt
 
-# to remove labels in one tick
-from matplotlib.ticker import MaxNLocator
-
-import eniric.IOmodule as IOmodule
+import eniric.IOmodule as IO
 import eniric.Qcalculator as Qcalculator
 import eniric.utilities as utils
-from eniric.utilities import band_selector
 import eniric.atmosphere as atm
 import eniric.plotting_functions as plt_functions
 
 from matplotlib import rc
-# set stuff for latex usage
-rc('text', usetex=True)
+rc('text', usetex=True)   # set stuff for latex usage
 
 
 def _parser():
@@ -42,7 +29,7 @@ def _parser():
     args = parser.parse_args()
     return args
 
-file_error_to_catch = getattr(__builtins__,'FileNotFoundError', IOError)
+file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 def main(bands="J", plot_bary=False):
     """ Main function that calls calc_precision.
@@ -81,8 +68,9 @@ def main(bands="J", plot_bary=False):
 
     # return results
 
+
 def strip_result_quantities(results):
-    """ Remove the units from Quantity results."""
+    """Remove the units from Quantity results."""
     for key in results:
         results[key] = [results[key][0].value, results[key][1].value, results[key][2].value]
     return results
@@ -115,7 +103,7 @@ def normalize_flux(flux_stellar, id_string):
             norm_constant = 879
     else:
         print("Constant not defined. Aborting...")
-        exit()
+        sys.exit(1)
 
     return flux_stellar / ((norm_constant / 100.0)**2.0)
 
@@ -161,16 +149,16 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
         flux_plot_M9 = []
 
         iterations = itertools.product(spectral_types, vsini, resolution, sampling)
-        for (star, vel, res, smpl) in iterations:
         # for star in spectral_types:
         #     for vel in vsini:
         #         for res in resolution:
         #             for smpl in sampling:
+        for (star, vel, res, smpl) in iterations:
             file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}"
                             "_res{4}.txt").format(star, band, vel, res, smpl)
             # print("Working on "+file_to_read+".")
             try:
-                wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir + file_to_read)
+                wav_stellar, flux_stellar = IO.pdread_2col(resampled_dir + file_to_read)
             except file_error_to_catch:
                 # Trun list of strings into strings without symbols  ["J", "K"] -> J K
                 spectral_str = re.sub(r"[\[\]\"\'\,]", "", str(spectral_types))
@@ -184,7 +172,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                        " -b {6} -v {7} -R {8} --sample_rate {9}"
                        "").format(star, band, vel, res, smpl, spectral_str, band_str, vsini_str, res_str, sampling_str))
                 raise
-            # removing boundary effects
+            # Removing boundary effects
             wav_stellar = wav_stellar[2:-2]
             flux_stellar = flux_stellar[2:-2]
 
@@ -275,20 +263,19 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
 
 ###############################################################################
 def compare_output():
-    """
-    function that compares a spectrum prior to convolution, after, and after resampling
+    """Function that compares a spectrum prior to convolution, after, and after resampling
     """
 
     pre_convolution = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
-    pre_wav, pre_flux = IOmodule.pdread_2col(pre_convolution)
+    pre_wav, pre_flux = IO.pdread_2col(pre_convolution)
     pre_wav = np.array(pre_wav, dtype="float64")*1.0e-4  # conversion to microns
     pre_flux = np.array(pre_flux, dtype="float64")*pre_wav
 
     convolved = "results_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k.txt"
     sampled = "resampled_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt"
 
-    conv_wav, theor_flux, conv_flux = IOmodule.pdread_3col(convolved)
-    sampled_wav, sampled_flux = IOmodule.pdread_2col(sampled)
+    conv_wav, theor_flux, conv_flux = IO.pdread_3col(convolved)
+    sampled_wav, sampled_flux = IO.pdread_2col(sampled)
 
     theor_flux = np.array(theor_flux)
     conv_flux = np.array(conv_flux)
@@ -316,8 +303,8 @@ def compare_output():
     plt.close()
 
 
-def calculate_all_masked():
-    """ Auxiliary function to calculate masked pixels in banded parts.
+def calculate_all_masked(wav_atm, mask_atm):
+    """Auxiliary function to calculate masked pixels in banded parts.
 
     Needs the code to load the atmopsheric data in for each band.
 
@@ -326,33 +313,29 @@ def calculate_all_masked():
     concatenate result.
     """
 
-
     # calculating the number of pixels inside the mask
-    wav_Z, mask_Z = band_selector(wav_atm, mask_atm, "Z")
-    wav_Y, mask_Y = band_selector(wav_atm, mask_atm, "Y")
-    wav_J, mask_J = band_selector(wav_atm, mask_atm, "J")
-    wav_H, mask_H = band_selector(wav_atm, mask_atm, "H")
-    wav_K, mask_K = band_selector(wav_atm, mask_atm, "K")
+    wav_Z, mask_Z = utils.band_selector(wav_atm, mask_atm, "Z")
+    wav_Y, mask_Y = utils.band_selector(wav_atm, mask_atm, "Y")
+    wav_J, mask_J = utils.band_selector(wav_atm, mask_atm, "J")
+    wav_H, mask_H = utils.band_selector(wav_atm, mask_atm, "H")
+    wav_K, mask_K = utils.band_selector(wav_atm, mask_atm, "K")
 
     bands_masked = np.concatenate((mask_Z, mask_Y, mask_J, mask_H, mask_K))
 
     print(("Inside the bands, there were {0:.0f} unmasked pixels out of {1:d}"
            ", or {2:.1%}.").format(np.sum(bands_masked), len(bands_masked),
-            np.sum(bands_masked) / len(bands_masked)))
+                                   np.sum(bands_masked) / len(bands_masked)))
+
 
 def RV_cumulative(RV_vector):
-    """
-    funtion that calculates the cumulative RV vector weighted_error
-    """
+    """Function that calculates the cumulative RV vector weighted_error."""
 
     return [weighted_error(RV_vector[:2]), weighted_error(RV_vector[:3]),
             weighted_error(RV_vector[:4]), weighted_error(RV_vector)]
 
 
 def weighted_error(RV_vector):
-    """
-    function that calculates the average weighted error from a vector of errors
-    """
+    """Function that calculates the average weighted error from a vector of errors."""
 
     RV_vector = np.array(RV_vector)
     RV_value = 1.0/(np.sqrt(np.sum((1.0/RV_vector)**2.0)))
@@ -361,9 +344,7 @@ def weighted_error(RV_vector):
 
 
 def moving_average(x, window_size):
-    """
-    moving average
-    """
+    """Moving average."""
     window = np.ones(int(window_size))/float(window_size)
     return np.convolve(x, window, 'same')
 
