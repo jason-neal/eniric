@@ -34,7 +34,7 @@ def _parser():
     parser.add_argument('--noresample', help='Resample output', default=False,
                         action="store_true")
     parser.add_argument('--normalize', help='Normalize for wavelength step', default=True,
-                        action="store_false")
+                        action="store_false")  # This logic needs fixed. (--flag shoud be "unnormalize" to turn normalization off)
     parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
                         default=False, action="store_true")
     args = parser.parse_args()
@@ -44,7 +44,7 @@ def _parser():
 def main(startype, vsini, resolution, band, data_dir=None, results=None,
          resamples=None, sample_rate=3.0, noresample=False, normalize=True,
          org=False):
-    """ Run convolutions of NIR spectra for the range of given parameters.
+    """Run convolutions of NIR spectra for the range of given parameters.
 
     Multiple values of startype, vsini, resolution, band, and sample_rate can
     be provided.

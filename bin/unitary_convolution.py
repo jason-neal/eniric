@@ -55,7 +55,7 @@ sampling = ["3"]
 bands = ["K"]    # single run with a known band (in current develop version)
 vsini = [1.0]
 R = [100000]
-""" Applying convolution stage of nIRanalysis for all bands vsini and
+"""Applying convolution stage of nIRanalysis for all bands vsini and
 resolution of paper.
 
 """

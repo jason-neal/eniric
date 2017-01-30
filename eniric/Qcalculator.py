@@ -28,7 +28,7 @@ def RVprec_test(spectrum_file="resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0
 
 
 def RVprec_calc(wavelength, flux):
-    """ Calculate the RV precision achievable on a spectrum.
+    """Calculate the RV precision achievable on a spectrum.
 
     Parameters
     ----------
@@ -75,7 +75,7 @@ def RVprec_calc(wavelength, flux):
 
 
 def SqrtSumWis(wavelength, flux):
-    """ Calculation of the SquareRoot of the sum of the weigths(Wis) for a spectrum.
+    """Calculation of the SquareRoot of the sum of the weigths(Wis) for a spectrum.
 
     Parameters
     ----------
@@ -116,7 +116,7 @@ def SqrtSumWis(wavelength, flux):
     derivF_over_lambda = delta_F / delta_l
 
     if isinstance(flux, u.Quantity):
-        """ Units of variance are squared """
+        """Units of variance are squared """
         flux_variance = flux.value * (flux.unit)**2
     else:
         flux_variance = flux
@@ -126,7 +126,7 @@ def SqrtSumWis(wavelength, flux):
 
 
 def RVprec_calc_masked(wavelength, flux, mask=None):
-    """ The same as RVprec_calc, but now wavelength and flux are organized into
+    """The same as RVprec_calc, but now wavelength and flux are organized into
     chunks according to the mask and the weighted average formula is used to
     calculate the combined precision.
 
@@ -185,7 +185,7 @@ def RVprec_calc_masked(wavelength, flux, mask=None):
 
     for i, (wav_slice, flux_slice) in enumerate(zip(wavelength_clumps, flux_clumps)):
         if len(wav_slice) == 1:
-            """ Results in infinate rv, can not determine the slope of single point."""
+            """Results in infinate rv, can not determine the slope of single point."""
             continue
 
         else:
@@ -202,7 +202,7 @@ def RVprec_calc_masked(wavelength, flux, mask=None):
 
 
 def mask_clumping(wave, flux, mask):
-    """ Clump contiguous wavelength and flux sections into list.
+    """Clump contiguous wavelength and flux sections into list.
 
     Note: Our value of mask (0 = bad points) is opposite to usage in
     np.ma.masked_array (1 = bad)
@@ -238,7 +238,7 @@ def mask_clumping(wave, flux, mask):
 
 
 def bug_fixed_clumping_method(wav, flux, mask):
-    """ Old clumping method that is difficult to understand ...[0]+1)[::2].
+    """Old clumping method that is difficult to understand ...[0]+1)[::2].
 
     There was a signifcant bug which was fixed.
     The returned values were dependant on the first value in the mask. """
@@ -261,7 +261,7 @@ def bug_fixed_clumping_method(wav, flux, mask):
 
 
 def bugged_clumping_method(wav, flux, mask):
-    """ Old clumping method that is difficult to understand ...[0]+1)[::2].
+    """Old clumping method that is difficult to understand ...[0]+1)[::2].
     There was a signifcant bug in which the returned values depend on the first value in mask."""
     wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0]+1)[::2]
     wav_chunks = [list(chunk) for chunk in wav_chunks_unformated]
@@ -274,7 +274,7 @@ def bugged_clumping_method(wav, flux, mask):
 
 ###############################################################################
 def RV_prec_calc_Trans(wavelength, flux, transmission):
-    """ The same as RV_prec_calc, but considering a transmission different than zero
+    """The same as RV_prec_calc, but considering a transmission different than zero
 
     Parameters
     ----------
@@ -295,7 +295,7 @@ def RV_prec_calc_Trans(wavelength, flux, transmission):
 
 
 def SqrtSumWisTrans(wavelength, flux, transmission):
-    """ Calculation of the SquareRoot of the sum of the Wis for a spectrum, considering transmission.
+    """Calculation of the SquareRoot of the sum of the Wis for a spectrum, considering transmission.
 
     The transmission reduces the flux so has an affect on the variance.
 
@@ -341,7 +341,7 @@ def SqrtSumWisTrans(wavelength, flux, transmission):
     derivF_over_lambda = delta_F / delta_l
 
     if isinstance(flux, u.Quantity):
-        """ Units of variance are squared """
+        """Units of variance are squared"""
         flux_variance = flux.value * (flux.unit)**2
     else:
         flux_variance = flux

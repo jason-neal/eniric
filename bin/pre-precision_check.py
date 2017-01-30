@@ -1,4 +1,4 @@
-""" Script to check if all the results files are ready for precision calculation
+"""Script to check if all the results files are ready for precision calculation
  e.g. that they exist before trying to calculate the precision.
 
  Jason Neal - Janurary 2017"""
