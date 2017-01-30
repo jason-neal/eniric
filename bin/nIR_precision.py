@@ -192,6 +192,11 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             flux_atm_selected = flux_atm[index_atm]
             mask_atm_selected = mask_atm[index_atm]
 
+            # Check mask masks out deep atmosphere absorption
+            if np.any(flux_atm_selected[mask_atm_selected] < 0.98):
+                print("####WARNGING####\nThis absorption mask does not mask out deep atmosphere transmission!")
+                print("Min flux_atm_selected[mask_atm_selected] = {} < 0.98\n####".format(np.min(flux_atm_selected[mask_atm_selected])))
+
             # Normaize to SNR 100 in middle of J band 1.25 micron!
             flux_stellar = normalize_flux(flux_stellar, id_string)
             if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k",
