@@ -12,7 +12,7 @@ from eniric.IOmodule import pdread_2col
 
 
 def read_spectrum(spec_name):
-    """ Function that reads a flux spectra from the database!.
+    """Function that reads a flux spectra from the database!.
 
     If a energy flux spectra is read then it converts it to photons.
 
@@ -41,7 +41,7 @@ def read_spectrum(spec_name):
 
 
 def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_type="photon"):
-    """ Return correct phoenix spectrum filename for a given spectral type.
+    """Return correct phoenix spectrum filename for a given spectral type.
 
     Based off phoenix_utils module.
 
@@ -92,7 +92,7 @@ def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_
 
 
 def band_selector(wav, flux, band):
-    """ Select a specific wavelength band.
+    """Select a specific wavelength band.
 
     Parameters
     ----------
@@ -184,7 +184,7 @@ def wav_selector(wav, flux, wav_min, wav_max):
 
 
 def unitary_Gauss(x, center, fwhm):
-    """ Gaussian function of area = 1.
+    """Gaussian function of area = 1.
 
     Parameters
     ----------
@@ -210,7 +210,7 @@ def unitary_Gauss(x, center, fwhm):
 
 
 def rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon):
-    """ Calculate the rotation kernel for a given wavelength
+    """Calculate the rotation kernel for a given wavelength
 
     Parameters
     ----------
@@ -265,7 +265,7 @@ def plotter(spectrum, band, vsini=0, R=0):
 
 
 def calculate_ratios(spectrum):
-    """ Calculate ratios between the different bands.
+    """Calculate ratios between the different bands.
 
     This was labeled WRONG from original code, but including here for reference.
     """
@@ -309,7 +309,7 @@ def list_creator(spectrum, band):
 
 
 def silentremove(filename):
-    """ Remove file without failing when it doesn't exist."""
+    """Remove file without failing when it doesn't exist."""
     try:
         os.remove(filename)
     except OSError as e:  # this would be "except OSError, e:" before Python 2.6

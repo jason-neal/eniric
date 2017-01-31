@@ -1,5 +1,5 @@
 
-""" Split the large atmopsheric model transmission spectra into the separate bands.
+"""Split the large atmopsheric model transmission spectra into the separate bands.
 To be able to include the separate files and to speed up performances for
 calculations on individual bands only.
 """
@@ -68,7 +68,7 @@ def check_positive(value):
 
 
 def main(model="Average_TAPAS_2014.txt", bands=None, new_name=None, data_dir="../data/atmmodel/", rv_extend=100):
-    """ Split the large atmopsheric model transmission spectra into the separate bands.
+    """Split the large atmopsheric model transmission spectra into the separate bands.
 
     Keeps wavelength of atmopshere model as nanometers.
     """
@@ -103,11 +103,13 @@ def main(model="Average_TAPAS_2014.txt", bands=None, new_name=None, data_dir="..
                 (len(band_std_flux) == len(band_mask)) &
                 (len(band_flux) == len(band_mask)))   # Check lengths are the same
 
+        band_mask = np.asarrya(band_mask, dtype=bool)
+
         # Save the result to file
         filename = os.path.join(data_dir, band_name)
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
 
-        return_vals[i] = IO.pdwrite_cols(filename, band_wav, band_flux, band_std_flux, band_mask, sep="\t", header=header)
+        return_vals[i] = IO.pdwrite_cols(filename, band_wav, band_flux, band_std_flux, band_mask, sep="\t", header=header, float_format="%10.8f")
 
         return np.sum(return_vals)  # If any extracts fail they will turn up here.
 

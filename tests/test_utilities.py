@@ -29,7 +29,7 @@ def test_read_spectrum():
 
 @pytest.mark.xfail(raises=file_error_to_catch)
 def test_get_spectrum_name():
-    """ Test specifing file names with stellar parameters."""
+    """Test specifing file names with stellar parameters."""
     test = ("PHOENIX-ACES_spectra/Z-0.0/lte02800-4.50"
             "-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
 
@@ -60,7 +60,8 @@ def test_get_spectrum_name():
 
 @pytest.mark.xfail(raises=file_error_to_catch)
 def test_org_name():
-    """ Test org flag of utils.get_spectrum_name, suposed to be temporary."""
+    """Test org flag of utils.get_spectrum_name, suposed to be temporary."""
+
     test_org = "PHOENIX-ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
     assert utils.get_spectrum_name("M0", org=True) == test_org
 
@@ -131,7 +132,7 @@ def test_band_selector():
        allow_nan=False), unique=True, min_size=3, max_size=25),
        st.floats(min_value=1e-2, max_value=200), st.floats(min_value=1e-4, max_value=1))
 def test_rotational_kernal(delta_lambdas, vsini, epsilon):
-    """ Test that the new and original code produces the same output."""
+    """Test that the new and original code produces the same output."""
     delta_lambdas = np.sort(np.asarray(delta_lambdas), kind='quicksort')
     delta_lambdas = np.append(np.flipud(delta_lambdas), np.insert(delta_lambdas, 0, 0))
     delta_lambda_l = np.max(delta_lambdas) * 2
