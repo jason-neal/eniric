@@ -137,7 +137,7 @@ def read_2col(filename):
     col1 = []
     col2 = []
 
-    for i in range(len(list_data)):
+    for i, __ in enumerate(list_data):
         # checking if the line is valid
         if(list_data[i][0][0] != '#'):
             col1.append(float(list_data[i][0]))
@@ -155,7 +155,7 @@ def read_3col(filename):
     col2 = []
     col3 = []
 
-    for i in range(len(list_data)):
+    for i, __ in enumerate(list_data):
         # checking if the line is valid
         if(list_data[i][0][0] != '#'):
             col1.append(float(list_data[i][0]))
@@ -175,7 +175,7 @@ def read_4col(filename):
     col3 = []
     col4 = []
 
-    for i in range(len(list_data)):
+    for i, __ in enumerate(list_data):
         # checking if the line is valid
         if(list_data[i][0][0] != '#'):
             col1.append(float(list_data[i][0]))
@@ -268,7 +268,7 @@ def write_2col(filename, data1, data2):
 
     f = open(filename, "w")
 
-    for i in range(len(data1)):
+    for i, __ in enumerate(data1):
         f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\n")
 
     f.close()
@@ -279,7 +279,7 @@ def write_3col(filename, data1, data2, data3):
 
     f = open(filename, "w")
 
-    for i in range(len(data1)):
+    for i, __ in enumerate(data1):
         f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
 
     f.close()
@@ -290,7 +290,7 @@ def write_e_2col(filename, data1, data2):
 
     f = open(filename, "w")
 
-    for i in range(len(data1)):
+    for i, __ in enumerate(data1):
         # f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
         f.write("\t{0:e}\t\t{1:e}\n".format(data1[i], data2[i]))
 
@@ -302,8 +302,62 @@ def write_e_3col(filename, data1, data2, data3):
 
     f = open(filename, "w")
 
-    for i in range(len(data1)):
+    for i, __ in enumerate(data1):
         # f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
         f.write("\t{0:e}\t\t{1:e}\t\t{2:e}\n".format(data1[i], data2[i], data3[i]))
 
     f.close()
+
+
+def pdwrite_cols(filename, *data, **kwargs):
+    """ Write out a csv file with pandas, variable columns possible.
+
+    Uses pandas.DataFrame.to_csv()
+
+    Parameters
+    ----------
+    filename: str
+        Name of file to write.
+    *data: ndarray or list, array-like
+        Variable number of data columns to be writen in the given order.
+    **kwargs: dict
+        Keyword args for pandas
+    sep: str, default="\t"
+        Character separation between values.
+    header: list of strings or bool, default False
+        Header strings to apply to columns. Must be equal to number
+        of data columns provided.
+
+    Returns
+    -------
+    flag: bool
+        Returns 0 if successful.
+    """
+
+    # unpack keyword args, second argument is the defualt if not found.
+    header = kwargs.pop('header', False)
+    sep = kwargs.pop('sep', "\t")
+    index = kwargs.pop('index', False)
+    # TODO: See about passing any extra keywords into pandas call
+    if kwargs:   # check for unwanted kewords
+        raise TypeError('Unexpected **kwargs: {!r}'.format(kwargs))
+
+    if header:
+        if len(header) != len(data):
+            raise ValueError("Size of data and header does not match.")
+
+    data_dict = {}
+    for i, data_i in enumerate(data):
+        data_dict[i] = data[i]    # keys are assigned the index value from enumerate
+
+        if len(data[i]) != len(data[0]):
+            raise ValueError("The length of the data columns are not equal")
+
+    df = pd.DataFrame(data_dict)
+
+    write_sequence = range(len(data))  # key values to write data in order
+
+    # Write dataframe to file
+    df.to_csv(filename, columns=write_sequence, sep=sep, header=header, index=index)
+
+    return 0
