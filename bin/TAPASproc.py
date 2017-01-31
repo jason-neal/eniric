@@ -4,7 +4,7 @@ Created on Fri Feb  6 00:36:14 2015
 @author: pfigueira
 """
 
-""" Script to process weekly TAPAS spectra to form an average atmospheric specturm.
+"""Script to process weekly TAPAS spectra to form an average atmospheric specturm.
 
 """
 
