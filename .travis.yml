@@ -37,4 +37,4 @@ script:
     # coverage report
 after_success:
   - coveralls
-  - CODECLIMATE_REPO_TOKEN=41bc9162c80f84f636ae2ea6a2dca245a10b07b52c86669931d350d02eb83a03 codeclimate-test-reporter
+  - codeclimate-test-reporter
