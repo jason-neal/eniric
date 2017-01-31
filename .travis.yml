@@ -32,7 +32,7 @@ install:
 
 # command to run tests
 script:
-    py.test --cov=eniric --cov-report term:term-missing --durations 5
+    py.test --cov=eniric --cov-report term-missing --durations 5
     # coverage run --source eniric -m py.test
     # coverage report
 after_success:
