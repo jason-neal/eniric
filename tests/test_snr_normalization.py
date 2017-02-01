@@ -7,6 +7,8 @@ import eniric.utilities as utils
 # import hypothesis.strategies as st
 from eniric.snr_normalization import snr_constant_band, snr_constant_wav, sampling_index
 
+
+@pytest.mark.xfail(raises=file_error_to_catch)
 def test_snr_normalization():
     """ Test SNR after normalizing function is the desired value.
     Testing on middle pf J band."""
@@ -35,6 +37,7 @@ def test_snr_normalization():
         assert snr_constant_band(wav, flux, band="J", SNR=desired_snr) == snr_constant_wav(wav, flux, 1.25, SNR=desired_snr)
 
 
+@pytest.mark.xfail(raises=file_error_to_catch)
 def test_band_snr_norm():
     """ Compared to wav snr norm"""
     # snr_constant_band
