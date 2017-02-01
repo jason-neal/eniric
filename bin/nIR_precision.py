@@ -186,6 +186,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             flux_stellar = flux_stellar[2:-2]
 
             # sample was left aside because only one value existed
+            # TODO: Add metalicity and logg into id string
             id_string = "{0}-{1}-{2}-{3}".format(star, band, vel, res)
 
             # Getting the wav, flux and mask values from the atm model
