@@ -1272,4 +1272,4 @@ def plot_paper_plots():
                     for smpl in sampling:
                         id_string = star+"-"+band+"-"+vel+"-"+resolution    # sample was left aside because only one value existed
                         precision = results[id_string]
-                        print("%s: & %.1f\t & %.1f\t & %.1f \\\\" % (id_string, precision[0], precision[1], precision[2]))
+                        print("{0!s}: & {1:.1f}\t & {2:.1f}\t & {3:.1f} \\\\".format(id_string, precision[0], precision[1], precision[2]))
