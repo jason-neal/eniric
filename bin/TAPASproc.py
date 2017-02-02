@@ -1,11 +1,8 @@
-"""
+"""Script to process weekly TAPAS spectra to form an average atmospheric specturm.
+
 Created on Fri Feb  6 00:36:14 2015
 
 @author: pfigueira
-"""
-
-"""Script to process weekly TAPAS spectra to form an average atmospheric specturm.
-
 """
 
 import numpy as np
@@ -13,35 +10,35 @@ import string
 
 import eniric.IOmodule as io
 
-#dirmodels = "/home/pfigueira/data/tapas/nIRanalysispaper/"
+# dirmodels = "/home/pfigueira/data/tapas/nIRanalysispaper/"
 dirmodels = "/home/pfigueira/data/tapas/nIRanalysis_visible/"
 list_files = "list_tapas_models.txt"
 
 outdir = "atmmodel/"
 
-def read_TAPAS(filename):
+def read_tapas(filename):
 
-    FileConv = io.read_fullcol(filename)
+    file_conv = io.read_fullcol(filename)
     properties_dict = {}
     lambdas = []
     flux = []
-    for line in FileConv:
+    for line in file_conv:
         if(line[0] == '|'):
-            #this is to ignore the header of the plot
+            # this is to ignore the header of the plot
             continue
         elif(line[0] == '\\'):
-            #add everything starting with a \\ to the dictionary
-            key_dic, value_dic = string.split(line[1:-1], "=")  #remove the "\" form the beggining and the "\n" from the end
+            # add everything starting with a \\ to the dictionary
+            key_dic, value_dic = string.split(line[1:-1], "=")  # remove the "\" form the beggining and the "\n" from the end
             properties_dict[key_dic] = value_dic
         else:
-            #these are the values of the file itself
+            # these are the values of the file itself
             lambda_act, flux_act = string.split(line)
             lambdas.append(float(lambda_act))
             flux.append(float(flux_act))
 
     lambdas = np.array(lambdas)
     flux = np.array(flux)
-    #note that the lambdas are provided in reversed order
+    # note that the lambdas are provided in reversed order
     return [properties_dict, lambdas[::-1], flux[::-1]]
 
 def read_allfiles(mask_limit = 0.02):
@@ -49,9 +46,9 @@ def read_allfiles(mask_limit = 0.02):
     reads all the files in list_files
     """
 
-    Files = IOmodule.read_fullcol(dirmodels+list_files)
+    Files = io.read_fullcol(dirmodels+list_files)
     print("Reading the files...")
-    atm_models = [read_TAPAS(dirmodels+file_act[:-1]) for file_act in Files]
+    atm_models = [read_tapas(dirmodels+file_act[:-1]) for file_act in Files]
     print("done.")
 
     wav = atm_models[0][1]
@@ -63,7 +60,7 @@ def read_allfiles(mask_limit = 0.02):
         mean_flux.append(np.average(flux_at_wav))
         std_flux.append(np.std(flux_at_wav))
         if(mean_flux[-1] > (1.0-mask_limit)):
-            #if transmission above threshold do not mask, otherwise mask
+            # if transmission above threshold do not mask, otherwise mask
             mask.append(1.0)
         else:
             mask.append(0.0)
