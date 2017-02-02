@@ -11,7 +11,7 @@ import argparse
 
 import numpy as np
 
-import eniric.IOmodule as IO
+import eniric.IOmodule as io
 import eniric.atmosphere as atm
 
 
@@ -68,7 +68,7 @@ def main(bands=None, plot=False):
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
 
         # Turn wav_atm back to nanometers for saving.
-        IO.pdwrite_cols(shifted_atmmodel, wav_atm * 1000, flux_atm, std_flux_atm,
+        io.pdwrite_cols(shifted_atmmodel, wav_atm * 1000, flux_atm, std_flux_atm,
                         mask_atm, header=header, float_format="%11.8f")
 
         if plot:

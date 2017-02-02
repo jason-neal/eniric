@@ -12,7 +12,7 @@ import sys
 # to remove labels in one tick
 # from matplotlib.ticker import MaxNLocator
 
-import eniric.IOmodule as IOmodule
+import eniric.IOmodule as io
 import eniric.Qcalculator as Qcalculator
 
 # from eniric.utilities import band_selector
@@ -38,7 +38,7 @@ def _parser():
                         type=float, nargs="*", default=None)
     parser.add_argument("-R", "--resolution", help="Observational resolution",
                         type=float, nargs="*", default=None)
-    parser.add_argument("-b", "--band", type=str, default="ALL",
+    parser.add_argument("-b", "--band", type=str, default=["ALL"],
                         choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
                         help="Wavelength band to select", nargs="+")
     parser.add_argument('-d', '--data_dir', help='Data directory', type=str, default=None)
@@ -75,7 +75,7 @@ def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True, resampled_d
                                                                 resolution,
                                                                 smpl)
     # print("Working on " + file_to_read)
-    wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir + file_to_read)
+    wav_stellar, flux_stellar = io.pdread_2col(resampled_dir + file_to_read)
 
     # removing boundary effects
     wav_stellar = wav_stellar[2:-2]
@@ -109,6 +109,7 @@ def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True, resampled_d
 def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, results=None,
          resamples=None, sample_rate=3.0, noresample=False, normalize=True,
          org=False):
+    """script that calculates the RV precision without atmosphere."""
     if data_dir is None:
         data_dir = "../data/"
 
@@ -154,7 +155,7 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
                             try:
                                 id_string, prec_1 = calc_prec1(star, band, vel, R, smpl, normalize=normalize)
                                 precision[id_string] = prec_1
-                            except error_to_catch:
+                            except file_error_to_catch:
                                 pass  # When file not found skip
                             except:
                                 print(star, band, vel, R, smpl, "normalized"*normalize, "Failed!")

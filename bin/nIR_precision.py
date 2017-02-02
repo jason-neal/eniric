@@ -1,4 +1,4 @@
-"""Near-Infrared radial velocity precision"""
+"""Near-Infrared radial velocity precision."""
 import re
 import sys
 import argparse
@@ -6,7 +6,7 @@ import itertools
 import numpy as np
 import matplotlib.pyplot as plt
 
-import eniric.IOmodule as IO
+import eniric.IOmodule as io
 import eniric.Qcalculator as Qcalculator
 import eniric.utilities as utils
 import eniric.atmosphere as atm
@@ -31,6 +31,7 @@ def _parser():
     args = parser.parse_args()
     return args
 
+
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
@@ -44,7 +45,6 @@ def main(bands="J", use_unshifted=False):
     use_unshifted: bool default=False
         Flag to start with the undopplershifted atmmodel.
     """
-
     resampled_dir = "../data/resampled/"
 
     spectral_types = ["M0", "M3", "M6", "M9"]
@@ -63,7 +63,7 @@ def main(bands="J", use_unshifted=False):
                              paper_plots=False, offset_RV=0.0, use_unshifted=use_unshifted)
 
     print("{Combination\t\tPrec_1\t\tPrec_2\t\tPrec_3")
-    print("-"*20)
+    print("-" * 20)
     for key in results:
         print("{0:s}\t\t{1:0.4f}\t{2:0.4f}\t{3:0.4f}".format(key, results[key][0], results[key][1], results[key][2]))
     # Save precision results
@@ -80,7 +80,6 @@ def strip_result_quantities(results):
 
 def normalize_flux(flux_stellar, id_string):
     """Normalize flux to have SNR of 100 in middle of J band."""
-
     if("M0" in id_string):
         norm_constant = 1607
 
@@ -110,9 +109,9 @@ def normalize_flux(flux_stellar, id_string):
 
 
 def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
-                   resampled_dir, plot_atm=False,
-                   plot_ste=False, plot_flux=True, paper_plots=True,
-                   offset_RV=0.0, use_unshifted=False):
+                   resampled_dir, plot_atm=False, plot_ste=False,
+                   plot_flux=True, paper_plots=True, offset_RV=0.0,
+                   use_unshifted=False):
 
     for band in bands:
 
@@ -143,17 +142,17 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             plt_functions.plot_atmopshere_model(wav_atm, flux_atm, mask_atm)
 
         # theoretical ratios calculation
-        # wav_M0, flux_M0, wav_M3, flux_M3, wav_M6, flux_M6, wav_M9, flux_M9 = read_nIRspectra()
+        # wav_m0, flux_m0, wav_m3, flux_m3, wav_m6, flux_m6, wav_m9, flux_m9 = read_nIRspectra()
 
         results = {}    # creating empty dictionary for the results
-        wav_plot_M0 = []   # creating empty lists for the plots
-        flux_plot_M0 = []
-        wav_plot_M3 = []
-        flux_plot_M3 = []
-        wav_plot_M6 = []
-        flux_plot_M6 = []
-        wav_plot_M9 = []
-        flux_plot_M9 = []
+        wav_plot_m0 = []   # creating empty lists for the plots
+        flux_plot_m0 = []
+        wav_plot_m3 = []
+        flux_plot_m3 = []
+        wav_plot_m6 = []
+        flux_plot_m6 = []
+        wav_plot_m9 = []
+        flux_plot_m9 = []
 
         iterations = itertools.product(spectral_types, vsini, resolution, sampling)
         # for star in spectral_types:
@@ -165,7 +164,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                             "_res{4}.txt").format(star, band, vel, res, smpl)
             # print("Working on "+file_to_read+".")
             try:
-                wav_stellar, flux_stellar = IO.pdread_2col(resampled_dir + file_to_read)
+                wav_stellar, flux_stellar = io.pdread_2col(resampled_dir + file_to_read)
             except file_error_to_catch:
                 # Trun list of strings into strings without symbols  ["J", "K"] -> J K
                 spectral_str = re.sub(r"[\[\]\"\'\,]", "", str(spectral_types))
@@ -208,13 +207,13 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             flux_stellar = normalize_flux(flux_stellar, id_string)
             if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k",
                              "M6-J-1.0-100k", "M9-J-1.0-100k"]):
-                index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
-                SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-                print("\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(id_string, SN_estimate))
+                index_ref = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
+                snr_estimate = np.sqrt(np.sum(flux_stellar[index_ref - 1:index_ref + 2]))
+                print("\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(id_string, snr_estimate))
             elif("J" in id_string):
-                index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
-                SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-                print("\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string, SN_estimate))
+                index_ref = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
+                snr_estimate = np.sqrt(np.sum(flux_stellar[index_ref - 1:index_ref + 2]))
+                print("\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string, snr_estimate))
 
             # Precision given by the first method:
             print("Performing analysis for: ", id_string)
@@ -251,17 +250,17 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                         "M3-H-1.0-100k", "M3-K-1.0-100k"]
 
             if(plot_flux and id_string in plot_ids):
-                wav_plot_M0.append(wav_stellar)
-                flux_plot_M0.append(flux_stellar)
+                wav_plot_m0.append(wav_stellar)
+                flux_plot_m0.append(flux_stellar)
             if(plot_flux and id_string in plot_ids):
-                wav_plot_M3.append(wav_stellar)
-                flux_plot_M3.append(flux_stellar)
+                wav_plot_m3.append(wav_stellar)
+                flux_plot_m3.append(flux_stellar)
             if(plot_flux and id_string in plot_ids):
-                wav_plot_M6.append(wav_stellar)
-                flux_plot_M6.append(flux_stellar)
+                wav_plot_m6.append(wav_stellar)
+                flux_plot_m6.append(flux_stellar)
             if(plot_flux and id_string in plot_ids):
-                wav_plot_M9.append(wav_stellar)
-                flux_plot_M9.append(flux_stellar)
+                wav_plot_m9.append(wav_stellar)
+                flux_plot_m9.append(flux_stellar)
 
     if(plot_flux):
         plt_functions.plot_nIR_flux()
@@ -275,31 +274,29 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
 
 ###############################################################################
 def compare_output():
-    """Function that compares a spectrum prior to convolution, after, and after resampling
-    """
-
+    """Function that compares a spectrum prior to convolution, after, and after resampling."""
     pre_convolution = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
-    pre_wav, pre_flux = IO.pdread_2col(pre_convolution)
-    pre_wav = np.array(pre_wav, dtype="float64")*1.0e-4  # conversion to microns
-    pre_flux = np.array(pre_flux, dtype="float64")*pre_wav
+    pre_wav, pre_flux = io.pdread_2col(pre_convolution)
+    pre_wav = np.array(pre_wav, dtype="float64") * 1.0e-4  # conversion to microns
+    pre_flux = np.array(pre_flux, dtype="float64") * pre_wav
 
     convolved = "results_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k.txt"
     sampled = "resampled_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt"
 
-    conv_wav, theor_flux, conv_flux = IO.pdread_3col(convolved)
-    sampled_wav, sampled_flux = IO.pdread_2col(sampled)
+    conv_wav, theor_flux, conv_flux = io.pdread_3col(convolved)
+    sampled_wav, sampled_flux = io.pdread_2col(sampled)
 
     theor_flux = np.array(theor_flux)
     conv_flux = np.array(conv_flux)
 
     ratio_flux = moving_average(conv_flux, 300) / moving_average(theor_flux, 300)
-    ratio_flux = ratio_flux/ratio_flux[0]
+    ratio_flux = ratio_flux / ratio_flux[0]
 
     plt.figure(1)
     plt.xlabel(r"wavelength [$\mu$m])")
     plt.ylabel(r"Flux[ ] ")
-    plt.plot(conv_wav, np.array(theor_flux)/theor_flux[0], color='k')
-    plt.plot(conv_wav, np.array(conv_flux)/conv_flux[0], color='b')
+    plt.plot(conv_wav, np.array(theor_flux) / theor_flux[0], color='k')
+    plt.plot(conv_wav, np.array(conv_flux) / conv_flux[0], color='b')
     plt.plot(conv_wav, ratio_flux, color='g', linestyle='--')
     plt.show()
     plt.close()
@@ -309,8 +306,8 @@ def compare_output():
     plt.figure(1)
     plt.xlabel(r"wavelength [$\mu$m])")
     plt.ylabel(r"Flux corrected[ ] ")
-    plt.plot(conv_wav, np.array(theor_flux)/theor_flux[0], color='k')
-    plt.plot(conv_wav, np.array(conv_flux_corrected)/conv_flux_corrected[0], color='b')
+    plt.plot(conv_wav, np.array(theor_flux) / theor_flux[0], color='k')
+    plt.plot(conv_wav, np.array(conv_flux_corrected) / conv_flux_corrected[0], color='b')
     plt.show()
     plt.close()
 
@@ -324,7 +321,6 @@ def calculate_all_masked(wav_atm, mask_atm):
     barycenter correct.
     concatenate result.
     """
-
     # calculating the number of pixels inside the mask
     wav_Z, mask_Z = utils.band_selector(wav_atm, mask_atm, "Z")
     wav_Y, mask_Y = utils.band_selector(wav_atm, mask_atm, "Y")
@@ -339,25 +335,23 @@ def calculate_all_masked(wav_atm, mask_atm):
                                    np.sum(bands_masked) / len(bands_masked)))
 
 
-def RV_cumulative(RV_vector):
+def rv_cumulative(rv_vector):
     """Function that calculates the cumulative RV vector weighted_error."""
+    return [weighted_error(rv_vector[:2]), weighted_error(rv_vector[:3]),
+            weighted_error(rv_vector[:4]), weighted_error(rv_vector)]
 
-    return [weighted_error(RV_vector[:2]), weighted_error(RV_vector[:3]),
-            weighted_error(RV_vector[:4]), weighted_error(RV_vector)]
 
-
-def weighted_error(RV_vector):
+def weighted_error(rv_vector):
     """Function that calculates the average weighted error from a vector of errors."""
+    rv_vector = np.array(rv_vector)
+    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / rv_vector)**2.0)))
 
-    RV_vector = np.array(RV_vector)
-    RV_value = 1.0/(np.sqrt(np.sum((1.0/RV_vector)**2.0)))
-
-    return RV_value
+    return rv_value
 
 
 def moving_average(x, window_size):
     """Moving average."""
-    window = np.ones(int(window_size))/float(window_size)
+    window = np.ones(int(window_size)) / float(window_size)
     return np.convolve(x, window, 'same')
 
 
