@@ -1,6 +1,6 @@
 """Calculate the Radial Velocity Precision of NIR Spectra.
 
- Using the Quality factor of the spectra.
+Using the Quality factor of the spectra.
 """
 
 import numpy as np
@@ -12,8 +12,7 @@ from astropy.units import Quantity
 
 
 def RVprec_test(spectrum_file="resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt"):
-    """Test a RVprec_calc for a singal specturm.
-    """
+    """Test a RVprec_calc for a singal specturm."""
     data = pd.read_table(spectrum_file, comment='#', header=None,
                          names=["wavelength", "flux"], dtype=np.float64,
                          delim_whitespace=True)
@@ -64,8 +63,8 @@ def RVprec_calc(wavelength, flux):
     detector noise sigma_D. In this paper we exclusively consider the high
     signal-to-noise ratio regime, so we can approximate A_0(i) + sigma_D**2
     to A_0(i).
-    """
 
+    """
     return c / sqrt_sum_wis(wavelength, flux)
 
 
@@ -98,7 +97,7 @@ def sqrt_sum_wis(wavelength, flux):
     content of the spectrum, given by the derivative of the amplitude, and
     calculated following Connes (1985).
 
-"""
+    """
     if not isinstance(wavelength, np.ndarray):
         print("Your wavelength and flux should really be numpy arrays! Converting them here.")
         wavelength = np.asarray(wavelength)
@@ -121,7 +120,9 @@ def sqrt_sum_wis(wavelength, flux):
 
 
 def RVprec_calc_masked(wavelength, flux, mask=None):
-    """The same as RVprec_calc, but now wavelength and flux are organized into
+    """RV precision for split apart spectra.
+
+    The same as RVprec_calc, but now wavelength and flux are organized into
     chunks according to the mask and the weighted average formula is used to
     calculate the combined precision.
 
@@ -161,7 +162,7 @@ def RVprec_calc_masked(wavelength, flux, mask=None):
         if mask[0] is False:  # First value of mask is False was a bug in original code
             print(("{0:s}\nWarning\nA condition that would have given bad "
                    "precision the by broken clumping function was found.\nNeed "
-                   "to find the model parameters for this!\n{0:s}\n").format("#"*40))
+                   "to find the model parameters for this!\n{0:s}\n").format("#" * 40))
         # Turn wavelength and flux into masked arrays
         wavelength_clumps, flux_clumps = mask_clumping(wavelength, flux, mask)
 
@@ -233,21 +234,22 @@ def mask_clumping(wave, flux, mask):
 
 
 def bug_fixed_clumping_method(wav, flux, mask):
-    """Old clumping method that is difficult to understand ...[0]+1)[::2].
+    """Old clumping method that is difficult to understand ...[0] + 1)[::2].
 
     There was a signifcant bug which was fixed.
-    The returned values were dependant on the first value in the mask. """
+    The returned values were dependant on the first value in the mask.
+    """
     if mask[0] is False:  # First value of mask is False was a bug in original code
         print(("{0:s}\nWarning\nA condition that would have given bad "
                "precision the by broken clumping function was found.\nNeed "
-               "to find the model parameters for this!\n{0:s}\n").format("#"*40))
+               "to find the model parameters for this!\n{0:s}\n").format("#" * 40))
 
     if mask[0] == 1:
-        wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0]+1)[::2]
-        flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0]+1)[::2]
+        wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[::2]
+        flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[::2]
     else:
-        wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0]+1)[1::2]
-        flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0]+1)[1::2]
+        wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[1::2]
+        flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[1::2]
 
     wav_chunks = [list(chunk) for chunk in wav_chunks_unformated]
     flux_chunks = [list(chunk) for chunk in flux_chunks_unformated]
@@ -256,12 +258,14 @@ def bug_fixed_clumping_method(wav, flux, mask):
 
 
 def bugged_clumping_method(wav, flux, mask):
-    """Old clumping method that is difficult to understand ...[0]+1)[::2].
-    There was a signifcant bug in which the returned values depend on the first value in mask."""
-    wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0]+1)[::2]
+    """Old clumping method that is difficult to understand ...[0] + 1)[::2].
+
+    There was a signifcant bug in which the returned values depend on the first value in mask.
+    """
+    wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[::2]
     wav_chunks = [list(chunk) for chunk in wav_chunks_unformated]
 
-    flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0]+1)[::2]
+    flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[::2]
     flux_chunks = [list(chunk) for chunk in flux_chunks_unformated]
 
     return wav_chunks, flux_chunks
@@ -269,7 +273,7 @@ def bugged_clumping_method(wav, flux, mask):
 
 ###############################################################################
 def RV_prec_calc_Trans(wavelength, flux, transmission):
-    """The same as RV_prec_calc, but considering a transmission different than zero
+    """The same as RV_prec_calc, but considering a transmission different than zero.
 
     Parameters
     ----------
@@ -284,8 +288,8 @@ def RV_prec_calc_Trans(wavelength, flux, transmission):
     -------
     RVrms: Quantity scalar
         Radial velocity precision for a spectrum affected by atmospheric transmission
-    """
 
+    """
     return c / sqrt_sum_wis_trans(wavelength, flux, transmission)
 
 
@@ -307,8 +311,8 @@ def sqrt_sum_wis_trans(wavelength, flux, transmission):
     -------
     sqrt_sum_wis_trans: array-like or Quantity
         Squarerooted sum of pixel weigths including effects of transmission.
-    """
 
+    """
     if not isinstance(wavelength, np.ndarray):
         print("Your wavelength and flux should really be numpy arrays! Converting them here.")
         wavelength = np.asarray(wavelength)

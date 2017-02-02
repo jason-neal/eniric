@@ -4,7 +4,8 @@
 # Jason Neal
 # December 2016
 from __future__ import division, print_function
-from eniric.nIRanalysis import convolution, resample_allfiles
+from eniric.nIRanalysis import convolution
+from eniric.resample import resample_allfiles
 from eniric.utilities import read_spectrum
 import eniric.IOmodule as io
 from eniric.Qcalculator import RVprec_calc
@@ -37,10 +38,10 @@ if False:
     wav, flux = read_spectrum(spectrum_path)
 
     wav_band, flux_band, flux_conv = convolution(wav, flux, vsini, R, epsilon,
-                                                      fwhm_lim, band=band,
-                                                      numprocs=numprocs,
-                                                      results_dir="../data/results/unnorm/",
-                                                      normalize=False)
+                                                 fwhm_lim, band=band,
+                                                 numprocs=numprocs,
+                                                 results_dir="../data/results/unnorm/",
+                                                 normalize=False)
 
     resample_allfiles(results_dir="../data/results/unnorm/",
                       resampled_dir="../data/resampled/unnorm/")
@@ -54,15 +55,12 @@ if False:
     resample_allfiles(results_dir="../data/results/norm/",
                       resampled_dir="../data/resampled/norm/")
 
-
     if plot:
         # Plot results together
         plt.plot(wav_band, flux_conv, label='Unnormalized')
         plt.plot(wav_band_norm, flux_conv_norm, label='Normalized (res only)')
         plt.legend(loc=0)
         plt.show()
-
-
 
 # Calculate RVPresision
 print("Radial velocity Presision, vsini = {0}, R = {1}".format(vsini, R))
@@ -85,7 +83,6 @@ for band in bands:
     # Normaliation with Perdos misterious  / ((1.634e4)**2.0)
     norm_prec_with_pedro = RVprec_calc(norm_wav, norm_flux / ((1.634e4)**2.0))
     unnorm_prec_with_pedro = RVprec_calc(unnorm_wav, unnorm_flux / ((1.634e4)**2.0))
-
 
     print("Unnormalized RV_Precision                           \t{0} band \t= {1:0.4f}".format(band, unnorm_prec))
     print("Unnormalized RV_Precision with pedros /(1.634e4)**2,\t{0} band \t= {1:6.4f}".format(band, unnorm_prec_with_pedro))

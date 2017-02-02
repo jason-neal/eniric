@@ -63,7 +63,7 @@ def main(bands="J", use_unshifted=False):
                              paper_plots=False, offset_RV=0.0, use_unshifted=use_unshifted)
 
     print("{Combination\t\tPrec_1\t\tPrec_2\t\tPrec_3")
-    print("-"*20)
+    print("-" * 20)
     for key in results:
         print("{0:s}\t\t{1:0.4f}\t{2:0.4f}\t{3:0.4f}".format(key, results[key][0], results[key][1], results[key][2]))
     # Save precision results
@@ -207,12 +207,12 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             flux_stellar = normalize_flux(flux_stellar, id_string)
             if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k",
                              "M6-J-1.0-100k", "M9-J-1.0-100k"]):
-                index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
-                snr_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
+                index_ref = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
+                snr_estimate = np.sqrt(np.sum(flux_stellar[index_ref - 1:index_ref + 2]))
                 print("\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(id_string, snr_estimate))
             elif("J" in id_string):
-                index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
-                snr_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
+                index_ref = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
+                snr_estimate = np.sqrt(np.sum(flux_stellar[index_ref - 1:index_ref + 2]))
                 print("\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string, snr_estimate))
 
             # Precision given by the first method:
@@ -277,8 +277,8 @@ def compare_output():
     """Function that compares a spectrum prior to convolution, after, and after resampling."""
     pre_convolution = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
     pre_wav, pre_flux = io.pdread_2col(pre_convolution)
-    pre_wav = np.array(pre_wav, dtype="float64")*1.0e-4  # conversion to microns
-    pre_flux = np.array(pre_flux, dtype="float64")*pre_wav
+    pre_wav = np.array(pre_wav, dtype="float64") * 1.0e-4  # conversion to microns
+    pre_flux = np.array(pre_flux, dtype="float64") * pre_wav
 
     convolved = "results_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k.txt"
     sampled = "resampled_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt"
@@ -290,13 +290,13 @@ def compare_output():
     conv_flux = np.array(conv_flux)
 
     ratio_flux = moving_average(conv_flux, 300) / moving_average(theor_flux, 300)
-    ratio_flux = ratio_flux/ratio_flux[0]
+    ratio_flux = ratio_flux / ratio_flux[0]
 
     plt.figure(1)
     plt.xlabel(r"wavelength [$\mu$m])")
     plt.ylabel(r"Flux[ ] ")
-    plt.plot(conv_wav, np.array(theor_flux)/theor_flux[0], color='k')
-    plt.plot(conv_wav, np.array(conv_flux)/conv_flux[0], color='b')
+    plt.plot(conv_wav, np.array(theor_flux) / theor_flux[0], color='k')
+    plt.plot(conv_wav, np.array(conv_flux) / conv_flux[0], color='b')
     plt.plot(conv_wav, ratio_flux, color='g', linestyle='--')
     plt.show()
     plt.close()
@@ -306,8 +306,8 @@ def compare_output():
     plt.figure(1)
     plt.xlabel(r"wavelength [$\mu$m])")
     plt.ylabel(r"Flux corrected[ ] ")
-    plt.plot(conv_wav, np.array(theor_flux)/theor_flux[0], color='k')
-    plt.plot(conv_wav, np.array(conv_flux_corrected)/conv_flux_corrected[0], color='b')
+    plt.plot(conv_wav, np.array(theor_flux) / theor_flux[0], color='k')
+    plt.plot(conv_wav, np.array(conv_flux_corrected) / conv_flux_corrected[0], color='b')
     plt.show()
     plt.close()
 
@@ -344,14 +344,14 @@ def rv_cumulative(rv_vector):
 def weighted_error(rv_vector):
     """Function that calculates the average weighted error from a vector of errors."""
     rv_vector = np.array(rv_vector)
-    rv_value = 1.0/(np.sqrt(np.sum((1.0/rv_vector)**2.0)))
+    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / rv_vector)**2.0)))
 
     return rv_value
 
 
 def moving_average(x, window_size):
     """Moving average."""
-    window = np.ones(int(window_size))/float(window_size)
+    window = np.ones(int(window_size)) / float(window_size)
     return np.convolve(x, window, 'same')
 
 

@@ -95,7 +95,7 @@ def plot_atmopshere_model(wav_atm, flux_atm, mask_atm):
     exit(0)
 
 def plot_stellar_spectum(wav_stellar, flux_stellar, wav_atm_selected, mask_atm_selected):
-    # Plot the stellar spectrum as considered
+    """Plot the stellar spectrum as considered."""
     selected_transmission_stellar = wav_atm_selected[mask_atm_selected]
 
     plt.figure(1)
