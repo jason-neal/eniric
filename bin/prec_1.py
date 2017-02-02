@@ -12,7 +12,7 @@ import sys
 # to remove labels in one tick
 # from matplotlib.ticker import MaxNLocator
 
-import eniric.IOmodule as IOmodule
+import eniric.IOmodule as io
 import eniric.Qcalculator as Qcalculator
 
 # from eniric.utilities import band_selector
@@ -75,7 +75,7 @@ def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True, resampled_d
                                                                 resolution,
                                                                 smpl)
     # print("Working on " + file_to_read)
-    wav_stellar, flux_stellar = IOmodule.pdread_2col(resampled_dir + file_to_read)
+    wav_stellar, flux_stellar = io.pdread_2col(resampled_dir + file_to_read)
 
     # removing boundary effects
     wav_stellar = wav_stellar[2:-2]

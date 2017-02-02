@@ -6,7 +6,7 @@ import itertools
 import numpy as np
 import matplotlib.pyplot as plt
 
-import eniric.IOmodule as IO
+import eniric.IOmodule as io
 import eniric.Qcalculator as Qcalculator
 import eniric.utilities as utils
 import eniric.atmosphere as atm
@@ -165,7 +165,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                             "_res{4}.txt").format(star, band, vel, res, smpl)
             # print("Working on "+file_to_read+".")
             try:
-                wav_stellar, flux_stellar = IO.pdread_2col(resampled_dir + file_to_read)
+                wav_stellar, flux_stellar = io.pdread_2col(resampled_dir + file_to_read)
             except file_error_to_catch:
                 # Trun list of strings into strings without symbols  ["J", "K"] -> J K
                 spectral_str = re.sub(r"[\[\]\"\'\,]", "", str(spectral_types))
@@ -279,15 +279,15 @@ def compare_output():
     """
 
     pre_convolution = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
-    pre_wav, pre_flux = IO.pdread_2col(pre_convolution)
+    pre_wav, pre_flux = io.pdread_2col(pre_convolution)
     pre_wav = np.array(pre_wav, dtype="float64")*1.0e-4  # conversion to microns
     pre_flux = np.array(pre_flux, dtype="float64")*pre_wav
 
     convolved = "results_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k.txt"
     sampled = "resampled_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt"
 
-    conv_wav, theor_flux, conv_flux = IO.pdread_3col(convolved)
-    sampled_wav, sampled_flux = IO.pdread_2col(sampled)
+    conv_wav, theor_flux, conv_flux = io.pdread_3col(convolved)
+    sampled_wav, sampled_flux = io.pdread_2col(sampled)
 
     theor_flux = np.array(theor_flux)
     conv_flux = np.array(conv_flux)

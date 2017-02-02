@@ -6,7 +6,7 @@
 from __future__ import division, print_function
 from eniric.nIRanalysis import convolution, resample_allfiles
 from eniric.utilities import read_spectrum
-from eniric.IOmodule import pdread_2col
+import eniric.IOmodule as io
 from eniric.Qcalculator import RVprec_calc
 import matplotlib.pyplot as plt
 import datetime
@@ -69,12 +69,12 @@ print("Radial velocity Presision, vsini = {0}, R = {1}".format(vsini, R))
 for band in bands:
 
     # Argument unpacking with *
-    norm_wav, norm_flux = pdread_2col("../data/resampled/norm/"
+    norm_wav, norm_flux = io.pdread_2col("../data/resampled/norm/"
                                          "Spectrum_M0-PHOENIX-ACES_"
                                          "{0}band_vsini{1}_R{2}k_res3.txt".format(band, int(vsini),
                                          int(R / 1000)), noheader=True)
 
-    unnorm_wav, unnorm_flux = pdread_2col("../data/resampled/unnorm/"
+    unnorm_wav, unnorm_flux = io.pdread_2col("../data/resampled/unnorm/"
                                          "Spectrum_M0-PHOENIX-ACES_"
                                          "{0}band_vsini{1}_R{2}k_res3.txt".format(band, int(vsini),
                                          int(R / 1000)), noheader=True)

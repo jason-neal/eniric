@@ -17,8 +17,7 @@ from eniric.nIRanalysis import convolution, write_2col, write_3col, \
                                read_spectrum, save_convolution_results
 
 from eniric.nIRanalysis import rotational_convolution, resolution_convolution
-from eniric.IOmodule import pdread_2col, pdread_3col
-
+import eniric.IOmodule as io
 # New code from PEDRO
 from eniric.updated_code.nIRanalysis_CONT import convolution_CONT
 
@@ -42,7 +41,7 @@ if create_dat:
 
 else:
     wav, ones_photons = read_spectrum(unitary_name)
-    # wav, ones_photons = pdread_2col(unitary_name, noheader=True)
+    # wav, ones_photons = io.pdread_2col(unitary_name, noheader=True)
 # Now that we have a spectrum file we can perform the convolutions
 name_model = "UNITARY"
 
@@ -98,9 +97,9 @@ for band in bands:
 
             else:
     # Just load data from files
-                wav1, flux1, flux1_conv = pdread_3col(results_dir + filename, noheader=True)
-                wav2, flux2, flux2_conv = pdread_3col(results_dir + filename_unnorm, noheader=True)
-                cont_wav, cont_flux = pdread_2col(results_dir + "result_from_convolution_CONT.txt", noheader=True)
+                wav1, flux1, flux1_conv = io.pdread_3col(results_dir + filename, noheader=True)
+                wav2, flux2, flux2_conv = io.pdread_3col(results_dir + filename_unnorm, noheader=True)
+                cont_wav, cont_flux = io.pdread_2col(results_dir + "result_from_convolution_CONT.txt", noheader=True)
 
             plt.plot(wav1, flux1_conv, label="Normalized")
             plt.plot(wav2, flux2_conv, "o-", label="Unnormalized")

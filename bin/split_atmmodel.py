@@ -11,7 +11,7 @@ import numpy as np
 from astropy.constants import c
 
 import eniric.utilities as utils
-import eniric.IOmodule as IO
+import eniric.IOmodule as io
 
 
 def _parser():
@@ -78,7 +78,7 @@ def main(model="Average_TAPAS_2014.txt", bands=None, new_name=None, data_dir="..
         new_name = model.split(".")[0]
     model_name = os.path.join(data_dir, model)
 
-    atm_wav, atm_flux, atm_std_flux, atm_mask = IO.pdread_4col(model_name)
+    atm_wav, atm_flux, atm_std_flux, atm_mask = io.pdread_4col(model_name)
 
     # atm_wav = atm_wav * 1e-3    # conversion from nanometers to micrometers
 
@@ -109,7 +109,7 @@ def main(model="Average_TAPAS_2014.txt", bands=None, new_name=None, data_dir="..
         filename = os.path.join(data_dir, band_name)
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
 
-        return_vals[i] = IO.pdwrite_cols(filename, band_wav, band_flux, band_std_flux, band_mask, sep="\t", header=header, float_format="%10.8f")
+        return_vals[i] = io.pdwrite_cols(filename, band_wav, band_flux, band_std_flux, band_mask, sep="\t", header=header, float_format="%10.8f")
 
         return np.sum(return_vals)  # If any extracts fail they will turn up here.
 

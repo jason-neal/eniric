@@ -9,13 +9,13 @@ from __future__ import division, print_function
 import numpy as np
 import matplotlib.pyplot as plt
 
-import eniric.IOmodule as IO
+import eniric.IOmodule as io
 import eniric.Qcalculator as Qcalculator
 
 
 def prepare_atmopshere(atmmodel):
     """Read in atmopheric model and prepare. """
-    wav_atm, flux_atm, std_flux_atm, mask_atm = IO.pdread_4col(atmmodel)
+    wav_atm, flux_atm, std_flux_atm, mask_atm = io.pdread_4col(atmmodel)
     # pandas already returns numpy arrays
     wav_atm = wav_atm / 1000.0  # conversion from nanometers to micrometers
     mask_atm = np.array(mask_atm, dtype=bool)

@@ -11,7 +11,7 @@ Created on Fri Feb  6 00:36:14 2015
 import numpy as np
 import string
 
-import IOmodule
+import eniric.IOmodule as io
 
 #dirmodels = "/home/pfigueira/data/tapas/nIRanalysispaper/"
 dirmodels = "/home/pfigueira/data/tapas/nIRanalysis_visible/"
@@ -21,7 +21,7 @@ outdir = "atmmodel/"
 
 def read_TAPAS(filename):
 
-    FileConv = IOmodule.read_fullcol(filename)
+    FileConv = io.read_fullcol(filename)
     properties_dict = {}
     lambdas = []
     flux = []

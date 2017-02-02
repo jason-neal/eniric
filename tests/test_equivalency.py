@@ -8,7 +8,7 @@ import pytest
 from hypothesis import given
 import hypothesis.strategies as st
 
-import eniric.IOmodule as IO
+import eniric.IOmodule as io
 import eniric.utilities as utils
 
 # For python2.X compatibility
@@ -20,13 +20,13 @@ def test_pdread_2col():
     spectrum_1 = "data/test_data/Sample_input_phoenix.dat"
     spectrum_2 = "data/test_data/Sample_resampled_spectrum_res3.txt"
 
-    wav_1_pd, flux_1_pd = IO.pdread_2col(spectrum_1)
-    wav_1, flux_1 = IO.read_2col(spectrum_1)
+    wav_1_pd, flux_1_pd = io.pdread_2col(spectrum_1)
+    wav_1, flux_1 = io.read_2col(spectrum_1)
     assert np.allclose(wav_1_pd, np.array(wav_1))
     assert np.allclose(flux_1_pd, np.array(flux_1))
 
-    wav_2_pd, flux_2_pd = IO.pdread_2col(spectrum_2, noheader=True)
-    wav_2, flux_2 = IO.read_2col(spectrum_2)
+    wav_2_pd, flux_2_pd = io.pdread_2col(spectrum_2, noheader=True)
+    wav_2, flux_2 = io.read_2col(spectrum_2)
     assert np.allclose(wav_2_pd, np.array(wav_2))
     assert np.allclose(flux_2_pd, np.array(flux_2))
 
@@ -38,8 +38,8 @@ def test_pdread_3col():
     """
     filename = "data/test_data/Sample_results_spectrum.txt"
 
-    wav_1_pd, theoretical_1_pd, flux_1_pd = IO.pdread_3col(filename, noheader=True)
-    wav_1, theoretical_1, flux_1 = IO.read_3col(filename)
+    wav_1_pd, theoretical_1_pd, flux_1_pd = io.pdread_3col(filename, noheader=True)
+    wav_1, theoretical_1, flux_1 = io.read_3col(filename)
     assert np.allclose(wav_1_pd, np.array(wav_1))
     assert np.allclose(theoretical_1_pd, np.array(theoretical_1))
     assert np.allclose(flux_1_pd, np.array(flux_1))
@@ -55,16 +55,16 @@ def test_pdwriter():
     threecol_name = filedir + "3col_test.txt"
 
     # write files
-    IO.pdwrite_2col(pd2col_name, data[0], data[1])
-    IO.pdwrite_3col(pd3col_name, data[0], data[1],  data[2])
-    IO.write_e_2col(twocol_name, data[0], data[1])
-    IO.write_e_3col(threecol_name, data[0], data[1], data[2])
+    io.pdwrite_2col(pd2col_name, data[0], data[1])
+    io.pdwrite_3col(pd3col_name, data[0], data[1],  data[2])
+    io.write_e_2col(twocol_name, data[0], data[1])
+    io.write_e_3col(threecol_name, data[0], data[1], data[2])
 
     # re-read files
-    a = IO.pdread_2col(pd2col_name)
-    b = IO.pdread_2col(twocol_name)
-    c = IO.pdread_3col(pd3col_name)
-    d = IO.pdread_3col(threecol_name)
+    a = io.pdread_2col(pd2col_name)
+    b = io.pdread_2col(twocol_name)
+    c = io.pdread_3col(pd3col_name)
+    d = io.pdread_3col(threecol_name)
 
     # check results the same
     assert np.allclose(a[0], b[0])
@@ -96,22 +96,22 @@ def test_pdwrire_cols():
     bad_data = range(6)   # Different length
 
     # 0 means successful write
-    assert 0 == IO.pdwrite_cols(pd_multicol_name, data1, data2, data1)
-    assert 0 == IO.pdwrite_cols(pd_multicol_name, data1)
-    assert 0 == IO.pdwrite_cols(pd_multicol_name, data1, data2, data1, data2,
+    assert 0 == io.pdwrite_cols(pd_multicol_name, data1, data2, data1)
+    assert 0 == io.pdwrite_cols(pd_multicol_name, data1)
+    assert 0 == io.pdwrite_cols(pd_multicol_name, data1, data2, data1, data2,
                              header=["headers", "for", "column", "labels"])
-    assert 0 == IO.pdwrite_cols(pd_multicol_name, data1, data2, sep=",", index=True)
+    assert 0 == io.pdwrite_cols(pd_multicol_name, data1, data2, sep=",", index=True)
 
     # test uneven dats lengths
     with pytest.raises(ValueError):
-        IO.pdwrite_cols(pd_multicol_name, data1, data2, bad_data)
+        io.pdwrite_cols(pd_multicol_name, data1, data2, bad_data)
 
     # test bad header
     with pytest.raises(ValueError):
-        IO.pdwrite_cols(pd_multicol_name, data1, data2, bad_data, header=["too", "many", "values"])
+        io.pdwrite_cols(pd_multicol_name, data1, data2, bad_data, header=["too", "many", "values"])
 
     with pytest.raises(TypeError):
-        IO.pdwrite_cols(pd_multicol_name, data1, bad="keyword")
+        io.pdwrite_cols(pd_multicol_name, data1, bad="keyword")
 
     # clean-up
     utils.silentremove(pd_multicol_name)

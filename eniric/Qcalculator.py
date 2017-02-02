@@ -6,8 +6,6 @@ Created on Mon Dec 29 00:14:56 2014
 Editied Thur Dec 15 13:00 2016 by Jason Neal for eniric.
 """
 
-# from eniric.IOmodule import read_2col
-
 import numpy as np
 import pandas as pd
 # c = 299792458  # m/s
