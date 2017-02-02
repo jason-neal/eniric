@@ -1,5 +1,5 @@
 
-""" To test the equivalence of old and newcode to check if it does the same thing"""
+"""To test the equivalence of old and newcode to check if it does the same thing"""
 
 from __future__ import division, print_function
 import os
@@ -16,7 +16,7 @@ file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
 def test_pdread_2col():
-    """ Test reading 2cols with pandas"""
+    """Test reading 2cols with pandas"""
     spectrum_1 = "data/test_data/Sample_input_phoenix.dat"
     spectrum_2 = "data/test_data/Sample_resampled_spectrum_res3.txt"
 
@@ -32,7 +32,7 @@ def test_pdread_2col():
 
 
 def test_pdread_3col():
-    """ Test reading 3 cols with pandas.
+    """Test reading 3 cols with pandas.
 
     Use small sample file to reduce time for test.
     """
@@ -46,7 +46,7 @@ def test_pdread_3col():
 
 
 def test_pdwriter():
-    """ Check pd_writer same write_col with with exponential flag."""
+    """Check pd_writer same write_col with with exponential flag."""
     filedir = "data/test_data/"
     data = np.random.randn(3, 100) * 1e7
     pd2col_name = filedir + "pd2col_test.txt"
@@ -81,7 +81,7 @@ def test_pdwriter():
 
 
 def test_prepared_dat_files():
-    """ Test that the flux inthe new prepared .dat files matches the original.
+    """Test that the flux inthe new prepared .dat files matches the original.
     This insures that all any conversions/scaling has been taken care of."""
     pass
 
