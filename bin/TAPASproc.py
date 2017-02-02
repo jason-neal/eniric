@@ -55,7 +55,7 @@ def read_allfiles(mask_limit=0.02):
     mean_flux = []
     std_flux = []
     mask = []
-    for i in range(len(wav)):
+    for i, __ in enumerate(wav):
         flux_at_wav = [model[2][i] for model in atm_models]
         mean_flux.append(np.average(flux_at_wav))
         std_flux.append(np.std(flux_at_wav))
@@ -72,7 +72,7 @@ def write_4col_eeed(filename, data1, data2, data3, data4):
     """Write data in 3 columns separated by tabs in a "filename" file."""
     f = open(filename, "w")
 
-    for i in range(len(data1)):
+    for i, __ in enumerate(data1):
         # f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
         f.write("\t{0:e}\t\t{1:e}\t\t{2:e}\t\t{3:d}\n".format(data1[i], data2[i], data3[i], data4[i]))
 
