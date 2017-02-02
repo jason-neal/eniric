@@ -268,11 +268,11 @@ def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plo
                         if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k", "M6-J-1.0-100k", "M9-J-1.0-100k"]):
                             index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
                             SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-                            print("\tSanity Check: The S/N for the %s reference model was of %4.2f." % (id_string, SN_estimate))
+                            print("\tSanity Check: The S/N for the {0!s} reference model was of {1:4.2f}.".format(id_string, SN_estimate))
                         elif("J" in id_string):
                             index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
                             SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-                            print("\tSanity Check: The S/N for the %s non-reference model was of %4.2f." % (id_string, SN_estimate))
+                            print("\tSanity Check: The S/N for the {0!s} non-reference model was of {1:4.2f}.".format(id_string, SN_estimate))
                         if(plot_ste or plot_ste == id_string):
                             # Plot the stellar spectr as considered
 
@@ -580,6 +580,6 @@ def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plo
                         for smpl in sampling:
                             id_string = star+"-"+band+"-"+vel+"-"+resolution    # sample was left aside because only one value existed
                             precision = results[id_string]
-                            print("%s: & %.1f\t & %.1f\t & %.1f \\\\" % (id_string, precision[0], precision[1], precision[2]))
+                            print("{0!s}: & {1:.1f}\t & {2:.1f}\t & {3:.1f} \\\\".format(id_string, precision[0], precision[1], precision[2]))
     else:
         return results

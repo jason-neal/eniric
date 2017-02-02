@@ -131,8 +131,8 @@ def calculate_prec(plot_atm = False, plot_ste = False, plot_flux = True, paper_p
     flux_atm = np.array(flux_atm)
     std_flux_atm = np.array(std_flux_atm)
     mask_atm = np.array(mask_atm, dtype=bool)
-    print("There were %d unmasked pixels out of %d." % (len(mask_atm[np.where(mask_atm)]), len(mask_atm)))
-    print("The model ranges from %4.2f to %4.2f micron." % (wav_atm[0], wav_atm[-1]))
+    print("There were {0:d} unmasked pixels out of {1:d}.".format(len(mask_atm[np.where(mask_atm)]), len(mask_atm)))
+    print("The model ranges from {0:4.2f} to {1:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
     print("Done.")
 
     print("Calculating impact of Barycentric movement on mask...")
@@ -167,7 +167,7 @@ def calculate_prec(plot_atm = False, plot_ste = False, plot_flux = True, paper_p
             mask_atm_30kms.append(tester)
 
     mask_atm = np.array(mask_atm_30kms, dtype=bool)
-    print("There were %d unmasked pixels out of %d." % (len(mask_atm[np.where(mask_atm)]), len(mask_atm)))
+    print("There were {0:d} unmasked pixels out of {1:d}.".format(len(mask_atm[np.where(mask_atm)]), len(mask_atm)))
 
     # calculating the number of pixels inside the mask
     wav_Z, mask_Z = band_selector(wav_atm, mask_atm, "Z")
@@ -177,7 +177,7 @@ def calculate_prec(plot_atm = False, plot_ste = False, plot_flux = True, paper_p
     wav_K, mask_K = band_selector(wav_atm, mask_atm, "K")
 
     bands_masked = np.array(list(mask_Z) + list(mask_Y) + list(mask_J) + list(mask_H) + list(mask_K))
-    print("Inside the bands, there were %d unmasked pixels out of %d." % (len(mask_atm[np.where(bands_masked)]), len(bands_masked)))
+    print("Inside the bands, there were {0:d} unmasked pixels out of {1:d}.".format(len(mask_atm[np.where(bands_masked)]), len(bands_masked)))
     if(plot_atm):
 
          # identify non-masked pixels
@@ -320,11 +320,11 @@ def calculate_prec(plot_atm = False, plot_ste = False, plot_flux = True, paper_p
                         if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k", "M6-J-1.0-100k", "M9-J-1.0-100k"]):
                             index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
                             SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-                            print("\tSanity Check: The S/N for the %s reference model was of %4.2f." % (id_string, SN_estimate))
+                            print("\tSanity Check: The S/N for the {0!s} reference model was of {1:4.2f}.".format(id_string, SN_estimate))
                         elif("J" in id_string):
                             index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
                             SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-                            print("\tSanity Check: The S/N for the %s non-reference model was of %4.2f." % (id_string, SN_estimate))
+                            print("\tSanity Check: The S/N for the {0!s} non-reference model was of {1:4.2f}.".format(id_string, SN_estimate))
                         if(plot_ste or plot_ste == id_string ):
                             # Plot the stellar spectr as considered
 
@@ -1559,7 +1559,7 @@ def calculate_prec(plot_atm = False, plot_ste = False, plot_flux = True, paper_p
                         for smpl in sampling:
                             id_string = star+"-"+band+"-"+vel+"-"+resolution    # sample was left aside because only one value existed
                             precision = results[id_string]
-                            print("%s: & %.1f\t & %.1f\t & %.1f \\\\" % (id_string, precision[0], precision[1], precision[2]))
+                            print("{0!s}: & {1:.1f}\t & {2:.1f}\t & {3:.1f} \\\\".format(id_string, precision[0], precision[1], precision[2]))
     else:
         return results
 
@@ -1578,8 +1578,8 @@ def calculate_prec_VIS(plot_atm = False, plot_ste = False, plot_flux = True, pap
     flux_atm = np.array(flux_atm)
     std_flux_atm = np.array(std_flux_atm)
     mask_atm = np.array(mask_atm, dtype=bool)
-    print("There were %d unmasked pixels out of %d." % (len(mask_atm[np.where(mask_atm)]), len(mask_atm)))
-    print("The model ranges from %4.2f to %4.2f micron." % (wav_atm[0], wav_atm[-1]))
+    print("There were {0:d} unmasked pixels out of {1:d}.".format(len(mask_atm[np.where(mask_atm)]), len(mask_atm)))
+    print("The model ranges from {0:4.2f} to {1:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
     print("Done.")
 
     print("Calculating impact of Barycentric movement on mask...")
@@ -1595,7 +1595,7 @@ def calculate_prec_VIS(plot_atm = False, plot_ste = False, plot_flux = True, pap
             mask_atm_30kms.append(all(mask_atm_30kmslice))
 
     mask_atm = np.array(mask_atm_30kms, dtype=bool)
-    print("There were %d unmasked pixels out of %d." % (len(mask_atm[np.where(mask_atm)]), len(mask_atm)))
+    print("There were {0:d} unmasked pixels out of {1:d}.".format(len(mask_atm[np.where(mask_atm)]), len(mask_atm)))
 
     if(plot_atm):
 
@@ -1715,11 +1715,11 @@ def calculate_prec_VIS(plot_atm = False, plot_ste = False, plot_flux = True, pap
                         if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k", "M6-J-1.0-100k", "M9-J-1.0-100k"]):
                             index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
                             SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-                            print("\tSanity Check: The S/N for the %s reference model was of %4.2f." % (id_string, SN_estimate))
+                            print("\tSanity Check: The S/N for the {0!s} reference model was of {1:4.2f}.".format(id_string, SN_estimate))
                         elif("J" in id_string):
                             index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
                             SN_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
-                            print("\tSanity Check: The S/N for the %s non-reference model was of %4.2f." % (id_string, SN_estimate))
+                            print("\tSanity Check: The S/N for the {0!s} non-reference model was of {1:4.2f}.".format(id_string, SN_estimate))
                         if(plot_ste or plot_ste == id_string ):
                             # Plot the stellar spectr as considered
 
@@ -2027,7 +2027,7 @@ def calculate_prec_VIS(plot_atm = False, plot_ste = False, plot_flux = True, pap
                         for smpl in sampling:
                             id_string = star+"-"+band+"-"+vel+"-"+resolution    # sample was left aside because only one value existed
                             precision = results[id_string]
-                            print("%s: & %.1f\t & %.1f\t & %.1f \\\\" % (id_string, precision[0], precision[1], precision[2]))
+                            print("{0!s}: & {1:.1f}\t & {2:.1f}\t & {3:.1f} \\\\".format(id_string, precision[0], precision[1], precision[2]))
     else:
         return results
 
