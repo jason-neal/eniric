@@ -1,11 +1,10 @@
 # Placed here to keep it around.
-
+import numpy as np
 import eniric.IOmodule as io
+
 # Functions from rv precision calculations that were tried for first paper but not used in results
 def read_contfit():
-    """
-    function that reads continuum fitting
-    """
+    """Function that reads continuum fitting."""
     m0_contfit = "PHOENIX_ACES_spectra/M0_nIRcont.txt"
     m3_contfit = "PHOENIX_ACES_spectra/M3_nIRcont.txt"
     m6_contfit = "PHOENIX_ACES_spectra/M6_nIRcont.txt"
@@ -29,9 +28,7 @@ def read_contfit():
 
 
 def read_nIRspectra():
-    """
-    function that reads nIR spectra
-    """
+    """Function that reads nIR spectra."""
     m0_contfit = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
     m3_contfit = "PHOENIX_ACES_spectra/lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
     m6_contfit = "PHOENIX_ACES_spectra/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
@@ -67,9 +64,7 @@ def read_nIRspectra():
 
 
 def ratios_calc(wav_bin):
-    """
-    funtion that calculates ratios as set in the continuum to apply to the spectrum
-    """
+    """Funtion that calculates ratios as set in the continuum to apply to the spectrum."""
     wav_m0, flux_m0, wav_m3, flux_m3, wav_m6, flux_m6, wav_m9, flux_m9 = read_contfit()
 
     index_m0_l = np.searchsorted(wav_m0, [0.83, 1.0, 1.17, 1.5, 2.07])
@@ -94,9 +89,7 @@ def flux_bin(flux, index_left, index_right):
 
 # Also removed from nIR_precision
 def compare_runs():
-    """
-    Function that compares spectra as resampled in the two versions of the code
-    """
+    """Function that compares spectra as resampled in the two versions of the code."""
     for star in spectral_types:
         for band in bands:
             for vel in vsini:
