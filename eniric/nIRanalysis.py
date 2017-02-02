@@ -11,8 +11,7 @@ import numpy as np
 from tqdm import tqdm
 import multiprocess as mprocess
 
-# from eniric.IOmodule import read_2col, read_3col
-from eniric.IOmodule import pdread_2col,  write_e_3col
+import eniric.IOmodule as io
 # from eniric.Qcalculator import RVprec_calc, SqrtSumWis
 from eniric.utilities import wav_selector, unitary_Gauss, rotation_kernel
 from eniric.utilities import band_selector, read_spectrum
@@ -60,7 +59,7 @@ def save_convolution_results(filename, wavelength, flux, convolved_flux):
 
     # Note: difference in sampling at 1.0 and 1.5 microns makes jumps
     # in the beginning of Y and H bands
-    write_e_3col(filename, wavelength, flux, convolved_flux)
+    io.write_e_3col(filename, wavelength, flux, convolved_flux)
     print("Done.")
     return 0
 

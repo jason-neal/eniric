@@ -1,7 +1,9 @@
 """Script to check if all the results files are ready for precision calculation
+
  e.g. that they exist before trying to calculate the precision.
 
- Jason Neal - Janurary 2017"""
+ Jason Neal - Janurary 2017
+ """
 
 
 import argparse
@@ -39,10 +41,10 @@ def _parser():
     return args
 
 
-def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, results=None,
-         resamples=None, sample_rate=3.0, noresample=False, normalize=True,
-         org=False):
-
+def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None,
+         results=None, resamples=None, sample_rate=3.0, noresample=False,
+         normalize=True, org=False):
+    """Check if all the results files are ready for precision calculation."""
     if data_dir is None:
         data_dir = "../data/"
 
@@ -80,7 +82,7 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
     iterations = itertools.product(spectral_types, bands, vsini, resolution, sampling)
     for (star, band, vel, res, smpl) in iterations:
 
-    # find if the file exists.
+    # Find if the file exists.
         if exists:
             pass
         else:

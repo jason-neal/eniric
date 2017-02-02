@@ -1,12 +1,7 @@
+"""Calculate the Radial Velocity Precision of NIR Spectra.
+
+Using the Quality factor of the spectra.
 """
-Created on Mon Dec 29 00:14:56 2014
-
-@author: pfigueira
-
-Editied Thur Dec 15 13:00 2016 by Jason Neal for eniric.
-"""
-
-# from eniric.IOmodule import read_2col
 
 import numpy as np
 import pandas as pd
@@ -17,8 +12,7 @@ from astropy.units import Quantity
 
 
 def RVprec_test(spectrum_file="resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt"):
-    """Test a RVprec_calc for a singal specturm.
-    """
+    """Test a RVprec_calc for a singal specturm."""
     data = pd.read_table(spectrum_file, comment='#', header=None,
                          names=["wavelength", "flux"], dtype=np.float64,
                          delim_whitespace=True)
@@ -69,12 +63,12 @@ def RVprec_calc(wavelength, flux):
     detector noise sigma_D. In this paper we exclusively consider the high
     signal-to-noise ratio regime, so we can approximate A_0(i) + sigma_D**2
     to A_0(i).
+
     """
+    return c / sqrt_sum_wis(wavelength, flux)
 
-    return c / SqrtSumWis(wavelength, flux)
 
-
-def SqrtSumWis(wavelength, flux):
+def sqrt_sum_wis(wavelength, flux):
     """Calculation of the SquareRoot of the sum of the weigths(Wis) for a spectrum.
 
     Parameters
@@ -103,17 +97,17 @@ def SqrtSumWis(wavelength, flux):
     content of the spectrum, given by the derivative of the amplitude, and
     calculated following Connes (1985).
 
-"""
+    """
     if not isinstance(wavelength, np.ndarray):
         print("Your wavelength and flux should really be numpy arrays! Converting them here.")
         wavelength = np.asarray(wavelength)
     if not isinstance(flux, np.ndarray):
         flux = np.asarray(flux)
 
-    delta_F = np.diff(flux)
-    delta_l = np.diff(wavelength)
+    delta_flux = np.diff(flux)
+    delta_lambda = np.diff(wavelength)
 
-    derivF_over_lambda = delta_F / delta_l
+    derivf_over_lambda = delta_flux / delta_lambda
 
     if isinstance(flux, u.Quantity):
         """Units of variance are squared """
@@ -121,12 +115,14 @@ def SqrtSumWis(wavelength, flux):
     else:
         flux_variance = flux
 
-    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivF_over_lambda**2.0 /
+    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivf_over_lambda**2.0 /
                           flux_variance[:-1]))
 
 
 def RVprec_calc_masked(wavelength, flux, mask=None):
-    """The same as RVprec_calc, but now wavelength and flux are organized into
+    """RV precision for split apart spectra.
+
+    The same as RVprec_calc, but now wavelength and flux are organized into
     chunks according to the mask and the weighted average formula is used to
     calculate the combined precision.
 
@@ -166,7 +162,7 @@ def RVprec_calc_masked(wavelength, flux, mask=None):
         if mask[0] is False:  # First value of mask is False was a bug in original code
             print(("{0:s}\nWarning\nA condition that would have given bad "
                    "precision the by broken clumping function was found.\nNeed "
-                   "to find the model parameters for this!\n{0:s}\n").format("#"*40))
+                   "to find the model parameters for this!\n{0:s}\n").format("#" * 40))
         # Turn wavelength and flux into masked arrays
         wavelength_clumps, flux_clumps = mask_clumping(wavelength, flux, mask)
 
@@ -238,21 +234,22 @@ def mask_clumping(wave, flux, mask):
 
 
 def bug_fixed_clumping_method(wav, flux, mask):
-    """Old clumping method that is difficult to understand ...[0]+1)[::2].
+    """Old clumping method that is difficult to understand ...[0] + 1)[::2].
 
     There was a signifcant bug which was fixed.
-    The returned values were dependant on the first value in the mask. """
+    The returned values were dependant on the first value in the mask.
+    """
     if mask[0] is False:  # First value of mask is False was a bug in original code
         print(("{0:s}\nWarning\nA condition that would have given bad "
                "precision the by broken clumping function was found.\nNeed "
-               "to find the model parameters for this!\n{0:s}\n").format("#"*40))
+               "to find the model parameters for this!\n{0:s}\n").format("#" * 40))
 
     if mask[0] == 1:
-        wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0]+1)[::2]
-        flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0]+1)[::2]
+        wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[::2]
+        flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[::2]
     else:
-        wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0]+1)[1::2]
-        flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0]+1)[1::2]
+        wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[1::2]
+        flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[1::2]
 
     wav_chunks = [list(chunk) for chunk in wav_chunks_unformated]
     flux_chunks = [list(chunk) for chunk in flux_chunks_unformated]
@@ -261,12 +258,14 @@ def bug_fixed_clumping_method(wav, flux, mask):
 
 
 def bugged_clumping_method(wav, flux, mask):
-    """Old clumping method that is difficult to understand ...[0]+1)[::2].
-    There was a signifcant bug in which the returned values depend on the first value in mask."""
-    wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0]+1)[::2]
+    """Old clumping method that is difficult to understand ...[0] + 1)[::2].
+
+    There was a signifcant bug in which the returned values depend on the first value in mask.
+    """
+    wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[::2]
     wav_chunks = [list(chunk) for chunk in wav_chunks_unformated]
 
-    flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0]+1)[::2]
+    flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[::2]
     flux_chunks = [list(chunk) for chunk in flux_chunks_unformated]
 
     return wav_chunks, flux_chunks
@@ -274,7 +273,7 @@ def bugged_clumping_method(wav, flux, mask):
 
 ###############################################################################
 def RV_prec_calc_Trans(wavelength, flux, transmission):
-    """The same as RV_prec_calc, but considering a transmission different than zero
+    """The same as RV_prec_calc, but considering a transmission different than zero.
 
     Parameters
     ----------
@@ -289,13 +288,13 @@ def RV_prec_calc_Trans(wavelength, flux, transmission):
     -------
     RVrms: Quantity scalar
         Radial velocity precision for a spectrum affected by atmospheric transmission
+
     """
+    return c / sqrt_sum_wis_trans(wavelength, flux, transmission)
 
-    return c / SqrtSumWisTrans(wavelength, flux, transmission)
 
-
-def SqrtSumWisTrans(wavelength, flux, transmission):
-    """Calculation of the SquareRoot of the sum of the Wis for a spectrum, considering transmission.
+def sqrt_sum_wis_trans(wavelength, flux, transmission):
+    """Calculation of the SquareRoot of the sum of the Weights for a spectrum, considering transmission.
 
     The transmission reduces the flux so has an affect on the variance.
 
@@ -310,10 +309,10 @@ def SqrtSumWisTrans(wavelength, flux, transmission):
 
     Returns
     -------
-    SqrtSumWisTrans: array-like or Quantity
+    sqrt_sum_wis_trans: array-like or Quantity
         Squarerooted sum of pixel weigths including effects of transmission.
-    """
 
+    """
     if not isinstance(wavelength, np.ndarray):
         print("Your wavelength and flux should really be numpy arrays! Converting them here.")
         wavelength = np.asarray(wavelength)
@@ -335,10 +334,10 @@ def SqrtSumWisTrans(wavelength, flux, transmission):
         if np.any(transmission > 1) or np.any(transmission < 0):
             raise ValueError("Transmission should range from 0 to 1 only.")
 
-    delta_F = np.diff(flux)
-    delta_l = np.diff(wavelength)
+    delta_flux = np.diff(flux)
+    delta_lambda = np.diff(wavelength)
 
-    derivF_over_lambda = delta_F / delta_l
+    derivf_over_lambda = delta_flux / delta_lambda
 
     if isinstance(flux, u.Quantity):
         """Units of variance are squared"""
@@ -346,5 +345,5 @@ def SqrtSumWisTrans(wavelength, flux, transmission):
     else:
         flux_variance = flux
 
-    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivF_over_lambda**2.0 /
+    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivf_over_lambda**2.0 /
                           (flux_variance[:-1] / transmission[:-1]**2.0)))

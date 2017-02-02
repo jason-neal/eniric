@@ -45,17 +45,17 @@ def test_RVprec_calc_with_lists():
     assert rv. unit == u.meter / u.second
 
 
-def test_SqrtSumWis():
-    """Test that SqrtSumWis can hande inputs as Quantities or unitless
+def test_sqrt_sum_wis():
+    """Test that sqrt_sum_wis can hande inputs as Quantities or unitless
     and returns a dimensionless unscaled Quantity. """
     wav = np.arange(1, 101)
     flux = np.random.random(100)
 
-    sqrtsumwis = Q.SqrtSumWis(wav, flux)
+    sqrtsumwis = Q.sqrt_sum_wis(wav, flux)
     assert not isinstance(sqrtsumwis, u.Quantity)  # Doesn't turn into quantity if does not have to.
     assert not hasattr(sqrtsumwis, '__len__')       # assert value is a scalar
 
-    sqrtsumwis2 = Q.SqrtSumWis(wav * u.micron,  (flux / u.second) / (u.centimeter**2))   # with some units
+    sqrtsumwis2 = Q.sqrt_sum_wis(wav * u.micron,  (flux / u.second) / (u.centimeter**2))   # with some units
     assert not hasattr(sqrtsumwis2.value, '__len__')   # assert value is a scalar
     assert isinstance(sqrtsumwis2, u.Quantity)
     assert sqrtsumwis2.unit == u.dimensionless_unscaled   # unscaled and dimentionless quantitiy
@@ -101,30 +101,30 @@ def test_SQRTSumWisTrans():
     flux = np.random.random(100)
     trans = np.random.random(100)
 
-    swrtsum_trans = Q.SqrtSumWisTrans(wav, flux, trans)
+    swrtsum_trans = Q.sqrt_sum_wis_trans(wav, flux, trans)
     assert not isinstance(swrtsum_trans, u.Quantity)  # Doesn't turn into quantity if does not have to.
     assert not hasattr(swrtsum_trans, '__len__')  # assert scalar
 
     # dimensionless_unscaled unit is ok for transmission
-    sqrtsum_trans2 = Q.SqrtSumWisTrans(wav, flux, trans * u.dimensionless_unscaled)
+    sqrtsum_trans2 = Q.sqrt_sum_wis_trans(wav, flux, trans * u.dimensionless_unscaled)
     assert not hasattr(sqrtsum_trans2.value, '__len__')   # assert scalar
     assert isinstance(sqrtsum_trans2, u.Quantity)
     assert sqrtsum_trans2.unit == u.dimensionless_unscaled  # unscaled and dimentionless quantitiy
 
-    sqrtsum_trans3 = Q.SqrtSumWisTrans(wav * u.micron, flux, trans)
+    sqrtsum_trans3 = Q.sqrt_sum_wis_trans(wav * u.micron, flux, trans)
     assert not hasattr(sqrtsum_trans3.value, '__len__')  # assert value is a scalar
     assert isinstance(sqrtsum_trans3, u.Quantity)
     assert sqrtsum_trans3.unit == u.dimensionless_unscaled   # unscaled and dimentionless quantitiy
 
     with pytest.raises(TypeError):
         # transmission mistakenly given as a flux unit
-        Q.SqrtSumWisTrans(wav, flux, (trans/u.s)/(u.centimeter**2))
+        Q.sqrt_sum_wis_trans(wav, flux, (trans/u.s)/(u.centimeter**2))
 
     with pytest.raises(ValueError):
-        Q.SqrtSumWisTrans(wav, flux, trans+1)
+        Q.sqrt_sum_wis_trans(wav, flux, trans+1)
 
     with pytest.raises(ValueError):
-        Q.SqrtSumWisTrans(wav, flux, trans*-5)
+        Q.sqrt_sum_wis_trans(wav, flux, trans*-5)
 
 
 def test_transmission_reduces_precision():
