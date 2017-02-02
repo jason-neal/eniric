@@ -5,8 +5,8 @@ Created on Fri Feb  6 00:36:14 2015
 @author: pfigueira
 """
 
-import numpy as np
 import string
+import numpy as np
 
 import eniric.IOmodule as io
 
@@ -16,8 +16,9 @@ list_files = "list_tapas_models.txt"
 
 outdir = "atmmodel/"
 
-def read_tapas(filename):
 
+def read_tapas(filename):
+    """Read in tapas file."""
     file_conv = io.read_fullcol(filename)
     properties_dict = {}
     lambdas = []
@@ -28,7 +29,8 @@ def read_tapas(filename):
             continue
         elif(line[0] == '\\'):
             # add everything starting with a \\ to the dictionary
-            key_dic, value_dic = string.split(line[1:-1], "=")  # remove the "\" form the beggining and the "\n" from the end
+            # remove the "\" form the beggining and the "\n" from the end
+            key_dic, value_dic = string.split(line[1:-1], "=")
             properties_dict[key_dic] = value_dic
         else:
             # these are the values of the file itself
@@ -41,11 +43,9 @@ def read_tapas(filename):
     # note that the lambdas are provided in reversed order
     return [properties_dict, lambdas[::-1], flux[::-1]]
 
-def read_allfiles(mask_limit = 0.02):
-    """
-    reads all the files in list_files
-    """
 
+def read_allfiles(mask_limit=0.02):
+    """Read all the files in list_files."""
     Files = io.read_fullcol(dirmodels+list_files)
     print("Reading the files...")
     atm_models = [read_tapas(dirmodels+file_act[:-1]) for file_act in Files]
@@ -67,13 +67,13 @@ def read_allfiles(mask_limit = 0.02):
 
     write_4col_eeed(outdir+"Average_TAPAS_2014_visible.txt", wav, mean_flux, std_flux, mask)
 
-def write_4col_eeed(filename, data1, data2, data3, data4):
-# Writes data in 3 columns separated by tabs in a "filename" file.
 
+def write_4col_eeed(filename, data1, data2, data3, data4):
+    """Write data in 3 columns separated by tabs in a "filename" file."""
     f = open(filename, "w")
 
     for i in range(len(data1)):
- #       f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
+        # f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
         f.write("\t{0:e}\t\t{1:e}\t\t{2:e}\t\t{3:d}\n".format(data1[i], data2[i], data3[i], data4[i]))
 
-    f.close();
+    f.close()
