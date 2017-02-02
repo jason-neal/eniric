@@ -1,9 +1,6 @@
-"""
-Created on Mon Dec 29 00:14:56 2014
+"""Calculate the Radial Velocity Precision of NIR Spectra.
 
-@author: pfigueira
-
-Editied Thur Dec 15 13:00 2016 by Jason Neal for eniric.
+ Using the Quality factor of the spectra.
 """
 
 import numpy as np
@@ -69,10 +66,10 @@ def RVprec_calc(wavelength, flux):
     to A_0(i).
     """
 
-    return c / SqrtSumWis(wavelength, flux)
+    return c / sqrt_sum_wis(wavelength, flux)
 
 
-def SqrtSumWis(wavelength, flux):
+def sqrt_sum_wis(wavelength, flux):
     """Calculation of the SquareRoot of the sum of the weigths(Wis) for a spectrum.
 
     Parameters
@@ -108,10 +105,10 @@ def SqrtSumWis(wavelength, flux):
     if not isinstance(flux, np.ndarray):
         flux = np.asarray(flux)
 
-    delta_F = np.diff(flux)
-    delta_l = np.diff(wavelength)
+    delta_flux = np.diff(flux)
+    delta_lambda = np.diff(wavelength)
 
-    derivF_over_lambda = delta_F / delta_l
+    derivf_over_lambda = delta_flux / delta_lambda
 
     if isinstance(flux, u.Quantity):
         """Units of variance are squared """
@@ -119,7 +116,7 @@ def SqrtSumWis(wavelength, flux):
     else:
         flux_variance = flux
 
-    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivF_over_lambda**2.0 /
+    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivf_over_lambda**2.0 /
                           flux_variance[:-1]))
 
 
@@ -289,11 +286,11 @@ def RV_prec_calc_Trans(wavelength, flux, transmission):
         Radial velocity precision for a spectrum affected by atmospheric transmission
     """
 
-    return c / SqrtSumWisTrans(wavelength, flux, transmission)
+    return c / sqrt_sum_wis_trans(wavelength, flux, transmission)
 
 
-def SqrtSumWisTrans(wavelength, flux, transmission):
-    """Calculation of the SquareRoot of the sum of the Wis for a spectrum, considering transmission.
+def sqrt_sum_wis_trans(wavelength, flux, transmission):
+    """Calculation of the SquareRoot of the sum of the Weights for a spectrum, considering transmission.
 
     The transmission reduces the flux so has an affect on the variance.
 
@@ -308,7 +305,7 @@ def SqrtSumWisTrans(wavelength, flux, transmission):
 
     Returns
     -------
-    SqrtSumWisTrans: array-like or Quantity
+    sqrt_sum_wis_trans: array-like or Quantity
         Squarerooted sum of pixel weigths including effects of transmission.
     """
 
@@ -333,10 +330,10 @@ def SqrtSumWisTrans(wavelength, flux, transmission):
         if np.any(transmission > 1) or np.any(transmission < 0):
             raise ValueError("Transmission should range from 0 to 1 only.")
 
-    delta_F = np.diff(flux)
-    delta_l = np.diff(wavelength)
+    delta_flux = np.diff(flux)
+    delta_lambda = np.diff(wavelength)
 
-    derivF_over_lambda = delta_F / delta_l
+    derivf_over_lambda = delta_flux / delta_lambda
 
     if isinstance(flux, u.Quantity):
         """Units of variance are squared"""
@@ -344,5 +341,5 @@ def SqrtSumWisTrans(wavelength, flux, transmission):
     else:
         flux_variance = flux
 
-    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivF_over_lambda**2.0 /
+    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivf_over_lambda**2.0 /
                           (flux_variance[:-1] / transmission[:-1]**2.0)))
