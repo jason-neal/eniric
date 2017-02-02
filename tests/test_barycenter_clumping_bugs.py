@@ -12,8 +12,8 @@ def org_clump_tester(clump):
     tester = True
     for block in clump:
         if len(clump) >= 3:     # clump should be block!
-           tester = False
-           break
+            tester = False
+            break
     return tester
 
 
@@ -31,7 +31,7 @@ def corrected_clump_tester(clump):
 
 
 def test_clump_tester():
-    """ Test old version and corrected version of clump_tester.
+    """Test old version and corrected version of clump_tester.
 
     This confirms the suspicions of the bugs.
 
@@ -43,13 +43,13 @@ def test_clump_tester():
     clump1 = [np.array([0, 0], dtype=bool), np.array([0, 0], dtype=bool),
               np.array([0, 0], dtype=bool), np.array([0], dtype=bool)]
     # Clump1 should return True!
-    assert not (org_clump_tester(clump1) is True)  # This is wrong
+    assert org_clump_tester(clump1) is not True  # This is wrong
     assert corrected_clump_tester(clump1) is True
 
     # Clump 2 does have a group of consutive Falses>3 but not #blocks>3.
     clump2 = [np.array([0, 0, 0, 0, 0], dtype=bool), np.array([0, 0], dtype=bool)]
     # Clump2 should return False!
-    assert not (org_clump_tester(clump2) is False)   # This is wrong
+    assert org_clump_tester(clump2) is not False   # This is wrong
     assert corrected_clump_tester(clump2) is False
 
     # Test an array of zeros
@@ -58,6 +58,7 @@ def test_clump_tester():
     # Test a short array of ones
     clump4 = [np.array([0, 0], dtype=bool)]
     assert corrected_clump_tester(clump4) is True  # Not Long enough.
+
 
 # This code snippet also has a bug.
 def org_zeros_clumper(mask):
@@ -71,7 +72,7 @@ def correct_zeros_clumper(mask):
     """Purpose: Split into the groups of consecutive Falses."""
     mask_reversed = [not i for i in mask]
     # Depends on first value of mask
-    if mask[0]: # == True
+    if mask[0]:  # == True
         clumps = np.array_split(mask, np.where(np.diff(mask_reversed))[0] + 1)[1::2]
     else:
         clumps = np.array_split(mask, np.where(np.diff(mask_reversed))[0] + 1)[::2]
@@ -80,14 +81,13 @@ def correct_zeros_clumper(mask):
 
 
 def test_zero_clumper():
-    """ Test clumping code. To confirm suspicions of the bugs."""
-
+    """Test clumping code. To confirm suspicions of the bugs."""
     mask0 = np.array([0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0], dtype=bool)
     expected_clump0 = [np.array([0], dtype=bool),
-                      np.array([0, 0, 0], dtype=bool),
-                      np.array([0, 0], dtype=bool),
-                      np.array([0, 0, 0], dtype=bool),
-                      np.array([0], dtype=bool)]
+                       np.array([0, 0, 0], dtype=bool),
+                       np.array([0, 0], dtype=bool),
+                       np.array([0, 0, 0], dtype=bool),
+                       np.array([0], dtype=bool)]
 
     clumps0 = org_zeros_clumper(mask0)
     clumps0_corr = correct_zeros_clumper(mask0)
@@ -100,15 +100,15 @@ def test_zero_clumper():
     clumps0_corr_inverted = correct_zeros_clumper(~mask0)
     # Check number of clumps if inverted
     # Should change since mask0 has uneven group numbers. 5 False, 4 True.
-    assert not (len(clumps0_inverted) != len(clumps0)) # This should not be the case
+    assert not (len(clumps0_inverted) != len(clumps0))  # This should not be the case
     assert (len(clumps0_corr_inverted) != len(clumps0_corr))
 
     # This mask starts with group of 1s so fails for original code.
     mask1 = np.array([1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0], dtype=bool)
     expected_clump1 = [np.array([0, 0, 0], dtype=bool),
-                      np.array([0, 0], dtype=bool),
-                      np.array([0, 0, 0], dtype=bool),
-                      np.array([0], dtype=bool)]
+                       np.array([0, 0], dtype=bool),
+                       np.array([0, 0, 0], dtype=bool),
+                       np.array([0], dtype=bool)]
     clumps1 = org_zeros_clumper(mask1)
     clumps1_corr = correct_zeros_clumper(mask1)
 

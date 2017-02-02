@@ -14,7 +14,7 @@ import eniric.Qcalculator as Qcalculator
 
 
 def prepare_atmopshere(atmmodel):
-    """Read in atmopheric model and prepare. """
+    """Read in atmopheric model and prepare."""
     wav_atm, flux_atm, std_flux_atm, mask_atm = io.pdread_4col(atmmodel)
     # pandas already returns numpy arrays
     wav_atm = wav_atm / 1000.0  # conversion from nanometers to micrometers
@@ -53,7 +53,7 @@ def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
 
         # Offset_RV is the offset applied for the star RV.
         if ((mask_val is False) and (mask_iminus1[i] is False) and
-             (mask_iplus1[i] is False) and (offset_RV == 0)):    # If the mask is false and the offset is equal to zero
+            (mask_iplus1[i] is False) and (offset_RV == 0)):    # If the mask is false and the offset is equal to zero
             """If the value and its 2 neighbours are already zero don't do the barycenter shifts"""
             mask_atm_30kms[i] = False
         else:

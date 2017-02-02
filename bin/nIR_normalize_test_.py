@@ -27,7 +27,7 @@ vsini = 10
 epsilon = 0.6
 fwhm_lim = 5
 plot = False
-numProcs = 4
+numprocs = 4
 
 for band in bands:
     pass
@@ -38,7 +38,7 @@ if False:
 
     wav_band, flux_band, flux_conv = convolution(wav, flux, vsini, R, epsilon,
                                                       fwhm_lim, band=band,
-                                                      numProcs=numProcs,
+                                                      numprocs=numprocs,
                                                       results_dir="../data/results/unnorm/",
                                                       normalize=False)
 
@@ -47,7 +47,7 @@ if False:
 
     wav_band_norm, flux_band_norm, flux_conv_norm = convolution(wav, flux, vsini, R,
                                                 epsilon, fwhm_lim, band=band,
-                                                numProcs=numProcs,
+                                                numprocs=numprocs,
                                                 results_dir="../data/results/norm/",
                                                 normalize=True)
 
