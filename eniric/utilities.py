@@ -8,7 +8,7 @@ import os
 import errno
 import numpy as np
 import matplotlib.pyplot as plt
-from eniric.IOmodule import pdread_2col
+import eniric.IOmodule as io
 
 
 def read_spectrum(spec_name):
@@ -30,9 +30,9 @@ def read_spectrum(spec_name):
 
     """
     if "photon" in spec_name:
-        wav_micron, flux_photons = pdread_2col(spec_name)
+        wav_micron, flux_photons = io.pdread_2col(spec_name)
     else:
-        wav, flux = pdread_2col(spec_name)
+        wav, flux = io.pdread_2col(spec_name)
 
         wav_micron = wav * 1.0e-4  # conversion to microns
         flux_photons = flux * wav_micron   # Convert to photons
