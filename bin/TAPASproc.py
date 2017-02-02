@@ -77,6 +77,6 @@ def write_4col_eeed(filename, data1, data2, data3, data4):
 
     for i in range(len(data1)):
  #       f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
-        f.write("\t%e\t\t%e\t\t%e\t\t%d\n" % (data1[i], data2[i], data3[i], data4[i]))
+        f.write("\t{0:e}\t\t{1:e}\t\t{2:e}\t\t{3:d}\n".format(data1[i], data2[i], data3[i], data4[i]))
 
     f.close();
