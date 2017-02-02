@@ -46,9 +46,9 @@ def read_tapas(filename):
 
 def read_allfiles(mask_limit=0.02):
     """Read all the files in list_files."""
-    Files = io.read_fullcol(dirmodels+list_files)
+    files = io.read_fullcol(dirmodels+list_files)
     print("Reading the files...")
-    atm_models = [read_tapas(dirmodels+file_act[:-1]) for file_act in Files]
+    atm_models = [read_tapas(dirmodels+file_act[:-1]) for file_act in files]
     print("done.")
 
     wav = atm_models[0][1]

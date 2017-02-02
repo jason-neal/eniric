@@ -143,17 +143,17 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             plt_functions.plot_atmopshere_model(wav_atm, flux_atm, mask_atm)
 
         # theoretical ratios calculation
-        # wav_M0, flux_M0, wav_M3, flux_M3, wav_M6, flux_M6, wav_M9, flux_M9 = read_nIRspectra()
+        # wav_m0, flux_m0, wav_m3, flux_m3, wav_m6, flux_m6, wav_m9, flux_m9 = read_nIRspectra()
 
         results = {}    # creating empty dictionary for the results
-        wav_plot_M0 = []   # creating empty lists for the plots
-        flux_plot_M0 = []
-        wav_plot_M3 = []
-        flux_plot_M3 = []
-        wav_plot_M6 = []
-        flux_plot_M6 = []
-        wav_plot_M9 = []
-        flux_plot_M9 = []
+        wav_plot_m0 = []   # creating empty lists for the plots
+        flux_plot_m0 = []
+        wav_plot_m3 = []
+        flux_plot_m3 = []
+        wav_plot_m6 = []
+        flux_plot_m6 = []
+        wav_plot_m9 = []
+        flux_plot_m9 = []
 
         iterations = itertools.product(spectral_types, vsini, resolution, sampling)
         # for star in spectral_types:
@@ -251,17 +251,17 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                         "M3-H-1.0-100k", "M3-K-1.0-100k"]
 
             if(plot_flux and id_string in plot_ids):
-                wav_plot_M0.append(wav_stellar)
-                flux_plot_M0.append(flux_stellar)
+                wav_plot_m0.append(wav_stellar)
+                flux_plot_m0.append(flux_stellar)
             if(plot_flux and id_string in plot_ids):
-                wav_plot_M3.append(wav_stellar)
-                flux_plot_M3.append(flux_stellar)
+                wav_plot_m3.append(wav_stellar)
+                flux_plot_m3.append(flux_stellar)
             if(plot_flux and id_string in plot_ids):
-                wav_plot_M6.append(wav_stellar)
-                flux_plot_M6.append(flux_stellar)
+                wav_plot_m6.append(wav_stellar)
+                flux_plot_m6.append(flux_stellar)
             if(plot_flux and id_string in plot_ids):
-                wav_plot_M9.append(wav_stellar)
-                flux_plot_M9.append(flux_stellar)
+                wav_plot_m9.append(wav_stellar)
+                flux_plot_m9.append(flux_stellar)
 
     if(plot_flux):
         plt_functions.plot_nIR_flux()
@@ -339,20 +339,20 @@ def calculate_all_masked(wav_atm, mask_atm):
                                    np.sum(bands_masked) / len(bands_masked)))
 
 
-def RV_cumulative(RV_vector):
+def rv_cumulative(rv_vector):
     """Function that calculates the cumulative RV vector weighted_error."""
 
-    return [weighted_error(RV_vector[:2]), weighted_error(RV_vector[:3]),
-            weighted_error(RV_vector[:4]), weighted_error(RV_vector)]
+    return [weighted_error(rv_vector[:2]), weighted_error(rv_vector[:3]),
+            weighted_error(rv_vector[:4]), weighted_error(rv_vector)]
 
 
-def weighted_error(RV_vector):
+def weighted_error(rv_vector):
     """Function that calculates the average weighted error from a vector of errors."""
 
-    RV_vector = np.array(RV_vector)
-    RV_value = 1.0/(np.sqrt(np.sum((1.0/RV_vector)**2.0)))
+    rv_vector = np.array(rv_vector)
+    rv_value = 1.0/(np.sqrt(np.sum((1.0/rv_vector)**2.0)))
 
-    return RV_value
+    return rv_value
 
 
 def moving_average(x, window_size):

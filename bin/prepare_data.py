@@ -112,9 +112,9 @@ def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=N
 
         for phoenix_file in phoenix_files:
 
-            Z_folder = path.split("/")[-1]
-            os.makedirs(os.path.join(data_dir, Z_folder), exist_ok=True)  # make folder if doesn't exit
-            output_filename = os.path.join(data_dir, Z_folder,
+            z_folder = path.split("/")[-1]
+            os.makedirs(os.path.join(data_dir, z_folder), exist_ok=True)  # make folder if doesn't exit
+            output_filename = os.path.join(data_dir, z_folder,
                                            phoenix_file[:-5] + file_suffix)  # Name of .dat file
 
             spectra = fits.getdata(os.path.join(path, phoenix_file))

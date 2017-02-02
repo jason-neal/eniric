@@ -36,83 +36,83 @@ def read_contfit():
     """
     function that reads continuum fitting
     """
-    M0_contfit ="PHOENIX_ACES_spectra/M0_nIRcont.txt"
-    M3_contfit ="PHOENIX_ACES_spectra/M3_nIRcont.txt"
-    M6_contfit ="PHOENIX_ACES_spectra/M6_nIRcont.txt"
-    M9_contfit ="PHOENIX_ACES_spectra/M9_nIRcont.txt"
+    m0_contfit ="PHOENIX_ACES_spectra/M0_nIRcont.txt"
+    m3_contfit ="PHOENIX_ACES_spectra/M3_nIRcont.txt"
+    m6_contfit ="PHOENIX_ACES_spectra/M6_nIRcont.txt"
+    m9_contfit ="PHOENIX_ACES_spectra/M9_nIRcont.txt"
 
-    wav_M0, flux_M0 = io.read_2col(M0_contfit)
-    wav_M3, flux_M3 = io.read_2col(M3_contfit)
-    wav_M6, flux_M6 = io.read_2col(M6_contfit)
-    wav_M9, flux_M9 = io.read_2col(M9_contfit)
+    wav_m0, flux_m0 = io.read_2col(m0_contfit)
+    wav_m3, flux_m3 = io.read_2col(m3_contfit)
+    wav_m6, flux_m6 = io.read_2col(m6_contfit)
+    wav_m9, flux_m9 = io.read_2col(m9_contfit)
 
-    wav_M0 = np.array(wav_M0, dtype="float64")*1.0e-4 # conversion to microns
-    flux_M0 = np.array(flux_M0, dtype="float64")*wav_M0
-    wav_M3 = np.array(wav_M3, dtype="float64")*1.0e-4 # conversion to microns
-    flux_M3 = np.array(flux_M3, dtype="float64")*wav_M3
-    wav_M6 = np.array(wav_M6, dtype="float64")*1.0e-4 # conversion to microns
-    flux_M6 = np.array(flux_M6, dtype="float64")*wav_M6
-    wav_M9 = np.array(wav_M9, dtype="float64")*1.0e-4 # conversion to microns
-    flux_M9 = np.array(flux_M9, dtype="float64")*wav_M9
+    wav_m0 = np.array(wav_m0, dtype="float64")*1.0e-4 # conversion to microns
+    flux_m0 = np.array(flux_m0, dtype="float64")*wav_m0
+    wav_m3 = np.array(wav_m3, dtype="float64")*1.0e-4 # conversion to microns
+    flux_m3 = np.array(flux_m3, dtype="float64")*wav_m3
+    wav_m6 = np.array(wav_m6, dtype="float64")*1.0e-4 # conversion to microns
+    flux_m6 = np.array(flux_m6, dtype="float64")*wav_m6
+    wav_m9 = np.array(wav_m9, dtype="float64")*1.0e-4 # conversion to microns
+    flux_m9 = np.array(flux_m9, dtype="float64")*wav_m9
 
-    return [wav_M0, flux_M0, wav_M3, flux_M3, wav_M6, flux_M6, wav_M9, flux_M9]
+    return [wav_m0, flux_m0, wav_m3, flux_m3, wav_m6, flux_m6, wav_m9, flux_m9]
 
 
 def read_nIRspectra():
     """
     function that reads nIR spectra
     """
-    M0_contfit ="PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
-    M3_contfit ="PHOENIX_ACES_spectra/lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
-    M6_contfit ="PHOENIX_ACES_spectra/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
-    M9_contfit ="PHOENIX_ACES_spectra/lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
+    m0_contfit ="PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
+    m3_contfit ="PHOENIX_ACES_spectra/lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
+    m6_contfit ="PHOENIX_ACES_spectra/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
+    m9_contfit ="PHOENIX_ACES_spectra/lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
 
     print("Reading PHOENIX original spectrum..."    )
-    wav_M0, flux_M0 = io.read_2col(M0_contfit)
-    wav_M3, flux_M3 = io.read_2col(M3_contfit)
-    wav_M6, flux_M6 = io.read_2col(M6_contfit)
-    wav_M9, flux_M9 = io.read_2col(M9_contfit)
+    wav_m0, flux_m0 = io.read_2col(m0_contfit)
+    wav_m3, flux_m3 = io.read_2col(m3_contfit)
+    wav_m6, flux_m6 = io.read_2col(m6_contfit)
+    wav_m9, flux_m9 = io.read_2col(m9_contfit)
     print("Done.")
 
-    wav_M0 = np.array(wav_M0, dtype="float64")*1.0e-4 # conversion to microns
-    flux_M0 = np.array(flux_M0, dtype="float64")*wav_M0
-    wav_M3 = np.array(wav_M3, dtype="float64")*1.0e-4 # conversion to microns
-    flux_M3 = np.array(flux_M3, dtype="float64")*wav_M3
-    wav_M6 = np.array(wav_M6, dtype="float64")*1.0e-4 # conversion to microns
-    flux_M6 = np.array(flux_M6, dtype="float64")*wav_M6
-    wav_M9 = np.array(wav_M9, dtype="float64")*1.0e-4 # conversion to microns
-    flux_M9 = np.array(flux_M9, dtype="float64")*wav_M9
+    wav_m0 = np.array(wav_m0, dtype="float64")*1.0e-4 # conversion to microns
+    flux_m0 = np.array(flux_m0, dtype="float64")*wav_m0
+    wav_m3 = np.array(wav_m3, dtype="float64")*1.0e-4 # conversion to microns
+    flux_m3 = np.array(flux_m3, dtype="float64")*wav_m3
+    wav_m6 = np.array(wav_m6, dtype="float64")*1.0e-4 # conversion to microns
+    flux_m6 = np.array(flux_m6, dtype="float64")*wav_m6
+    wav_m9 = np.array(wav_m9, dtype="float64")*1.0e-4 # conversion to microns
+    flux_m9 = np.array(flux_m9, dtype="float64")*wav_m9
 
-    wav_M0 = wav_M0[1000:-1000]
-    wav_M3 = wav_M3[1000:-1000]
-    wav_M6 = wav_M6[1000:-1000]
-    wav_M9 = wav_M9[1000:-1000]
+    wav_m0 = wav_m0[1000:-1000]
+    wav_m3 = wav_m3[1000:-1000]
+    wav_m6 = wav_m6[1000:-1000]
+    wav_m9 = wav_m9[1000:-1000]
 
-    flux_M0 = moving_average(flux_M0, 2000)[1000:-1000]
-    flux_M3 = moving_average(flux_M3, 2000)[1000:-1000]
-    flux_M6 = moving_average(flux_M6, 2000)[1000:-1000]
-    flux_M9 = moving_average(flux_M9, 2000)[1000:-1000]
+    flux_m0 = moving_average(flux_m0, 2000)[1000:-1000]
+    flux_m3 = moving_average(flux_m3, 2000)[1000:-1000]
+    flux_m6 = moving_average(flux_m6, 2000)[1000:-1000]
+    flux_m9 = moving_average(flux_m9, 2000)[1000:-1000]
 
-    return [wav_M0, flux_M0, wav_M3, flux_M3, wav_M6, flux_M6, wav_M9, flux_M9]
+    return [wav_m0, flux_m0, wav_m3, flux_m3, wav_m6, flux_m6, wav_m9, flux_m9]
 
 
 def ratios_calc(wav_bin):
     """
     funtion that calculates ratios as set in the continuum to apply to the spectrum
     """
-    wav_M0, flux_M0, wav_M3, flux_M3, wav_M6, flux_M6, wav_M9, flux_M9 = read_contfit()
+    wav_m0, flux_m0, wav_m3, flux_m3, wav_m6, flux_m6, wav_m9, flux_m9 = read_contfit()
 
-    index_M0_l = np.searchsorted(wav_M0, [0.83, 1.0, 1.17, 1.5, 2.07])
-    index_M3_l = np.searchsorted(wav_M3, [0.83, 1.0, 1.17, 1.5, 2.07])
-    index_M6_l = np.searchsorted(wav_M6, [0.83, 1.0, 1.17, 1.5, 2.07])
-    index_M9_l = np.searchsorted(wav_M9, [0.83, 1.0, 1.17, 1.5, 2.07])
+    index_m0_l = np.searchsorted(wav_m0, [0.83, 1.0, 1.17, 1.5, 2.07])
+    index_m3_l = np.searchsorted(wav_m3, [0.83, 1.0, 1.17, 1.5, 2.07])
+    index_m6_l = np.searchsorted(wav_m6, [0.83, 1.0, 1.17, 1.5, 2.07])
+    index_m9_l = np.searchsorted(wav_m9, [0.83, 1.0, 1.17, 1.5, 2.07])
 
-    index_M0_r = np.searchsorted(wav_M0, [0.83+wav_bin, 1.0+wav_bin, 1.17+wav_bin, 1.5+wav_bin, 2.07+wav_bin])
-    index_M3_r = np.searchsorted(wav_M3, [0.83+wav_bin, 1.0+wav_bin, 1.17+wav_bin, 1.5+wav_bin, 2.07+wav_bin])
-    index_M6_r = np.searchsorted(wav_M6, [0.83+wav_bin, 1.0+wav_bin, 1.17+wav_bin, 1.5+wav_bin, 2.07+wav_bin])
-    index_M9_r = np.searchsorted(wav_M9, [0.83+wav_bin, 1.0+wav_bin, 1.17+wav_bin, 1.5+wav_bin, 2.07+wav_bin])
+    index_m0_r = np.searchsorted(wav_m0, [0.83+wav_bin, 1.0+wav_bin, 1.17+wav_bin, 1.5+wav_bin, 2.07+wav_bin])
+    index_m3_r = np.searchsorted(wav_m3, [0.83+wav_bin, 1.0+wav_bin, 1.17+wav_bin, 1.5+wav_bin, 2.07+wav_bin])
+    index_m6_r = np.searchsorted(wav_m6, [0.83+wav_bin, 1.0+wav_bin, 1.17+wav_bin, 1.5+wav_bin, 2.07+wav_bin])
+    index_m9_r = np.searchsorted(wav_m9, [0.83+wav_bin, 1.0+wav_bin, 1.17+wav_bin, 1.5+wav_bin, 2.07+wav_bin])
 
-    return [flux_bin(flux_M0, index_M0_l, index_M0_r), flux_bin(flux_M3, index_M3_l, index_M3_r), flux_bin(flux_M6, index_M6_l, index_M6_r), flux_bin(flux_M9, index_M9_l, index_M9_r)]
+    return [flux_bin(flux_m0, index_m0_l, index_m0_r), flux_bin(flux_m3, index_m3_l, index_m3_r), flux_bin(flux_m6, index_m6_l, index_m6_r), flux_bin(flux_m9, index_m9_l, index_m9_r)]
 
 
 def flux_bin(flux, index_left, index_right):
@@ -255,17 +255,17 @@ def calculate_prec(plot_atm = False, plot_ste = False, plot_flux = True, paper_p
         exit()
 
     # theoretical ratios calculation
-    wav_M0, flux_M0, wav_M3, flux_M3, wav_M6, flux_M6, wav_M9, flux_M9 = read_nIRspectra()
+    wav_m0, flux_m0, wav_m3, flux_m3, wav_m6, flux_m6, wav_m9, flux_m9 = read_nIRspectra()
 
     results = {}    # creating empty dictionary for the results
-    wav_plot_M0 = []   # creating empty lists for the plots
-    flux_plot_M0 = []
-    wav_plot_M3 = []
-    flux_plot_M3 = []
-    wav_plot_M6 = []
-    flux_plot_M6 = []
-    wav_plot_M9 = []
-    flux_plot_M9 = []
+    wav_plot_m0 = []   # creating empty lists for the plots
+    flux_plot_m0 = []
+    wav_plot_m3 = []
+    flux_plot_m3 = []
+    wav_plot_m6 = []
+    flux_plot_m6 = []
+    wav_plot_m9 = []
+    flux_plot_m9 = []
     for star in spectral_types:
         for band in bands:
             for vel in vsini:
@@ -342,17 +342,17 @@ def calculate_prec(plot_atm = False, plot_ste = False, plot_flux = True, paper_p
                             plt.close()
 
                         if(plot_flux and id_string in ["M0-Z-1.0-100k", "M0-Y-1.0-100k", "M0-J-1.0-100k", "M0-H-1.0-100k", "M0-K-1.0-100k"]):
-                            wav_plot_M0.append(wav_stellar)
-                            flux_plot_M0.append(flux_stellar)
+                            wav_plot_m0.append(wav_stellar)
+                            flux_plot_m0.append(flux_stellar)
                         if(plot_flux and id_string in ["M3-Z-1.0-100k", "M3-Y-1.0-100k", "M3-J-1.0-100k", "M3-H-1.0-100k", "M3-K-1.0-100k"]):
-                            wav_plot_M3.append(wav_stellar)
-                            flux_plot_M3.append(flux_stellar)
+                            wav_plot_m3.append(wav_stellar)
+                            flux_plot_m3.append(flux_stellar)
                         if(plot_flux and id_string in ["M6-Z-1.0-100k", "M6-Y-1.0-100k", "M6-J-1.0-100k", "M6-H-1.0-100k", "M6-K-1.0-100k"]):
-                            wav_plot_M6.append(wav_stellar)
-                            flux_plot_M6.append(flux_stellar)
+                            wav_plot_m6.append(wav_stellar)
+                            flux_plot_m6.append(flux_stellar)
                         if(plot_flux and id_string in ["M9-Z-1.0-100k", "M9-Y-1.0-100k", "M9-J-1.0-100k", "M9-H-1.0-100k", "M9-K-1.0-100k"]):
-                            wav_plot_M9.append(wav_stellar)
-                            flux_plot_M9.append(flux_stellar)
+                            wav_plot_m9.append(wav_stellar)
+                            flux_plot_m9.append(flux_stellar)
 
                         # precision given by the first method:
                         print("Performing analysis for: ", id_string)
@@ -408,43 +408,43 @@ def calculate_prec(plot_atm = False, plot_ste = False, plot_flux = True, paper_p
 
         ax1.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
 
-        ax1.plot(wav_plot_M0[0], np.array(flux_plot_M0[0]), color ='0.1')
-        ax1.plot(wav_plot_M0[1], np.array(flux_plot_M0[1]), color ='0.1')
-        ax1.plot(wav_plot_M0[2], np.array(flux_plot_M0[2]), color ='0.1')
-        ax1.plot(wav_plot_M0[3], np.array(flux_plot_M0[3]), color ='0.1')
-        ax1.plot(wav_plot_M0[4], np.array(flux_plot_M0[4]), color ='0.1')
+        ax1.plot(wav_plot_m0[0], np.array(flux_plot_m0[0]), color ='0.1')
+        ax1.plot(wav_plot_m0[1], np.array(flux_plot_m0[1]), color ='0.1')
+        ax1.plot(wav_plot_m0[2], np.array(flux_plot_m0[2]), color ='0.1')
+        ax1.plot(wav_plot_m0[3], np.array(flux_plot_m0[3]), color ='0.1')
+        ax1.plot(wav_plot_m0[4], np.array(flux_plot_m0[4]), color ='0.1')
         ax1.text(0.9, 0.8,'M0',horizontalalignment='center', verticalalignment='center', transform = ax1.transAxes, size=12)
-        ax1.plot(wav_M0, (flux_M0/flux_M0[0])*flux_plot_M0[0][1000], color='0.1', linestyle='--')
+        ax1.plot(wav_m0, (flux_m0/flux_m0[0])*flux_plot_m0[0][1000], color='0.1', linestyle='--')
 
-        ax2.plot(wav_plot_M3[0], np.array(flux_plot_M3[0]), color ='0.3')
-        ax2.plot(wav_plot_M3[1], np.array(flux_plot_M3[1]), color ='0.3')
-        ax2.plot(wav_plot_M3[2], np.array(flux_plot_M3[2]), color ='0.3')
-        ax2.plot(wav_plot_M3[3], np.array(flux_plot_M3[3]), color ='0.3')
-        ax2.plot(wav_plot_M3[4], np.array(flux_plot_M3[4]), color ='0.3')
+        ax2.plot(wav_plot_m3[0], np.array(flux_plot_m3[0]), color ='0.3')
+        ax2.plot(wav_plot_m3[1], np.array(flux_plot_m3[1]), color ='0.3')
+        ax2.plot(wav_plot_m3[2], np.array(flux_plot_m3[2]), color ='0.3')
+        ax2.plot(wav_plot_m3[3], np.array(flux_plot_m3[3]), color ='0.3')
+        ax2.plot(wav_plot_m3[4], np.array(flux_plot_m3[4]), color ='0.3')
         ax2.text(0.9, 0.8,'M3',horizontalalignment='center', verticalalignment='center', transform = ax2.transAxes, size=12)
-        ax2.plot(wav_M3, (flux_M3/flux_M3[0])*flux_plot_M3[0][1000], color='0.1', linestyle='--')
+        ax2.plot(wav_m3, (flux_m3/flux_m3[0])*flux_plot_m3[0][1000], color='0.1', linestyle='--')
 
         ax2.get_yaxis().get_offset_text().set_visible(False)            # remove offset from the yaxis
         ax2.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='upper'))   # remove upper element from yaxis
         # ax2.yaxis.set_major_locator(MaxNLocator(nbins=len(ax2.get_yticklabels()), prune='upper'))   # remove upper element from yaxis
 
-        ax3.plot(wav_plot_M6[0], np.array(flux_plot_M6[0]), color ='0.4')
-        ax3.plot(wav_plot_M6[1], np.array(flux_plot_M6[1]), color ='0.4')
-        ax3.plot(wav_plot_M6[2], np.array(flux_plot_M6[2]), color ='0.4')
-        ax3.plot(wav_plot_M6[3], np.array(flux_plot_M6[3]), color ='0.4')
-        ax3.plot(wav_plot_M6[4], np.array(flux_plot_M6[4]), color ='0.4')
+        ax3.plot(wav_plot_m6[0], np.array(flux_plot_m6[0]), color ='0.4')
+        ax3.plot(wav_plot_m6[1], np.array(flux_plot_m6[1]), color ='0.4')
+        ax3.plot(wav_plot_m6[2], np.array(flux_plot_m6[2]), color ='0.4')
+        ax3.plot(wav_plot_m6[3], np.array(flux_plot_m6[3]), color ='0.4')
+        ax3.plot(wav_plot_m6[4], np.array(flux_plot_m6[4]), color ='0.4')
         ax3.text(0.9, 0.8,'M6',horizontalalignment='center', verticalalignment='center', transform = ax3.transAxes, size=12)
-        ax3.plot(wav_M6, (flux_M6/flux_M6[0])*flux_plot_M6[0][1000]*1.2, color='0.1', linestyle='--')
+        ax3.plot(wav_m6, (flux_m6/flux_m6[0])*flux_plot_m6[0][1000]*1.2, color='0.1', linestyle='--')
 
         ax3.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
 
-        ax4.plot(wav_plot_M9[0], np.array(flux_plot_M9[0]), color ='0.6')
-        ax4.plot(wav_plot_M9[1], np.array(flux_plot_M9[1]), color ='0.6')
-        ax4.plot(wav_plot_M9[2], np.array(flux_plot_M9[2]), color ='0.6')
-        ax4.plot(wav_plot_M9[3], np.array(flux_plot_M9[3]), color ='0.6')
-        ax4.plot(wav_plot_M9[4], np.array(flux_plot_M9[4]), color ='0.6')
+        ax4.plot(wav_plot_m9[0], np.array(flux_plot_m9[0]), color ='0.6')
+        ax4.plot(wav_plot_m9[1], np.array(flux_plot_m9[1]), color ='0.6')
+        ax4.plot(wav_plot_m9[2], np.array(flux_plot_m9[2]), color ='0.6')
+        ax4.plot(wav_plot_m9[3], np.array(flux_plot_m9[3]), color ='0.6')
+        ax4.plot(wav_plot_m9[4], np.array(flux_plot_m9[4]), color ='0.6')
         ax4.text(0.9, 0.8,'M9',horizontalalignment='center', verticalalignment='center', transform = ax4.transAxes, size=12)
-        ax4.plot(wav_M9, (flux_M9/flux_M9[0])*flux_plot_M9[0][1000]*1.4, color='0.1', linestyle='--')
+        ax4.plot(wav_m9, (flux_m9/flux_m9[0])*flux_plot_m9[0][1000]*1.4, color='0.1', linestyle='--')
 
         ax4.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
 
@@ -462,24 +462,24 @@ def calculate_prec(plot_atm = False, plot_ste = False, plot_flux = True, paper_p
         f.text(0.06, 0.5, r"Flux in Z band [ ]", ha='center', va='center', rotation='vertical')
 
         ax1.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
-        ax1.set_xlim(np.min(wav_plot_M0[0]), np.max(wav_plot_M0[0]))
+        ax1.set_xlim(np.min(wav_plot_m0[0]), np.max(wav_plot_m0[0]))
         ax1.set_ylim(0.0, 5.0e3)
 
-        ax1.plot(wav_plot_M0[0], np.array(flux_plot_M0[0]), color ='0.1', label="M0")
+        ax1.plot(wav_plot_m0[0], np.array(flux_plot_m0[0]), color ='0.1', label="M0")
         ax1.text(0.9, 0.8,'M0',horizontalalignment='center', verticalalignment='center', transform = ax1.transAxes, size=12)
         ax1.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='both'))
 
-        ax2.plot(wav_plot_M3[0], np.array(flux_plot_M3[0]), color ='0.3', label="M3")
+        ax2.plot(wav_plot_m3[0], np.array(flux_plot_m3[0]), color ='0.3', label="M3")
         ax2.text(0.9, 0.8,'M3',horizontalalignment='center', verticalalignment='center', transform = ax2.transAxes, size=12)
         ax2.get_yaxis().get_offset_text().set_visible(False)            # remove offset from the yaxis
         ax2.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='both'))   # remove upper element from yaxis
 
-        ax3.plot(wav_plot_M6[0], np.array(flux_plot_M6[0]), color ='0.4', label="M6")
+        ax3.plot(wav_plot_m6[0], np.array(flux_plot_m6[0]), color ='0.4', label="M6")
         ax3.text(0.9, 0.8,'M6',horizontalalignment='center', verticalalignment='center', transform = ax3.transAxes, size=12)
         ax3.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
         ax3.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='both'))
 
-        ax4.plot(wav_plot_M9[0], np.array(flux_plot_M9[0]), color ='0.6', label="M9")
+        ax4.plot(wav_plot_m9[0], np.array(flux_plot_m9[0]), color ='0.6', label="M9")
         ax4.text(0.9, 0.8,'M9',horizontalalignment='center', verticalalignment='center', transform = ax4.transAxes, size=12)
         ax4.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
         ax4.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='both'))
@@ -496,19 +496,19 @@ def calculate_prec(plot_atm = False, plot_ste = False, plot_flux = True, paper_p
 
         ax1.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
 
-        ax1.plot(wav_plot_M0[1], np.array(flux_plot_M0[1]), color ='0.1', label="M0")
+        ax1.plot(wav_plot_m0[1], np.array(flux_plot_m0[1]), color ='0.1', label="M0")
         ax1.text(0.9, 0.8,'M0',horizontalalignment='center', verticalalignment='center', transform = ax1.transAxes, size=12)
 
-        ax2.plot(wav_plot_M3[1], np.array(flux_plot_M3[1]), color ='0.3', label="M3")
+        ax2.plot(wav_plot_m3[1], np.array(flux_plot_m3[1]), color ='0.3', label="M3")
         ax2.text(0.9, 0.8,'M3',horizontalalignment='center', verticalalignment='center', transform = ax2.transAxes, size=12)
         ax2.get_yaxis().get_offset_text().set_visible(False)            # remove offset from the yaxis
         ax2.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='upper'))   # remove upper element from yaxis
 
-        ax3.plot(wav_plot_M6[1], np.array(flux_plot_M6[1]), color ='0.4', label="M6")
+        ax3.plot(wav_plot_m6[1], np.array(flux_plot_m6[1]), color ='0.4', label="M6")
         ax3.text(0.9, 0.8,'M6',horizontalalignment='center', verticalalignment='center', transform = ax3.transAxes, size=12)
         ax3.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
 
-        ax4.plot(wav_plot_M9[1], np.array(flux_plot_M9[1]), color ='0.6', label="M9")
+        ax4.plot(wav_plot_m9[1], np.array(flux_plot_m9[1]), color ='0.6', label="M9")
         ax4.text(0.9, 0.8,'M9',horizontalalignment='center', verticalalignment='center', transform = ax4.transAxes, size=12)
         ax4.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
 
@@ -523,21 +523,21 @@ def calculate_prec(plot_atm = False, plot_ste = False, plot_flux = True, paper_p
         f.text(0.06, 0.5, r"Flux in J band [ ]", ha='center', va='center', rotation='vertical')
 
         ax1.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
-        ax1.set_xlim(np.min(wav_plot_M0[2]), np.max(wav_plot_M0[2]))
+        ax1.set_xlim(np.min(wav_plot_m0[2]), np.max(wav_plot_m0[2]))
 
-        ax1.plot(wav_plot_M0[2], np.array(flux_plot_M0[2]), color ='0.1', label="M0")
+        ax1.plot(wav_plot_m0[2], np.array(flux_plot_m0[2]), color ='0.1', label="M0")
         ax1.text(0.9, 0.8,'M0',horizontalalignment='center', verticalalignment='center', transform = ax1.transAxes, size=12)
 
-        ax2.plot(wav_plot_M3[2], np.array(flux_plot_M3[2]), color ='0.3', label="M3")
+        ax2.plot(wav_plot_m3[2], np.array(flux_plot_m3[2]), color ='0.3', label="M3")
         ax2.text(0.9, 0.8,'M3',horizontalalignment='center', verticalalignment='center', transform = ax2.transAxes, size=12)
         ax2.get_yaxis().get_offset_text().set_visible(False)            # remove offset from the yaxis
         ax2.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='upper'))   # remove upper element from yaxis
 
-        ax3.plot(wav_plot_M6[2], np.array(flux_plot_M6[2]), color ='0.4', label="M6")
+        ax3.plot(wav_plot_m6[2], np.array(flux_plot_m6[2]), color ='0.4', label="M6")
         ax3.text(0.9, 0.8,'M6',horizontalalignment='center', verticalalignment='center', transform = ax3.transAxes, size=12)
         ax3.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
 
-        ax4.plot(wav_plot_M9[2], np.array(flux_plot_M9[2]), color ='0.6', label="M9")
+        ax4.plot(wav_plot_m9[2], np.array(flux_plot_m9[2]), color ='0.6', label="M9")
         ax4.text(0.9, 0.8,'M9',horizontalalignment='center', verticalalignment='center', transform = ax4.transAxes, size=12)
         ax4.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
 
@@ -553,19 +553,19 @@ def calculate_prec(plot_atm = False, plot_ste = False, plot_flux = True, paper_p
 
         ax1.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
 
-        ax1.plot(wav_plot_M0[3], np.array(flux_plot_M0[3]), color ='0.1', label="M0")
+        ax1.plot(wav_plot_m0[3], np.array(flux_plot_m0[3]), color ='0.1', label="M0")
         ax1.text(0.9, 0.8,'M0',horizontalalignment='center', verticalalignment='center', transform = ax1.transAxes, size=12)
 
-        ax2.plot(wav_plot_M3[3], np.array(flux_plot_M3[3]), color ='0.3', label="M3")
+        ax2.plot(wav_plot_m3[3], np.array(flux_plot_m3[3]), color ='0.3', label="M3")
         ax2.text(0.9, 0.8,'M3',horizontalalignment='center', verticalalignment='center', transform = ax2.transAxes, size=12)
         ax2.get_yaxis().get_offset_text().set_visible(False)            # remove offset from the yaxis
         ax2.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='upper'))   # remove upper element from yaxis
 
-        ax3.plot(wav_plot_M6[3], np.array(flux_plot_M6[3]), color ='0.4', label="M6")
+        ax3.plot(wav_plot_m6[3], np.array(flux_plot_m6[3]), color ='0.4', label="M6")
         ax3.text(0.9, 0.8,'M6',horizontalalignment='center', verticalalignment='center', transform = ax3.transAxes, size=12)
         ax3.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
 
-        ax4.plot(wav_plot_M9[3], np.array(flux_plot_M9[3]), color ='0.6', label="M9")
+        ax4.plot(wav_plot_m9[3], np.array(flux_plot_m9[3]), color ='0.6', label="M9")
         ax4.text(0.9, 0.8,'M9',horizontalalignment='center', verticalalignment='center', transform = ax4.transAxes, size=12)
         ax4.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
 
@@ -579,22 +579,22 @@ def calculate_prec(plot_atm = False, plot_ste = False, plot_flux = True, paper_p
         plt.xlabel(r"wavelength [ $\mu$m ]")
         f.text(0.06, 0.5, r"Flux in K band [ ]", ha='center', va='center', rotation='vertical')
 
-        ax1.set_xlim([np.min(wav_plot_M0[4]), np.max(wav_plot_M0[4])])
+        ax1.set_xlim([np.min(wav_plot_m0[4]), np.max(wav_plot_m0[4])])
         ax1.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
 
-        ax1.plot(wav_plot_M0[4], np.array(flux_plot_M0[4]), color ='0.1', label="M0")
+        ax1.plot(wav_plot_m0[4], np.array(flux_plot_m0[4]), color ='0.1', label="M0")
         ax1.text(0.9, 0.8,'M0',horizontalalignment='center', verticalalignment='center', transform = ax1.transAxes, size=12)
 
-        ax2.plot(wav_plot_M3[4], np.array(flux_plot_M3[4]), color ='0.3', label="M3")
+        ax2.plot(wav_plot_m3[4], np.array(flux_plot_m3[4]), color ='0.3', label="M3")
         ax2.text(0.9, 0.8,'M3',horizontalalignment='center', verticalalignment='center', transform = ax2.transAxes, size=12)
         ax2.get_yaxis().get_offset_text().set_visible(False)            # remove offset from the yaxis
         ax2.yaxis.set_major_locator(MaxNLocator(nbins=4, prune='upper'))   # remove upper element from yaxis
 
-        ax3.plot(wav_plot_M6[4], np.array(flux_plot_M6[4]), color ='0.4', label="M6")
+        ax3.plot(wav_plot_m6[4], np.array(flux_plot_m6[4]), color ='0.4', label="M6")
         ax3.text(0.9, 0.8,'M6',horizontalalignment='center', verticalalignment='center', transform = ax3.transAxes, size=12)
         ax3.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
 
-        ax4.plot(wav_plot_M9[4], np.array(flux_plot_M9[4]), color ='0.6', label="M9")
+        ax4.plot(wav_plot_m9[4], np.array(flux_plot_m9[4]), color ='0.6', label="M9")
         ax4.text(0.9, 0.8,'M9',horizontalalignment='center', verticalalignment='center', transform = ax4.transAxes, size=12)
         ax4.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
 
@@ -1616,14 +1616,14 @@ def calculate_prec_VIS(plot_atm = False, plot_ste = False, plot_flux = True, pap
     bands = ["VIS", "Z", "Y", "J", "H", "K"]
 
     results = {}    # creating empty dictionary for the results
-    wav_plot_M0 = []   # creating empty lists for the plots
-    flux_plot_M0 = []
-    wav_plot_M3 = []
-    flux_plot_M3 = []
-    wav_plot_M6 = []
-    flux_plot_M6 = []
-    wav_plot_M9 = []
-    flux_plot_M9 = []
+    wav_plot_m0 = []   # creating empty lists for the plots
+    flux_plot_m0 = []
+    wav_plot_m3 = []
+    flux_plot_m3 = []
+    wav_plot_m6 = []
+    flux_plot_m6 = []
+    wav_plot_m9 = []
+    flux_plot_m9 = []
     for star in spectral_types:
         for band in bands:
             for vel in ["1.0"]:
@@ -1659,31 +1659,31 @@ def calculate_prec_VIS(plot_atm = False, plot_ste = False, plot_flux = True, pap
                         if("M0" in id_string):
                             # correcting for the different jumps:
                             if("Y" in id_string or "J" in id_string):
-                                flux_stellar = np.array(flux_stellar)*(ratios_M0[1]/ratios_M0[0])*(flux_0p5/flux_stellar[1])
+                                flux_stellar = np.array(flux_stellar)*(ratios_m0[1]/ratios_m0[0])*(flux_0p5/flux_stellar[1])
                             elif("H" in id_string):
-                                flux_stellar = np.array(flux_stellar)*(ratios_M0[2]/ratios_M0[0])*(flux_0p5/flux_stellar[1])
+                                flux_stellar = np.array(flux_stellar)*(ratios_m0[2]/ratios_m0[0])*(flux_0p5/flux_stellar[1])
                             elif("K" in id_string):
-                                flux_stellar = np.array(flux_stellar)*(ratios_M0[3]/ratios_M0[0])*(flux_0p5/flux_stellar[1])
+                                flux_stellar = np.array(flux_stellar)*(ratios_m0[3]/ratios_m0[0])*(flux_0p5/flux_stellar[1])
 
                             norm_constant = 4712425.8785
 
                         elif("M3" in id_string):
                             if("Y" in id_string or "J" in id_string):
-                                flux_stellar = np.array(flux_stellar)*(ratios_M3[1]/ratios_M3[0])*(flux_0p5/flux_stellar[1])
+                                flux_stellar = np.array(flux_stellar)*(ratios_m3[1]/ratios_m3[0])*(flux_0p5/flux_stellar[1])
                             elif("H" in id_string):
-                                flux_stellar = np.array(flux_stellar)*(ratios_M3[2]/ratios_M3[0])*(flux_0p5/flux_stellar[1])
+                                flux_stellar = np.array(flux_stellar)*(ratios_m3[2]/ratios_m3[0])*(flux_0p5/flux_stellar[1])
                             elif("K" in id_string):
-                                flux_stellar = np.array(flux_stellar)*(ratios_M3[3]/ratios_M3[0])*(flux_0p5/flux_stellar[1])
+                                flux_stellar = np.array(flux_stellar)*(ratios_m3[3]/ratios_m3[0])*(flux_0p5/flux_stellar[1])
 
                             norm_constant=3873172.8673
 
                         elif("M6" in id_string):
                             if("Y" in id_string or "J" in id_string):
-                                flux_stellar = np.array(flux_stellar)*(ratios_M6[1]/ratios_M6[0])*(flux_0p5/flux_stellar[1])
+                                flux_stellar = np.array(flux_stellar)*(ratios_m6[1]/ratios_m6[0])*(flux_0p5/flux_stellar[1])
                             elif("H" in id_string):
-                                flux_stellar = np.array(flux_stellar)*(ratios_M6[2]/ratios_M6[0])*(flux_0p5/flux_stellar[1])
+                                flux_stellar = np.array(flux_stellar)*(ratios_m6[2]/ratios_m6[0])*(flux_0p5/flux_stellar[1])
                             elif("K" in id_string):
-                                flux_stellar = np.array(flux_stellar)*(ratios_M6[3]/ratios_M6[0])*(flux_0p5/flux_stellar[1])
+                                flux_stellar = np.array(flux_stellar)*(ratios_m6[3]/ratios_m6[0])*(flux_0p5/flux_stellar[1])
 
                             if("1.0" in id_string):
                                 norm_constant = 1713987.3947
@@ -1694,11 +1694,11 @@ def calculate_prec_VIS(plot_atm = False, plot_ste = False, plot_flux = True, pap
 
                         elif("M9" in id_string):
                             if("Y" in id_string or "J" in id_string):
-                                flux_stellar = np.array(flux_stellar)*(ratios_M9[1]/ratios_M9[0])*(flux_0p5/flux_stellar[1])
+                                flux_stellar = np.array(flux_stellar)*(ratios_m9[1]/ratios_m9[0])*(flux_0p5/flux_stellar[1])
                             elif("H" in id_string):
-                                flux_stellar = np.array(flux_stellar)*(ratios_M9[2]/ratios_M9[0])*(flux_0p5/flux_stellar[1])
+                                flux_stellar = np.array(flux_stellar)*(ratios_m9[2]/ratios_m9[0])*(flux_0p5/flux_stellar[1])
                             elif("K" in id_string):
-                                flux_stellar = np.array(flux_stellar)*(ratios_M9[3]/ratios_M9[0])*(flux_0p5/flux_stellar[1])
+                                flux_stellar = np.array(flux_stellar)*(ratios_m9[3]/ratios_m9[0])*(flux_0p5/flux_stellar[1])
 
                             if("1.0" in id_string):
                                 norm_constant = 1189097.2706
@@ -1737,17 +1737,17 @@ def calculate_prec_VIS(plot_atm = False, plot_ste = False, plot_flux = True, pap
                             plt.close()
 
                         if(plot_flux and id_string in ["M0-VIS-1.0-100k", "M0-Z-1.0-100k", "M0-Y-1.0-100k", "M0-J-1.0-100k", "M0-H-1.0-100k", "M0-K-1.0-100k"]):
-                            wav_plot_M0.append(wav_stellar)
-                            flux_plot_M0.append(flux_stellar)
+                            wav_plot_m0.append(wav_stellar)
+                            flux_plot_m0.append(flux_stellar)
                         if(plot_flux and id_string in ["M3-VIS-1.0-100k", "M3-Z-1.0-100k", "M3-Y-1.0-100k", "M3-J-1.0-100k", "M3-H-1.0-100k", "M3-K-1.0-100k"]):
-                            wav_plot_M3.append(wav_stellar)
-                            flux_plot_M3.append(flux_stellar)
+                            wav_plot_m3.append(wav_stellar)
+                            flux_plot_m3.append(flux_stellar)
                         if(plot_flux and id_string in ["M6-VIS-1.0-100k", "M6-Z-1.0-100k", "M6-Y-1.0-100k", "M6-J-1.0-100k", "M6-H-1.0-100k", "M6-K-1.0-100k"]):
-                            wav_plot_M6.append(wav_stellar)
-                            flux_plot_M6.append(flux_stellar)
+                            wav_plot_m6.append(wav_stellar)
+                            flux_plot_m6.append(flux_stellar)
                         if(plot_flux and id_string in ["M9-VIS-1.0-100k", "M9-Z-1.0-100k", "M9-Y-1.0-100k", "M9-J-1.0-100k", "M9-H-1.0-100k", "M9-K-1.0-100k"]):
-                            wav_plot_M9.append(wav_stellar)
-                            flux_plot_M9.append(flux_stellar)
+                            wav_plot_m9.append(wav_stellar)
+                            flux_plot_m9.append(flux_stellar)
 
                         # precision given by the first method:
                         prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar)
@@ -1793,40 +1793,40 @@ def calculate_prec_VIS(plot_atm = False, plot_ste = False, plot_flux = True, pap
 
         ax1.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
 
-        ax1.plot(wav_plot_M0[0], np.array(flux_plot_M0[0]), color ='0.1')
-        ax1.plot(wav_plot_M0[1], np.array(flux_plot_M0[1]), color ='0.1')
-        ax1.plot(wav_plot_M0[2], np.array(flux_plot_M0[2]), color ='0.1')
-        ax1.plot(wav_plot_M0[3], np.array(flux_plot_M0[3]), color ='0.1')
-        ax1.plot(wav_plot_M0[4], np.array(flux_plot_M0[4]), color ='0.1')
-        ax1.plot(wav_plot_M0[5], np.array(flux_plot_M0[5]), color ='0.1')
+        ax1.plot(wav_plot_m0[0], np.array(flux_plot_m0[0]), color ='0.1')
+        ax1.plot(wav_plot_m0[1], np.array(flux_plot_m0[1]), color ='0.1')
+        ax1.plot(wav_plot_m0[2], np.array(flux_plot_m0[2]), color ='0.1')
+        ax1.plot(wav_plot_m0[3], np.array(flux_plot_m0[3]), color ='0.1')
+        ax1.plot(wav_plot_m0[4], np.array(flux_plot_m0[4]), color ='0.1')
+        ax1.plot(wav_plot_m0[5], np.array(flux_plot_m0[5]), color ='0.1')
         ax1.text(0.9, 0.8,'M0',horizontalalignment='center', verticalalignment='center', transform = ax1.transAxes)
 
-        ax2.plot(wav_plot_M3[0], np.array(flux_plot_M3[0]), color ='0.3')
-        ax2.plot(wav_plot_M3[1], np.array(flux_plot_M3[1]), color ='0.3')
-        ax2.plot(wav_plot_M3[2], np.array(flux_plot_M3[2]), color ='0.3')
-        ax2.plot(wav_plot_M3[3], np.array(flux_plot_M3[3]), color ='0.3')
-        ax2.plot(wav_plot_M3[4], np.array(flux_plot_M3[4]), color ='0.3')
-        ax2.plot(wav_plot_M3[5], np.array(flux_plot_M3[5]), color ='0.3')
+        ax2.plot(wav_plot_m3[0], np.array(flux_plot_m3[0]), color ='0.3')
+        ax2.plot(wav_plot_m3[1], np.array(flux_plot_m3[1]), color ='0.3')
+        ax2.plot(wav_plot_m3[2], np.array(flux_plot_m3[2]), color ='0.3')
+        ax2.plot(wav_plot_m3[3], np.array(flux_plot_m3[3]), color ='0.3')
+        ax2.plot(wav_plot_m3[4], np.array(flux_plot_m3[4]), color ='0.3')
+        ax2.plot(wav_plot_m3[5], np.array(flux_plot_m3[5]), color ='0.3')
         ax2.text(0.9, 0.8,'M3',horizontalalignment='center', verticalalignment='center', transform = ax2.transAxes)
         ax2.get_yaxis().get_offset_text().set_visible(False)            # remove offset from the yaxis
         ax2.yaxis.set_major_locator(MaxNLocator(nbins=len(ax2.get_yticklabels()), prune='upper'))   # remove upper element from yaxis
 
-        ax3.plot(wav_plot_M6[0], np.array(flux_plot_M6[0]), color ='0.4')
-        ax3.plot(wav_plot_M6[1], np.array(flux_plot_M6[1]), color ='0.4')
-        ax3.plot(wav_plot_M6[2], np.array(flux_plot_M6[2]), color ='0.4')
-        ax3.plot(wav_plot_M6[3], np.array(flux_plot_M6[3]), color ='0.4')
-        ax3.plot(wav_plot_M6[4], np.array(flux_plot_M6[4]), color ='0.4')
-        ax3.plot(wav_plot_M6[5], np.array(flux_plot_M6[5]), color ='0.4')
+        ax3.plot(wav_plot_m6[0], np.array(flux_plot_m6[0]), color ='0.4')
+        ax3.plot(wav_plot_m6[1], np.array(flux_plot_m6[1]), color ='0.4')
+        ax3.plot(wav_plot_m6[2], np.array(flux_plot_m6[2]), color ='0.4')
+        ax3.plot(wav_plot_m6[3], np.array(flux_plot_m6[3]), color ='0.4')
+        ax3.plot(wav_plot_m6[4], np.array(flux_plot_m6[4]), color ='0.4')
+        ax3.plot(wav_plot_m6[5], np.array(flux_plot_m6[5]), color ='0.4')
 
         ax3.text(0.9, 0.8,'M6',horizontalalignment='center', verticalalignment='center', transform = ax3.transAxes)
         ax3.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
 
-        ax4.plot(wav_plot_M9[0], np.array(flux_plot_M9[0]), color ='0.6')
-        ax4.plot(wav_plot_M9[1], np.array(flux_plot_M9[1]), color ='0.6')
-        ax4.plot(wav_plot_M9[2], np.array(flux_plot_M9[2]), color ='0.6')
-        ax4.plot(wav_plot_M9[3], np.array(flux_plot_M9[3]), color ='0.6')
-        ax4.plot(wav_plot_M9[4], np.array(flux_plot_M9[4]), color ='0.6')
-        ax4.plot(wav_plot_M9[5], np.array(flux_plot_M9[5]), color ='0.6')
+        ax4.plot(wav_plot_m9[0], np.array(flux_plot_m9[0]), color ='0.6')
+        ax4.plot(wav_plot_m9[1], np.array(flux_plot_m9[1]), color ='0.6')
+        ax4.plot(wav_plot_m9[2], np.array(flux_plot_m9[2]), color ='0.6')
+        ax4.plot(wav_plot_m9[3], np.array(flux_plot_m9[3]), color ='0.6')
+        ax4.plot(wav_plot_m9[4], np.array(flux_plot_m9[4]), color ='0.6')
+        ax4.plot(wav_plot_m9[5], np.array(flux_plot_m9[5]), color ='0.6')
         ax4.text(0.9, 0.8,'M9',horizontalalignment='center', verticalalignment='center', transform = ax4.transAxes)
         ax4.get_yaxis().get_offset_text().set_visible(False)             # remove offset from the yaxis
 
