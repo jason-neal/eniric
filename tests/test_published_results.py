@@ -6,7 +6,7 @@ import pytest
 import numpy as np
 
 import eniric.Qcalculator as Q
-import eniric.IOmodule as IO
+import eniric.IOmodule as io
 from bin.prec_1 import calc_prec1
 
 # For python2.X compatibility
