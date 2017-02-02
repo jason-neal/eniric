@@ -1,15 +1,17 @@
 """test_eniric.py"""
 
+from __future__ import division, print_function
 import pytest
 import numpy as np
 
 import eniric.utilities as utils
+
 # Test using hypothesis
-from hypothesis import given
 import hypothesis.strategies as st
+from hypothesis import given, settings
 
 # For python2.X compatibility
-file_error_to_catch = getattr(__builtins__,'FileNotFoundError', IOError)
+file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
 @pytest.mark.xfail(raises=file_error_to_catch)
@@ -24,9 +26,10 @@ def test_read_spectrum():
     assert np.allclose(photon_wav, wave_wav)
     assert np.allclose(photon_flux, wave_flux)
 
+
 @pytest.mark.xfail(raises=file_error_to_catch)
 def test_get_spectrum_name():
-    """ Test specifing file names with stellar parameters."""
+    """Test specifing file names with stellar parameters."""
     test = ("PHOENIX-ACES_spectra/Z-0.0/lte02800-4.50"
             "-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
 
@@ -54,9 +57,11 @@ def test_get_spectrum_name():
     with pytest.raises(ValueError):
         utils.get_spectrum_name("X10")      # Not valid spectral type in [OBAFGKML]
 
+
 @pytest.mark.xfail(raises=file_error_to_catch)
 def test_org_name():
-    """ Test org flag of utils.get_spectrum_name, suposed to be temporary."""
+    """Test org flag of utils.get_spectrum_name, suposed to be temporary."""
+
     test_org = "PHOENIX-ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
     assert utils.get_spectrum_name("M0", org=True) == test_org
 
@@ -120,3 +125,19 @@ def test_band_selector():
         utils.band_selector(wav, flux, ["list", "of", "strings"])
     with pytest.raises(AttributeError):
         utils.band_selector(wav, flux, flux)
+
+
+@settings(max_examples=100)
+@given(st.lists(st.floats(min_value=1e-7, max_value=1e-5, allow_infinity=False,
+       allow_nan=False), unique=True, min_size=3, max_size=25),
+       st.floats(min_value=1e-2, max_value=200), st.floats(min_value=1e-4, max_value=1))
+def test_rotational_kernal(delta_lambdas, vsini, epsilon):
+    """Test that the new and original code produces the same output."""
+    delta_lambdas = np.sort(np.asarray(delta_lambdas), kind='quicksort')
+    delta_lambdas = np.append(np.flipud(delta_lambdas), np.insert(delta_lambdas, 0, 0))
+    delta_lambda_l = np.max(delta_lambdas) * 2
+
+    new_profile = utils.rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon)
+
+    assert len(new_profile) == len(delta_lambdas)
+    # other properties to test?

@@ -12,7 +12,7 @@ from eniric.IOmodule import pdread_2col
 
 
 def read_spectrum(spec_name):
-    """ Function that reads a flux spectra from the database!.
+    """Function that reads a flux spectra from the database!.
 
     If a energy flux spectra is read then it converts it to photons.
 
@@ -41,7 +41,7 @@ def read_spectrum(spec_name):
 
 
 def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_type="photon"):
-    """ Return correct phoenix spectrum filename for a given spectral type.
+    """Return correct phoenix spectrum filename for a given spectral type.
 
     Based off phoenix_utils module.
 
@@ -84,15 +84,15 @@ def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_
 
         spectrum_name = phoenix_name
     elif re.match(r"^[OBAFGKML][0-9]$", startype):   # Valid spectral types
-        raise NotImplementedError("The spectral type '{:s}' is not implemented yet.".format(startype))
+        raise NotImplementedError("The spectral type '{0:s}' is not implemented yet.".format(startype))
     else:
-        raise ValueError("'{:s}' is not a valid spectral type.".format(startype))
+        raise ValueError("'{0:s}' is not a valid spectral type.".format(startype))
 
     return spectrum_name
 
 
 def band_selector(wav, flux, band):
-    """ Select a specific wavelength band.
+    """Select a specific wavelength band.
 
     Parameters
     ----------
@@ -183,8 +183,8 @@ def wav_selector(wav, flux, wav_min, wav_max):
     return wav_sel, flux_sel
 
 
-def unitary_Gauss(x, center, FWHM):
-    """ Gaussian function of area = 1.
+def unitary_Gauss(x, center, fwhm):
+    """Gaussian function of area = 1.
 
     Parameters
     ----------
@@ -201,22 +201,22 @@ def unitary_Gauss(x, center, FWHM):
         Result of gaussian function sampled at x values.
     """
 
-    sigma = np.abs(FWHM) / (2 * np.sqrt(2 * np.log(2)))
-    Amp = 1.0 / (sigma * np.sqrt(2 * np.pi))
+    sigma = np.abs(fwhm) / (2 * np.sqrt(2 * np.log(2)))
+    amp = 1.0 / (sigma * np.sqrt(2 * np.pi))
     tau = -((x - center)**2) / (2 * (sigma**2))
-    result = Amp * np.exp(tau)
+    result = amp * np.exp(tau)
 
     return result
 
 
-def rotation_kernel(delta_lambdas, delta_lambda_L, vsini, epsilon):
-    """ Calculate the rotation kernel for a given wavelength
+def rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon):
+    """Calculate the rotation kernel for a given wavelength
 
     Parameters
     ----------
     delta_lambdas: array
-        Wavelength values selected within delta_lambda_L around central value. (check)
-    delta_lambda_L: float
+        Wavelength values selected within delta_lambda_l around central value. (check)
+    delta_lambda_l: float
         FWHM of rotational broading. (check)
     vsini: float
         Projected rotational velocity [km/s]
@@ -232,7 +232,7 @@ def rotation_kernel(delta_lambdas, delta_lambda_L, vsini, epsilon):
 
     """
     denominator = (np.pi * vsini * (1.0 - epsilon / 3.0))
-    lambda_ratio_sqr = (delta_lambdas / delta_lambda_L)**2.0
+    lambda_ratio_sqr = (delta_lambdas / delta_lambda_l)**2.0
 
     c1 = 2.0 * (1.0 - epsilon) / denominator
     c2 = 0.5 * np.pi * epsilon / denominator
@@ -265,7 +265,7 @@ def plotter(spectrum, band, vsini=0, R=0):
 
 
 def calculate_ratios(spectrum):
-    """ Calculate ratios between the different bands.
+    """Calculate ratios between the different bands.
 
     This was labeled WRONG from original code, but including here for reference.
     """
@@ -303,13 +303,13 @@ def list_creator(spectrum, band):
 
     line_centers = wav_band[2:-2][left_mask * right_mask]  # find peaks using masking
     print("Line centers", line_centers * 1.0e4)
-    print("In a spectrum with {} points".format(len(wav_band)),
-          ", {} lines were found.".format(len(line_centers)))
+    print("In a spectrum with {0} points".format(len(wav_band)),
+          ", {0} lines were found.".format(len(line_centers)))
     return line_centers
 
 
 def silentremove(filename):
-    """ Remove file without failing when it doesn't exist."""
+    """Remove file without failing when it doesn't exist."""
     try:
         os.remove(filename)
     except OSError as e:  # this would be "except OSError, e:" before Python 2.6

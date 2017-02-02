@@ -1,11 +1,15 @@
 
-""" The photon flux can be scaled by multiplicative constant which affects the SNR of the spectra and the radial velocity precision.
+""" The photon flux can be scaled by multiplicative constant which affects the
+SNR of the spectra and the radial velocity precision.
 
-For consistancy and valid comparision we normalize each spectra to acheive a consistant SNR at a specific location. """
+For consistancy and valid comparision we normalize each spectra to acheive a
+consistant SNR at a specific location.
+"""
 
 # Normaize to SNR 100 in middle of J band 1.25 micron!
 import numpy as np
-from eniric.utilities import band_limits
+import eniric.utilities as utils
+import eniric.IOmodule as IO
 
 
 def normalize_flux(flux_stellar, id_string):
@@ -49,8 +53,8 @@ def get_reference_spectrum(id_string, ref_band="J"):
     pass
 
 
-def snr_constant_band(wav, flux, SNR=100, band="J"):
-    """ Determine the constant to acheive a SNR in the middle of a given band."
+def snr_constant_band(wav, flux, snr=100, band="J"):
+    """ Determine the normalization constant to acheive a SNR in the middle of a given band.
 
     SNR estimated by the square root of the number of photons in a resolution element.
 
@@ -58,7 +62,7 @@ def snr_constant_band(wav, flux, SNR=100, band="J"):
     ----------
     wav: ndarray (micron)
     flux: ndarray (photons/s/cm**2)
-    SNR: int,  default = 100
+    snr: int,  default = 100
     band: str, default = "J"
 
     Returns
@@ -67,7 +71,7 @@ def snr_constant_band(wav, flux, SNR=100, band="J"):
 
     """
 
-    band_min, band_max = band_limits(band)
+    band_min, band_max = utils.band_limits(band)
 
     band_middle = (band_min + band_max) / 2
 
@@ -75,7 +79,7 @@ def snr_constant_band(wav, flux, SNR=100, band="J"):
         # not in range
         pass
     # Option to specify own wavelength?
-    norm_constant = snr_constant_wav(wav, flux, band_middle, SNR=SNR)
+    norm_constant = snr_constant_wav(wav, flux, band_middle, snr=snr)
 
     # Test it
     # flux2 = flux / norm_constant
@@ -83,8 +87,8 @@ def snr_constant_band(wav, flux, SNR=100, band="J"):
     return norm_constant
 
 
-def snr_constant_wav(wav, flux, wav_ref, SNR=100, sampling=3):
-    """ Determine the constant to acheive a SNR at given wavelength."
+def snr_constant_wav(wav, flux, wav_ref, snr=100, sampling=3):
+    """ Determine the normalization constant to acheive a SNR at given wavelength.
 
     SNR estimated by the square root of the number of photons in a resolution element.
 
@@ -96,7 +100,7 @@ def snr_constant_wav(wav, flux, wav_ref, SNR=100, sampling=3):
         Photon flux array (photons/s/cm**2)
     wav_ref: float
         Wavelength to set the SNR per resolution element.
-    SNR: int,  default = 100
+    snr: int,  default = 100
         SNR to set.
     sampling: int
        Number of pixels per resolution element.
@@ -118,11 +122,12 @@ def snr_constant_wav(wav, flux, wav_ref, SNR=100, sampling=3):
 
     indexes = sampling_index(index_ref, sampling=sampling, array_length=len(wav))
 
-    SN_estimate = np.sqrt(np.sum(flux[indexes]))
+    snr_estimate = np.sqrt(np.sum(flux[indexes]))
 
-    # print("\tSanity Check: The S/N for the reference model was of {:4.2f}.".format(SN_estimate))
-    norm_value = (SN_estimate / SNR)**2
+    # print("\tSanity Check: The S/N for the reference model was of {:4.2f}.".format(snr_estimate))
+    norm_value = (snr_estimate / snr)**2
     return norm_value
+
 
 def sampling_index(index, sampling=3, array_length=None):
     """ Get a small number of index values around the given index value.
@@ -143,7 +148,7 @@ def sampling_index(index, sampling=3, array_length=None):
         """
     if sampling % 2 == 0:    # even sampling
         # index values must be integer
-        indexes = np.arange(index - sampling/2, index + sampling/2, dtype=int)
+        indexes = np.arange(index - sampling / 2, index + sampling / 2, dtype=int)
         assert len(indexes) % 2 == 0  # confirm even
         assert len(indexes) == sampling
     else:

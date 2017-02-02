@@ -22,7 +22,7 @@ band = "GAP"
 R = 100000
 vsini = 1
 epsilon = 0.6
-FWHM_lim = 5
+fwhm_lim = 5
 plot = False
 numProcs = 4
 do_old = False
@@ -31,11 +31,11 @@ do_old = False
 for band in ["K"]:
     # New version
     start_time = datetime.datetime.now()
-    print("Time at start of {} band, {}".format(band, start_time))
-    wav_band, flux_band, flux_conv_res = convolve_spectra(spectrum_path, band, vsini, R, epsilon, FWHM_lim, plot, numProcs=numProcs)
+    print("Time at start of {0} band, {1}".format(band, start_time))
+    wav_band, flux_band, flux_conv_res = convolve_spectra(spectrum_path, band, vsini, R, epsilon, fwhm_lim, plot, numProcs=numProcs)
     end_time = datetime.datetime.now()
     print("Time at end, ", end_time)
-    print("Time to run {} band  convolution = {}".format(band, (end_time-start_time)))
+    print("Time to run {0} band  convolution = {1}".format(band, (end_time-start_time)))
 
     resample_allfiles()
 
@@ -44,11 +44,11 @@ for band in ["K"]:
     # The unchanged version
     if do_old:
         old_start_time = datetime.datetime.now()
-        print("Time at start of {} band, {}".format(band, old_start_time))
-        old_wav_band, old_flux_conv_res = old_convolution(spectrum_path, band, vsini, R, epsilon, FWHM_lim, plot)  # takes a very long time. good progress indicator though
+        print("Time at start of {0} band, {1}".format(band, old_start_time))
+        old_wav_band, old_flux_conv_res = old_convolution(spectrum_path, band, vsini, R, epsilon, fwhm_lim, plot)  # takes a very long time. good progress indicator though
         old_end_time = datetime.datetime.now()
         print("Time at end,  ", old_end_time)
-        print("Time to run old {} band convolution = {}".format(band, (old_end_time-old_start_time)))
+        print("Time to run old {0} band convolution = {1}".format(band, (old_end_time-old_start_time)))
 
         old_resample_allfiles()
 

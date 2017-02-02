@@ -34,7 +34,7 @@ def _parser():
     parser.add_argument('--noresample', help='Resample output', default=False,
                         action="store_true")
     parser.add_argument('--normalize', help='Normalize for wavelength step', default=True,
-                        action="store_false")
+                        action="store_false")  # This logic needs fixed. (--flag shoud be "unnormalize" to turn normalization off)
     parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
                         default=False, action="store_true")
     args = parser.parse_args()
@@ -44,7 +44,7 @@ def _parser():
 def main(startype, vsini, resolution, band, data_dir=None, results=None,
          resamples=None, sample_rate=3.0, noresample=False, normalize=True,
          org=False):
-    """ Run convolutions of NIR spectra for the range of given parameters.
+    """Run convolutions of NIR spectra for the range of given parameters.
 
     Multiple values of startype, vsini, resolution, band, and sample_rate can
     be provided.
@@ -93,13 +93,13 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
 
                         if normalize:
                             # when normalize ation is confirmed then can
-                            result_name = "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}k.txt".format(star, b, vel, int(R/1000))
+                            result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k.txt".format(star, b, vel, int(R/1000))
                         else:
-                            result_name = "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}k_unnormalized.txt".format(star, b, vel, int(R/1000))
+                            result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k_unnormalized.txt".format(star, b, vel, int(R/1000))
                         print("Name to be result file", result_name)
 
                         convolve_spectra(data_dir + spectrum_name, b, vel, R, epsilon=0.6, plot=False,
-                                         FWHM_lim=5.0, numProcs=None, data_rep=data_dir,
+                                         fwhm_lim=5.0, num_procs=None, data_rep=data_dir,
                                          results_dir=results_dir, normalize=normalize, output_name=result_name)
 
                         # Resample only the file just made
@@ -110,7 +110,7 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
                                       resampled_dir=resampled_dir, sampling=sample)
                         counter += 1
 
-    print("Time to convolve {:d} combinations = {}".format(counter,
+    print("Time to convolve {0:d} combinations = {1}".format(counter,
                                                            dt.now()-start_time))
     return 0
 
