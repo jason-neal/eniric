@@ -1,4 +1,4 @@
-"""Near-Infrared radial velocity precision"""
+"""Near-Infrared radial velocity precision."""
 import re
 import sys
 import argparse
@@ -31,6 +31,7 @@ def _parser():
     args = parser.parse_args()
     return args
 
+
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
@@ -44,7 +45,6 @@ def main(bands="J", use_unshifted=False):
     use_unshifted: bool default=False
         Flag to start with the undopplershifted atmmodel.
     """
-
     resampled_dir = "../data/resampled/"
 
     spectral_types = ["M0", "M3", "M6", "M9"]
@@ -80,7 +80,6 @@ def strip_result_quantities(results):
 
 def normalize_flux(flux_stellar, id_string):
     """Normalize flux to have SNR of 100 in middle of J band."""
-
     if("M0" in id_string):
         norm_constant = 1607
 
@@ -110,9 +109,9 @@ def normalize_flux(flux_stellar, id_string):
 
 
 def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
-                   resampled_dir, plot_atm=False,
-                   plot_ste=False, plot_flux=True, paper_plots=True,
-                   offset_RV=0.0, use_unshifted=False):
+                   resampled_dir, plot_atm=False, plot_ste=False,
+                   plot_flux=True, paper_plots=True, offset_RV=0.0,
+                   use_unshifted=False):
 
     for band in bands:
 
@@ -275,9 +274,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
 
 ###############################################################################
 def compare_output():
-    """Function that compares a spectrum prior to convolution, after, and after resampling
-    """
-
+    """Function that compares a spectrum prior to convolution, after, and after resampling."""
     pre_convolution = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
     pre_wav, pre_flux = io.pdread_2col(pre_convolution)
     pre_wav = np.array(pre_wav, dtype="float64")*1.0e-4  # conversion to microns
@@ -324,7 +321,6 @@ def calculate_all_masked(wav_atm, mask_atm):
     barycenter correct.
     concatenate result.
     """
-
     # calculating the number of pixels inside the mask
     wav_Z, mask_Z = utils.band_selector(wav_atm, mask_atm, "Z")
     wav_Y, mask_Y = utils.band_selector(wav_atm, mask_atm, "Y")
@@ -341,14 +337,12 @@ def calculate_all_masked(wav_atm, mask_atm):
 
 def rv_cumulative(rv_vector):
     """Function that calculates the cumulative RV vector weighted_error."""
-
     return [weighted_error(rv_vector[:2]), weighted_error(rv_vector[:3]),
             weighted_error(rv_vector[:4]), weighted_error(rv_vector)]
 
 
 def weighted_error(rv_vector):
     """Function that calculates the average weighted error from a vector of errors."""
-
     rv_vector = np.array(rv_vector)
     rv_value = 1.0/(np.sqrt(np.sum((1.0/rv_vector)**2.0)))
 
