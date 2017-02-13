@@ -7,6 +7,7 @@ import eniric.IOmodule as io
 # from hypothesis import given, example
 # import hypothesis.strategies as st
 import eniric.snr_normalization as snrnorm
+import eniric.Qcalculator as Q
 
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
@@ -77,3 +78,63 @@ def test_sampling_index_array():
         snrnorm.sampling_index(3, 9, array_length=50)   # index will be < 0
     with pytest.raises(ValueError):
         snrnorm.sampling_index(46, 10, array_length=50)   # an index will be > (array_length - 1)
+
+
+def test_errors_in_snr_get_reference_spectrum():
+    """Testing getting the reference spectrum.
+
+    Currently "Alpha=" in the id-stringis not implemented.
+    Currently "smpl=" in the id-stringis not implemented.
+    """
+
+    with pytest.raises(NotImplementedError):
+        snrnorm.get_reference_spectrum("Alpha=")
+
+    with pytest.raises(NotImplementedError):
+        snrnorm.get_reference_spectrum("smpl=")
+
+    # Could try put all failing exmaples into a parameterized fixture!
+    with pytest.raises(ValueError):
+        "Bad id-string"
+        snrnorm.get_reference_spectrum("id-string")
+    with pytest.raises(ValueError):
+        "Bad id-string"
+        snrnorm.get_reference_spectrum("M0-K-1.0-100")  # missing the k
+    with pytest.raises(ValueError):
+        "Bad id-string"
+        snrnorm.get_reference_spectrum("M0-P-1.0-100")  # band bandname
+
+
+@pytest.mark.xfail(raises=file_error_to_catch)
+def test_valid_snr_get_reference_spectrum():
+    """Testing getting the reference spectrum."""
+
+    ref_band = "J"
+    wav_ref, flux_ref = snrnorm.get_reference_spectrum("M0-K-1.0-100k", ref_band=ref_band)
+    band_min, band_max = utils.band_limits(ref_band)
+
+    # Test the wavelength is in the refernce band wavelength range
+    assert np.all(wav_ref <= band_max)
+    assert np.all(wav_ref >= band_min)
+    # test properties of output
+    assert len(wav_ref) == len(flux_ref)
+    assert isinstance(wav_ref, np.ndarray)
+    assert isinstance(flux_ref, np.ndarray)
+
+
+def test_normalize_spectrum():
+    """Test normalize_specturm has similar effect as normalize_flux."""
+
+    test_data = ("data/resampled/Spectrum_M0-PHOENIX-ACES_Kband_vsini5.0_R100k_res3.txt")
+    id_string = "M0-K-5.0-100k"
+    wav, flux = utils.read_spectrum(test_data)
+
+    norm_flux = snrnorm.normalize_flux(flux, id_string)
+    rvprec1 = Q.RVprec_calc(wav, norm_flux)
+
+    new_norm_flux = snrnorm.normalize_spectrum(id_string, wav, flux, snr=100, ref_band="J")
+    rvprec1_new = Q.RVprec_calc(wav, new_norm_flux)
+    print(norm_flux - new_norm_flux)
+    print("RVs", rvprec1, rvprec1_new)
+    assert (rvprec1 == rvprec1_new)
+    assert np.allclose(new_norm_flux, norm_flux)
