@@ -12,11 +12,12 @@ import eniric.utilities as utils
 import eniric.IOmodule as IO
 
 
+
 def normalize_flux(flux_stellar, id_string):
-    """Normalize flux to have SNR of 100 in middle of J band."""
+    """Normalize flux to have SNR of 100 in middle of J band.
 
-    """ This is the original values to acheive a SNR of 100 in the middle of the J band at 1.25 micron """
-
+    This is the original values to acheive a SNR of 100 in the middle of the J band at 1.25 micron.
+    """
 
     if("M0" in id_string):
         norm_constant = 1607
@@ -60,14 +61,21 @@ def snr_constant_band(wav, flux, snr=100, band="J"):
 
     Parameters
     ----------
-    wav: ndarray (micron)
-    flux: ndarray (photons/s/cm**2)
+    id_string: str
+        Identifying string for spectrum we want to normalize.
+    wav: ndarray
+        Wavelength array (microns)
+    flux: ndarray
+        Photon flux array (photons/s/cm**2)
     snr: int,  default = 100
+        SNR to normalize to.
     band: str, default = "J"
+        Band to use for normalization.
 
     Returns
     -------
     normalization_value: float
+        Normalization value to divide spectrum by to achive a signal-to-noise level of snr within an resolution element in the middle of the band.
 
     """
 
