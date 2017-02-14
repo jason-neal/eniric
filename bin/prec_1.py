@@ -18,7 +18,7 @@ import eniric.Qcalculator as Qcalculator
 # from eniric.utilities import band_selector
 
 # from eniric.plotting_functions import plot_atmopshere_model, plot_stellar_spectum
-from bin.nIR_precision import normalize_flux
+from eniric.snr_normalization import normalize_flux
 
 # from matplotlib import rc
 # set stuff for latex usage
@@ -82,9 +82,9 @@ def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True, resampled_d
     flux_stellar = flux_stellar[2:-2]
 
     if normalize:
-        id_string = "{0}-{1}-{2}-{3}".format(star, band, vel, resolution)   # sample was left aside because only one value existed
+        id_string = "{0}-{1}-{2:.1f}-{3}".format(star, band, vel, resolution)   # sample was left aside because only one value existed
     else:
-        id_string = "{0}-{1}-{2}-{3}-unnorm".format(star, band, vel, resolution)   # sample was left aside because only one value existed
+        id_string = "{0}-{1}-{2:.1f}-{3}-unnorm".format(star, band, vel, resolution)   # sample was left aside because only one value existed
 
     # Normaize to SNR 100 in middle of J band 1.25 micron!
     flux_stellar = normalize_flux(flux_stellar, id_string)
