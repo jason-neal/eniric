@@ -33,12 +33,12 @@ def normalize_flux(flux_stellar, id_string, new=True, resampled_dir="../data/res
         Flux normalized to a S/N of 100 in the middle of the J band.
 
     """
-    print("Starting norm of {}".format(id_string))
+    # print("Starting norm of {}".format(id_string))
     if new:
         wav_ref, flux_ref = get_reference_spectrum(id_string, "J", resampled_dir=resampled_dir)  # Looks in data/resampled/
         norm_const = snr_constant_band(wav_ref, flux_ref, snr=100, band="J")
     else:
-        norm_const = old_norm_constant(id_string) / 1000  # /100 added for flux offset at beginning
+        norm_const = old_norm_constant(id_string) * 1e4  # Input flux offset
 
     return flux_stellar / norm_const
 
