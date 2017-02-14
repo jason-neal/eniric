@@ -74,7 +74,7 @@ def main(bands="J", use_unshifted=False, save=False):
         print("{0:s}\t\t{1:0.4f}\t{2:0.4f}\t{3:0.4f}".format(key, results[key][0], results[key][1], results[key][2]))
     # Save precision results
     if save:
-        output_filename = "../data/precision_rseults_2017.txt"
+        output_filename = "../data/precision_results_2017.txt"
         ids = []
         prec_1s = []
         prec_2s = []
