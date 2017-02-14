@@ -109,6 +109,16 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
     # TODO: iterate over band last so that the J band normalization value can be
     # obtained first and applied to each band.
 
+    results = {}    # creating empty dictionary for the results
+    wav_plot_m0 = []   # creating empty lists for the plots
+    flux_plot_m0 = []
+    wav_plot_m3 = []
+    flux_plot_m3 = []
+    wav_plot_m6 = []
+    flux_plot_m6 = []
+    wav_plot_m9 = []
+    flux_plot_m9 = []
+
     for band in bands:
 
         if use_unshifted:
@@ -139,16 +149,6 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
 
         # theoretical ratios calculation
         # wav_m0, flux_m0, wav_m3, flux_m3, wav_m6, flux_m6, wav_m9, flux_m9 = read_nIRspectra()
-
-        results = {}    # creating empty dictionary for the results
-        wav_plot_m0 = []   # creating empty lists for the plots
-        flux_plot_m0 = []
-        wav_plot_m3 = []
-        flux_plot_m3 = []
-        wav_plot_m6 = []
-        flux_plot_m6 = []
-        wav_plot_m9 = []
-        flux_plot_m9 = []
 
         iterations = itertools.product(spectral_types, vsini, resolution, sampling)
         # for star in spectral_types:
