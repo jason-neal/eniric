@@ -1,5 +1,5 @@
 
-""" The photon flux can be scaled by multiplicative constant which affects the
+"""The photon flux can be scaled by multiplicative constant which affects the
 SNR of the spectra and the radial velocity precision.
 
 For consistancy and valid comparision we normalize each spectra to acheive a
@@ -50,8 +50,7 @@ def normalize_flux(flux_stellar, id_string):
 
 
 def get_reference_spectrum(id_string, ref_band="J", resampled_dir="data/resampled/"):
-    """ From the id_string find the correct Spectrum to
-    calculate norm_constant from"""
+    """From the id_string find the correct Spectrum to calculate norm_constant from."""
     # TODO: add option for Alpha into ID-String
     # TODO: Add metalicity and logg into id string
     # TODO: Add metalicity folder
@@ -94,7 +93,7 @@ def normalize_spectrum(id_string, wav, flux, snr=100, ref_band="J", resampled_di
 
 
 def snr_constant_band(wav, flux, snr=100, band="J"):
-    """ Determine the normalization constant to acheive a SNR in the middle of a given band.
+    """Determine the normalization constant to acheive a SNR in the middle of a given band.
 
     SNR estimated by the square root of the number of photons in a resolution element.
 
@@ -117,7 +116,6 @@ def snr_constant_band(wav, flux, snr=100, band="J"):
         Normalization value to divide spectrum by to achive a signal-to-noise level of snr within an resolution element in the middle of the band.
 
     """
-
     band_min, band_max = utils.band_limits(band)
 
     band_middle = (band_min + band_max) / 2
@@ -135,7 +133,7 @@ def snr_constant_band(wav, flux, snr=100, band="J"):
 
 
 def snr_constant_wav(wav, flux, wav_ref, snr=100, sampling=3):
-    """ Determine the normalization constant to acheive a SNR at given wavelength.
+    """Determine the normalization constant to acheive a SNR at given wavelength.
 
     SNR estimated by the square root of the number of photons in a resolution element.
 
@@ -164,7 +162,6 @@ def snr_constant_wav(wav, flux, wav_ref, snr=100, sampling=3):
     as the reference it will need to be used for all bands of that spectra.
 
     """
-
     index_ref = np.searchsorted(wav, wav_ref)  # Searching for the closest index
 
     indexes = sampling_index(index_ref, sampling=sampling, array_length=len(wav))
@@ -177,7 +174,7 @@ def snr_constant_wav(wav, flux, wav_ref, snr=100, sampling=3):
 
 
 def sampling_index(index, sampling=3, array_length=None):
-    """ Get a small number of index values around the given index value.
+    """Get a small number of index values around the given index value.
 
     Parameters
     ----------
