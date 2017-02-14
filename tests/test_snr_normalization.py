@@ -129,10 +129,10 @@ def test_normalize_spectrum():
     id_string = "M0-K-5.0-100k"
     wav, flux = utils.read_spectrum(test_data)
 
-    norm_flux = snrnorm.normalize_flux(flux, id_string)
+    norm_flux = snrnorm.normalize_flux(flux, id_string, resampled_dir="data/resampled/")
     rvprec1 = Q.RVprec_calc(wav, norm_flux)
 
-    new_norm_flux = snrnorm.normalize_spectrum(id_string, wav, flux, snr=100, ref_band="J")
+    new_norm_flux = snrnorm.normalize_spectrum(id_string, wav, flux, snr=100, ref_band="J", resampled_dir="data/resampled/")
     rvprec1_new = Q.RVprec_calc(wav, new_norm_flux)
     print(norm_flux - new_norm_flux)
     print("RVs", rvprec1, rvprec1_new)
