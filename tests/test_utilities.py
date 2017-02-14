@@ -1,4 +1,4 @@
-"""test_eniric.py"""
+"""Test utilities for eniric."""
 
 from __future__ import division, print_function
 import pytest
@@ -16,8 +16,7 @@ file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 @pytest.mark.xfail(raises=file_error_to_catch)
 def test_read_spectrum():
-    """Test reading in a _wave_photon.dat is the same as a _wave.dat.
-    """
+    """Test reading in a _wave_photon.dat is the same as a _wave.dat."""
     photon = "data/test_data/sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
     wave = "data/test_data/sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
     wave_wav, wave_flux = utils.read_spectrum(wave)
@@ -61,14 +60,13 @@ def test_get_spectrum_name():
 @pytest.mark.xfail(raises=file_error_to_catch)
 def test_org_name():
     """Test org flag of utils.get_spectrum_name, suposed to be temporary."""
-
     test_org = "PHOENIX-ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
     assert utils.get_spectrum_name("M0", org=True) == test_org
 
 
 @given(st.lists(st.floats()), st.floats(), st.floats(), st.floats())
 def test_wav_selector(x, y, wav_min, wav_max):
-    """Test some properties of wavelength selector"""
+    """Test some properties of wavelength selector."""
     y = [xi + y for xi in x]   # just to make y different
     x1, y1 = utils.wav_selector(x, y, wav_min, wav_max)
 
@@ -82,8 +80,7 @@ def test_wav_selector(x, y, wav_min, wav_max):
 
 
 def test_band_limits():
-    """ Test geting limits out of band. """
-
+    """Test geting limits out of band."""
     # Test all bands, lower case allowed
     for band in ["VIS", "GAP", "z", "Y", "h", "J", "K", "CONT", "NIR"]:
         band_min, band_max = utils.band_limits(band)
@@ -103,7 +100,7 @@ def test_band_limits():
 
 
 def test_band_selector():
-    """ Test band selector selects the wav and flux in the given band."""
+    """Test band selector selects the wav and flux in the given band."""
     wav = np.linspace(0.5, 3, 100)
     flux = wav**2
 
