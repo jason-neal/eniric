@@ -1,6 +1,6 @@
+"""Automated snr normalization.
 
-"""The photon flux can be scaled by multiplicative constant which affects the
-SNR of the spectra and the radial velocity precision.
+The photon flux can be scaled by multiplicative constant which affects the SNR of the spectra and the radial velocity precision.
 
 For consistancy and valid comparision we normalize each spectra to acheive a
 consistant SNR at a specific location.
@@ -15,12 +15,36 @@ import eniric.IOmodule as IO
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
-def normalize_flux(flux_stellar, id_string):
+def normalize_flux(flux_stellar, id_string, new=True, resampled_dir="../data/resampled/"):
     """Normalize flux to have SNR of 100 in middle of J band.
 
-    This is the original values to acheive a SNR of 100 in the middle of the J band at 1.25 micron.
-    """
+    Parameters
+    ----------
+    flux_stellar: ndarray
+        Photon flux.
+    id_string: str
+        Idenitifing sting for spectra.
+    new: bool default=True
+        Choose between new and old constant for testing.
 
+    Returns
+    -------
+    normalized_flux: ndarray
+        Flux normalized to a S/N of 100 in the middle of the J band.
+
+    """
+    print("Starting norm of {}".format(id_string))
+    if new:
+        wav_ref, flux_ref = get_reference_spectrum(id_string, "J", resampled_dir=resampled_dir)  # Looks in data/resampled/
+        norm_const = snr_constant_band(wav_ref, flux_ref, snr=100, band="J")
+    else:
+        norm_const = old_norm_constant(id_string) / 1000  # /100 added for flux offset at beginning
+
+    return flux_stellar / norm_const
+
+
+def old_norm_constant(id_string):
+    """These are the manual values to acheive a SNR of 100 at 1.25 micron."""
     if("M0" in id_string):
         norm_constant = 1607
 
@@ -46,10 +70,10 @@ def normalize_flux(flux_stellar, id_string):
         print("Constant not defined. Aborting...")
         exit()
 
-    return flux_stellar / ((norm_constant / 100.0)**2.0)
+    return (norm_constant / 100.0) ** 2.0
 
 
-def get_reference_spectrum(id_string, ref_band="J", resampled_dir="data/resampled/"):
+def get_reference_spectrum(id_string, ref_band="J", resampled_dir="../data/resampled/"):
     """From the id_string find the correct Spectrum to calculate norm_constant from."""
     # TODO: add option for Alpha into ID-String
     # TODO: Add metalicity and logg into id string
@@ -77,15 +101,15 @@ def get_reference_spectrum(id_string, ref_band="J", resampled_dir="data/resample
     return wav_ref, flux_ref
 
 
-def normalize_spectrum(id_string, wav, flux, snr=100, ref_band="J", resampled_dir="data/resampled/"):
+def normalize_spectrum(id_string, wav, flux, snr=100, ref_band="J", resampled_dir="../data/resampled/"):
     """Normalize spectrum flux with to have a SNR of snr in middle of ref_band band."""
-    if ref_band in id_string:
-        # Dont need to load different spectrum as already have the reference spectrum
-        wav_ref, flux_ref = wav, flux
-    else:
-        wav_ref, flux_ref = get_reference_spectrum(id_string, ref_band, resampled_dir)
+    # if ref_band in id_string:
+    #     # Dont need to load different spectrum as already have the reference spectrum
+    #     wav_ref, flux_ref = wav, flux
+    # else:
+    wav_ref, flux_ref = get_reference_spectrum(id_string, ref_band, resampled_dir)
 
-    norm_constant = snr_constant_band(wav_ref, flux_ref, snr=100, band=ref_band)
+    norm_constant = snr_constant_band(wav_ref, flux_ref, snr=snr, band=ref_band)
 
     normalized_flux = flux / norm_constant
     print("{0:s} norm_constant = {1:f}".format(id_string, norm_constant))
@@ -189,7 +213,8 @@ def sampling_index(index, sampling=3, array_length=None):
     -------
     indexes: ndarray of int64
         The index values.
-        """
+
+    """
     if sampling % 2 == 0:    # even sampling
         # index values must be integer
         indexes = np.arange(index - sampling / 2, index + sampling / 2, dtype=int)
