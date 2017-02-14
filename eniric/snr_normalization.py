@@ -78,6 +78,21 @@ def get_reference_spectrum(id_string, ref_band="J", resampled_dir="data/resample
     return wav_ref, flux_ref
 
 
+def normalize_spectrum(id_string, wav, flux, snr=100, ref_band="J", resampled_dir="data/resampled/"):
+    """Normalize spectrum flux with to have a SNR of snr in middle of ref_band band."""
+    if ref_band in id_string:
+        # Dont need to load different spectrum as already have the reference spectrum
+        wav_ref, flux_ref = wav, flux
+    else:
+        wav_ref, flux_ref = get_reference_spectrum(id_string, ref_band, resampled_dir)
+
+    norm_constant = snr_constant_band(wav_ref, flux_ref, snr=100, band=ref_band)
+
+    normalized_flux = flux / norm_constant
+    print("{0:s} norm_constant = {1:f}".format(id_string, norm_constant))
+    return normalized_flux
+
+
 def snr_constant_band(wav, flux, snr=100, band="J"):
     """ Determine the normalization constant to acheive a SNR in the middle of a given band.
 
