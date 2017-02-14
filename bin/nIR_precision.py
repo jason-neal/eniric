@@ -11,6 +11,7 @@ import eniric.Qcalculator as Qcalculator
 import eniric.utilities as utils
 import eniric.atmosphere as atm
 import eniric.plotting_functions as plt_functions
+import eniric.snr_normalization as snrnorm
 
 from matplotlib import rc
 rc('text', usetex=True)   # set stuff for latex usage
@@ -100,36 +101,6 @@ def strip_result_quantities(results):
     return results
 
 
-def normalize_flux(flux_stellar, id_string):
-    """Normalize flux to have SNR of 100 in middle of J band."""
-    if("M0" in id_string):
-        norm_constant = 1607
-
-    elif("M3" in id_string):
-        norm_constant = 1373
-
-    elif("M6" in id_string):
-        if("1.0" in id_string):
-            norm_constant = 933
-        elif("5.0" in id_string):
-            norm_constant = 967
-        else:
-            norm_constant = 989
-
-    elif("M9" in id_string):
-        if("1.0" in id_string):
-            norm_constant = 810
-        elif("5.0" in id_string):
-            norm_constant = 853
-        else:
-            norm_constant = 879
-    else:
-        print("Constant not defined. Aborting...")
-        sys.exit(1)
-
-    return flux_stellar / ((norm_constant / 100.0)**2.0)
-
-
 def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                    resampled_dir, plot_atm=False, plot_ste=False,
                    plot_flux=True, paper_plots=True, offset_RV=0.0,
@@ -209,7 +180,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
 
             # sample was left aside because only one value existed
             # TODO: Add metalicity and logg into id string
-            id_string = "{0}-{1}-{2}-{3}".format(star, band, vel, res)
+            id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
 
             # Getting the wav, flux and mask values from the atm model
             # that are the closest to the stellar wav values, see
@@ -230,7 +201,11 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                 print("Min flux_atm_selected[mask_atm_selected] = {} < 0.98\n####".format(np.min(flux_atm_selected[mask_atm_selected])))
 
             # Normaize to SNR 100 in middle of J band 1.25 micron!
-            flux_stellar = normalize_flux(flux_stellar, id_string)
+            # flux_stellar = normalize_flux(flux_stellar, id_string)
+            print("before norm", flux_stellar)
+            flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string)  # snr=100, ref_band="J"
+            print("after norm", flux_stellar)
+
             if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k",
                              "M6-J-1.0-100k", "M9-J-1.0-100k"]):
                 index_ref = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
