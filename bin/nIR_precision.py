@@ -28,6 +28,8 @@ def _parser():
                         help="Wavelength bands to select. Default=J.", nargs="+")
     parser.add_argument("-u", "--use_unshifted", default=False, action="store_true",
                         help="Start with the un-doppler-shifted atmmodel.")
+    parser.add_argument("-s", "--save", default=False, action="store_true",
+                        help="Save results to file.")
     args = parser.parse_args()
     return args
 
@@ -35,7 +37,7 @@ def _parser():
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
-def main(bands="J", use_unshifted=False):
+def main(bands="J", use_unshifted=False, save=False):
     """Main function that calls calc_precision.
 
     Parameters
@@ -44,6 +46,9 @@ def main(bands="J", use_unshifted=False):
         Band letters to use. None does the bands Z through K.
     use_unshifted: bool default=False
         Flag to start with the undopplershifted atmmodel.
+    save: bool
+        Save results to file.
+
     """
     resampled_dir = "../data/resampled/"
 
@@ -67,7 +72,24 @@ def main(bands="J", use_unshifted=False):
     for key in results:
         print("{0:s}\t\t{1:0.4f}\t{2:0.4f}\t{3:0.4f}".format(key, results[key][0], results[key][1], results[key][2]))
     # Save precision results
+    if save:
+        output_filename = "../data/precision_rseults_2017.txt"
+        ids = []
+        prec_1s = []
+        prec_2s = []
+        prec_3s = []
+        for star in spectral_types:
+            for band in bands:
+                for vel in vsini:
+                    for res in resolution:
+                        id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
+                        ids.append(id_string)
+                        prec_1s.append(results[id_string][0].value)
+                        prec_2s.append(results[id_string][1].value)
+                        prec_3s.append(results[id_string][2].value)
 
+        io.pdwrite_cols(output_filename, ids, prec_1s, prec_2s, prec_3s,
+                        header=["# id", r"prec_1", r"prec_2", r"prec_3"], float_format="%.7f")
     # return results
 
 
