@@ -7,10 +7,12 @@ consistant SNR at a specific location.
 """
 
 # Normaize to SNR 100 in middle of J band 1.25 micron!
+import re
 import numpy as np
 import eniric.utilities as utils
 import eniric.IOmodule as IO
 
+file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
 def normalize_flux(flux_stellar, id_string):
@@ -47,11 +49,33 @@ def normalize_flux(flux_stellar, id_string):
     return flux_stellar / ((norm_constant / 100.0)**2.0)
 
 
-def get_reference_spectrum(id_string, ref_band="J"):
+def get_reference_spectrum(id_string, ref_band="J", resampled_dir="data/resampled/"):
     """ From the id_string find the correct Spectrum to
     calculate norm_constant from"""
     # TODO: add option for Alpha into ID-String
-    pass
+    # TODO: Add metalicity and logg into id string
+    # TODO: Add metalicity folder
+
+    # Determine the corrrect reference file to use.
+    if ("Alpha=" in id_string) or ("smpl" in id_string):
+        raise NotImplementedError
+    else:
+        try:
+            # don't need the band value as will use ref_band
+            star, vel, res = re.search(r"(M\d)-[ZYHJK]-(\d{1,2}\.0)-(\d{2,3}k)", id_string).groups()
+        except:
+            raise ValueError("Id-string {} is not valid for normalization.".format(id_string))
+
+        smpl = 3.0   # Fixed value atm
+    file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}"
+                    "_res{4:1.0f}.txt").format(star, ref_band, vel, res, smpl)
+
+    try:
+        wav_ref, flux_ref = IO.pdread_2col(resampled_dir + file_to_read)
+    except file_error_to_catch:
+        print("The reference spectra in {0:s} band was not found for id {1:s}".format(ref_band, id_string))
+        raise
+    return wav_ref, flux_ref
 
 
 def snr_constant_band(wav, flux, snr=100, band="J"):
