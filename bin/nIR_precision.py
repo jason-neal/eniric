@@ -25,7 +25,7 @@ def _parser():
     parser = argparse.ArgumentParser(description='Calculate radial velocity precision of model spectra.')
 
     parser.add_argument("-b", "--bands", type=str, default="J",
-                        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", None],
+                        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", 'None'],
                         help="Wavelength bands to select. Default=J.", nargs="+")
     parser.add_argument("-u", "--use_unshifted", default=False, action="store_true",
                         help="Start with the un-doppler-shifted atmmodel.")
@@ -54,10 +54,10 @@ def main(bands="J", use_unshifted=False, save=False):
     resampled_dir = "../data/resampled/"
 
     spectral_types = ["M0", "M3", "M6", "M9"]
-    if isinstance(bands, str):
-        bands = [bands]
-    elif (bands is None) or (bands is "None"):
+    if ("ALL" in bands) or ("None" in bands):
         bands = ["Z", "Y", "J", "H", "K"]
+    elif isinstance(bands, str) and (bands != "None"):
+        bands = [bands]
 
     vsini = ["1.0", "5.0", "10.0"]
     resolution = ["60k", "80k", "100k"]
