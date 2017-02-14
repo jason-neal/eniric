@@ -202,8 +202,6 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
 
             # Normaize to SNR 100 in middle of J band 1.25 micron!
             # flux_stellar = normalize_flux(flux_stellar, id_string)
-            print("before norm", flux_stellar)
-            print("after norm", flux_stellar)
             flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=True)  # snr=100, ref_band="J"
 
             if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k",
