@@ -11,6 +11,7 @@ import eniric.Qcalculator as Qcalculator
 import eniric.utilities as utils
 import eniric.atmosphere as atm
 import eniric.plotting_functions as plt_functions
+import eniric.snr_normalization as snrnorm
 
 from matplotlib import rc
 rc('text', usetex=True)   # set stuff for latex usage
@@ -24,10 +25,12 @@ def _parser():
     parser = argparse.ArgumentParser(description='Calculate radial velocity precision of model spectra.')
 
     parser.add_argument("-b", "--bands", type=str, default="J",
-                        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", None],
+                        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", 'None'],
                         help="Wavelength bands to select. Default=J.", nargs="+")
     parser.add_argument("-u", "--use_unshifted", default=False, action="store_true",
                         help="Start with the un-doppler-shifted atmmodel.")
+    parser.add_argument("-s", "--save", default=False, action="store_true",
+                        help="Save results to file.")
     args = parser.parse_args()
     return args
 
@@ -35,7 +38,7 @@ def _parser():
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
-def main(bands="J", use_unshifted=False):
+def main(bands="J", use_unshifted=False, save=False):
     """Main function that calls calc_precision.
 
     Parameters
@@ -44,14 +47,17 @@ def main(bands="J", use_unshifted=False):
         Band letters to use. None does the bands Z through K.
     use_unshifted: bool default=False
         Flag to start with the undopplershifted atmmodel.
+    save: bool
+        Save results to file.
+
     """
     resampled_dir = "../data/resampled/"
 
     spectral_types = ["M0", "M3", "M6", "M9"]
-    if isinstance(bands, str):
-        bands = [bands]
-    elif (bands is None) or (bands is "None"):
+    if ("ALL" in bands) or ("None" in bands):
         bands = ["Z", "Y", "J", "H", "K"]
+    elif isinstance(bands, str) and (bands != "None"):
+        bands = [bands]
 
     vsini = ["1.0", "5.0", "10.0"]
     resolution = ["60k", "80k", "100k"]
@@ -67,7 +73,24 @@ def main(bands="J", use_unshifted=False):
     for key in results:
         print("{0:s}\t\t{1:0.4f}\t{2:0.4f}\t{3:0.4f}".format(key, results[key][0], results[key][1], results[key][2]))
     # Save precision results
+    if save:
+        output_filename = "../data/precision_results_2017.txt"
+        ids = []
+        prec_1s = []
+        prec_2s = []
+        prec_3s = []
+        for star in spectral_types:
+            for band in bands:
+                for vel in vsini:
+                    for res in resolution:
+                        id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
+                        ids.append(id_string)
+                        prec_1s.append(results[id_string][0].value)
+                        prec_2s.append(results[id_string][1].value)
+                        prec_3s.append(results[id_string][2].value)
 
+        io.pdwrite_cols(output_filename, ids, prec_1s, prec_2s, prec_3s,
+                        header=["# id", r"prec_1", r"prec_2", r"prec_3"], float_format="%.7f")
     # return results
 
 
@@ -78,40 +101,23 @@ def strip_result_quantities(results):
     return results
 
 
-def normalize_flux(flux_stellar, id_string):
-    """Normalize flux to have SNR of 100 in middle of J band."""
-    if("M0" in id_string):
-        norm_constant = 1607
-
-    elif("M3" in id_string):
-        norm_constant = 1373
-
-    elif("M6" in id_string):
-        if("1.0" in id_string):
-            norm_constant = 933
-        elif("5.0" in id_string):
-            norm_constant = 967
-        else:
-            norm_constant = 989
-
-    elif("M9" in id_string):
-        if("1.0" in id_string):
-            norm_constant = 810
-        elif("5.0" in id_string):
-            norm_constant = 853
-        else:
-            norm_constant = 879
-    else:
-        print("Constant not defined. Aborting...")
-        sys.exit(1)
-
-    return flux_stellar / ((norm_constant / 100.0)**2.0)
-
-
 def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                    resampled_dir, plot_atm=False, plot_ste=False,
                    plot_flux=True, paper_plots=True, offset_RV=0.0,
                    use_unshifted=False):
+    """Calculate precisions for given combinations."""
+    # TODO: iterate over band last so that the J band normalization value can be
+    # obtained first and applied to each band.
+
+    results = {}    # creating empty dictionary for the results
+    wav_plot_m0 = []   # creating empty lists for the plots
+    flux_plot_m0 = []
+    wav_plot_m3 = []
+    flux_plot_m3 = []
+    wav_plot_m6 = []
+    flux_plot_m6 = []
+    wav_plot_m9 = []
+    flux_plot_m9 = []
 
     for band in bands:
 
@@ -144,16 +150,6 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
         # theoretical ratios calculation
         # wav_m0, flux_m0, wav_m3, flux_m3, wav_m6, flux_m6, wav_m9, flux_m9 = read_nIRspectra()
 
-        results = {}    # creating empty dictionary for the results
-        wav_plot_m0 = []   # creating empty lists for the plots
-        flux_plot_m0 = []
-        wav_plot_m3 = []
-        flux_plot_m3 = []
-        wav_plot_m6 = []
-        flux_plot_m6 = []
-        wav_plot_m9 = []
-        flux_plot_m9 = []
-
         iterations = itertools.product(spectral_types, vsini, resolution, sampling)
         # for star in spectral_types:
         #     for vel in vsini:
@@ -183,7 +179,8 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             flux_stellar = flux_stellar[2:-2]
 
             # sample was left aside because only one value existed
-            id_string = "{0}-{1}-{2}-{3}".format(star, band, vel, res)
+            # TODO: Add metalicity and logg into id string
+            id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
 
             # Getting the wav, flux and mask values from the atm model
             # that are the closest to the stellar wav values, see
@@ -204,7 +201,9 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                 print("Min flux_atm_selected[mask_atm_selected] = {} < 0.98\n####".format(np.min(flux_atm_selected[mask_atm_selected])))
 
             # Normaize to SNR 100 in middle of J band 1.25 micron!
-            flux_stellar = normalize_flux(flux_stellar, id_string)
+            # flux_stellar = normalize_flux(flux_stellar, id_string)
+            flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=True)  # snr=100, ref_band="J"
+
             if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k",
                              "M6-J-1.0-100k", "M9-J-1.0-100k"]):
                 index_ref = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron

@@ -18,7 +18,7 @@ import eniric.Qcalculator as Qcalculator
 # from eniric.utilities import band_selector
 
 # from eniric.plotting_functions import plot_atmopshere_model, plot_stellar_spectum
-from bin.nIR_precision import normalize_flux
+from eniric.snr_normalization import normalize_flux
 
 # from matplotlib import rc
 # set stuff for latex usage
@@ -57,23 +57,24 @@ def _parser():
     args = parser.parse_args()
     return args
 
-#atmmodel = "../data/atmmodel/Average_TAPAS_2014.txt"
-resampled_dir = "../data/resampled/"
-file_error_to_catch = getattr(__builtins__,'FileNotFoundError', IOError)
 
-def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True, resampled_dir=resampled_dir):
+# atmmodel = "../data/atmmodel/Average_TAPAS_2014.txt"
+resampled_dir = "../data/resampled/"
+file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
+
+
+def calc_prec1(star, band, vel, resolution, smpl, normalize=True, resampled_dir=resampled_dir):
     """Just caluclate precision for 1st case.
 
     resolution in short form e.g 100k
     """
     if normalize:
         file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2:.1f}_R{3}"
-                        "_res{4}.txt").format(star, band, vel, resolution,  smpl)
+                        "_res{4}.txt").format(star, band, vel, resolution, smpl)
     else:
         file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini"
-                        "{2:.1f}_R{3}_unnormalized_res{4}.txt").format(star, band, vel,
-                                                                resolution,
-                                                                smpl)
+                        "{2:.1f}_R{3}_unnormalized_res{4}.txt"
+                        "").format(star, band, vel, resolution, smpl)
     # print("Working on " + file_to_read)
     wav_stellar, flux_stellar = io.pdread_2col(resampled_dir + file_to_read)
 
@@ -82,22 +83,21 @@ def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True, resampled_d
     flux_stellar = flux_stellar[2:-2]
 
     if normalize:
-        id_string = "{0}-{1}-{2}-{3}".format(star, band, vel, resolution)   # sample was left aside because only one value existed
+        id_string = "{0}-{1}-{2:.1f}-{3}".format(star, band, vel, resolution)   # sample was left aside because only one value existed
     else:
-        id_string = "{0}-{1}-{2}-{3}-unnorm".format(star, band, vel, resolution)   # sample was left aside because only one value existed
+        id_string = "{0}-{1}-{2:.1f}-{3}-unnorm".format(star, band, vel, resolution)   # sample was left aside because only one value existed
 
     # Normaize to SNR 100 in middle of J band 1.25 micron!
     flux_stellar = normalize_flux(flux_stellar, id_string)
 
     if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k", "M6-J-1.0-100k", "M9-J-1.0-100k"]):
         index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
-        sn_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
+        sn_estimate = np.sqrt(np.sum(flux_stellar[index_reference - 1:index_reference + 2]))
         print("\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(id_string, sn_estimate))
     elif("J" in id_string):
         index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
-        sn_estimate = np.sqrt(np.sum(flux_stellar[index_reference-1:index_reference+2]))
+        sn_estimate = np.sqrt(np.sum(flux_stellar[index_reference - 1:index_reference + 2]))
         print("\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string, sn_estimate))
-
 
     # print("Performing analysis for: ", id_string)
     prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar)
@@ -109,7 +109,7 @@ def calc_prec1(star, band,  vel,  resolution,  smpl, normalize=True, resampled_d
 def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, results=None,
          resamples=None, sample_rate=3.0, noresample=False, normalize=True,
          org=False):
-    """script that calculates the RV precision without atmosphere."""
+    """Script that calculates the RV precision without atmosphere."""
     if data_dir is None:
         data_dir = "../data/"
 
@@ -137,7 +137,7 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
     if resolution is None:
         resolution = ["60k", "80k", "100k"]
     else:
-        resolution = ["{0:.0f}k".format(R/1000) for R in resolution]
+        resolution = ["{0:.0f}k".format(R / 1000) for R in resolution]
 
     if sample_rate is None:
         sampling = ["3"]
@@ -145,6 +145,10 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
         sampling = sample_rate
 
     precision = {}  # dict for storing precision value
+
+    # TODO: iterate over band last so that the J band normalization value can be
+    # obtained first and applied to each band.
+
     for star in spectral_types:
         for band in bands:
             for vel in vsini:
@@ -158,8 +162,7 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
                             except file_error_to_catch:
                                 pass  # When file not found skip
                             except:
-                                print(star, band, vel, R, smpl, "normalized"*normalize, "Failed!")
-
+                                print(star, band, vel, R, smpl, "normalized" * normalize, "Failed!")
 
     print("id_string\t\tprec_1")
     for key in precision:
@@ -170,7 +173,7 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
 
 if __name__ == '__main__':
     args = vars(_parser())
-    #startype = args.pop("startype")  # positional arguments
+    # startype = args.pop("startype")  # positional arguments
 
     opts = {k: args[k] for k in args}
 
