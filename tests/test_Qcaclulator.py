@@ -46,8 +46,10 @@ def test_RVprec_calc_with_lists():
 
 
 def test_sqrt_sum_wis():
-    """Test that sqrt_sum_wis can hande inputs as Quantities or unitless
-    and returns a dimensionless unscaled Quantity. """
+    """Test that sqrt_sum_wis can hande inputs as Quantities or unitless.
+
+    Returns a dimensionless unscaled Quantity.
+    """
     wav = np.arange(1, 101)
     flux = np.random.random(100)
 
@@ -55,7 +57,7 @@ def test_sqrt_sum_wis():
     assert not isinstance(sqrtsumwis, u.Quantity)  # Doesn't turn into quantity if does not have to.
     assert not hasattr(sqrtsumwis, '__len__')       # assert value is a scalar
 
-    sqrtsumwis2 = Q.sqrt_sum_wis(wav * u.micron,  (flux / u.second) / (u.centimeter**2))   # with some units
+    sqrtsumwis2 = Q.sqrt_sum_wis(wav * u.micron, (flux / u.second) / (u.centimeter**2))   # with some units
     assert not hasattr(sqrtsumwis2.value, '__len__')   # assert value is a scalar
     assert isinstance(sqrtsumwis2, u.Quantity)
     assert sqrtsumwis2.unit == u.dimensionless_unscaled   # unscaled and dimentionless quantitiy
@@ -67,8 +69,7 @@ def test_sqrt_sum_wis():
 
 
 def test_RV_prec_calc_Trans():
-
-    """Trans should not have units """
+    """Transmission should not have units."""
     wav = np.arange(1, 101)
     flux = np.random.random(100)
     trans = np.random.random(100)
@@ -86,13 +87,13 @@ def test_RV_prec_calc_Trans():
 
     with pytest.raises(TypeError):
         # transmission mistakenly given as a flux unit
-        Q.RV_prec_calc_Trans(wav, flux, (trans/u.s)/(u.centimeter**2))
+        Q.RV_prec_calc_Trans(wav, flux, (trans / u.s) / (u.centimeter**2))
 
     with pytest.raises(ValueError):
-        Q.RV_prec_calc_Trans(wav, flux, trans+1)
+        Q.RV_prec_calc_Trans(wav, flux, trans + 1)
 
     with pytest.raises(ValueError):
-        Q.RV_prec_calc_Trans(wav, flux, trans*-5)
+        Q.RV_prec_calc_Trans(wav, flux, trans * -5)
 
 
 def test_SQRTSumWisTrans():
@@ -118,13 +119,13 @@ def test_SQRTSumWisTrans():
 
     with pytest.raises(TypeError):
         # transmission mistakenly given as a flux unit
-        Q.sqrt_sum_wis_trans(wav, flux, (trans/u.s)/(u.centimeter**2))
+        Q.sqrt_sum_wis_trans(wav, flux, (trans / u.s) / (u.centimeter**2))
 
     with pytest.raises(ValueError):
-        Q.sqrt_sum_wis_trans(wav, flux, trans+1)
+        Q.sqrt_sum_wis_trans(wav, flux, trans + 1)
 
     with pytest.raises(ValueError):
-        Q.sqrt_sum_wis_trans(wav, flux, trans*-5)
+        Q.sqrt_sum_wis_trans(wav, flux, trans * -5)
 
 
 def test_transmission_reduces_precision():
@@ -140,11 +141,10 @@ def test_transmission_reduces_precision():
 
 
 def test_RV_prec_masked():
-    """Test same prections results between past pre-clumped version and mask version
-    """
+    """Test same prections results between past pre-clumped version and mask version."""
     wav = np.arange(100)
     flux = np.random.random(100) * 10
-    mask = np.asarray(np.floor(2*np.random.random(100)), dtype=bool)
+    mask = np.asarray(np.floor(2 * np.random.random(100)), dtype=bool)
 
     # Pre clumping as in nIR_precion.py
     wav_chunks, flux_chunks = Q.bug_fixed_clumping_method(wav, flux, mask)
@@ -161,7 +161,7 @@ def test_mask_clumping():
     """Test properties of clumping function using masked_arrays."""
     wav = np.arange(1, 101)
     flux = np.random.random(100) * 10
-    mask = np.asarray(np.floor(2*np.random.random(100)), dtype=bool)
+    mask = np.asarray(np.floor(2 * np.random.random(100)), dtype=bool)
 
     wav_chunks, flux_chunks = Q.bug_fixed_clumping_method(wav, flux, mask)
     wav_masked, flux_masked = Q.mask_clumping(wav, flux, mask)
@@ -214,7 +214,7 @@ def test_manual_clumping():
 
 
 def test_bugs_in_old_clumping_method():
-    """Test that it actually works on small tests"""
+    """Test that it actually works on small tests."""
     val = np.arange(10)
 
     # Define masks and expected results from val

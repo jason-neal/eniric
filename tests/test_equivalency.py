@@ -1,5 +1,4 @@
-
-"""To test the equivalence of old and newcode to check if it does the same thing"""
+"""To test the equivalence of old and newcode to check if it does the same thing."""
 
 from __future__ import division, print_function
 import os
@@ -16,7 +15,7 @@ file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
 def test_pdread_2col():
-    """Test reading 2cols with pandas"""
+    """Test reading 2cols with pandas."""
     spectrum_1 = "data/test_data/Sample_input_phoenix.dat"
     spectrum_2 = "data/test_data/Sample_resampled_spectrum_res3.txt"
 
@@ -56,7 +55,7 @@ def test_pdwriter():
 
     # write files
     io.pdwrite_2col(pd2col_name, data[0], data[1])
-    io.pdwrite_3col(pd3col_name, data[0], data[1],  data[2])
+    io.pdwrite_3col(pd3col_name, data[0], data[1], data[2])
     io.write_e_2col(twocol_name, data[0], data[1])
     io.write_e_3col(threecol_name, data[0], data[1], data[2])
 
@@ -82,12 +81,14 @@ def test_pdwriter():
 
 def test_prepared_dat_files():
     """Test that the flux inthe new prepared .dat files matches the original.
-    This insures that all any conversions/scaling has been taken care of."""
+
+    This insures that all any conversions/scaling has been taken care of.
+    """
     pass
 
 
 def test_pdwrire_cols():
-    """Test writer that can take variable column numbers"""
+    """Test writer that can take variable column numbers."""
     filedir = "data/test_data"
     pd_multicol_name = os.path.join(filedir, "pd_multicol_test.txt")
 
@@ -99,7 +100,7 @@ def test_pdwrire_cols():
     assert 0 == io.pdwrite_cols(pd_multicol_name, data1, data2, data1)
     assert 0 == io.pdwrite_cols(pd_multicol_name, data1)
     assert 0 == io.pdwrite_cols(pd_multicol_name, data1, data2, data1, data2,
-                             header=["headers", "for", "column", "labels"])
+                                header=["headers", "for", "column", "labels"])
     assert 0 == io.pdwrite_cols(pd_multicol_name, data1, data2, sep=",", index=True)
 
     # test uneven dats lengths
