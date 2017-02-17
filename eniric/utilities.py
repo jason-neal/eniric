@@ -106,20 +106,49 @@ def band_selector(wav, flux, band):
     """
     band = band.upper()
 
+    # bands = {"VIS": (0.38, 0.78), "GAP": (0.78, 0.83), "Z": (0.83, 0.93),
+    #         "Y": (1.0, 1.1), "J": (1.17, 1.33), "H": (1.5, 1.75),
+    #         "K": (2.07, 2.35), "CONT": (0.45, 1.05), "NIR": (0.83, 2.35)}
+    if(band in ["ALL", ""]):
+        return wav, flux
+    else:
+        try:
+            # select values from the band
+            bandmin, bandmax = band_limits(band)
+        except (ValueError, AttributeError) as e:
+            print("Unrecognized band tag.")
+            raise
+        return wav_selector(wav, flux, bandmin, bandmax)
+
+
+def band_limits(band):
+    """ Get wavelength limits of band in microns.
+
+    Parameters
+    ----------
+    band: str
+        Band letter to get wavelength range for.
+
+    Returns
+    -------
+    wav_min: float
+        Lower wavelength bound of band in microns
+    wav_max: float
+        Upper wavelength bound of band in microns
+    """
+    if not isinstance(band, str):
+        raise AttributeError("Band name must be a string")
+    else:
+        band = band.upper()
+
     bands = {"VIS": (0.38, 0.78), "GAP": (0.78, 0.83), "Z": (0.83, 0.93),
              "Y": (1.0, 1.1), "J": (1.17, 1.33), "H": (1.5, 1.75),
              "K": (2.07, 2.35), "CONT": (0.45, 1.05), "NIR": (0.83, 2.35)}
-    if(band in ["ALL", ""]):
-        return wav, flux
-    elif band in bands:
-        # select values form the band
-        bandmin = bands[band][0]
-        bandmax = bands[band][1]
 
-        return wav_selector(wav, flux, bandmin, bandmax)
+    if band in bands:
+        return bands[band]
     else:
-        print("Unrecognized band tag.")
-        exit(1)
+        raise ValueError("The band {0} requested is not a valid option".format(band))
 
 
 def wav_selector(wav, flux, wav_min, wav_max):
@@ -233,6 +262,7 @@ def plotter(spectrum, band, vsini=0, R=0):
     plt.plot(wav_band[1:], delta_wav, color='k', marker="o", linestyle="-")
     plt.show()
     plt.close()
+
 
 def calculate_ratios(spectrum):
     """Calculate ratios between the different bands.
