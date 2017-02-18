@@ -11,7 +11,8 @@ import numpy as np
 from tqdm import tqdm
 import multiprocess as mprocess
 
-import eniric.IOmodule as io
+# from eniric.IOmodule import read_2col, read_3col
+from eniric.IOmodule import pdread_2col,  write_e_3col
 # from eniric.Qcalculator import RVprec_calc, SqrtSumWis
 from eniric.utilities import wav_selector, unitary_Gauss, rotation_kernel
 from eniric.utilities import band_selector, read_spectrum
@@ -47,7 +48,7 @@ def run_convolutions(spectrum_string, band):
 
 
 def save_convolution_results(filename, wavelength, flux, convolved_flux):
-    """Saves covolution results to a file.
+    """ Saves covolution results to a file.
 
     Parameters
     ----------
@@ -59,7 +60,7 @@ def save_convolution_results(filename, wavelength, flux, convolved_flux):
 
     # Note: difference in sampling at 1.0 and 1.5 microns makes jumps
     # in the beginning of Y and H bands
-    io.write_e_3col(filename, wavelength, flux, convolved_flux)
+    write_e_3col(filename, wavelength, flux, convolved_flux)
     print("Done.")
     return 0
 
@@ -67,7 +68,7 @@ def save_convolution_results(filename, wavelength, flux, convolved_flux):
 def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, fwhm_lim=5.0,
                      plot=True, num_procs=None, results_dir=results_dir,
                      data_rep=data_rep, normalize=True, output_name=None):
-    """Load Spectrum, apply convolution and then save results.
+    """ Load Spectrum, apply convolution and then save results.
 
     """
     print("Reading the data...")
@@ -108,7 +109,7 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, fwhm_lim=5.0,
 
 def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, fwhm_lim=5.0,
                 num_procs=None, normalize=True, output_name=None):
-    """Perform convolution of spectrum.
+    """ Perform convolution of spectrum.
 
     Rotational convolution followed by a guassian a a specified resolution R.
 
@@ -174,11 +175,11 @@ def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, fwhm_lim=5.0,
 
 def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
                            vsini, epsilon, num_procs=None, normalize=True):
-    """Perform Rotational convolution part of convolution.
+    """ Perform Rotational convolution part of convolution.
     """
 
     def wrapper_rot_parallel_convolution(args):
-        """Wrapper for rot_parallel_convolution needed to unpack the arguments for
+        """ Wrapper for rot_parallel_convolution needed to unpack the arguments for
         fast_convolve as multiprocess.Pool.map does not accept multiple
         arguments
         """
@@ -234,13 +235,13 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
 
 def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
                            num_procs=1, normalize=True):
-    """Perform Resolution convolution part of convolution.
+    """ Perform Resolution convolution part of convolution.
     """
 
     # Define inner convolution functions
     def element_res_convolution(wav, R, wav_extended, flux_conv_rot, fwhm_lim,
                                 normalize):
-        """Embarisingly parallel component of resolution convolution"""
+        """ Embarisingly parallel component of resolution convolution"""
         fwhm = wav / R
         # Mask of wavelength range within 5 fwhm of wav
         index_mask = ((wav_extended > (wav - fwhm_lim*fwhm)) &
@@ -259,7 +260,7 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
             return sum_val
 
     def wrapper_res_parallel_convolution(args):
-        """Wrapper for res_parallel_convolution needed to unpack the arguments
+        """ Wrapper for res_parallel_convolution needed to unpack the arguments
         for fast_convolve as multiprocess.Pool.map does not accept multiple
         arguments
         """
