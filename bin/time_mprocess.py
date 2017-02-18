@@ -19,19 +19,21 @@ vsini = 1
 epsilon = 0.6
 fwhm_lim = 5
 plot = False
-numProcs = 0
+numprocs = 0
 
 numprocs = [None, 0, 1, 2, 3, 4]
 
-def time_diff_procs(numProcs):
-    """ Time the convolution with different number of processors"""
+
+def time_diff_procs(numprocs):
+    """Time the convolution with different number of processors"""
     conv_times = dict()
-    for proc in numProcs:
+    for proc in numprocs:
         start_time = datetime.datetime.now()
-        convolve_spectra(spectrum_path, band, vsini, R, epsilon, fwhm_lim, plot, numProcs=proc)
+        convolve_spectra(spectrum_path, band, vsini, R, epsilon, fwhm_lim, plot, numprocs=proc)
         end_time = datetime.datetime.now()
         conv_times[proc] = end_time - start_time
     return conv_times
+
 
 conv_times = time_diff_procs(numprocs)
 
