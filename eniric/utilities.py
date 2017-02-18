@@ -8,11 +8,11 @@ import os
 import errno
 import numpy as np
 import matplotlib.pyplot as plt
-from eniric.IOmodule import pdread_2col
+import eniric.IOmodule as io
 
 
 def read_spectrum(spec_name):
-    """ Function that reads a flux spectra from the database!.
+    """Function that reads a flux spectra from the database!.
 
     If a energy flux spectra is read then it converts it to photons.
 
@@ -30,9 +30,9 @@ def read_spectrum(spec_name):
 
     """
     if "photon" in spec_name:
-        wav_micron, flux_photons = pdread_2col(spec_name)
+        wav_micron, flux_photons = io.pdread_2col(spec_name)
     else:
-        wav, flux = pdread_2col(spec_name)
+        wav, flux = io.pdread_2col(spec_name)
 
         wav_micron = wav * 1.0e-4  # conversion to microns
         flux_photons = flux * wav_micron   # Convert to photons
@@ -41,7 +41,7 @@ def read_spectrum(spec_name):
 
 
 def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_type="photon"):
-    """ Return correct phoenix spectrum filename for a given spectral type.
+    """Return correct phoenix spectrum filename for a given spectral type.
 
     Based off phoenix_utils module.
 
@@ -92,7 +92,7 @@ def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_
 
 
 def band_selector(wav, flux, band):
-    """ Select a specific wavelength band.
+    """Select a specific wavelength band.
 
     Parameters
     ----------
@@ -106,20 +106,49 @@ def band_selector(wav, flux, band):
     """
     band = band.upper()
 
+    # bands = {"VIS": (0.38, 0.78), "GAP": (0.78, 0.83), "Z": (0.83, 0.93),
+    #         "Y": (1.0, 1.1), "J": (1.17, 1.33), "H": (1.5, 1.75),
+    #         "K": (2.07, 2.35), "CONT": (0.45, 1.05), "NIR": (0.83, 2.35)}
+    if(band in ["ALL", ""]):
+        return wav, flux
+    else:
+        try:
+            # select values from the band
+            bandmin, bandmax = band_limits(band)
+        except (ValueError, AttributeError) as e:
+            print("Unrecognized band tag.")
+            raise
+        return wav_selector(wav, flux, bandmin, bandmax)
+
+
+def band_limits(band):
+    """ Get wavelength limits of band in microns.
+
+    Parameters
+    ----------
+    band: str
+        Band letter to get wavelength range for.
+
+    Returns
+    -------
+    wav_min: float
+        Lower wavelength bound of band in microns
+    wav_max: float
+        Upper wavelength bound of band in microns
+    """
+    if not isinstance(band, str):
+        raise AttributeError("Band name must be a string")
+    else:
+        band = band.upper()
+
     bands = {"VIS": (0.38, 0.78), "GAP": (0.78, 0.83), "Z": (0.83, 0.93),
              "Y": (1.0, 1.1), "J": (1.17, 1.33), "H": (1.5, 1.75),
              "K": (2.07, 2.35), "CONT": (0.45, 1.05), "NIR": (0.83, 2.35)}
-    if(band in ["ALL", ""]):
-        return wav, flux
-    elif band in bands:
-        # select values form the band
-        bandmin = bands[band][0]
-        bandmax = bands[band][1]
 
-        return wav_selector(wav, flux, bandmin, bandmax)
+    if band in bands:
+        return bands[band]
     else:
-        print("Unrecognized band tag.")
-        exit(1)
+        raise ValueError("The band {0} requested is not a valid option".format(band))
 
 
 def wav_selector(wav, flux, wav_min, wav_max):
@@ -155,7 +184,7 @@ def wav_selector(wav, flux, wav_min, wav_max):
 
 
 def unitary_Gauss(x, center, fwhm):
-    """ Gaussian function of area = 1.
+    """Gaussian function of area = 1.
 
     Parameters
     ----------
@@ -181,7 +210,7 @@ def unitary_Gauss(x, center, fwhm):
 
 
 def rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon):
-    """ Calculate the rotation kernel for a given wavelength
+    """Calculate the rotation kernel for a given wavelength
 
     Parameters
     ----------
@@ -234,8 +263,9 @@ def plotter(spectrum, band, vsini=0, R=0):
     plt.show()
     plt.close()
 
+
 def calculate_ratios(spectrum):
-    """ Calculate ratios between the different bands.
+    """Calculate ratios between the different bands.
 
     This was labeled WRONG from original code, but including here for reference.
     """
@@ -279,7 +309,7 @@ def list_creator(spectrum, band):
 
 
 def silentremove(filename):
-    """ Remove file without failing when it doesn't exist."""
+    """Remove file without failing when it doesn't exist."""
     try:
         os.remove(filename)
     except OSError as e:  # this would be "except OSError, e:" before Python 2.6
