@@ -8,13 +8,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from os import listdir
 from os.path import isfile, join
-import eniric.IOmodule as io
+from eniric.IOmodule import pdread_3col, write_e_2col
+
 results_dir = "../data/results/"
 resampled_dir = "../data/resampled/"
 
 
 def resample_allfiles(results_dir=results_dir, resampled_dir=resampled_dir):
-    """Resample all files inside folder.
+    """ Resample all files inside folder.
 
     Parameters
     ----------
@@ -40,7 +41,7 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
     # wavelength, theoretical_spectrum, spectrum = read_3col(spectrum_name)
     read_name = results_dir + spectrum_name
     # theoretical_spectrum = data["model"].values
-    wavelength, __, spectrum = io.pdread_3col(read_name, noheader=True)
+    wavelength, __, spectrum = pdread_3col(read_name, noheader=True)
 
     wavelength_start = wavelength[1]  # because of border effects
     wavelength_end = wavelength[-2]   # because of border effects
@@ -63,7 +64,7 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
     interpolated_flux = np.interp(wav_grid, wavelength, spectrum)
     filetowrite = "{0}{1}_res{2}.txt".format(resampled_dir, spectrum_name[:-4],
                                              int(sampling))
-    io.write_e_2col(filetowrite, wav_grid, interpolated_flux)
+    write_e_2col(filetowrite, wav_grid, interpolated_flux)
 
     if(plottest):
         plt.figure(1)
