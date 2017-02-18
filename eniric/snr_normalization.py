@@ -144,7 +144,7 @@ def snr_constant_band(wav, flux, snr=100, band="J"):
 
     band_middle = (band_min + band_max) / 2
 
-    if band_middle < wav[0] or band_middle > wav[-1]:
+    if not (wav[0] < band_middle < wav[-1]):
         # not in range
         pass
     # Option to specify own wavelength?
