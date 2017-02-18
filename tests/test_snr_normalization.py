@@ -53,7 +53,7 @@ def test_band_snr_norm():
 
 
 def test_sampling_index():
-    # Some hard coded examples
+    """Some hard coded examples of sampling index."""
     # odd number
     assert snrnorm.sampling_index(6, 1) == [6]
     assert np.all(snrnorm.sampling_index(100, 3) == [99, 100, 101])
