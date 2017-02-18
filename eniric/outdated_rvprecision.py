@@ -118,7 +118,7 @@ def compare_runs():
 #
 ###############################################################################
 def calculate_prec_VIS(plot_atm=False, plot_ste=False, plot_flux=True, paper_plots=True):
-
+    """Precision calculation in the Visible, Outdated."""
     print("Reading atmospheric model...")
     wav_atm, flux_atm, std_flux_atm, mask_atm = prepare_atmopshere()
     print(("There were {:d} unmasked pixels out of {:d}., or {:.1%}."
