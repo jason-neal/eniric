@@ -11,7 +11,7 @@ import numpy as np
 def pdread_2col(filename, noheader=False):
     """Read in a 2 column file with pandas.
 
-    Faster then read_2col
+    Faster then read_2col.
 
     Parameters
     ----------
@@ -116,9 +116,9 @@ def pdread_4col(filename, noheader=False):
 
 
 def read_col(filename):
-    # This program reads column formatted data from a file and
-    # returns a list in which each sublist correspond to the line's elements.
-    # THE RESULT IS A LIST OF STRINGS!
+    """This program reads column formatted data from a file and
+    returns a list in which each sublist correspond to the line's elements.
+    THE RESULT IS A LIST OF STRINGS!"""
 
     f = open(filename, "r")
 
@@ -140,9 +140,9 @@ def read_col(filename):
 
 
 def read_2col(filename):
-    # The same as the previous, but returns 2 vectors, corresponding each
-    # one to a column.THE RESULTS ARE FLOAT PYTHON VECTORS.
-    # Note that in python all "float" are in fact "double-precision".
+    """The same as the previous, but returns 2 vectors, corresponding each
+    one to a column.THE RESULTS ARE FLOAT PYTHON VECTORS.
+    Note that in python all "float" are in fact "double-precision"."""
 
     list_data = read_col(filename)
 
@@ -159,7 +159,7 @@ def read_2col(filename):
 
 
 def read_3col(filename):
-    # The same as the previous, but returns 3 columns
+    """The same as the previous, but returns 3 columns."""
 
     list_data = read_col(filename)
 
@@ -178,7 +178,7 @@ def read_3col(filename):
 
 
 def read_4col(filename):
-    # The same as the previous, but returns 4 columns
+    """The same as the previous, but returns 4 columns."""
 
     list_data = read_col(filename)
 
@@ -280,7 +280,7 @@ def pdwrite_3col(filename, data1, data2, data3, sep="\t", header=False, float_fo
 
 
 def write_2col(filename, data1, data2):
-    # Writes data in 2 columns separated by tabs in a "filename" file.
+    """Writes data in 2 columns separated by tabs in a "filename" file."""
 
     f = open(filename, "w")
 
@@ -291,7 +291,7 @@ def write_2col(filename, data1, data2):
 
 
 def write_3col(filename, data1, data2, data3):
-    # Writes data in 2 columns separated by tabs in a "filename" file.
+    """Writes data in 2 columns separated by tabs in a "filename" file."""
 
     f = open(filename, "w")
 
@@ -302,7 +302,7 @@ def write_3col(filename, data1, data2, data3):
 
 
 def write_e_2col(filename, data1, data2):
-    # Writes data in 2 columns separated by tabs in a "filename" file.
+    """Writes data in 2 columns separated by tabs in a "filename" file."""
 
     f = open(filename, "w")
 
@@ -314,7 +314,7 @@ def write_e_2col(filename, data1, data2):
 
 
 def write_e_3col(filename, data1, data2, data3):
-    # Writes data in 3 columns separated by tabs in a "filename" file.
+    """Writes data in 3 columns separated by tabs in a "filename" file."""
 
     f = open(filename, "w")
 
