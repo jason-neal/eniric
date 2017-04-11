@@ -2,6 +2,9 @@
 .sync/
 
 # eniric files
+images/*
+docs/*.py
+docs/*.html
 data/original_code/*
 data/resampled/*
 data/results/*
