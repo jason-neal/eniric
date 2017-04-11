@@ -22,7 +22,7 @@ def prepare_atmopshere(atmmodel):
     return wav_atm, flux_atm, std_flux_atm, mask_atm
 
 
-def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
+def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0, consecutive_test=True):
     """Calculating impact of Barycentric movement on mask...
 
     Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
@@ -60,28 +60,30 @@ def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
             # np.searchsorted is faster then the boolean masking wavlength range
             # It returns index locations to place the min/max doppler-shifted vals
             slice_limits = np.searchsorted(wav_atm, [wav_lower_barys[i], wav_upper_barys[i]])
-            slice_limits = [index if(index < len(wav_atm)) else len(wav_atm)-1
+            slice_limits = [index if(index < len(wav_atm)) else len(wav_atm) - 1
                             for index in slice_limits]  # Fix searchsorted index
 
             mask_atm_slice = mask_atm[slice_limits[0]:slice_limits[1]]
 
             mask_atm_slice = np.asarray(mask_atm_slice, dtype=bool)  # Insure boolean dtype
 
-            # Make mask value False if there are 3 or more consecutive zeros in slice.
-            len_consec_zeros = consecutive_truths(~mask_atm_slice)
-            if np.all(~mask_atm_slice):    # All pixels of slice is zeros (shouldn't get here)
-                mask_atm_30kms[i] = False
-            elif np.max(len_consec_zeros) >= 3:
-                mask_atm_30kms[i] = False
+            if consecutive_test:
+                # Make mask value False if there are 3 or more consecutive zeros in slice.
+                len_consec_zeros = consecutive_truths(~mask_atm_slice)
+                if np.all(~mask_atm_slice):    # All pixels of slice is zeros (shouldn't get here)
+                    mask_atm_30kms[i] = False
+                elif np.max(len_consec_zeros) >= 3:
+                    mask_atm_30kms[i] = False
+                else:
+                    mask_atm_30kms[i] = True
+                    if np.sum(~mask_atm_slice) > 3:
+                        # print(len_consec_zeros)
+                        print("There were {0} zeros out of {1} in this barycentric shift but none were 3 consecutive!".format(np.sum(~mask_atm_slice), len(mask_atm_slice)))
             else:
-                mask_atm_30kms[i] = True
-                if np.sum(~mask_atm_slice) > 3:
-                    # print(len_consec_zeros)
-                    print("There were {0} zeros out of {1} in this barycentric shift but none were 3 consecutive!".format(np.sum(~mask_atm_slice), len(mask_atm_slice)))
-
+                mask_atm_30kms[i] = np.product(mask_atm_slice)
     masked_end = pixels_total - np.sum(mask_atm_30kms)
     print(("New Barycentric impact affects the number of masked pixels by {0:04.1%} due to the atmospheric"
-          " spectrum").format((masked_end - masked_start)/pixels_total))
+          " spectrum").format((masked_end - masked_start) / pixels_total))
     print(("Masked Pixels start = {1}, masked_pixel_end = {0}, Total = {2}").format(masked_end, masked_start, pixels_total))
     return mask_atm_30kms
 
@@ -148,7 +150,7 @@ def bugged_old_barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
             starting_lambda = value[0] * offset_RV * 1.0e3 / Qcalculator.c.value
             indexes_30kmslice = np.searchsorted(wav_atm, [starting_lambda + value[0] - delta_lambda,
                                                           starting_lambda + value[0] + delta_lambda])
-            indexes_30kmslice = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in indexes_30kmslice]
+            indexes_30kmslice = [index if(index < len(wav_atm)) else len(wav_atm) - 1 for index in indexes_30kmslice]
 
             mask_atm_30kmslice = np.array(mask_atm[indexes_30kmslice[0]:indexes_30kmslice[1]], dtype=bool)    # selecting only the slice in question
 
@@ -168,7 +170,7 @@ def bugged_old_barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
     mask_atm = np.array(mask_atm_30kms, dtype=bool)
     masked_end = pixels_total - np.sum(mask_atm)
     print(("Old Barycentric impact affects number of masked pixels by {0:04.1%} due to the atmospheric"
-          " spectrum").format((masked_end - masked_start)/pixels_total))
+          " spectrum").format((masked_end - masked_start) / pixels_total))
     print(("Pedros Pixels start = {1}, Pixel_end = {0}, Total = {2}").format(masked_end, masked_start, pixels_total))
     return mask_atm
 
@@ -193,7 +195,7 @@ def old_barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
             starting_lambda = value[0] * offset_RV * 1.0e3 / Qcalculator.c.value
             indexes_30kmslice = np.searchsorted(wav_atm, [starting_lambda + value[0] - delta_lambda,
                                                           starting_lambda + value[0] + delta_lambda])
-            indexes_30kmslice = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in indexes_30kmslice]
+            indexes_30kmslice = [index if(index < len(wav_atm)) else len(wav_atm) - 1 for index in indexes_30kmslice]
 
             mask_atm_30kmslice = np.array(mask_atm[indexes_30kmslice[0]:indexes_30kmslice[1]], dtype=bool)    # selecting only the slice in question
 
@@ -220,6 +222,6 @@ def old_barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
     mask_atm = np.array(mask_atm_30kms, dtype=bool)
     masked_end = pixels_total - np.sum(mask_atm)
     print(("Old Barycentric impact affects number of masked pixels by {0:04.1%} due to the atmospheric"
-          " spectrum").format((masked_end - masked_start)/pixels_total))
+          " spectrum").format((masked_end - masked_start) / pixels_total))
     print(("Pedros Pixels start = {1}, Pixel_end = {0}, Total = {2}").format(masked_end, masked_start, pixels_total))
     return mask_atm
