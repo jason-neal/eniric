@@ -1,13 +1,13 @@
-import pytest
 import numpy as np
-import eniric.utilities as utils
-import eniric.IOmodule as io
+import pytest
 
+import eniric.IOmodule as io
+import eniric.Qcalculator as Q
 # Test using hypothesis
 # from hypothesis import given, example
 # import hypothesis.strategies as st
 import eniric.snr_normalization as snrnorm
-import eniric.Qcalculator as Q
+import eniric.utilities as utils
 
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 

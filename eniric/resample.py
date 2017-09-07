@@ -4,11 +4,14 @@ Functions for file resampling.
 """
 
 import re
-import numpy as np
-import matplotlib.pyplot as plt
 from os import listdir
 from os.path import isfile, join
+
+import matplotlib.pyplot as plt
+import numpy as np
+
 import eniric.IOmodule as io
+
 results_dir = "../data/results/"
 resampled_dir = "../data/resampled/"
 

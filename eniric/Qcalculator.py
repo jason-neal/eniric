@@ -3,11 +3,11 @@
 Using the Quality factor of the spectra.
 """
 
+import astropy.units as u
 import numpy as np
 import pandas as pd
 # c = 299792458  # m/s
 from astropy.constants import c
-import astropy.units as u
 from astropy.units import Quantity
 
 

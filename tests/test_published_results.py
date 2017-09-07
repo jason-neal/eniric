@@ -2,11 +2,12 @@
 """To test if the new code produces the same precision values on the published results."""
 
 from __future__ import division, print_function
-import pytest
-import numpy as np
 
-import eniric.Qcalculator as Q
+import numpy as np
+import pytest
+
 import eniric.IOmodule as io
+import eniric.Qcalculator as Q
 from bin.prec_1 import calc_prec1
 
 # For python2.X compatibility

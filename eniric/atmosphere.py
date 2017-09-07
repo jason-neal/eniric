@@ -6,8 +6,8 @@ Manily the barycentric shifting of the absobtion mask.
 
 from __future__ import division, print_function
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 import eniric.IOmodule as io
 import eniric.Qcalculator as Qcalculator

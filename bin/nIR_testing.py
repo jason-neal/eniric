@@ -4,11 +4,15 @@
 # Jason Neal
 # December 2016
 from __future__ import division, print_function
+
+import datetime
+
+import matplotlib.pyplot as plt
+
 from eniric.nIRanalysis import convolve_spectra, resample_allfiles
 from eniric.original_code.nIRanalysis import convolution as old_convolution
-from eniric.original_code.nIRanalysis import resample_allfiles as old_resample_allfiles
-import matplotlib.pyplot as plt
-import datetime
+from eniric.original_code.nIRanalysis import \
+    resample_allfiles as old_resample_allfiles
 
 spectrum_name = "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 

@@ -1,11 +1,11 @@
 
+import numpy as np
 ################################################################################
 #
 #    Functions to read column-separated files
 #
 ################################################################################
 import pandas as pd
-import numpy as np
 
 
 def pdread_2col(filename, noheader=False):
