@@ -4,14 +4,15 @@ To be able to include the separate files and to speed up performances for
 calculations on individual bands only.
 """
 
+import argparse
 import os
 import sys
-import argparse
+
 import numpy as np
 from astropy.constants import c
 
-import eniric.utilities as utils
 import eniric.IOmodule as io
+import eniric.utilities as utils
 
 
 def _parser():

@@ -10,13 +10,16 @@ This wastes alot of memory duplicating wavelemgth vector.
 Jason Neal Janurary 2017
 """
 from __future__ import division, print_function
-import re
-import os
-import sys
+
 import argparse
+import os
+import re
+import sys
+
 import numpy as np
 import pandas as pd
 from astropy.io import fits
+
 import eniric.IOmodule as io
 
 

@@ -8,8 +8,10 @@ Jason Neal, Janurary 2017
 
 """
 from __future__ import division, print_function
-import numpy as np
+
 import itertools
+
+import numpy as np
 
 fehs = np.arange(-2, 1, 0.5)
 spec_type = ["M0", "M3", "M6", "M9"]

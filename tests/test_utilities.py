@@ -1,14 +1,14 @@
 """Test utilities for eniric."""
 
 from __future__ import division, print_function
-import pytest
-import numpy as np
-
-import eniric.utilities as utils
 
 # Test using hypothesis
 import hypothesis.strategies as st
+import numpy as np
+import pytest
 from hypothesis import given, settings
+
+import eniric.utilities as utils
 
 # For python2.X compatibility
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)

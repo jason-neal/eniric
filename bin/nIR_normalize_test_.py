@@ -4,13 +4,16 @@
 # Jason Neal
 # December 2016
 from __future__ import division, print_function
+
+import datetime
+
+import matplotlib.pyplot as plt
+
+import eniric.IOmodule as io
 from eniric.nIRanalysis import convolution
+from eniric.Qcalculator import RVprec_calc
 from eniric.resample import resample_allfiles
 from eniric.utilities import read_spectrum
-import eniric.IOmodule as io
-from eniric.Qcalculator import RVprec_calc
-import matplotlib.pyplot as plt
-import datetime
 
 spectrum_name = "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 
