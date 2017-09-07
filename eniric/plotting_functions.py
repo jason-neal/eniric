@@ -3,15 +3,16 @@
 Plotting functions for nIR_precision.
 
 """
-import numpy as np
 from sys import exit
-import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib import rc
 # to remove labels in one tick
 from matplotlib.ticker import MaxNLocator
+
 from eniric.utilities import band_selector
 
-from matplotlib import rc
 # set stuff for latex usage
 rc('text', usetex=True)
 
