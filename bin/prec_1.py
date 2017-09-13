@@ -5,25 +5,28 @@ precision is working.
 """
 
 
-import numpy as np
+# from matplotlib import rc
+# set stuff for latex usage
+# rc('text', usetex=True)
+import argparse
 import sys
+
+import numpy as np
+
+import eniric.IOmodule as io
+import eniric.Qcalculator as Qcalculator
+# from eniric.plotting_functions import plot_atmopshere_model, plot_stellar_spectum
+from eniric.snr_normalization import normalize_flux
+
 # import matplotlib.pyplot as plt
 
 # to remove labels in one tick
 # from matplotlib.ticker import MaxNLocator
 
-import eniric.IOmodule as io
-import eniric.Qcalculator as Qcalculator
 
 # from eniric.utilities import band_selector
 
-# from eniric.plotting_functions import plot_atmopshere_model, plot_stellar_spectum
-from eniric.snr_normalization import normalize_flux
 
-# from matplotlib import rc
-# set stuff for latex usage
-# rc('text', usetex=True)
-import argparse
 
 
 def _parser():

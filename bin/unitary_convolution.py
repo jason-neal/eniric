@@ -10,14 +10,16 @@ results in the resampler.
 
 """
 from __future__ import division, print_function
-import numpy as np
-import matplotlib.pyplot as plt
-from astropy.io import fits
-from eniric.nIRanalysis import convolution, write_2col, write_3col, \
-                               read_spectrum, save_convolution_results
 
-from eniric.nIRanalysis import rotational_convolution, resolution_convolution
+import matplotlib.pyplot as plt
+import numpy as np
+from astropy.io import fits
+
 import eniric.IOmodule as io
+from eniric.nIRanalysis import (convolution, read_spectrum,
+                                resolution_convolution, rotational_convolution,
+                                save_convolution_results, write_2col,
+                                write_3col)
 # New code from PEDRO
 from eniric.updated_code.nIRanalysis_CONT import convolution_CONT
 

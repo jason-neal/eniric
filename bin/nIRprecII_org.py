@@ -7,17 +7,17 @@ Updated for eniric/python3 - Janurary 2017
 @author: Jason Neal
 """
 
-import numpy as np
 from sys import exit
-import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib import rc
 # to remove labels in one tick
 from matplotlib.ticker import MaxNLocator
 
 import eniric.IOmodule as io
 import eniric.Qcalculator as Qcalculator
 
-from matplotlib import rc
 # set stuff for latex usage
 rc('text', usetex=True)
 

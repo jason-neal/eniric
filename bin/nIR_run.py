@@ -2,12 +2,14 @@
 # Script to perform a convolution on a spectrum.
 # Can take a number of parameters if needed
 from __future__ import division, print_function
+
+import argparse
 import sys
 from datetime import datetime as dt
+
 from eniric.nIRanalysis import convolve_spectra
 from eniric.resample import resampler
 from eniric.utilities import get_spectrum_name
-import argparse
 
 
 def _parser():

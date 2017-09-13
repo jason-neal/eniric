@@ -6,13 +6,13 @@ To make RVprec_cals faster.
 
 from __future__ import division, print_function
 
-import sys
 import argparse
+import sys
 
 import numpy as np
 
-import eniric.IOmodule as io
 import eniric.atmosphere as atm
+import eniric.IOmodule as io
 
 
 def _parser():

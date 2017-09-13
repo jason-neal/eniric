@@ -3,8 +3,10 @@
 # Jason Neal
 # December 2016
 from __future__ import division, print_function
-from eniric.nIRanalysis import convolve_spectra
+
 import datetime
+
+from eniric.nIRanalysis import convolve_spectra
 
 spectrum_name = "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 
