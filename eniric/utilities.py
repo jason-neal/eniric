@@ -3,11 +3,13 @@
 Auxiliary functions for nIRanalysis
 
 """
-import re
-import os
 import errno
-import numpy as np
+import os
+import re
+
 import matplotlib.pyplot as plt
+import numpy as np
+
 import eniric.IOmodule as io
 
 

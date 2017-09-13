@@ -6,6 +6,7 @@ Created on Fri Feb  6 00:36:14 2015
 """
 
 import string
+
 import numpy as np
 
 import eniric.IOmodule as io

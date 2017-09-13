@@ -6,17 +6,20 @@ Created on Sun Dec 14 15:43:13 2014
 Adapted December 2016 by Jason Neal
 """
 from __future__ import division, print_function
+
 import sys
-import numpy as np
-from tqdm import tqdm
+
+import matplotlib.pyplot as plt
 import multiprocess as mprocess
+import numpy as np
+from matplotlib import rc
+from tqdm import tqdm
 
 import eniric.IOmodule as io
 # from eniric.Qcalculator import RVprec_calc, SqrtSumWis
-from eniric.utilities import wav_selector, unitary_Gauss, rotation_kernel
-from eniric.utilities import band_selector, read_spectrum
-import matplotlib.pyplot as plt
-from matplotlib import rc
+from eniric.utilities import (band_selector, read_spectrum, rotation_kernel,
+                              unitary_Gauss, wav_selector)
+
 # set stuff for latex usage
 rc('text', usetex=True)
 

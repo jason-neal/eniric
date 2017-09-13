@@ -8,9 +8,11 @@ consistant SNR at a specific location.
 
 # Normaize to SNR 100 in middle of J band 1.25 micron!
 import re
+
 import numpy as np
-import eniric.utilities as utils
+
 import eniric.IOmodule as IO
+import eniric.utilities as utils
 
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
