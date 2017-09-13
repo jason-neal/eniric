@@ -33,6 +33,7 @@ def resample_allfiles(results_dir=results_dir, resampled_dir=resampled_dir):
 
     return 0
 
+
 def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
               results_dir=results_dir, resampled_dir=resampled_dir,
               sampling=3.0, plottest=False):

@@ -49,8 +49,7 @@ def _parser():
     parser.add_argument('-p', '--phoenix_dir', default=None, type=str,
                         help='Phoenix directory to find fits files')
 
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
 def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=None, phoenix_dir=None):
