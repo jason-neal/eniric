@@ -27,8 +27,6 @@ from eniric.snr_normalization import normalize_flux
 # from eniric.utilities import band_selector
 
 
-
-
 def _parser():
     """Take care of all the argparse stuff.
 
@@ -57,8 +55,7 @@ def _parser():
                         action="store_false")
     parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
                         default=False, action="store_true")
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
 # atmmodel = "../data/atmmodel/Average_TAPAS_2014.txt"
@@ -94,11 +91,11 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True, resampled_dir=
     flux_stellar = normalize_flux(flux_stellar, id_string)
 
     if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k", "M6-J-1.0-100k", "M9-J-1.0-100k"]):
-        index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
+        index_reference = np.searchsorted(wav_stellar, 1.25)  # searching for the index closer to 1.25 micron
         sn_estimate = np.sqrt(np.sum(flux_stellar[index_reference - 1:index_reference + 2]))
         print("\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(id_string, sn_estimate))
     elif("J" in id_string):
-        index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
+        index_reference = np.searchsorted(wav_stellar, 1.25)  # searching for the index closer to 1.25 micron
         sn_estimate = np.sqrt(np.sum(flux_stellar[index_reference - 1:index_reference + 2]))
         print("\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string, sn_estimate))
 
