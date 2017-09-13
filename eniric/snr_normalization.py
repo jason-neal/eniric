@@ -1,9 +1,10 @@
 """Automated snr normalization.
 
-The photon flux can be scaled by multiplicative constant which affects the SNR of the spectra and the radial velocity precision.
+The photon flux can be scaled by multiplicative constant which
+affects the SNR of the spectra and the radial velocity precision.
 
-For consistancy and valid comparision we normalize each spectra to acheive a
-consistant SNR at a specific location.
+For consistency and valid comparision we normalize each spectra
+to achieve a consistent SNR at a specific location.
 """
 
 # Normaize to SNR 100 in middle of J band 1.25 micron!
@@ -11,7 +12,7 @@ import re
 
 import numpy as np
 
-import eniric.IOmodule as IO
+import eniric.IOmodule as Io
 import eniric.utilities as utils
 
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
@@ -28,6 +29,8 @@ def normalize_flux(flux_stellar, id_string, new=True, resampled_dir="../data/res
         Idenitifing sting for spectra.
     new: bool default=True
         Choose between new and old constant for testing.
+    resampled_dir: str
+        Path to the resampled files directory.
 
     Returns
     -------
@@ -37,7 +40,7 @@ def normalize_flux(flux_stellar, id_string, new=True, resampled_dir="../data/res
     """
     # print("Starting norm of {}".format(id_string))
     if new:
-        wav_ref, flux_ref = get_reference_spectrum(id_string, "J", resampled_dir=resampled_dir)  # Looks in data/resampled/
+        wav_ref, flux_ref = get_reference_spectrum(id_string, "J", resampled_dir=resampled_dir)
         norm_const = snr_constant_band(wav_ref, flux_ref, snr=100, band="J")
     else:
         norm_const = old_norm_constant(id_string) * 1e4  # Input flux offset
@@ -46,31 +49,31 @@ def normalize_flux(flux_stellar, id_string, new=True, resampled_dir="../data/res
 
 
 def old_norm_constant(id_string):
-    """These are the manual values to acheive a SNR of 100 at 1.25 micron."""
-    if("M0" in id_string):
+    """Normalization constants for Figueira et al 2016.
+
+    These are the manual values to achieve a SNR of 100 at 1.25 micron.
+    """
+    if "M0" in id_string:
         norm_constant = 1607
-
-    elif("M3" in id_string):
+    elif "M3" in id_string:
         norm_constant = 1373
-
-    elif("M6" in id_string):
-        if("1.0" in id_string):
+    elif "M6" in id_string:
+        if "1.0" in id_string:
             norm_constant = 933
-        elif("5.0" in id_string):
+        elif "5.0" in id_string:
             norm_constant = 967
         else:
             norm_constant = 989
-
-    elif("M9" in id_string):
-        if("1.0" in id_string):
+    elif "M9" in id_string:
+        if "1.0" in id_string:
             norm_constant = 810
-        elif("5.0" in id_string):
+        elif "5.0" in id_string:
             norm_constant = 853
         else:
             norm_constant = 879
     else:
         print("Constant not defined. Aborting...")
-        exit()
+        raise ValueError("Bad ID string")
 
     return (norm_constant / 100.0) ** 2.0
 
@@ -81,7 +84,7 @@ def get_reference_spectrum(id_string, ref_band="J", resampled_dir="../data/resam
     # TODO: Add metalicity and logg into id string
     # TODO: Add metalicity folder
 
-    # Determine the corrrect reference file to use.
+    # Determine the correct reference file to use.
     if ("Alpha=" in id_string) or ("smpl" in id_string):
         raise NotImplementedError
     else:
@@ -96,7 +99,7 @@ def get_reference_spectrum(id_string, ref_band="J", resampled_dir="../data/resam
                     "_res{4:1.0f}.txt").format(star, ref_band, vel, res, smpl)
 
     try:
-        wav_ref, flux_ref = IO.pdread_2col(resampled_dir + file_to_read)
+        wav_ref, flux_ref = Io.pdread_2col(resampled_dir + file_to_read)
     except file_error_to_catch:
         print("The reference spectra in {0:s} band was not found for id {1:s}".format(ref_band, id_string))
         raise
@@ -119,14 +122,12 @@ def normalize_spectrum(id_string, wav, flux, snr=100, ref_band="J", resampled_di
 
 
 def snr_constant_band(wav, flux, snr=100, band="J"):
-    """Determine the normalization constant to acheive a SNR in the middle of a given band.
+    """Determine the normalization constant to achieve a SNR in the middle of a given band.
 
     SNR estimated by the square root of the number of photons in a resolution element.
 
     Parameters
     ----------
-    id_string: str
-        Identifying string for spectrum we want to normalize.
     wav: ndarray
         Wavelength array (microns)
     flux: ndarray
@@ -139,7 +140,9 @@ def snr_constant_band(wav, flux, snr=100, band="J"):
     Returns
     -------
     normalization_value: float
-        Normalization value to divide spectrum by to achive a signal-to-noise level of snr within an resolution element in the middle of the band.
+        Normalization value to divide spectrum by to achieve a
+        signal-to-noise level of snr within an resolution element
+        in the middle of the band.
 
     """
     band_min, band_max = utils.band_limits(band)
@@ -148,9 +151,9 @@ def snr_constant_band(wav, flux, snr=100, band="J"):
 
     if not (wav[0] < band_middle < wav[-1]):
         # not in range
-        pass
+        raise ValueError("band middle not in wavelength range.")
     # Option to specify own wavelength?
-    norm_constant = snr_constant_wav(wav, flux, band_middle, snr=snr)
+    norm_constant = snr_constant_wav(wav, flux, wav_ref=band_middle, snr=snr)
 
     # Test it
     # flux2 = flux / norm_constant
@@ -188,13 +191,13 @@ def snr_constant_wav(wav, flux, wav_ref, snr=100, sampling=3):
     as the reference it will need to be used for all bands of that spectra.
 
     """
-    index_ref = np.searchsorted(wav, wav_ref)  # Searching for the closest index
+    index_ref = np.searchsorted(wav, [wav_ref])[0]  # Searching for the closest index
 
     indexes = sampling_index(index_ref, sampling=sampling, array_length=len(wav))
 
     snr_estimate = np.sqrt(np.sum(flux[indexes]))
 
-    # print("\tSanity Check: The S/N for the reference model was of {:4.2f}.".format(snr_estimate))
+    print("\tSanity Check: The S/N for the reference model was of {:4.2f}.".format(snr_estimate))
     norm_value = (snr_estimate / snr)**2
     return norm_value
 
@@ -217,13 +220,15 @@ def sampling_index(index, sampling=3, array_length=None):
         The index values.
 
     """
+    import math
+    half_sampling = math.floor(sampling / 2)
     if sampling % 2 == 0:    # even sampling
         # index values must be integer
-        indexes = np.arange(index - sampling / 2, index + sampling / 2, dtype=int)
+        indexes = np.arange(index - half_sampling, index + half_sampling, dtype=int)
         assert len(indexes) % 2 == 0  # confirm even
         assert len(indexes) == sampling
     else:
-        indexes = index + np.arange(-np.floor(sampling / 2), sampling - np.floor(sampling / 2), dtype=int)
+        indexes = index + np.arange(-half_sampling, sampling - half_sampling, dtype=int)
         assert len(indexes) % 2 != 0  # confirm odd
         assert len(indexes) == sampling
 

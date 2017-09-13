@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-import eniric.IOmodule as io
+import eniric.IOmodule as Io
 import eniric.Qcalculator as Q
 # Test using hypothesis
 # from hypothesis import given, example
@@ -27,7 +27,7 @@ def test_snr_normalization():
 
     for desired_snr in [50.0, 100.0, 150.0, 200.0]:
 
-        index_reference = np.searchsorted(wav, band_mid[band])  # Searching for the closest index to 1.25
+        index_reference = np.searchsorted(wav, [band_mid[band]])[0]  # Searching for the closest index to 1.25
         snr_estimate = np.sqrt(np.sum(flux[index_reference - 1:index_reference + 2]))
 
         assert round(snr_estimate, 0) != desired_snr     # Assert SNR is not correct
@@ -47,9 +47,14 @@ def test_snr_normalization():
 def test_band_snr_norm():
     """Compared to wav snr norm."""
     # snr_constant_band
-    test_data = ("data/resampled/Spectrum_M0-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt")
-    wav, flux = io.pdread_2col(test_data)
-    assert snrnorm.snr_constant_band(wav, flux, band="J", snr=100) == snrnorm.snr_constant_wav(wav, flux, wav_ref=1.25, snr=100)
+    test_data = "data/resampled/Spectrum_M0-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt"
+    wav, flux = Io.pdread_2col(test_data)
+
+    assert (snrnorm.snr_constant_band(wav, flux, band="J", snr=100) ==
+            snrnorm.snr_constant_wav(wav, flux, wav_ref=1.25, snr=100))
+
+    assert (snrnorm.snr_constant_band(wav, flux, band="J", snr=100) !=
+            snrnorm.snr_constant_wav(wav, flux, wav_ref=1.24, snr=100))
 
 
 def test_sampling_index():
@@ -58,6 +63,7 @@ def test_sampling_index():
     assert snrnorm.sampling_index(6, 1) == [6]
     assert np.all(snrnorm.sampling_index(100, 3) == [99, 100, 101])
     assert np.all(snrnorm.sampling_index(5, 5) == [3, 4, 5, 6, 7])
+
     # even number
     assert np.all(snrnorm.sampling_index(10, 4) == [8, 9, 10, 11])
     assert np.all(snrnorm.sampling_index(10, 2) == [9, 10])
@@ -84,8 +90,8 @@ def test_sampling_index_array():
 def test_errors_in_snr_get_reference_spectrum():
     """Testing getting the reference spectrum.
 
-    Currently "Alpha=" in the id-stringis not implemented.
-    Currently "smpl=" in the id-stringis not implemented.
+    Currently "Alpha=" in the id-string is not implemented.
+    Currently "smpl=" in the id-string is not implemented.
     """
     with pytest.raises(NotImplementedError):
         snrnorm.get_reference_spectrum("Alpha=")
@@ -112,9 +118,10 @@ def test_valid_snr_get_reference_spectrum():
     wav_ref, flux_ref = snrnorm.get_reference_spectrum("M0-K-1.0-100k", ref_band=ref_band)
     band_min, band_max = utils.band_limits(ref_band)
 
-    # Test the wavelength is in the refernce band wavelength range
+    # Test the wavelength is in the reference band wavelength range
     assert np.all(wav_ref <= band_max)
     assert np.all(wav_ref >= band_min)
+
     # test properties of output
     assert len(wav_ref) == len(flux_ref)
     assert isinstance(wav_ref, np.ndarray)
