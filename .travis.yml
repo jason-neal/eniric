@@ -28,7 +28,7 @@ install:
   - travis_retry pip install -r requirements.txt
   - python setup.py install
   # Test requirements
-  - travis_retry pip install pytest pytest-cov hypothesis python-coveralls  codeclimate-test-reporter codacy-coverage
+  - travis_retry pip install pytest pytest-cov hypothesis python-coveralls codeclimate-test-reporter codacy-coverage
 
 # command to run tests
 script:
