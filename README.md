@@ -38,3 +38,12 @@ Ridiculous!
 
 ## Bugs:
 A number of bugs were found when improving this code. Mainly affecting the condition involving telluric line masking. This alters the RV in this column, sometimes significantly. This, however, does **NOT** alter the conclusions in the published paper.
+
+
+## Band reference.
+By default, in accordance with the initial paper, each spectra band is normalized to 100 SNR in the center of the J band.
+
+This now does this automatically by measuring the SNR in 1 pixel resolution (3 points) in the center of the band. And scales accordingly. This adds a spectral model dependent factor on the RV presicion.
+To get around you can manually specify the SNR level to normalize to and which specific band to normalize to. (it can be itself for instance).
+
+You can do this by ....
