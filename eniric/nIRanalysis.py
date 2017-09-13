@@ -154,10 +154,14 @@ def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, fwhm_lim=5.0,
     delta_lambda_max = wav_band[-1] * vsini / 3.0e5
 
     # widest wavelength bin for the rotation convolution
-    wav_ext_rotation, flux_ext_rotation = wav_selector(wav, flux, wav_band[0]-delta_lambda_min-fwhm_lim*fwhm_min, wav_band[-1]+delta_lambda_max+fwhm_lim*fwhm_max)
+    lower_lim = wav_band[0] - delta_lambda_min - fwhm_lim * fwhm_min
+    upper_lim = wav_band[-1] + delta_lambda_max + fwhm_lim * fwhm_max
+    wav_ext_rotation, flux_ext_rotation = wav_selector(wav, flux, lower_lim, upper_lim)
 
     # wide wavelength bin for the resolution_convolution
-    wav_extended, flux_extended = wav_selector(wav, flux, wav_band[0]-fwhm_lim*fwhm_min, wav_band[-1]+fwhm_lim*fwhm_max)
+    lower_lim = wav_band[0] - fwhm_lim * fwhm_min
+    upper_lim = wav_band[-1] + fwhm_lim * fwhm_max
+    wav_extended, flux_extended = wav_selector(wav, flux, lower_lim, upper_lim)
 
     # rotational convolution
     flux_conv_rot = rotational_convolution(wav_extended, wav_ext_rotation,
@@ -277,7 +281,7 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
         args_generator = tqdm([[wav, R, wav_extended, flux_conv_rot, fwhm_lim,
                                 normalize] for wav in wav_band])
         flux_conv_res = np.array(mproc_pool.map(wrapper_res_parallel_convolution,
-                                               args_generator))
+            args_generator))
         mproc_pool.close()
 
     else:  # num_procs == 0
