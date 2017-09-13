@@ -11,6 +11,8 @@ import eniric.Qcalculator as Q
 # test it returns a quantity in m/s
 # test it can handle wavelength and flux alo being quantities.
 
+m_per_s = u.meter / u.second
+
 
 def test_RVprec_calc():
     """Test that RVprec_calc can hande inputs as Quantities or unitless and returns a Quantity."""
@@ -18,7 +20,7 @@ def test_RVprec_calc():
     flux = np.random.random(100)
 
     rv = Q.RVprec_calc(wav, flux)
-    assert rv.unit == u.meter / u.second
+    assert rv.unit == m_per_s
     assert not hasattr(rv.value, '__len__')       # assert value is a scalar
     assert isinstance(rv, u.Quantity)
 
@@ -26,13 +28,13 @@ def test_RVprec_calc():
     rv1 = Q.RVprec_calc(wav * u.micron, flux)
     assert not hasattr(rv1.value, '__len__')       # assert value is a scalar
     assert rv1 == rv
-    assert rv1.unit == u.meter / u.second
+    assert rv1.unit == m_per_s
 
     rv2 = Q.RVprec_calc(wav * u.micron, (flux / u.second) / (u.centimeter**2))
     assert not hasattr(rv2.value, '__len__')       # assert value is a scalar
     assert rv1 == rv2
     assert rv == rv2
-    assert rv2.unit == u.meter / u.second
+    assert rv2.unit == m_per_s
 
 
 def test_RVprec_calc_with_lists():
@@ -43,7 +45,7 @@ def test_RVprec_calc_with_lists():
     rv = Q.RVprec_calc(wav, flux)
     assert not hasattr(rv.value, '__len__')       # assert value is a scalar
     assert isinstance(rv, u.Quantity)
-    assert rv. unit == u.meter / u.second
+    assert rv. unit == m_per_s
 
 
 def test_sqrt_sum_wis():
@@ -77,12 +79,12 @@ def test_RV_prec_calc_Trans():
 
     rv_trans = Q.RV_prec_calc_Trans(wav, flux, trans)
     assert not hasattr(rv_trans.value, '__len__')  # assert scalar
-    assert rv_trans.unit == u.meter / u.second
+    assert rv_trans.unit == m_per_s
 
     # dimensionless_unscaled unit is ok
     rv_trans2 = Q.RV_prec_calc_Trans(wav, flux, trans * u.dimensionless_unscaled)
     assert not hasattr(rv_trans2.value, '__len__')  # assert  scalar
-    assert rv_trans2.unit == u.meter / u.second
+    assert rv_trans2.unit == m_per_s
 
     assert rv_trans == rv_trans2
 
