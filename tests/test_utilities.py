@@ -64,7 +64,10 @@ def test_org_name():
     assert utils.get_spectrum_name("M0", org=True) == test_org
 
 
-@given(st.lists(st.floats()), st.floats(), st.floats(), st.floats())
+@given(st.lists(st.floats(allow_nan=False, allow_infinity=False)),
+       st.floats(allow_nan=False, allow_infinity=False),
+       st.floats(allow_nan=False, allow_infinity=False),
+       st.floats(allow_nan=False, allow_infinity=False))
 def test_wav_selector(x, y, wav_min, wav_max):
     """Test some properties of wavelength selector."""
     y = [xi + y for xi in x]   # just to make y different
