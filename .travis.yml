@@ -28,13 +28,15 @@ install:
   - pip install -r requirements.txt
   - python setup.py install
   # Test requirements
-  - pip install pytest pytest-cov hypothesis python-coveralls codeclimate-test-reporter
+  - pip install pytest pytest-cov hypothesis python-coveralls  codeclimate-test-reporter codacy-coverage
 
 # command to run tests
 script:
     - pytest --cov=eniric --cov-report term-missing --durations 5
     # coverage run --source eniric -m py.test
     # coverage report
+    - coverage xml
 after_success:
   - coveralls
   - codeclimate-test-reporter
+  - python-codacy-coverage -r coverage.xml
