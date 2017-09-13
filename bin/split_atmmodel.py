@@ -34,8 +34,7 @@ def _parser():
     parser.add_argument('--rv_extend', default=100, type=check_positive,
                         help='Doopler RV (km/s) to extend the wavelength limits of the band. Default=100 km/s')
 
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
 def check_positive(value):
