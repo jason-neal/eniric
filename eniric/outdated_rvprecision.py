@@ -1,6 +1,8 @@
 # Placed here to keep it around.
 import numpy as np
+
 import eniric.IOmodule as io
+
 
 # Functions from rv precision calculations that were tried for first paper but not used in results
 def read_contfit():

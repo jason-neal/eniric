@@ -1,11 +1,13 @@
 """To test the equivalence of old and newcode to check if it does the same thing."""
 
 from __future__ import division, print_function
+
 import os
+
+import hypothesis.strategies as st
 import numpy as np
 import pytest
 from hypothesis import given
-import hypothesis.strategies as st
 
 import eniric.IOmodule as io
 import eniric.utilities as utils

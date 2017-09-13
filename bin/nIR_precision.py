@@ -1,19 +1,20 @@
 """Near-Infrared radial velocity precision."""
-import re
-import sys
 import argparse
 import itertools
-import numpy as np
+import re
+import sys
+
 import matplotlib.pyplot as plt
-
-import eniric.IOmodule as io
-import eniric.Qcalculator as Qcalculator
-import eniric.utilities as utils
-import eniric.atmosphere as atm
-import eniric.plotting_functions as plt_functions
-import eniric.snr_normalization as snrnorm
-
+import numpy as np
 from matplotlib import rc
+
+import eniric.atmosphere as atm
+import eniric.IOmodule as io
+import eniric.plotting_functions as plt_functions
+import eniric.Qcalculator as Qcalculator
+import eniric.snr_normalization as snrnorm
+import eniric.utilities as utils
+
 rc('text', usetex=True)   # set stuff for latex usage
 
 
