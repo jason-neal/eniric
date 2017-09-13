@@ -32,6 +32,8 @@ def _parser():
                         help="Start with the un-doppler-shifted atmmodel.")
     parser.add_argument("-s", "--save", default=False, action="store_true",
                         help="Save results to file.")
+    parser.add_argument("--SNR", help="Mid-band SNR scaling. (Default=100)", default=100, type=float)
+    parser.add_argument("--ref_band", help="SNR reference band. Default=J. (Default=100). 'self' scales each band relative to the SNR itself.", choices=["self", "VIS", "GAP", "Z", "Y", "J", "H", "K"], default="J", type=str)
     args = parser.parse_args()
     return args
 
@@ -39,7 +41,7 @@ def _parser():
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
-def main(bands="J", use_unshifted=False, save=False):
+def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
     """Main function that calls calc_precision.
 
     Parameters
@@ -67,7 +69,7 @@ def main(bands="J", use_unshifted=False, save=False):
     results = calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                              resampled_dir=resampled_dir,
                              plot_atm=False, plot_ste=False, plot_flux=False,
-                             paper_plots=False, offset_RV=0.0, use_unshifted=use_unshifted)
+                             paper_plots=False, offset_RV=0.0, use_unshifted=use_unshifted, snr=snr, ref_band=ref_band)
 
     print("{Combination\t\tPrec_1\t\tPrec_2\t\tPrec_3")
     print("-" * 20)
@@ -105,7 +107,7 @@ def strip_result_quantities(results):
 def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                    resampled_dir, plot_atm=False, plot_ste=False,
                    plot_flux=True, paper_plots=True, offset_RV=0.0,
-                   use_unshifted=False):
+                   use_unshifted=False, snr=100, ref_band="J", new=True):
     """Calculate precisions for given combinations."""
     # TODO: iterate over band last so that the J band normalization value can be
     # obtained first and applied to each band.
@@ -145,7 +147,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                           len(mask_atm)))
 
         if plot_atm:
-            # moved ploting code to separate code, eniric.plotting_functions.py
+            # moved plotting code to separate code, eniric.plotting_functions.py
             plt_functions.plot_atmopshere_model(wav_atm, flux_atm, mask_atm)
 
         # theoretical ratios calculation
@@ -163,7 +165,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             try:
                 wav_stellar, flux_stellar = io.pdread_2col(resampled_dir + file_to_read)
             except file_error_to_catch:
-                # Trun list of strings into strings without symbols  ["J", "K"] -> J K
+                # Turn list of strings into strings without symbols  ["J", "K"] -> J K
                 spectral_str = re.sub(r"[\[\]\"\'\,]", "", str(spectral_types))
                 band_str = re.sub(r"[\[\]\"\'\,]", "", str(bands))
                 vsini_str = re.sub(r"[\[\]\"\'\,]", "", str(vsini))
@@ -203,7 +205,8 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
 
             # Normaize to SNR 100 in middle of J band 1.25 micron!
             # flux_stellar = normalize_flux(flux_stellar, id_string)
-            flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=True)  # snr=100, ref_band="J"
+            # flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=True)  # snr=100, ref_band="J"
+            flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=new, snr=snr, ref_band=ref_band)  # snr=100, ref_band="J"
 
             if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k",
                              "M6-J-1.0-100k", "M9-J-1.0-100k"]):
@@ -241,7 +244,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             # Adding Precision results to the dictionary
             results[id_string] = [prec_1, prec_2, prec_3]
 
-            # Prepare/Do for the ploting.
+            # Prepare/Do for the plotting.
             if(plot_ste or plot_ste == id_string):
                 plt_functions.plot_stellar_spectum(wav_stellar, flux_stellar,
                                                    wav_atm_selected, mask_atm_selected)
