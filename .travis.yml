@@ -28,6 +28,8 @@ install:
   - travis_retry pip install -r requirements.txt
   - travis_retry pip install -r test_requirements.txt
   - python setup.py install
+before_script:
+  - mv .test_config.yaml config.yaml
 
 script:
     - pytest --cov=eniric --cov-report term-missing --durations 5
