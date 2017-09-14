@@ -155,10 +155,14 @@ def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, fwhm_lim=5.0,
     delta_lambda_max = wav_band[-1] * vsini / 3.0e5
 
     # widest wavelength bin for the rotation convolution
-    wav_ext_rotation, flux_ext_rotation = wav_selector(wav, flux, wav_band[0]-delta_lambda_min-fwhm_lim*fwhm_min, wav_band[-1]+delta_lambda_max+fwhm_lim*fwhm_max)
+    lower_lim = wav_band[0] - delta_lambda_min - fwhm_lim * fwhm_min
+    upper_lim = wav_band[-1] + delta_lambda_max + fwhm_lim * fwhm_max
+    wav_ext_rotation, flux_ext_rotation = wav_selector(wav, flux, lower_lim, upper_lim)
 
     # wide wavelength bin for the resolution_convolution
-    wav_extended, flux_extended = wav_selector(wav, flux, wav_band[0]-fwhm_lim*fwhm_min, wav_band[-1]+fwhm_lim*fwhm_max)
+    lower_lim = wav_band[0] - fwhm_lim * fwhm_min
+    upper_lim = wav_band[-1] + fwhm_lim * fwhm_max
+    wav_extended, flux_extended = wav_selector(wav, flux, lower_lim, upper_lim)
 
     # rotational convolution
     flux_conv_rot = rotational_convolution(wav_extended, wav_ext_rotation,
@@ -278,7 +282,7 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
         args_generator = tqdm([[wav, R, wav_extended, flux_conv_rot, fwhm_lim,
                                 normalize] for wav in wav_band])
         flux_conv_res = np.array(mproc_pool.map(wrapper_res_parallel_convolution,
-                                               args_generator))
+            args_generator))
         mproc_pool.close()
 
     else:  # num_procs == 0
@@ -296,22 +300,21 @@ def name_assignment(spectrum):
     assigns a name to the filename in which the spectrum is going to be saved
     """
     # Simplified to temperature and base in spectrum name.
-    M0_ACES = "lte03900"
-    M3_ACES = "lte03500"
-    M6_ACES = "lte02800"
-    M9_ACES = "lte02600"
+    m0_aces = "lte03900"
+    m3_aces = "lte03500"
+    m6_aces = "lte02800"
+    m9_aces = "lte02600"
     base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-    if (M0_ACES in spectrum) and (base in spectrum):
+    if (m0_aces in spectrum) and (base in spectrum):
         name = "M0-PHOENIX-ACES"
-    elif(M3_ACES in spectrum) and (base in spectrum):
+    elif(m3_aces in spectrum) and (base in spectrum):
         name = "M3-PHOENIX-ACES"
-    elif(M6_ACES in spectrum) and (base in spectrum):
+    elif(m6_aces in spectrum) and (base in spectrum):
         name = "M6-PHOENIX-ACES"
-    elif(M9_ACES in spectrum) and (base in spectrum):
+    elif(m9_aces in spectrum) and (base in spectrum):
         name = "M9-PHOENIX-ACES"
     else:
-        print("Name {0} not found!".format(spectrum))
-        exit(1)
+        raise ValueError("Name {0} not found!".format(spectrum))
     return name
 
 
