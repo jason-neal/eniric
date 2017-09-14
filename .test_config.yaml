@@ -11,8 +11,6 @@ paths:
   resampled: "data/test_data/resampled"
   test_data: "data/test_data/"
 
-# key_name: "t{0:.0f}g{1:.1f}" # Specifies how the params are stored
-
 
 # full pathsname: eniric_default
 

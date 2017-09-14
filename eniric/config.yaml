@@ -9,10 +9,7 @@ paths:
   atmmodel: "../data/atmmodel"
   results: "../data/results"
   resampled: "../data/resampled"
-
-test:
-    test_data_pref: "../test/data"
-# key_name: "t{0:.0f}g{1:.1f}" # Specifies how the params are stored
+  test_data: "data/test_data/"
 
 
 # full pathsname: eniric_default
