@@ -19,6 +19,7 @@ import eniric.IOmodule as io
 # from eniric.Qcalculator import RVprec_calc, SqrtSumWis
 from eniric.utilities import (band_selector, read_spectrum, rotation_kernel,
                               unitary_Gauss, wav_selector)
+import os
 
 # set stuff for latex usage
 rc('text', usetex=True)
@@ -90,7 +91,7 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, fwhm_lim=5.0,
             filename = ("{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k_unnormalized.txt"
                         "").format(results_dir, name_model, band, vsini, R/1000)
     else:
-        filename = results_dir + output_name
+        filename = os.path.join(results_dir, output_name)
 
     save_convolution_results(filename, wav_band, flux_band, convolved_flux)
 

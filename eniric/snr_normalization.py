@@ -9,7 +9,7 @@ to achieve a consistent SNR at a specific location.
 
 # Normaize to SNR 100 in middle of J band 1.25 micron!
 import re
-
+import os
 import numpy as np
 
 import eniric.IOmodule as Io
@@ -99,7 +99,7 @@ def get_reference_spectrum(id_string, ref_band="J", resampled_dir="../data/resam
                     "_res{4:1.0f}.txt").format(star, ref_band, vel, res, smpl)
 
     try:
-        wav_ref, flux_ref = Io.pdread_2col(resampled_dir + file_to_read)
+        wav_ref, flux_ref = Io.pdread_2col(os.path.join(resampled_dir, file_to_read))
     except file_error_to_catch:
         print("The reference spectra in {0:s} band was not found for id {1:s}".format(ref_band, id_string))
         raise

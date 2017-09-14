@@ -15,8 +15,6 @@ test:
 # key_name: "t{0:.0f}g{1:.1f}" # Specifies how the params are stored
 
 
-
-
 # full pathsname: eniric_default
 
 # The parameters defining the spectral libraries live here.
