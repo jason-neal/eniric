@@ -55,8 +55,8 @@ def _parser():
                         action="store_false")
     parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
                         default=False, action="store_true")
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
+
 
 
 # atmmodel = "../data/atmmodel/Average_TAPAS_2014.txt"
