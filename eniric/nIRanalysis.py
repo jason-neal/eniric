@@ -24,9 +24,9 @@ import os
 # set stuff for latex usage
 rc('text', usetex=True)
 
-data_rep = "../data/PHOENIX_ACES_spectra/"
-results_dir = "../data/results/"
-resampled_dir = "../data/resampled/"
+data_rep = eniric.paths["phoenix_dat"]
+results_dir = eniric.paths["results"]
+resampled_dir = eniric.paths["resampled"]
 
 # models form PHOENIX-ACES
 M0_ACES = data_rep+"lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
@@ -70,7 +70,7 @@ def save_convolution_results(filename, wavelength, flux, convolved_flux):
 
 def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, fwhm_lim=5.0,
                      plot=True, num_procs=None, results_dir=results_dir,
-                     data_rep=data_rep, normalize=True, output_name=None):
+                     normalize=True, output_name=None):
     """Load Spectrum, apply convolution and then save results.
 
     """

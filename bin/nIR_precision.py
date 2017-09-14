@@ -55,7 +55,6 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
         Save results to file.
 
     """
-    resampled_dir = "../data/resampled/"
 
     spectral_types = ["M0", "M3", "M6", "M9"]
     if ("ALL" in bands) or ("None" in bands):
@@ -68,7 +67,6 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
     sampling = ["3"]
 
     results = calculate_prec(spectral_types, bands, vsini, resolution, sampling,
-                             resampled_dir=resampled_dir,
                              plot_atm=False, plot_ste=False, plot_flux=False,
                              paper_plots=False, offset_RV=0.0, use_unshifted=use_unshifted, snr=snr, ref_band=ref_band)
 
@@ -106,14 +104,14 @@ def strip_result_quantities(results):
 
 
 def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
-                   resampled_dir, plot_atm=False, plot_ste=False,
+                   plot_atm=False, plot_ste=False,
                    plot_flux=True, paper_plots=True, offset_RV=0.0,
                    use_unshifted=False, snr=100, ref_band="J", new=True):
     """Calculate precisions for given combinations."""
     # TODO: iterate over band last so that the J band normalization value can be
     # obtained first and applied to each band.
 
-    resampled_dir = eniric.paths["resampled"]
+    print("using new config.yaml file here!!!!!!!!!!!!!!")
     results = {}    # creating empty dictionary for the results
     wav_plot_m0 = []   # creating empty lists for the plots
     flux_plot_m0 = []
@@ -165,7 +163,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                             "_res{4}.txt").format(star, band, vel, res, smpl)
             # print("Working on "+file_to_read+".")
             try:
-                wav_stellar, flux_stellar = io.pdread_2col(os.path.join(resampled_dir, file_to_read))
+                wav_stellar, flux_stellar = io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
             except file_error_to_catch:
                 # Turn list of strings into strings without symbols  ["J", "K"] -> J K
                 spectral_str = re.sub(r"[\[\]\"\'\,]", "", str(spectral_types))
