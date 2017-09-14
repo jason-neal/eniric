@@ -20,6 +20,13 @@ file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 resampled_dir = eniric.paths["resampled"]
 
+
+def normalize_spectrum(*args, **kwargs):
+    raise NotImplementedError("Use normalize_flux")
+
+def normalize_flux2(*args, **kwargs):
+    raise NotImplementedError("Use normalize_flux")
+
 def normalize_flux(flux, id_string, new=True, snr=100, ref_band="J"):
     """Normalize flux to have SNR of 100 in middle of J band.
 
@@ -112,21 +119,6 @@ def get_reference_spectrum(id_string, ref_band="J"):
         print("The reference spectra in {0:s} band was not found for id {1:s}".format(ref_band, id_string))
         raise
     return wav_ref, flux_ref
-
-
-def normalize_spectrum(id_string, wav, flux, snr=100, ref_band="J", resampled_dir="../data/resampled/"):
-    """Normalize spectrum flux with to have a SNR of snr in middle of ref_band band."""
-    # if ref_band in id_string:
-    #     # Dont need to load different spectrum as already have the reference spectrum
-    #     wav_ref, flux_ref = wav, flux
-    # else:
-    wav_ref, flux_ref = get_reference_spectrum(id_string, ref_band, resampled_dir)
-
-    norm_constant = snr_constant_band(wav_ref, flux_ref, snr=snr, band=ref_band)
-
-    normalized_flux = flux / norm_constant
-    print("{0:s} norm_constant = {1:f}".format(id_string, norm_constant))
-    return normalized_flux
 
 
 def snr_constant_band(wav, flux, snr=100, band="J"):
