@@ -131,19 +131,46 @@ def test_valid_snr_get_reference_spectrum():
 
 
 @pytest.mark.xfail(raises=file_error_to_catch)
-def test_normalize_spectrum():
+def test_normalize_flux_and_flux2():
     """Test normalize_specturm has similar effect as normalize_flux."""
     test_data = os.path.join(
         eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Kband_vsini5.0_R100k_res3.txt")
     id_string = "M0-K-5.0-100k"
     wav, flux = utils.read_spectrum(test_data)
 
-    norm_flux = snrnorm.normalize_flux(flux, id_string, resampled_dir="data/resampled/")
+    norm_flux = snrnorm.normalize_flux(flux, id_string)
     rvprec1 = Q.RVprec_calc(wav, norm_flux)
 
-    new_norm_flux = snrnorm.normalize_spectrum(id_string, wav, flux, snr=100, ref_band="J", resampled_dir="data/resampled/")
+    new_norm_flux = snrnorm.normalize_flux2(flux, id_string, snr=100, ref_band="J")
     rvprec1_new = Q.RVprec_calc(wav, new_norm_flux)
+
     print(norm_flux - new_norm_flux)
     print("RVs", rvprec1, rvprec1_new)
+
     assert (rvprec1 == rvprec1_new)
     assert np.allclose(new_norm_flux, norm_flux)
+
+
+@pytest.mark.xfail()  # size is too big
+def test_normalize_flux_new_verse_old():
+    test_data = os.path.join(eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Kband_vsini5.0_R100k_res3.txt")
+    id_string = "M0-K-5.0-100k"
+    wav, flux = utils.read_spectrum(test_data)
+    new_norm = snrnorm.normalize_flux(flux, id_string, new=True)
+    old_norm = snrnorm.normalize_flux(flux, id_string, new=False)
+
+    rvprec_new = Q.RVprec_calc(wav, new_norm)
+    rvprec_old = Q.RVprec_calc(wav, old_norm)
+
+    assert abs(rvprec_new.value - rvprec_old.value) < 1
+
+
+def test_old_does_does_not_handle_changed_band():
+    test_data = os.path.join(eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Kband_vsini5.0_R100k_res3.txt")
+    id_string = "M0-K-5.0-100k"
+    wav, flux = utils.read_spectrum(test_data)
+    with pytest.raises(ValueError):
+        snrnorm.normalize_flux(flux, id_string, new=False, ref_band="K")
+
+    with pytest.raises(ValueError):
+        snrnorm.normalize_flux(flux, id_string, new=False, snr=101)
