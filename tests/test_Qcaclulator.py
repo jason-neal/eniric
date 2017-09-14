@@ -7,7 +7,8 @@ import pytest
 
 import eniric.Qcalculator as Q
 import eniric
-
+import astropy
+import os
 # test RVprec_calc retuns a single values
 # test it returns a quantity in m/s
 # test it can handle wavelength and flux alo being quantities.
@@ -273,3 +274,11 @@ def test_bugs_in_old_clumping_method():
         assert np.all(x4[i] == expected4[i])
         assert not np.all(x4_bugged[i] == expected4[i])
         assert np.all(x4_bugged[i] == unexpected4[i])
+
+
+
+def test_RVprec_test():
+    spectrum_file = os.path.join(eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt")
+    precision = Q.RVprec_test(spectrum_file)
+
+    assert isinstance(precision, astropy.units.Quantity)
