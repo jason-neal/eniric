@@ -20,7 +20,7 @@ file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 resampled_dir = eniric.paths["resampled"]
 
-def normalize_flux(flux_stellar, id_string, new=True, resampled_dir="../data/resampled/"):
+def normalize_flux(flux, id_string, new=True, snr=100, ref_band="J"):
     """Normalize flux to have SNR of 100 in middle of J band.
 
     Parameters
@@ -31,21 +31,29 @@ def normalize_flux(flux_stellar, id_string, new=True, resampled_dir="../data/res
         Idenitifing sting for spectra.
     new: bool default=True
         Choose between new and old constant for testing.
+    snr: int default=100
+        SNR to normalize to, .
+    ref_band: str default="J"
+        References band to normalize to.
 
     Returns
     -------
     normalized_flux: ndarray
-        Flux normalized to a S/N of 100 in the middle of the J band.
+        Flux normalized to a S/N of SNR in the middle of the ref_band.
 
     """
     # print("Starting norm of {}".format(id_string))
     if new:
-        wav_ref, flux_ref = get_reference_spectrum(id_string, "J", resampled_dir=resampled_dir)
-        norm_const = snr_constant_band(wav_ref, flux_ref, snr=100, band="J")
+        wav_ref, flux_ref = get_reference_spectrum(id_string, ref_band)
+        norm_const = snr_constant_band(wav_ref, flux_ref, snr=snr, band=ref_band)
     else:
+        if ref_band != "J" or snr != 100:
+            raise ValueError("The old way does not work with these reference values.")
         norm_const = old_norm_constant(id_string) * 1e4  # Input flux offset
 
-    return flux_stellar / norm_const
+    print("{0:s} normalization constant = {1:f}".format(id_string, norm_const))
+
+    return flux / norm_const
 
 
 def old_norm_constant(id_string):
