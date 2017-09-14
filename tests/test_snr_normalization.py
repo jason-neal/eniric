@@ -10,6 +10,7 @@ import eniric.Qcalculator as Q
 import eniric.snr_normalization as snrnorm
 import eniric.utilities as utils
 import eniric
+
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
@@ -19,8 +20,8 @@ def test_snr_normalization():
 
     Testing on middle of J band.
     """
-    test_data = ("data/PHOENIX-ACES_spectra/Z-0.0/lte02800-4.50"
-                 "-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
+    test_data = os.path.join(eniric.paths["phoenix_dat"],
+        "Z-0.0/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
 
     band = "J"
     band_mid = {"J": 1.25}
@@ -89,28 +90,23 @@ def test_sampling_index_array():
         snrnorm.sampling_index(46, 10, array_length=50)   # an index will be > (array_length - 1)
 
 
-def test_errors_in_snr_get_reference_spectrum():
+@pytest.mark.parametrize("bad_string",
+    ["id-string", "M0-K-1.0-100", "M0-P-1.0-100k"])
+def test_errors_in_snr_get_reference_spectrum(bad_string):
+    """Testing Eorros in getting the reference spectrum."""
+    with pytest.raises(ValueError):
+        snrnorm.get_reference_spectrum(bad_string)
+
+
+@pytest.mark.parametrize("bad_string", ["Alpha=", "smpl="])
+def test_notimplemented_errors_in_snr_get_reference_spectrum(bad_string):
     """Testing getting the reference spectrum.
 
     Currently "Alpha=" in the id-string is not implemented.
     Currently "smpl=" in the id-string is not implemented.
     """
     with pytest.raises(NotImplementedError):
-        snrnorm.get_reference_spectrum("Alpha=")
-
-    with pytest.raises(NotImplementedError):
-        snrnorm.get_reference_spectrum("smpl=")
-
-    # Could try put all failing exmaples into a parameterized fixture!
-    with pytest.raises(ValueError):
-        "Bad id-string"
-        snrnorm.get_reference_spectrum("id-string")
-    with pytest.raises(ValueError):
-        "Bad id-string"
-        snrnorm.get_reference_spectrum("M0-K-1.0-100")  # missing the k
-    with pytest.raises(ValueError):
-        "Bad id-string"
-        snrnorm.get_reference_spectrum("M0-P-1.0-100")  # band bandname
+        snrnorm.get_reference_spectrum(bad_string)
 
 
 @pytest.mark.xfail(raises=file_error_to_catch)
@@ -128,27 +124,6 @@ def test_valid_snr_get_reference_spectrum():
     assert len(wav_ref) == len(flux_ref)
     assert isinstance(wav_ref, np.ndarray)
     assert isinstance(flux_ref, np.ndarray)
-
-
-@pytest.mark.xfail(raises=file_error_to_catch)
-def test_normalize_flux_and_flux2():
-    """Test normalize_specturm has similar effect as normalize_flux."""
-    test_data = os.path.join(
-        eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Kband_vsini5.0_R100k_res3.txt")
-    id_string = "M0-K-5.0-100k"
-    wav, flux = utils.read_spectrum(test_data)
-
-    norm_flux = snrnorm.normalize_flux(flux, id_string)
-    rvprec1 = Q.RVprec_calc(wav, norm_flux)
-
-    new_norm_flux = snrnorm.normalize_flux2(flux, id_string, snr=100, ref_band="J")
-    rvprec1_new = Q.RVprec_calc(wav, new_norm_flux)
-
-    print(norm_flux - new_norm_flux)
-    print("RVs", rvprec1, rvprec1_new)
-
-    assert (rvprec1 == rvprec1_new)
-    assert np.allclose(new_norm_flux, norm_flux)
 
 
 @pytest.mark.xfail()  # size is too big
