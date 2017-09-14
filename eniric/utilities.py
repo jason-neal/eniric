@@ -72,16 +72,16 @@ def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_
 
     if startype in temps.keys():
         if org:
-            phoenix_name = "PHOENIX-ACES_spectra/lte{0:05d}-{1}-{2}.{3}".format(temps[startype], "4.50", "0.0", base)
+            phoenix_name = "lte{0:05d}-{1}-{2}.{3}".format(temps[startype], "4.50", "0.0", base)
         elif (alpha is not None) and (alpha != 0.0):
             if abs(alpha) > 0.2:
                 print("Warning! Alpha is outside acceptable range -0.2->0.2")
 
-            phoenix_name = ("PHOENIX-ACES_spectra/Z{2:+4.1f}.Alpha={3:+5.2f}/"
+            phoenix_name = ("Z{2:+4.1f}.Alpha={3:+5.2f}/"
                             "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}.{4:s}"
                             "").format(temps[startype], logg, feh, alpha, base)
         else:
-            phoenix_name = ("PHOENIX-ACES_spectra/Z{2:+4.1f}/lte{0:05d}-{1:4.2f}"
+            phoenix_name = ("Z{2:+4.1f}/lte{0:05d}-{1:4.2f}"
                             "{2:+4.1f}.{3:s}").format(temps[startype], logg, feh, base)
 
         spectrum_name = phoenix_name
