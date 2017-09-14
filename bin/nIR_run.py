@@ -17,7 +17,7 @@ def _parser():
 
     :returns: the args
     """
-    parser = argparse.ArgumentParser(description='Helpful discription')
+    parser = argparse.ArgumentParser(description='Unhelpful description')
     parser.add_argument("-s", '--startype', help='Spectral Type e.g "MO"', type=str, nargs="+")
     parser.add_argument("-v", "--vsini", help="Rotational velocity of source",
                         type=float, nargs="+")
@@ -26,13 +26,8 @@ def _parser():
     parser.add_argument("-b", "--band", type=str, default="ALL",
                         choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
                         help="Wavelength band to select", nargs="+")
-    parser.add_argument('-d', '--data_dir', help='Data directory', type=str, default=None)
     parser.add_argument('--sample_rate', default=[3.0], type=float, nargs="+",
                         help="Resample rate, pixels per FWHM. Default=3.0")
-    parser.add_argument('--results', default=None, type=str,
-                        help='Result directory Default=data_dir+"/results/"')
-    parser.add_argument('--resamples', default=None, type=str,
-                        help='Resample directory. Default=data_dir+"/resampled/"')
     parser.add_argument('--noresample', help='Resample output', default=False,
                         action="store_true")
     parser.add_argument('--normalize', help='Normalize for wavelength step', default=True,
@@ -43,17 +38,14 @@ def _parser():
     return args
 
 
-def main(startype, vsini, resolution, band, data_dir=None, results=None,
-         resamples=None, sample_rate=3.0, noresample=False, normalize=True,
-         org=False):
+def main(startype, vsini, resolution, band, sample_rate=3.0,
+         noresample=False, normalize=True, org=False):
     """Run convolutions of NIR spectra for the range of given parameters.
 
     Multiple values of startype, vsini, resolution, band, and sample_rate can
     be provided.
 
     Read files from data_dir + "PHOENIX_ACES_spectra/"
-    Saves results to data_dir + "results/"
-    Resamples results to data_dir + "resamples/"
 
     Parameters
     ----------
@@ -61,9 +53,6 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
     vsini: list of floats
     resolution: list of floats
     band: list of strings
-    data_dir: str, default=None
-    results: str, default=None
-    resample: str, default=None
     sample_rate: list of floats default=[3.0]
     noresample: bool default=False
     normalize: bool default=True
@@ -71,19 +60,11 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
     """
     # vsini, resolution, band and sample_rate can all be a series of values
     start_time = dt.now()
-    if data_dir is None:
-        data_dir = "../data/"
 
-    if results is None:
-        results_dir = data_dir + "results/"
-    else:
-        results_dir = results
     phoenix_path = eniric.path["phoenix_dat"]
 
-    if resamples is None:
-        resampled_dir = data_dir + "resampled/"
-    else:
-        resampled_dir = resamples
+    results_dir = eniric.path["results"]
+    resampled_dir = eniric.paths["resampled"]
 
     counter = 0
     for star in startype:
@@ -102,7 +83,7 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
                         print("Name to be result file", result_name)
 
                         convolve_spectra(data_dir + spectrum_name, b, vel, R, epsilon=0.6, plot=False,
-                                         fwhm_lim=5.0, num_procs=None, data_rep=data_dir,
+                                         fwhm_lim=5.0, num_procs=None,
                                          results_dir=results_dir, normalize=normalize, output_name=result_name)
 
                         # Resample only the file just made
