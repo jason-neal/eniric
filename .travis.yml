@@ -21,21 +21,18 @@ before_install:
   - conda config --set always_yes yes --set changeps1 no
   - travis_retry conda update -q conda
   - conda info -a
-# command to install dependencies
+
 install:
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy astropy matplotlib
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file conda_requirements.txt
   - source activate test-environment
   - travis_retry pip install -r requirements.txt
+  - travis_retry pip install -r test_requirements.txt
   - python setup.py install
-  # Test requirements
-  - travis_retry pip install pytest pytest-cov hypothesis python-coveralls  codeclimate-test-reporter codacy-coverage
 
-# command to run tests
 script:
     - pytest --cov=eniric --cov-report term-missing --durations 5
-    # coverage run --source eniric -m py.test
-    # coverage report
     - coverage xml
+
 after_success:
   - coveralls
   - codeclimate-test-reporter
