@@ -10,7 +10,7 @@ from datetime import datetime as dt
 from eniric.nIRanalysis import convolve_spectra
 from eniric.resample import resampler
 from eniric.utilities import get_spectrum_name
-
+import eniric
 
 def _parser():
     """Take care of all the argparse stuff.
@@ -78,6 +78,7 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
         results_dir = data_dir + "results/"
     else:
         results_dir = results
+    phoenix_path = eniric.path["phoenix_dat"]
 
     if resamples is None:
         resampled_dir = data_dir + "resampled/"
@@ -86,7 +87,7 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
 
     counter = 0
     for star in startype:
-        spectrum_name = get_spectrum_name(star, org=org)
+        spectrum_name = os.path.join(phoenix_path, get_spectrum_name(star, org=org))
 
         for b in band:
             for vel in vsini:
