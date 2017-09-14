@@ -3,11 +3,12 @@ import argparse
 import itertools
 import re
 import sys
-
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import rc
 
+import eniric
 import eniric.atmosphere as atm
 import eniric.IOmodule as io
 import eniric.plotting_functions as plt_functions
@@ -112,6 +113,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
     # TODO: iterate over band last so that the J band normalization value can be
     # obtained first and applied to each band.
 
+    resampled_dir = eniric.paths["resampled"]
     results = {}    # creating empty dictionary for the results
     wav_plot_m0 = []   # creating empty lists for the plots
     flux_plot_m0 = []
@@ -125,7 +127,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
     for band in bands:
 
         if use_unshifted:
-            atmmodel = "../data/atmmodel/Average_TAPAS_2014_{}.txt".format(band)
+            atmmodel = os.path.join(eniric.paths["atmmodel"], "Average_TAPAS_2014_{}.txt".format(band))
             print("Reading atmospheric model...")
             wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmopshere(atmmodel)
             print(("There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}."
@@ -137,7 +139,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             # mask_atm = atm.old_barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
             mask_atm = atm.barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
         else:
-            shifted_atmmodel = "../data/atmmodel/Average_TAPAS_2014_{}_bary.txt".format(band)
+            shifted_atmmodel = os.path.join(eniric.paths["atmmodel"], "Average_TAPAS_2014_{}_bary.txt".format(band))
             print("Reading pre-doppler-shifted atmospheric model...")
             wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmopshere(shifted_atmmodel)
         print("Done.")
@@ -163,7 +165,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                             "_res{4}.txt").format(star, band, vel, res, smpl)
             # print("Working on "+file_to_read+".")
             try:
-                wav_stellar, flux_stellar = io.pdread_2col(resampled_dir + file_to_read)
+                wav_stellar, flux_stellar = io.pdread_2col(os.path.join(resampled_dir, file_to_read))
             except file_error_to_catch:
                 # Turn list of strings into strings without symbols  ["J", "K"] -> J K
                 spectral_str = re.sub(r"[\[\]\"\'\,]", "", str(spectral_types))

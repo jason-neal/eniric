@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+import os
 
 import eniric.IOmodule as Io
 import eniric.Qcalculator as Q
@@ -131,7 +132,7 @@ def test_valid_snr_get_reference_spectrum():
 @pytest.mark.xfail(raises=file_error_to_catch)
 def test_normalize_spectrum():
     """Test normalize_specturm has similar effect as normalize_flux."""
-    test_data = ("data/resampled/Spectrum_M0-PHOENIX-ACES_Kband_vsini5.0_R100k_res3.txt")
+    test_data = "data/resampled/Spectrum_M0-PHOENIX-ACES_Kband_vsini5.0_R100k_res3.txt"
     id_string = "M0-K-5.0-100k"
     wav, flux = utils.read_spectrum(test_data)
 
