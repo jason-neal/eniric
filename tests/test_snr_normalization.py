@@ -9,7 +9,7 @@ import eniric.Qcalculator as Q
 # import hypothesis.strategies as st
 import eniric.snr_normalization as snrnorm
 import eniric.utilities as utils
-
+import eniric
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
@@ -48,7 +48,8 @@ def test_snr_normalization():
 def test_band_snr_norm():
     """Compared to wav snr norm."""
     # snr_constant_band
-    test_data = "data/resampled/Spectrum_M0-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt"
+    test_data = os.path.join(
+        eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt")
     wav, flux = Io.pdread_2col(test_data)
 
     assert (snrnorm.snr_constant_band(wav, flux, band="J", snr=100) ==
@@ -132,7 +133,8 @@ def test_valid_snr_get_reference_spectrum():
 @pytest.mark.xfail(raises=file_error_to_catch)
 def test_normalize_spectrum():
     """Test normalize_specturm has similar effect as normalize_flux."""
-    test_data = "data/resampled/Spectrum_M0-PHOENIX-ACES_Kband_vsini5.0_R100k_res3.txt"
+    test_data = os.path.join(
+        eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Kband_vsini5.0_R100k_res3.txt")
     id_string = "M0-K-5.0-100k"
     wav, flux = utils.read_spectrum(test_data)
 

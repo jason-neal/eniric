@@ -61,13 +61,13 @@ def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=N
 
     """
     if data_dir is None:
-        data_dir = "../data/PHOENIX-ACES_spectra/"
+        data_dir = eniric.paths["phoenix_dat"]
     if phoenix_dir is None:
-        phoenix_dir = "../../../data/fullphoenix/"
+        phoenix_dir = eniric.paths["phoenix_raw"]
 
     # Get Phoenix wavelength data
     wavelength_file = "WAVE_PHOENIX-ACES-AGSS-COND-2011.fits"
-    wavelength = fits.getdata(data_dir + wavelength_file)
+    wavelength = fits.getdata(os.path.join(data_dir, wavelength_file))
 
     if flux_type == "photon":
         file_suffix = "_wave_photon.dat"  # For saving output

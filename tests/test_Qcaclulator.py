@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 import eniric.Qcalculator as Q
+import eniric
 
 # test RVprec_calc retuns a single values
 # test it returns a quantity in m/s

@@ -12,11 +12,13 @@ import re
 import os
 import numpy as np
 
+import eniric
 import eniric.IOmodule as Io
 import eniric.utilities as utils
 
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
+resampled_dir = eniric.paths["resampled"]
 
 def normalize_flux(flux_stellar, id_string, new=True, resampled_dir="../data/resampled/"):
     """Normalize flux to have SNR of 100 in middle of J band.
@@ -29,8 +31,6 @@ def normalize_flux(flux_stellar, id_string, new=True, resampled_dir="../data/res
         Idenitifing sting for spectra.
     new: bool default=True
         Choose between new and old constant for testing.
-    resampled_dir: str
-        Path to the resampled files directory.
 
     Returns
     -------
@@ -78,7 +78,7 @@ def old_norm_constant(id_string):
     return (norm_constant / 100.0) ** 2.0
 
 
-def get_reference_spectrum(id_string, ref_band="J", resampled_dir="../data/resampled/"):
+def get_reference_spectrum(id_string, ref_band="J"):
     """From the id_string find the correct Spectrum to calculate norm_constant from."""
     # TODO: add option for Alpha into ID-String
     # TODO: Add metalicity and logg into id string
@@ -99,7 +99,7 @@ def get_reference_spectrum(id_string, ref_band="J", resampled_dir="../data/resam
                     "_res{4:1.0f}.txt").format(star, ref_band, vel, res, smpl)
 
     try:
-        wav_ref, flux_ref = Io.pdread_2col(os.path.join(resampled_dir, file_to_read))
+        wav_ref, flux_ref = Io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
     except file_error_to_catch:
         print("The reference spectra in {0:s} band was not found for id {1:s}".format(ref_band, id_string))
         raise

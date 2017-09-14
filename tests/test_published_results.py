@@ -20,10 +20,9 @@ path = "data/Published_Results/resampled/"
 def test_presicion_1():
     """New precision 1 test that works."""
     published_results = {1: 3.8, 5: 9.1, 10: 20.7}
-    path = "data/resampled/"
     for vsini in [1, 5, 10]:
         # name = "Spectrum_M0-PHOENIX-ACES_Yband_vsini{0}.0_R100k_res3.txt".format(vsini)
-        __, p1 = calc_prec1("M0", "Y", vsini, "100k", 3, resampled_dir=path)
+        __, p1 = calc_prec1("M0", "Y", vsini, "100k", 3)
 
         # assert np.round(p1, 1).value == published_results[vsini]
         assert np.round(100 * p1, 1).value == published_results[vsini]  # With incorect normalization

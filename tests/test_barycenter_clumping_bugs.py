@@ -4,6 +4,7 @@ Just taking the main components out of the code.
 """
 
 import numpy as np
+import eniric
 
 
 # This has the main bug.
