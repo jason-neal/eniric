@@ -12,6 +12,7 @@ from eniric.resample import resampler
 from eniric.utilities import get_spectrum_name
 import eniric
 
+
 def _parser():
     """Take care of all the argparse stuff.
 
@@ -30,12 +31,12 @@ def _parser():
                         help="Resample rate, pixels per FWHM. Default=3.0")
     parser.add_argument('--noresample', help='Resample output', default=False,
                         action="store_true")
+    # TODO: This logic needs fixed. (--flag shoud be "unnormalize" to turn normalization off)
     parser.add_argument('--normalize', help='Normalize for wavelength step', default=True,
-                        action="store_false")  # This logic needs fixed. (--flag shoud be "unnormalize" to turn normalization off)
+                        action="store_false")
     parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
                         default=False, action="store_true")
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
 def main(startype, vsini, resolution, band, sample_rate=3.0,
@@ -77,9 +78,11 @@ def main(startype, vsini, resolution, band, sample_rate=3.0,
 
                         if normalize:
                             # when normalize ation is confirmed then can
-                            result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k.txt".format(star, b, vel, int(R / 1000))
+                            result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k.txt".format(
+                                star, b, vel, int(R / 1000))
                         else:
-                            result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k_unnormalized.txt".format(star, b, vel, int(R / 1000))
+                            result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k_unnormalized.txt".format(
+                                star, b, vel, int(R / 1000))
                         print("Name to be result file", result_name)
 
                         convolve_spectra(data_dir + spectrum_name, b, vel, R, epsilon=0.6, plot=False,

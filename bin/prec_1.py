@@ -58,7 +58,6 @@ def _parser():
     return parser.parse_args()
 
 
-
 # atmmodel = "../data/atmmodel/Average_TAPAS_2014.txt"
 resampled_dir = eniric.paths["resampled"]
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
