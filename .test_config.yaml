@@ -1,0 +1,28 @@
+# YAML configuration script
+
+name: eniric_default
+
+# The parameters defining the spectral libraries live here.
+paths:
+  phoenix_raw: "data/test_data/PHOENIX-ALL/PHOENIX"
+  phoenix_dat: "data/test_data/PHOENIX-ACES_spectra"
+  atmmodel: "data/test_data/atmmodel"
+  results: "data/test_data/results"
+  resampled: "data/test_data/resampled"
+  test_data: "data/test_data/"
+
+# key_name: "t{0:.0f}g{1:.1f}" # Specifies how the params are stored
+
+
+# full pathsname: eniric_default
+
+# The parameters defining the spectral libraries live here.
+# paths:
+#   phoenix_raw: "/home/jneal/Phd/data/PHOENIX-ALL/PHOENIX"
+#   phoenix_dat: "/home/jneal/Phd/Codes/eniric/data/PHOENIX-ACES_spectra"
+#   atmmodel: "/home/jneal/Phd/Codes/eniric/data/atmmodel"
+#   results: "/home/jneal/Phd/Codes/eniric/data/results"
+#   resampled: "/home/jneal/Phd/Codes/eniric/data/resampled"
+#
+# test:
+#     test_data_path: "../../test/data"
