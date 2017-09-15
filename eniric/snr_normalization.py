@@ -104,12 +104,18 @@ def get_reference_spectrum(id_string, ref_band="J"):
         raise NotImplementedError
     else:
         try:
-            # don't need the band value as will use ref_band
-            star, vel, res = re.search(r"(M\d)-[ZYHJK]-(\d{1,2}\.0)-(\d{2,3}k)", id_string).groups()
+            # Use band for when ref_band is "self"
+            star, band, vel, res = re.search(r"(M\d)-(\w)-(\d{1,2}\.0)-(\d{2,3}k)", id_string).groups()
+
+            if band not in eniric.bands["all"]:
+                raise ValueError
         except:
             raise ValueError("Id-string {} is not valid for normalization.".format(id_string))
 
         smpl = 3.0   # Fixed value atm
+    if ref_band == "self":
+        ref_band = band
+
     file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}"
                     "_res{4:1.0f}.txt").format(star, ref_band, vel, res, smpl)
 
