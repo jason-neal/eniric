@@ -182,6 +182,13 @@ def test_rotational_kernal(delta_lambdas, vsini, epsilon):
     assert len(new_profile) == len(delta_lambdas)
     # other properties to test?
 
+
+def test_silent_remove():
+    """Test this doesn't raise and issue.
+    Not really a good test."""
+    utils.silentremove("a_fake_filename_that_doesnt_exist.fake")
+    assert True
+
 @given(st.lists(st.floats(min_value=-100, max_value=100, allow_nan=False), min_size=1, unique=True),
        st.floats(min_value=-100, max_value=100, allow_nan=False),
        st.floats(min_value=0.001, max_value=100, allow_nan=False))
