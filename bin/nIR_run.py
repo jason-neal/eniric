@@ -32,16 +32,15 @@ def _parser():
                         help="Resample rate, pixels per FWHM. Default=3.0")
     parser.add_argument('--noresample', help='Resample output', default=False,
                         action="store_true")
-    # TODO: This logic needs fixed. (--flag shoud be "unnormalize" to turn normalization off)
-    parser.add_argument('--normalize', help='Normalize for wavelength step', default=True,
-                        action="store_false")
+    parser.add_argument('--unnormalized', help='Normalize for wavelength step',
+                        action="store_true")
     parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
                         default=False, action="store_true")
     return parser.parse_args()
 
 
 def main(startype, vsini, resolution, band, sample_rate=3.0,
-         noresample=False, normalize=True, org=False):
+         noresample=False, unnormalized=False, org=False):
     """Run convolutions of NIR spectra for the range of given parameters.
 
     Multiple values of startype, vsini, resolution, band, and sample_rate can
@@ -60,6 +59,8 @@ def main(startype, vsini, resolution, band, sample_rate=3.0,
     normalize: bool default=True
 
     """
+    normalize = not unnormalized
+
     # vsini, resolution, band and sample_rate can all be a series of values
 
     # Handle K in Resolution
@@ -81,13 +82,13 @@ def main(startype, vsini, resolution, band, sample_rate=3.0,
                     for sample in sample_rate:
 
                         if normalize:
-                            # when normalize ation is confirmed then can
+                            # when normalize action is confirmed then can
                             result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k.txt".format(
                                 star, b, vel, int(R / 1000))
                         else:
                             result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k_unnormalized.txt".format(
                                 star, b, vel, int(R / 1000))
-                        print("Name to be result file", result_name)
+                        print("Name to be the result file", result_name)
 
                         convolve_spectra(data_dir + spectrum_name, b, vel, R, epsilon=0.6, plot=False,
                                          fwhm_lim=5.0, num_procs=None,
