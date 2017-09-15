@@ -46,7 +46,7 @@ def main(startype, vsini, resolution, band, sample_rate=3.0,
     Multiple values of startype, vsini, resolution, band, and sample_rate can
     be provided.
 
-    Read files from data_dir + "PHOENIX_ACES_spectra/"
+    Read files from eniric.paths["phoenix_dat"]"
 
     Parameters
     ----------
@@ -65,11 +65,12 @@ def main(startype, vsini, resolution, band, sample_rate=3.0,
 
     # Handle K in Resolution
     resolution = resolution2int(resolution)
+
     start_time = dt.now()
 
-    phoenix_path = eniric.path["phoenix_dat"]
+    phoenix_path = eniric.paths["phoenix_dat"]
 
-    results_dir = eniric.path["results"]
+    results_dir = eniric.paths["results"]
     resampled_dir = eniric.paths["resampled"]
 
     counter = 0
@@ -90,7 +91,7 @@ def main(startype, vsini, resolution, band, sample_rate=3.0,
                                 star, b, vel, int(R / 1000))
                         print("Name to be the result file", result_name)
 
-                        convolve_spectra(data_dir + spectrum_name, b, vel, R, epsilon=0.6, plot=False,
+                        convolve_spectra(spectrum_name, b, vel, R, epsilon=0.6, plot=False,
                                          fwhm_lim=5.0, num_procs=None,
                                          results_dir=results_dir, normalize=normalize, output_name=result_name)
 
@@ -108,9 +109,6 @@ def main(startype, vsini, resolution, band, sample_rate=3.0,
 
 if __name__ == '__main__':
     args = vars(_parser())
-    # startype = args.pop("startype")  # positional arguments
-
     opts = {k: args[k] for k in args}
 
-    # sys.exit(main(startype, **opts))
     sys.exit(main(**opts))
