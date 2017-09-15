@@ -79,3 +79,20 @@ To get around you can manually specify the SNR level to normalize to and which s
 You can do this by ....
 
 The code for the automatic snr detection and application is in `eniric/snr_normalization.py`
+
+
+
+
+## Instructions
+
+Create an empty dir to hold your analysis.
+Create data dir with re-sampled, results, phoenix_dat
+Copy config.yaml and adjust the paths relative to what you created and to the raw phoenix spectra.
+
+bin/prepare_spectra.py - This opens the phoenix flux spectra, add wavelength axis in microns and converts flux to photon counts. It saves this in the phoenix_dat dir. (The copy of wavelengths does waste space.)
+
+bin/nIR_run.py  - Perform the resolution and rotational convolution on the prepared spectra.
+
+This also does the resampling.
+
+e.g. python ../Codes/eniric/bin/nIR_run.py -s M0 M3 M6 M9 -b Y J H K -v 1.0 5.0 10.0 -R 60000 80000 100000 --sample_rate 3
