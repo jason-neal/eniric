@@ -21,4 +21,5 @@ except FileNotFoundError as e:
 # Read the YAML variables into package-level dictionaries to be used by the other programs.
 name = config["name"]
 paths = config["paths"]
+bands = config["bands"]
 # use as resamled_dir = eniric.paths["resampled"]
