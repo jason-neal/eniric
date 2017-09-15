@@ -58,6 +58,22 @@ def test_get_spectrum_name():
         utils.get_spectrum_name("X10")      # Not valid spectral type in [OBAFGKML]
 
 
+@pytest.mark.parametrize("bad_alpha", [-0.3, 0.3, 1])
+def test_spectrum_name_with_bad_alpha(bad_alpha):
+    """Bad_alpha is outside range -0.2-0.2 for Mdwarf science case."""
+    with pytest.raises(ValueError):
+        utils.get_spectrum_name("M0", alpha=bad_alpha)
+
+
+@pytest.mark.parametrize("alpha", [-0.2, 0.1, 0.2])
+def test_spectrum_name_with_ok_alpha(alpha):
+    name = utils.get_spectrum_name("M0", alpha=alpha)
+
+    assert isinstance(name, str)
+    assert str(alpha) in name
+    assert "Alpha=" in name
+
+
 @pytest.mark.xfail(raises=file_error_to_catch)
 def test_org_name():
     """Test org flag of utils.get_spectrum_name, suposed to be temporary."""
