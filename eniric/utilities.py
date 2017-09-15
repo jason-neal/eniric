@@ -75,7 +75,7 @@ def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_
             phoenix_name = "lte{0:05d}-{1}-{2}.{3}".format(temps[startype], "4.50", "0.0", base)
         elif (alpha is not None) and (alpha != 0.0):
             if abs(alpha) > 0.2:
-                print("Warning! Alpha is outside acceptable range -0.2->0.2")
+                raise ValueError("Warning! Alpha is outside acceptable range -0.2->0.2. (for current science case)")
 
             phoenix_name = ("Z{2:+4.1f}.Alpha={3:+5.2f}/"
                             "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}.{4:s}"
