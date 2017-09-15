@@ -157,14 +157,14 @@ def snr_constant_band(wav, flux, snr=100, band="J"):
 
 
 def snr_constant_wav(wav, flux, wav_ref, snr=100, sampling=3):
-    """Determine the normalization constant to acheive a SNR at given wavelength.
+    """Determine the normalization constant to achieve a SNR at given wavelength.
 
     SNR estimated by the square root of the number of photons in a resolution element.
 
     Parameters
     ----------
     wav: ndarray
-        Wavlength in micron
+        Wavelength in micron
     flux: ndarray
         Photon flux array (photons/s/cm**2)
     wav_ref: float

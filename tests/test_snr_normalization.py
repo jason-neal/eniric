@@ -134,6 +134,7 @@ def test_get_reference_spectrum_in_nonexistent_file():
         snrnorm.get_reference_spectrum("M1-K-1.0-100k", ref_band=ref_band)
 
 
+
 @pytest.mark.xfail()  # size is too big
 def test_normalize_flux_new_verse_old():
     test_data = os.path.join(eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Kband_vsini5.0_R100k_res3.txt")
@@ -183,6 +184,43 @@ def test_snr_old_norm_constant_with_bad_id_str(bad_string):
     """Fixed to the set of values in first paper."""
     with pytest.raises(ValueError):
         snrnorm.old_norm_constant(bad_string)
+
+
+@pytest.mark.parametrize("band", [
+    "VIS", "Z", "NIR"])
+def test_snr_constant_band_returns_mid_value_const(band):
+    size = 100
+    np.random.seed(40)
+    flux = 500*np.random.rand(size)  # To give a random spectrum (but consistent between tests)
+    lim = utils.band_limits(band)
+    wav = np.linspace(lim[0], lim[1], size)
+
+    band_const = snrnorm.snr_constant_band(wav, flux, band=band)
+    wav_const = snrnorm.snr_constant_wav(wav, flux, wav_ref=(lim[0] + lim[1]) / 2)
+
+    assert isinstance(band_const, float)
+    assert isinstance(wav_const, float)
+    assert band_const == wav_const  # Since band calls wave at midpoint
+
+
+@pytest.mark.parametrize("band", [
+    "VIS", "K", "H"])
+def test_snr_normalization_logic(band):
+    """Testing direct value.
+
+    snr = sqrt(sum(3 pixels))
+    const = (snr/ref_snr)**2
+    if pixel value = 3 then  the normalization constant will be 1.
+    """
+    size = 100
+    band = "K"
+    lim = utils.band_limits(band)
+    wav = np.linspace(lim[0], lim[1], size)
+    flux = 3 * np.ones(size)
+    band_const = snrnorm.snr_constant_band(wav, flux, snr=3, band=band)
+    wav_const = snrnorm.snr_constant_wav(wav, flux, snr=3, wav_ref=(lim[0] + lim[1]) / 2)
+    assert band_const == 1
+    assert wav_const == 1
 
 
 @pytest.mark.parametrize("wav,band", [
