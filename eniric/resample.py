@@ -3,6 +3,7 @@ Functions for file resampling.
 
 """
 
+import os
 import re
 from os import listdir
 from os.path import isfile, join
@@ -10,9 +11,8 @@ from os.path import isfile, join
 import matplotlib.pyplot as plt
 import numpy as np
 
-import eniric.IOmodule as io
 import eniric
-import os
+import eniric.IOmodule as io
 
 results_dir = eniric.paths["results"]
 resampled_dir = eniric.paths["resampled"]
@@ -48,7 +48,8 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
     sampling of 3 pixels per resolution element.
     """
     # wavelength, theoretical_spectrum, spectrum = read_3col(spectrum_name)
-    read_name = results_dir + spectrum_name
+    read_name = os.path.join(results_dir, spectrum_name)
+
     # theoretical_spectrum = data["model"].values
     wavelength, __, spectrum = io.pdread_3col(read_name, noheader=True)
 
@@ -72,7 +73,7 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
 
     interpolated_flux = np.interp(wav_grid, wavelength, spectrum)
     filetowrite = os.path.join(
-        resampled_dir, "{0}_res{1}.txt".format(spectrum_name[:-4], int(sampling))
+        resampled_dir, "{0}_res{1}.txt".format(spectrum_name[:-4], int(sampling)))
     io.write_e_2col(filetowrite, wav_grid, interpolated_flux)
 
     if(plottest):
