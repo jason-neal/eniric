@@ -20,6 +20,7 @@ import numpy as np
 import pandas as pd
 from astropy.io import fits
 
+import eniric
 import eniric.IOmodule as io
 
 
@@ -66,7 +67,7 @@ def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=N
 
     # Get Phoenix wavelength data
     wavelength_file = "WAVE_PHOENIX-ACES-AGSS-COND-2011.fits"
-    wavelength = fits.getdata(os.path.join(data_dir, wavelength_file))
+    wavelength = fits.getdata(os.path.join(phoenix_dir, wavelength_file))
 
     if flux_type == "photon":
         file_suffix = "_wave_photon.dat"  # For saving output
