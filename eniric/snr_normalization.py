@@ -116,7 +116,7 @@ def get_reference_spectrum(id_string, ref_band="J"):
         wav_ref, flux_ref = Io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
     except file_error_to_catch:
         print("The reference spectra in {0:s} band was not found for id {1:s}".format(ref_band, id_string))
-        raise
+        raise file_error_to_catch
     return wav_ref, flux_ref
 
 
