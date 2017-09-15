@@ -33,7 +33,7 @@ def _parser():
                         help="Start with the un-doppler-shifted atmmodel.")
     parser.add_argument("-s", "--save", default=False, action="store_true",
                         help="Save results to file.")
-    parser.add_argument("--SNR", help="Mid-band SNR scaling. (Default=100)", default=100, type=float)
+    parser.add_argument("--snr", help="Mid-band SNR scaling. (Default=100)", default=100, type=float)
     parser.add_argument("--ref_band", help="SNR reference band. Default=J. (Default=100). 'self' scales each band relative to the SNR itself.", choices=["self", "VIS", "GAP", "Z", "Y", "J", "H", "K"], default="J", type=str)
     return parser.parse_args()
 
