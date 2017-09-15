@@ -18,7 +18,7 @@ from tqdm import tqdm
 import eniric.IOmodule as io
 # from eniric.Qcalculator import RVprec_calc, SqrtSumWis
 from eniric.utilities import (band_selector, read_spectrum, rotation_kernel,
-                              unitary_Gauss, wav_selector)
+                              unitary_gaussian, wav_selector)
 import os
 
 # set stuff for latex usage
@@ -256,7 +256,7 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
 
         flux_2convolve = flux_conv_rot[index_mask]
         # Gausian Instrument Profile for given resolution and wavelength
-        IP = unitary_Gauss(wav_extended[index_mask], wav, fwhm)
+        IP = unitary_gaussian(wav_extended[index_mask], wav, fwhm)
 
         sum_val = np.sum(IP * flux_2convolve)
         if normalize:
