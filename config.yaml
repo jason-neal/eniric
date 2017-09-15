@@ -10,7 +10,7 @@ paths:
   results: "data/results"
   resampled: "data/resampled"
   test_data: "data/test_data/"
-
+  precision: "precision/"
 
 # full pathsname: eniric_default
 
