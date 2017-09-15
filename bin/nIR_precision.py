@@ -67,7 +67,7 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
 
     results = calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                              plot_atm=False, plot_ste=False, plot_flux=False,
-                             paper_plots=False, offset_RV=0.0, use_unshifted=use_unshifted, snr=snr, ref_band=ref_band)
+                             paper_plots=False, rv_offset=0.0, use_unshifted=use_unshifted, snr=snr, ref_band=ref_band)
 
     print("{Combination\t\tPrec_1\t\tPrec_2\t\tPrec_3")
     print("-" * 20)
@@ -104,7 +104,7 @@ def strip_result_quantities(results):
 
 def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                    plot_atm=False, plot_ste=False,
-                   plot_flux=True, paper_plots=True, offset_RV=0.0,
+                   plot_flux=True, paper_plots=True, rv_offset=0.0,
                    use_unshifted=False, snr=100, ref_band="J", new=True):
     """Calculate precisions for given combinations."""
     # TODO: iterate over band last so that the J band normalization value can be
@@ -133,8 +133,8 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             print("The model ranges from {0:4.2f} to {1:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
             print("Done.")
             print("Calculating impact of Barycentric movement on mask...")
-            # mask_atm = atm.old_barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
-            mask_atm = atm.barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
+            # mask_atm = atm.old_barycenter_shift(wav_atm, mask_atm, rv_offset=rv_offset)
+            mask_atm = atm.barycenter_shift(wav_atm, mask_atm, rv_offset=rv_offset)
         else:
             shifted_atmmodel = os.path.join(eniric.paths["atmmodel"], "Average_TAPAS_2014_{}_bary.txt".format(band))
             print("Reading pre-doppler-shifted atmospheric model...")
