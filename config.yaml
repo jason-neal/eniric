@@ -12,6 +12,8 @@ paths:
   test_data: "data/test_data/"
   precision: "precision/"
 
+bands:
+  all: ["VIS", "K", "H", "J", "Y", "Z", "CONT", "GAP"]
 # full pathsname: eniric_default
 
 # The parameters defining the spectral libraries live here.

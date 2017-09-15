@@ -27,6 +27,7 @@ def normalize_spectrum(*args, **kwargs):
 def normalize_flux2(*args, **kwargs):
     raise NotImplementedError("Use normalize_flux")
 
+
 def normalize_flux(flux, id_string, new=True, snr=100, ref_band="J"):
     """Normalize flux to have SNR of 100 in middle of J band.
 
