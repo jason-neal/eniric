@@ -114,12 +114,7 @@ def band_selector(wav, flux, band):
     if band in ["ALL", ""]:
         return wav, flux
     else:
-        try:
-            # select values from the band
-            bandmin, bandmax = band_limits(band)
-        except (ValueError, AttributeError) as e:
-            print("Unrecognized band tag.")
-            raise e
+        bandmin, bandmax = band_limits(band)
         return wav_selector(wav, flux, bandmin, bandmax)
 
 
