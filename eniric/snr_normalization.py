@@ -149,13 +149,9 @@ def snr_constant_band(wav, flux, snr=100, band="J"):
     band_middle = (band_min + band_max) / 2
 
     if not (wav[0] < band_middle < wav[-1]):
-        # not in range
-        raise ValueError("band middle not in wavelength range.")
-    # Option to specify own wavelength?
-    norm_constant = snr_constant_wav(wav, flux, wav_ref=band_middle, snr=snr)
+        raise ValueError("Band center not in wavelength range.")
 
-    # Test it
-    # flux2 = flux / norm_constant
+    norm_constant = snr_constant_wav(wav, flux, wav_ref=band_middle, snr=snr)
 
     return norm_constant
 
