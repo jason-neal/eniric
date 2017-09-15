@@ -181,3 +181,35 @@ def test_rotational_kernal(delta_lambdas, vsini, epsilon):
 
     assert len(new_profile) == len(delta_lambdas)
     # other properties to test?
+
+@given(st.lists(st.floats(min_value=-100, max_value=100, allow_nan=False), min_size=1, unique=True),
+       st.floats(min_value=-100, max_value=100, allow_nan=False),
+       st.floats(min_value=0.001, max_value=100, allow_nan=False))
+def test_unitary_gaussian(x, center, fwhm):
+    """Just a quick simple test."""
+    x = np.asarray(x)
+
+    gaussian = utils.unitary_gaussian(x, center, fwhm)
+    print(gaussian)
+    # point at center should be the max
+    assert len(gaussian) == len(x)
+    assert np.allclose(np.max(gaussian), gaussian[np.argmin(abs(x - center))])
+
+
+
+def test_unitary_gaussian_type_errors():
+    """Just a quick simple test."""
+    x = np.arange(-10, 10)
+    center = 0
+    fwhm = 3
+
+    gaussian = utils.unitary_gaussian(x, center, fwhm)
+
+    with pytest.raises(TypeError):
+        utils.unitary_gaussian(x, center, "fwhm")
+    with pytest.raises(TypeError):
+        utils.unitary_gaussian(x, "center", fwhm)
+    with pytest.raises(TypeError):
+        utils.unitary_gaussian(range(-10, 10), "center", fwhm)
+    with pytest.raises(TypeError):
+        utils.unitary_gaussian(1, "center", fwhm)
