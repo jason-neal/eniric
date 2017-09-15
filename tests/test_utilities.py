@@ -99,49 +99,72 @@ def test_wav_selector(x, y, wav_min, wav_max):
     assert isinstance(y1, np.ndarray)
 
 
-def test_band_limits():
-    """Test geting limits out of band."""
-    # Test all bands, lower case allowed
-    for band in ["VIS", "GAP", "z", "Y", "h", "J", "K", "CONT", "NIR"]:
-        band_min, band_max = utils.band_limits(band)
-        assert band_min < band_max
-        assert band_min != band_max
+@pytest.mark.parametrize("band", [
+    "VIS", "GAP", "z", "Y", "h", "J", "K", "CONT", "NIR"])
+def test_band_limits(band):
+    """Test getting limits out of band."""
+    band_min, band_max = utils.band_limits(band)
 
-    # Test non-bands
-    with pytest.raises(ValueError):
-        utils.band_limits("X")
-
-    with pytest.raises(ValueError):
-        utils.band_limits("M0")
-    with pytest.raises(AttributeError):
-        utils.band_limits(np.array(1))
-    with pytest.raises(AttributeError):
-        utils.band_limits(["list", "of", "strings"])
+    assert band_min < band_max
+    assert band_min != band_max
+    assert 0 < band_min < 3
+    assert 0 < band_max < 3
 
 
-def test_band_selector():
+@pytest.mark.parametrize("band", ["Z", "H", "J", "K"])
+def test_band_selector(band):
     """Test band selector selects the wav and flux in the given band."""
     wav = np.linspace(0.5, 3, 100)
     flux = wav**2
 
-    for band in ["Z", "H", "J", "k"]:
-        band_min, band_max = utils.band_limits(band)
-        assert np.any(wav < band_min)      # Assert wav goes outside band
-        assert np.any(wav > band_max)
+    band_min, band_max = utils.band_limits(band)
+    assert not np.all(wav > band_min)      # Assert wav goes outside band
+    assert not np.all(wav < band_max)
 
-        wav2, flux2 = utils.band_selector(wav, flux, band)
-        assert np.all(wav2 > band_min)
-        assert np.all(wav2 < band_max)
+    wav, flux = utils.band_selector(wav, flux, band)
+    assert np.all(wav > band_min)
+    assert np.all(wav < band_max)
 
-    # Test it also raises the Value and Attribute Errors
-    with pytest.raises(ValueError):
-        utils.band_selector(wav, flux, "M0")
-    with pytest.raises(AttributeError):
-        utils.band_selector(wav, flux, 1)
-    with pytest.raises(AttributeError):
-        utils.band_selector(wav, flux, ["list", "of", "strings"])
-    with pytest.raises(AttributeError):
-        utils.band_selector(wav, flux, flux)
+
+@pytest.mark.parametrize("band,error",[
+    ("X", ValueError),
+    ("M0", ValueError),
+    (1, AttributeError),
+    (np.array(1), AttributeError),
+    (["list", "of", "strings"], AttributeError),
+])
+def test_band_limits_raises_errors(band, error):
+    """Test it raises the Value and Attribute Errors."""
+    with pytest.raises(error):
+        utils.band_limits(band)
+
+
+@pytest.mark.parametrize("band,error",[
+    ("X", ValueError),
+    ("M0", ValueError),
+    (1, AttributeError),
+    (["list", "of", "strings"], AttributeError),
+    (np.linspace(1,2,10), AttributeError)
+])
+def test_band_selector_raises_errors(band, error):
+    """Test it raises the Value and Attribute Errors"""
+    wav = np.linspace(0.5, 3, 100)
+    flux = wav ** 2
+
+    with pytest.raises(error):
+        utils.band_selector(wav, flux, band)
+
+
+@pytest.mark.parametrize("band", ["ALL", ""])
+def test_band_selector_with_no_selection(band):
+    """If band = "ALL" or ""."""
+    wav = np.linspace(0.5, 3, 100)
+    flux = wav ** 2
+    wav2, flux2 = utils.band_selector(wav, flux, band)
+
+    # No changes
+    assert np.all(wav == wav2)
+    assert np.all(flux2 == flux)
 
 
 @settings(max_examples=100)
