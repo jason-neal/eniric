@@ -7,6 +7,7 @@ Adapted December 2016 by Jason Neal
 """
 from __future__ import division, print_function
 
+import os
 import sys
 
 import matplotlib.pyplot as plt
@@ -15,11 +16,11 @@ import numpy as np
 from matplotlib import rc
 from tqdm import tqdm
 
+import eniric
 import eniric.IOmodule as io
 # from eniric.Qcalculator import RVprec_calc, SqrtSumWis
 from eniric.utilities import (band_selector, read_spectrum, rotation_kernel,
                               unitary_gaussian, wav_selector)
-import os
 
 # set stuff for latex usage
 rc('text', usetex=True)
@@ -322,4 +323,4 @@ if __name__ == "__main__":
     if len(sys.argv) == 3:
         run_convolutions(sys.argv[1], sys.argv[2])
     else:
-        print("Arguments not compatible with called functtion.")
+        print("Arguments not compatible with called function.")

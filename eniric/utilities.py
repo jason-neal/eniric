@@ -250,3 +250,56 @@ def silentremove(filename):
     except OSError as e:
         if e.errno != errno.ENOENT:  # errno.ENOENT = no such file or directory
             raise  # re-raise exception if a different error occured
+
+
+def resolution2int(resolutions, to=str):
+    """Convert from "100k" or "100000" to 100000."""
+    if not hasattr(resolutions, '__len__') or isinstance(resolutions, str):
+        resolutions = [resolutions]
+        list_flag = True
+    else:
+        list_flag = False
+
+    res_ints = []
+    for res in resolutions:
+        if isinstance(res, (np.int, np.float)):
+            value = res
+        elif isinstance(res, str):
+            if res.lower().endswith("k"):
+                value = float(res[:-1]) * 1000
+            else:
+                value = float(res)
+        else:
+            raise TypeError("Resolution name Type error of type {}".format(type(res)))
+        res_ints.append(int(value))
+
+    if list_flag:
+        return res_ints[0]
+    else:
+        return res_ints
+
+
+def resolution2str(resolutions):
+    if not hasattr(resolutions, '__len__') or isinstance(resolutions, str):
+        resolutions = [resolutions]
+        list_flag = True
+    else:
+        list_flag = False
+
+    res_str = []
+    for res in resolutions:
+        if isinstance(res, (np.int, np.float)):
+            value = res / 1000
+        elif isinstance(res, str):
+            if res.lower().endswith("k"):
+                value = res[:-1]
+            else:
+                value = float(res) / 1000
+        else:
+            raise TypeError("Resolution name Type error of type {}".format(type(res)))
+
+        res_str.append("{0}k".format(int(value)))
+    if list_flag:
+        return res_str[0]
+    else:
+        return res_str
