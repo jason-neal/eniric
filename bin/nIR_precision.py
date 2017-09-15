@@ -75,7 +75,8 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
         print("{0:s}\t\t{1:0.4f}\t{2:0.4f}\t{3:0.4f}".format(key, results[key][0], results[key][1], results[key][2]))
     # Save precision results
     if save:
-        output_filename = "../data/precision_results_2017.txt"
+        output_filename = os.path.join(eniric.paths["precision"],
+            "precision_results_2017_ref_band={0}_snr={1}.txt".format(ref_band, snr))
         ids = []
         prec_1s = []
         prec_2s = []
@@ -92,6 +93,7 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
 
         io.pdwrite_cols(output_filename, ids, prec_1s, prec_2s, prec_3s,
                         header=["# id", r"prec_1", r"prec_2", r"prec_3"], float_format="%.7f")
+        print("saved results to {}".format(output_filename))
     # return results
 
 
