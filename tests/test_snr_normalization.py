@@ -126,6 +126,14 @@ def test_valid_snr_get_reference_spectrum():
     assert isinstance(flux_ref, np.ndarray)
 
 
+def test_get_reference_spectrum_in_nonexistent_file():
+    """Testing getting the reference spectrum."""
+    ref_band = "J"
+
+    with pytest.raises(file_error_to_catch):
+        snrnorm.get_reference_spectrum("M1-K-1.0-100k", ref_band=ref_band)
+
+
 @pytest.mark.xfail()  # size is too big
 def test_normalize_flux_new_verse_old():
     test_data = os.path.join(eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Kband_vsini5.0_R100k_res3.txt")
