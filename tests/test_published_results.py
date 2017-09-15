@@ -37,9 +37,9 @@ def test_old_calc_precision(SpType, band, vsini, R, expected):
 
     id = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(SpType, band, float(vsini), R)
     results = calculate_prec([SpType], [band], [float(vsini)], [R], [3],
-                   plot_atm=False, plot_ste=False,
-                   plot_flux=False, paper_plots=False, offset_RV=0.0,
-                   use_unshifted=False, snr=100, ref_band="J", new=False)
+                             plot_atm=False, plot_ste=False,
+                             plot_flux=False, paper_plots=False, rv_offset=0.0,
+                             use_unshifted=False, snr=100, ref_band="J", new=False)
 
     # precision 1
     assert expected[0] == round(results[id][0].value, 1)
