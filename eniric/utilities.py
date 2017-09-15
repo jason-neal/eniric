@@ -180,7 +180,7 @@ def wav_selector(wav, flux, wav_min, wav_max):
     return wav_sel, flux_sel
 
 
-def unitary_Gauss(x, center, fwhm):
+def unitary_gaussian(x, center, fwhm):
     """Gaussian function of area = 1.
 
     Parameters
@@ -197,6 +197,12 @@ def unitary_Gauss(x, center, fwhm):
     result: array-like
         Result of gaussian function sampled at x values.
     """
+    if not isinstance(fwhm, (np.float, np.int)):
+        raise TypeError("The fwhm value is not a number, {0}".format(type(fwhm)))
+    if not isinstance(center, (np.float, np.int)):
+        raise TypeError("The center value is not a number, {0}".format(type(center)))
+    if not isinstance(x, np.ndarray):
+        raise TypeError
 
     sigma = np.abs(fwhm) / (2 * np.sqrt(2 * np.log(2)))
     amp = 1.0 / (sigma * np.sqrt(2 * np.pi))
