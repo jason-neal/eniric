@@ -220,3 +220,40 @@ def test_unitary_gaussian_type_errors():
         utils.unitary_gaussian(range(-10, 10), "center", fwhm)
     with pytest.raises(TypeError):
         utils.unitary_gaussian(1, "center", fwhm)
+
+
+@pytest.mark.parametrize("resolutions,results", [
+    (["60k", "80k", "100k"], ["60k", "80k", "100k"]),
+    ([60000, 80000, 100000], ["60k", "80k", "100k"]),
+    (["60000", "80K", "100k"], ["60k", "80k", "100k"]),
+    ([np.float("60000"), np.int("2000")], ["60k", "2k"]),
+    ("60k", "60k"),
+    (80000, "80k")
+])
+def test_resolution2str(resolutions, results):
+
+    assert results == utils.resolution2str(resolutions)
+
+
+@pytest.mark.parametrize("resolutions,results", [
+    ([60000, 80000, 100000], [60000, 80000, 100000]),
+    (["60k", "80k", "100k"], [60000, 80000, 100000]),
+    (["6000", "8000", "100000"], [6000, 8000, 100000]),
+    (["10000", "20k", "300K"], [10000, 20000, 300000]),
+    ("60k", 60000),
+    (80000, 80000)
+])
+def test_resolution2int(resolutions, results):
+
+    assert results == utils.resolution2int(resolutions)
+
+
+def test_compatibility_res2int_res2str():
+    resolution = [60000, "80000", "100k"]
+    res2str = utils.resolution2str
+    res2int = utils.resolution2int
+    assert res2str(resolution) == res2str(res2int(resolution))
+    assert res2int(resolution) == res2int(res2str(resolution))
+
+    assert res2int(res2int(resolution)) == res2int(resolution)
+    assert res2str(res2str(resolution)) == res2str(resolution)

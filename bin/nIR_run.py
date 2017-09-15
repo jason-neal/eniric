@@ -4,13 +4,14 @@
 from __future__ import division, print_function
 
 import argparse
+import os
 import sys
 from datetime import datetime as dt
 
+import eniric
 from eniric.nIRanalysis import convolve_spectra
 from eniric.resample import resampler
-from eniric.utilities import get_spectrum_name
-import eniric
+from eniric.utilities import get_spectrum_name, resolution2int
 
 
 def _parser():
@@ -22,8 +23,8 @@ def _parser():
     parser.add_argument("-s", '--startype', help='Spectral Type e.g "MO"', type=str, nargs="+")
     parser.add_argument("-v", "--vsini", help="Rotational velocity of source",
                         type=float, nargs="+")
-    parser.add_argument("-R", "--resolution", help="Observational resolution",
-                        type=float, nargs="+")
+    parser.add_argument("-R", "--resolution", help="Observational resolution e.g. 100000 or 100k",
+                        type=str, nargs="+")
     parser.add_argument("-b", "--band", type=str, default="ALL",
                         choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
                         help="Wavelength band to select", nargs="+")
@@ -60,6 +61,9 @@ def main(startype, vsini, resolution, band, sample_rate=3.0,
 
     """
     # vsini, resolution, band and sample_rate can all be a series of values
+
+    # Handle K in Resolution
+    resolution = resolution2int(resolution)
     start_time = dt.now()
 
     phoenix_path = eniric.path["phoenix_dat"]
