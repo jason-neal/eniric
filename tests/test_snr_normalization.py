@@ -183,3 +183,15 @@ def test_snr_old_norm_constant_with_bad_id_str(bad_string):
     """Fixed to the set of values in first paper."""
     with pytest.raises(ValueError):
         snrnorm.old_norm_constant(bad_string)
+
+
+@pytest.mark.parametrize("wav,band", [
+    (np.linspace(0.8, 1, 50), "VIS"),   # "VIS": (0.38, 0.78)
+    (np.linspace(2, 3, 50), "J"),       # "J": (1.17, 1.33)
+    (np.linspace(2.0, 2.1, 50), "K"),   # "K": (2.07, 2.35)
+    (np.linspace(2.25, 2.4, 50), "K")   # "K": (2.07, 2.35)
+])
+def test_snr_constant_band_with_invalid_wavelength(wav, band):
+
+    with pytest.raises(ValueError):
+        snrnorm.snr_constant_band(wav, np.ones(50), band=band)
