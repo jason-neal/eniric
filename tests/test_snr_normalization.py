@@ -149,3 +149,18 @@ def test_old_does_does_not_handle_changed_band():
 
     with pytest.raises(ValueError):
         snrnorm.normalize_flux(flux, id_string, new=False, snr=101)
+
+@pytest.mark.parametrize("id_string", [
+    "M0-1.0", "M3-1.0", "M6-1.0", "M9-1.0", "M0-5.0", "M3-5.0", "M6-5.0",
+    "M9-5.0", "M0-10.0", "M3-10.0", "M6-10.0", "M9-10.0"])
+def test_snr_old_norm_constant(id_string):
+    norm_const = snrnorm.old_norm_constant(id_string)
+    assert isinstance(norm_const, float)
+
+
+@pytest.mark.parametrize("bad_string", [
+    "M0-1", "M0-2.5", "M8-1.0", "M6-5", "M9-10", "T0-3.0", "", "AB-CDE"])
+def test_snr_old_norm_constant_with_bad_id_str(bad_string):
+    """Fixed to the set of values in first paper."""
+    with pytest.raises(ValueError):
+        snrnorm.old_norm_constant(bad_string)

@@ -66,26 +66,25 @@ def normalize_flux(flux, id_string, new=True, snr=100, ref_band="J"):
 def old_norm_constant(id_string):
     """Normalization constants for Figueira et al 2016.
 
-    These are the manual values to achieve a SNR of 100 at 1.25 micron.
+    These are the manual values to achieve a SNR of 100 at 1.25 micro
+    for the set of parameter combinations presented.
     """
-    if "M0" in id_string:
+    if "M0" in id_string and ("1.0"in id_string or "5.0"in id_string or "10.0" in id_string):
         norm_constant = 1607
-    elif "M3" in id_string:
+    elif "M3" in id_string and ("1.0"in id_string or "5.0"in id_string or "10.0" in id_string):
         norm_constant = 1373
-    elif "M6" in id_string:
-        if "1.0" in id_string:
-            norm_constant = 933
-        elif "5.0" in id_string:
-            norm_constant = 967
-        else:
-            norm_constant = 989
-    elif "M9" in id_string:
-        if "1.0" in id_string:
-            norm_constant = 810
-        elif "5.0" in id_string:
-            norm_constant = 853
-        else:
-            norm_constant = 879
+    elif "M6" in id_string and "1.0" in id_string:
+        norm_constant = 933
+    elif "M6" in id_string and "5.0" in id_string:
+        norm_constant = 967
+    elif "M6" in id_string and "10.0" in id_string:
+        norm_constant = 989
+    elif "M9" in id_string and "1.0" in id_string:
+         norm_constant = 810
+    elif "M9" in id_string and "5.0" in id_string:
+        norm_constant = 853
+    elif "M9" in id_string and "10.0" in id_string:
+        norm_constant = 879
     else:
         print("Constant not defined. Aborting...")
         raise ValueError("Bad ID string")
