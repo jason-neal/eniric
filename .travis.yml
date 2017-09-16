@@ -22,12 +22,17 @@ before_install:
   - travis_retry conda update -q conda
   - conda info -a
 
+cache:
+  directories:
+    - $HOME/.cache/pip
+
 install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION --file conda_requirements.txt
   - source activate test-environment
   - travis_retry pip install -r requirements.txt
   - travis_retry pip install -r test_requirements.txt
   - python setup.py install
+
 before_script:
   - mv .test_config.yaml config.yaml
 
