@@ -186,21 +186,22 @@ def test_snr_old_norm_constant_with_bad_id_str(bad_string):
         snrnorm.old_norm_constant(bad_string)
 
 
-@pytest.mark.parametrize("star,band,vel,res", [
-    ("M0", "Z", 1.0, "60k"),
-    ("M3", "Y", 5.0, "80k"),
-    ("M6", "J", 10.0, "100k"),
-    ("M9", "H", 1.0, "100k"),
-    ("M0", "K", 5.0, "60k")
+@pytest.mark.parametrize("star,band,vel,res,ref_band", [
+    ("M0", "Z", 1.0, "60k", "self"),
+    ("M3", "Y", 5.0, "80k", "SELF"),
+    ("M6", "J", 10.0, "100k", "self"),
+    ("M9", "H", 1.0, "100k", "SELF"),
+    ("M0", "K", 5.0, "60k", "self")
 ])
-def test_get_ref_spectrum_with_self(star,band,vel,res):
+def test_get_ref_spectrum_with_self(star, band, vel, res, ref_band):
+    """Checks for upper or lower "self"."""
     id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
 
     test_data = os.path.join(eniric.paths["resampled"],
         "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}_res3.txt".format(star, band, vel, res))
     wav, flux = Io.pdread_2col(test_data)
 
-    wav_ref, flux_ref = snrnorm.get_reference_spectrum(id_string, ref_band="self")
+    wav_ref, flux_ref = snrnorm.get_reference_spectrum(id_string, ref_band=ref_band)
 
     # Reference is the same values
     assert np.allclose(wav, wav_ref)
