@@ -98,7 +98,7 @@ def get_reference_spectrum(id_string, ref_band="J"):
     # TODO: add option for Alpha into ID-String
     # TODO: Add metalicity and logg into id string
     # TODO: Add metalicity folder
-
+    ref_band = ref_band.upper()
     # Determine the correct reference file to use.
     if ("Alpha=" in id_string) or ("smpl" in id_string):
         raise NotImplementedError
@@ -113,7 +113,7 @@ def get_reference_spectrum(id_string, ref_band="J"):
             raise ValueError("Id-string {} is not valid for normalization.".format(id_string))
 
         smpl = 3.0   # Fixed value atm
-    if ref_band == "self":
+    if ref_band == "SELF":
         ref_band = band
 
     file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}"
