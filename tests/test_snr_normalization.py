@@ -50,7 +50,7 @@ def test_band_snr_norm():
     """Compared to wav snr norm."""
     # snr_constant_band
     test_data = os.path.join(
-        eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt")
+        eniric.paths["test_data"], "resampled", "Spectrum_M0-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt")
     wav, flux = Io.pdread_2col(test_data)
 
     assert (snrnorm.snr_constant_band(wav, flux, band="J", snr=100) ==
