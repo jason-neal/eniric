@@ -1,4 +1,6 @@
 
+import os
+
 import numpy as np
 ################################################################################
 #
@@ -6,7 +8,6 @@ import numpy as np
 #
 ################################################################################
 import pandas as pd
-import os
 
 
 def pdread_2col(filename, noheader=False):

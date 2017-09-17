@@ -1,9 +1,10 @@
 """Near-Infrared radial velocity precision."""
 import argparse
 import itertools
+import os
 import re
 import sys
-import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import rc

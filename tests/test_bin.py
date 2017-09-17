@@ -6,8 +6,8 @@ import argparse
 
 import pytest
 
-from bin.split_atmmodel import check_positive
 import eniric
+from bin.split_atmmodel import check_positive
 
 
 def test_check_positive():
