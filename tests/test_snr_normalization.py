@@ -1,7 +1,9 @@
-import numpy as np
-import pytest
 import os
 
+import numpy as np
+import pytest
+
+import eniric
 import eniric.IOmodule as Io
 import eniric.Qcalculator as Q
 # Test using hypothesis
@@ -9,7 +11,6 @@ import eniric.Qcalculator as Q
 # import hypothesis.strategies as st
 import eniric.snr_normalization as snrnorm
 import eniric.utilities as utils
-import eniric
 
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 

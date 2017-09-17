@@ -3,8 +3,8 @@
 import numpy as np
 import pytest
 
-import eniric.atmosphere as atm
 import eniric
+import eniric.atmosphere as atm
 
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
