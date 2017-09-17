@@ -13,9 +13,9 @@ paths:
   precision: "precision/"
 
 bands:
-  all: ["VIS", "K", "H", "J", "Y", "Z", "CONT", "GAP"]
+  all: ["VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP"]
 
- 
+
 # full pathsname: eniric_default
 
 # The parameters defining the spectral libraries live here.
