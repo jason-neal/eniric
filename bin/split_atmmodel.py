@@ -11,9 +11,10 @@ import sys
 import numpy as np
 from astropy.constants import c
 
+import eniric
 import eniric.IOmodule as io
 import eniric.utilities as utils
-import eniric
+
 
 def _parser():
     """Take care of all the argparse stuff.

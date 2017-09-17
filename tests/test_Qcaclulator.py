@@ -1,14 +1,16 @@
 # Test Qcaclulator
 
+import os
+
+import astropy
 import astropy.constants as const
 import astropy.units as u
 import numpy as np
 import pytest
 
-import eniric.Qcalculator as Q
 import eniric
-import astropy
-import os
+import eniric.Qcalculator as Q
+
 # test RVprec_calc retuns a single values
 # test it returns a quantity in m/s
 # test it can handle wavelength and flux alo being quantities.

@@ -13,6 +13,7 @@ from astropy.constants import c
 import eniric.IOmodule as io
 import eniric.Qcalculator as Qcalculator
 
+
 def prepare_atmopshere(atmmodel):
     """Read in atmopheric model and prepare."""
     wav_atm, flux_atm, std_flux_atm, mask_atm = io.pdread_4col(atmmodel)
