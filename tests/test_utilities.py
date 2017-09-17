@@ -2,14 +2,16 @@
 
 from __future__ import division, print_function
 
+import os
+
 # Test using hypothesis
 import hypothesis.strategies as st
 import numpy as np
 import pytest
 from hypothesis import given, settings
 
-import eniric.utilities as utils
 import eniric
+import eniric.utilities as utils
 
 # For python2.X compatibility
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
@@ -18,8 +20,10 @@ file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 @pytest.mark.xfail(raises=file_error_to_catch)
 def test_read_spectrum():
     """Test reading in a _wave_photon.dat is the same as a _wave.dat."""
-    photon = "data/test_data/sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
-    wave = "data/test_data/sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+    photon = os.path.join(eniric.paths["test_data"],
+        "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
+    wave = os.path.join(eniric.paths["test_data"],
+        "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
     wave_wav, wave_flux = utils.read_spectrum(wave)
     photon_wav, photon_flux = utils.read_spectrum(photon)
 
@@ -30,8 +34,7 @@ def test_read_spectrum():
 @pytest.mark.xfail(raises=file_error_to_catch)
 def test_get_spectrum_name():
     """Test specifing file names with stellar parameters."""
-    test = ("Z-0.0/lte02800-4.50"
-            "-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
+    test = ("Z-0.0/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
 
     assert utils.get_spectrum_name("M6", flux_type="wave") == test
 
@@ -93,7 +96,6 @@ def test_wav_selector(x, y, wav_min, wav_max):
     y = [xi + y for xi in x]   # just to make y different
     x1, y1 = utils.wav_selector(x, y, wav_min, wav_max)
 
-    # All values in selected should be less than the max and greater
     assert all(x1 >= wav_min)
     assert all(x1 <= wav_max)
     assert len(x1) == len(y1)
