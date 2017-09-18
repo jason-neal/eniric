@@ -181,21 +181,22 @@ def test_snr_old_norm_constant_with_bad_id_str(bad_string):
         snrnorm.old_norm_constant(bad_string)
 
 
-@pytest.mark.parametrize("star,band,vel,res", [
-    ("M0", "Z", 1.0, "60k"),
-    ("M3", "Y", 5.0, "80k"),
-    ("M6", "J", 10.0, "100k"),
-    ("M9", "H", 1.0, "100k"),
-    ("M0", "K", 5.0, "60k")
+@pytest.mark.parametrize("star,band,vel,res,ref_band", [
+    ("M0", "Z", 1.0, "60k", "self"),
+    ("M3", "Y", 5.0, "80k", "SELF"),
+    ("M6", "J", 10.0, "100k", "self"),
+    ("M9", "H", 1.0, "100k", "SELF"),
+    ("M0", "K", 5.0, "60k", "self")
 ])
-def test_get_ref_spectrum_with_self(star,band,vel,res):
+def test_get_ref_spectrum_with_self(star, band, vel, res, ref_band):
+    """Checks for upper or lower "self"."""
     id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
 
     test_data = os.path.join(eniric.paths["resampled"],
         "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}_res3.txt".format(star, band, vel, res))
     wav, flux = Io.pdread_2col(test_data)
 
-    wav_ref, flux_ref = snrnorm.get_reference_spectrum(id_string, ref_band="self")
+    wav_ref, flux_ref = snrnorm.get_reference_spectrum(id_string, ref_band=ref_band)
 
     # Reference is the same values
     assert np.allclose(wav, wav_ref)
@@ -249,3 +250,34 @@ def test_snr_constant_band_with_invalid_wavelength(wav, band):
 
     with pytest.raises(ValueError):
         snrnorm.snr_constant_band(wav, np.ones(50), band=band)
+
+
+@pytest.mark.parametrize("id_string", [
+    "M0-BAD-1.0-100k", "M9-A-5.0-50k", "MO-J-1.0-100k",
+    "N0-J-1.0-100k", "M2--1.0-100k", "M0-J-2-100k",
+    "M9-Z-5.0",  "M0-J-1.0-100", "M0-J-1.0-1k",
+    "M2-100k", "M0"])
+def test_decompose_bad_id_strings_give_errors(id_string):
+
+    with pytest.raises(ValueError):
+        snrnorm.decompose_id_string(id_string)
+
+
+@pytest.mark.parametrize("id_string,expected", [
+    ("M0-H-1.0-100k", ("M0", "H", "1.0", "100k")),
+    ("M9-K-5.0-50k", ("M9", "K", "5.0", "50k")),
+    ("M9-J-5.0-30k", ("M9", "J", "5.0", "30k")),
+    ("M3-VIS-5.0-50k", ("M3", "VIS", "5.0", "50k")),
+    ("M6-NIR-10.0-80k", ("M6", "NIR", "10.0", "80k")),
+        ("M6-CONT-10.0-80k", ("M6", "CONT", "10.0", "80k"))
+])
+def test_decompose_id_string(id_string, expected):
+
+    decomposed = snrnorm.decompose_id_string(id_string)
+
+    assert decomposed == expected
+    assert len(decomposed) == 4
+
+
+# TODO:
+    #  Test normalize_flux() with ref_band == SELF. to check the condition on line 56
