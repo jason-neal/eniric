@@ -33,14 +33,15 @@ def _parser():
     parser.add_argument("-s", '--startype', help='Spectral Type e.g "MO"', default=["M0"],
                         type=str, nargs="+")
     parser.add_argument("-t", "--temp", help="Temperature of stars to prepare",
-                        type=float, nargs="+", default=[3900.0], choices=list(np.arange(2300, 7000, 100.0))+list(np.arange(7000, 12001, 200.0)))
+                        type=float, nargs="+", default=[3900.0], choices=list(
+                            np.arange(2300, 7000, 100.0)) + list(np.arange(7000, 12001, 200.0)))
     parser.add_argument("-l", "--logg", help="Logg for stellar models.", default=[4.50],
                         type=float, nargs="+", choices=np.arange(0, 6.01, 0.5))
     parser.add_argument("-m", "--metalicity", type=float, default=[0.0],
                         help="Metalicity values.", nargs="+")
                         # choices=[list(np.arange(-4.0, -2.0, 1))+list(np.arange(-2.0, 1.01, 0.5))]
     parser.add_argument("-a", "--alpha", type=float, default=[0.0],
-                        choices=np.arange(-0.2,1.201, 0.2),
+                        choices=np.arange(-0.2, 1.201, 0.2),
                         help="Metalicity values.", nargs="+")
     parser.add_argument("-f", "--flux_type", type=str, default="photon",
                         choices=["photon", "energy"],
@@ -53,15 +54,20 @@ def _parser():
     return parser.parse_args()
 
 
-def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=None, phoenix_dir=None):
+def main(startype, temp, logg, metalicity, alpha, flux_type="photon",
+         data_dir=None, phoenix_dir=None):
     """Prepare datafiles for phoenix models that match the input parameters.
 
-    This add the wavelength information to each spectra and converts to microns/photons if the flux_tpye="photons" is given.
-    We do realise that this is a waste of space and it would be more storage efficent to just read in the phoenix raw fits files and wavelength file when needed.
+    This add the wavelength information to each spectra and converts
+    to microns/photons if the flux_tpye="photons" is given.
+    We do realise that this is a waste of space and it would be more
+    storage efficent to just read in the phoenix raw fits files and
+    wavelength file when needed.
 
     """
     if data_dir is None:
         data_dir = eniric.paths["phoenix_dat"]
+    os.makedirs(data_dir, exist_ok=True)
     if phoenix_dir is None:
         phoenix_dir = eniric.paths["phoenix_raw"]
 
@@ -94,7 +100,7 @@ def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=N
             try:
                 if "Alpha=" in f:
                     (match_temp, match_logg, match_feh, match_alpha) = (
-                         re.search(r"(\d{5})\-(\d\.\d\d)([\+\-]\d\.\d)\.Alpha=([\+\-]\d\.\d\d)\.", f).groups())
+                        re.search(r"(\d{5})\-(\d\.\d\d)([\+\-]\d\.\d)\.Alpha=([\+\-]\d\.\d\d)\.", f).groups())
                     alpha_cond = float(match_alpha) in alpha
                 else:
                     (match_temp, match_logg, match_feh) = re.search(r"(\d{5})\-(\d\.\d\d)([\+\-]\d\.\d)", f).groups()
@@ -144,11 +150,12 @@ def main(startype, temp, logg, metalicity, alpha, flux_type="photon", data_dir=N
                 spectra_photon = spectra_micron * wavelength_micron  # Ignoring constants h*c in photon energy equation
 
                 result = io.pdwrite_cols(output_filename, wavelength_micron, spectra_photon,
-                                  header=["# Wavelength (micron)", r"Flux (photon/s/cm^2)"], float_format="%.7f")
+                    header=["# Wavelength (micron)", r"Flux (photon/s/cm^2)"], float_format="%.7f")
 
             else:
                 result = io.pdwrite_cols(output_filename, wavelength, spectra_micron,
-                                  header=["# Wavelength (Angstom)", r"Flux (erg/s/cm^2/micron)"], float_format=None)
+                    header=["# Wavelength (Angstom)", r"Flux (erg/s/cm^2/micron)"],
+                    float_format=None)
 
             if not result:
                 print("Successfully wrote to ", output_filename)

@@ -5,7 +5,6 @@ Functions for file resampling.
 
 import os
 import re
-from os import listdir
 from os.path import isfile, join
 
 import matplotlib.pyplot as plt
@@ -31,7 +30,7 @@ def resample_allfiles(results_dir=None, resampled_dir=None):
     if resampled_dir is None:
         resampled_dir = eniric.paths["resampled"]
     # getting a list of all the files
-    onlyfiles = [f for f in listdir(results_dir) if isfile(join(results_dir, f))]
+    onlyfiles = [f for f in os.listdir(results_dir) if isfile(join(results_dir, f))]
 
     [resampler(spectrum_file, results_dir=results_dir,
                resampled_dir=resampled_dir) for spectrum_file in onlyfiles
@@ -47,6 +46,7 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
     resamples a spectrum by interpolation onto a grid with a
     sampling of 3 pixels per resolution element.
     """
+    os.makedirs(resampled_dir, exist_ok=True)
     # wavelength, theoretical_spectrum, spectrum = read_3col(spectrum_name)
     read_name = os.path.join(results_dir, spectrum_name)
 

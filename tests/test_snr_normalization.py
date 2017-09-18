@@ -1,7 +1,9 @@
-import numpy as np
-import pytest
 import os
 
+import numpy as np
+import pytest
+
+import eniric
 import eniric.IOmodule as Io
 import eniric.Qcalculator as Q
 # Test using hypothesis
@@ -9,7 +11,6 @@ import eniric.Qcalculator as Q
 # import hypothesis.strategies as st
 import eniric.snr_normalization as snrnorm
 import eniric.utilities as utils
-import eniric
 
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
@@ -50,7 +51,7 @@ def test_band_snr_norm():
     """Compared to wav snr norm."""
     # snr_constant_band
     test_data = os.path.join(
-        eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt")
+        eniric.paths["test_data"], "resampled", "Spectrum_M0-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt")
     wav, flux = Io.pdread_2col(test_data)
 
     assert (snrnorm.snr_constant_band(wav, flux, band="J", snr=100) ==
@@ -128,17 +129,14 @@ def test_valid_snr_get_reference_spectrum():
 
 def test_get_reference_spectrum_in_nonexistent_file():
     """Testing getting the reference spectrum."""
-    ref_band = "J"
-
     with pytest.raises(file_error_to_catch):
-        snrnorm.get_reference_spectrum("M1-K-1.0-100k", ref_band=ref_band)
-
+        snrnorm.get_reference_spectrum("M1-K-1.0-100k", ref_band="J")
 
 
 @pytest.mark.xfail()  # size is too big
 def test_normalize_flux_new_verse_old():
-    test_data = os.path.join(eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Kband_vsini5.0_R100k_res3.txt")
-    id_string = "M0-K-5.0-100k"
+    test_data = os.path.join(eniric.paths["test_data"], "resampled", "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k_res3.txt")
+    id_string = "M0-K-1.0-100k"
     wav, flux = utils.read_spectrum(test_data)
     new_norm = snrnorm.normalize_flux(flux, id_string, new=True)
     old_norm = snrnorm.normalize_flux(flux, id_string, new=False)

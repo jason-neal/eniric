@@ -7,9 +7,10 @@ For consistency and valid comparision we normalize each spectra
 to achieve a consistent SNR at a specific location.
 """
 
+import os
 # Normalize to SNR 100 in middle of J band 1.25 micron!
 import re
-import os
+
 import numpy as np
 
 import eniric
