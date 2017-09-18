@@ -69,9 +69,10 @@ def main(startype, vsini, resolution, band, sample_rate=3.0,
     start_time = dt.now()
 
     phoenix_path = eniric.paths["phoenix_dat"]
-
     results_dir = eniric.paths["results"]
+    os.makedirs(results_dir, exist_ok=True)
     resampled_dir = eniric.paths["resampled"]
+    os.makedirs(resampled_dir, exist_ok=True)
 
     counter = 0
     for star in startype:
