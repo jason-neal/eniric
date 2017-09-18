@@ -55,6 +55,7 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
         Save results to file.
 
     """
+    os.makedirs(eniric.paths["precision"], exist=True)
 
     spectral_types = ["M0", "M3", "M6", "M9"]
     if ("ALL" in bands) or ("None" in bands):
@@ -77,7 +78,7 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
     # Save precision results
     if save:
         output_filename = os.path.join(eniric.paths["precision"],
-            "precision_results_2017_ref_band={0}_snr={1}.txt".format(ref_band, snr))
+            "precision_results_2017_ref_band-{0}_snr-{1}.txt".format(ref_band, snr))
         ids = []
         prec_1s = []
         prec_2s = []
@@ -93,7 +94,7 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
                         prec_3s.append(results[id_string][2].value)
 
         io.pdwrite_cols(output_filename, ids, prec_1s, prec_2s, prec_3s,
-                        header=["# id", r"prec_1", r"prec_2", r"prec_3"], float_format="%.7f")
+                        header=["# id", r"prec_1", r"prec_2", r"prec_3"], float_format="%.2f")
         print("saved results to {}".format(output_filename))
     # return results
 
