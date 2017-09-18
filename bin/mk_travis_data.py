@@ -10,6 +10,7 @@ Don't do to many."""
 subprocess.call("python bin/prepare_data.py -s M0 M3 M6 M9 -l 4.50 -m 0.0", shell=True)
 
 parameters = [("M0", "Z", 1, "60k"),
+              ("M0", "H", 1, "60k"),
               ("M0", "Y", 10, "100k"),
               ("M0", "K", 5, "60k 100k"),
               ("M6", "H", 1, "80k"),
