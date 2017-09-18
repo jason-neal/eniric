@@ -1,3 +1,3 @@
 import pytest
 
-from eniric.resample import (resample_allfiles, resampler)
+from eniric.resample import resample_allfiles, resampler

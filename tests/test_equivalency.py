@@ -9,9 +9,9 @@ import numpy as np
 import pytest
 from hypothesis import given
 
+import eniric
 import eniric.IOmodule as io
 import eniric.utilities as utils
-import eniric
 
 # For python2.X compatibility
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)

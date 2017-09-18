@@ -30,7 +30,7 @@ def _parser():
                         help="Wavelength band to select", nargs="+")
     parser.add_argument('--sample_rate', default=[3.0], type=float, nargs="+",
                         help="Resample rate, pixels per FWHM. Default=3.0")
-    parser.add_argument('--noresample', help='Resample output', default=False,
+    parser.add_argument('--noresample', help="Don't Resample output", default=False,
                         action="store_true")
     parser.add_argument('--unnormalized', help='Normalize for wavelength step',
                         action="store_true")
@@ -69,9 +69,10 @@ def main(startype, vsini, resolution, band, sample_rate=3.0,
     start_time = dt.now()
 
     phoenix_path = eniric.paths["phoenix_dat"]
-
     results_dir = eniric.paths["results"]
+    os.makedirs(results_dir, exist_ok=True)
     resampled_dir = eniric.paths["resampled"]
+    os.makedirs(resampled_dir, exist_ok=True)
 
     counter = 0
     for star in startype:
