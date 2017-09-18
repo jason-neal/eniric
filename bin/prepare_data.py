@@ -67,6 +67,7 @@ def main(startype, temp, logg, metalicity, alpha, flux_type="photon",
     """
     if data_dir is None:
         data_dir = eniric.paths["phoenix_dat"]
+    os.makedirs(data_dir, exist_ok=True)
     if phoenix_dir is None:
         phoenix_dir = eniric.paths["phoenix_raw"]
 
