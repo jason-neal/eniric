@@ -21,3 +21,6 @@ parameters = [("M0", "Z", 1, "60k"),
 for sptype, band, vel, res in parameters:
 
     subprocess.call(["python bin/nIR_run.py -s {0} -b {1} -R {2} -v {3}".format(sptype, band, res, vel)], shell=True)
+
+# List data files
+subprocess.call(["ls -R data"], shell=True)
