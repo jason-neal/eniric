@@ -1,7 +1,5 @@
 language: python
 python:
-     # Remove 2.7 when it breaks
-    - "2.7"
     - "3.4"
     - "3.5"
     - "3.6"
