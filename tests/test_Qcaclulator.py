@@ -1,4 +1,4 @@
-# Test Qcaclulator
+"""Test Qcaclulator."""
 
 import os
 

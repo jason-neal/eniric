@@ -4,7 +4,6 @@ from __future__ import division, print_function
 
 import os
 
-# Test using hypothesis
 import hypothesis.strategies as st
 import numpy as np
 import pytest
@@ -52,9 +51,9 @@ def test_get_spectrum_name():
 
 
 @pytest.mark.parametrize("spec_type", ["MO", "ME", "M11", "X10", "Z3"])
-def test_notimplemented_spectrum_name(spec_type):
+def test_spectrum_name_value_error(spec_type):
+    """Not valid spectral type in [OBAFGKML] or misspelled"""
     with pytest.raises(ValueError):
-        """Not valid spectral type in [OBAFGKML] or misspelled"""
         utils.get_spectrum_name(spec_type)
 
 
