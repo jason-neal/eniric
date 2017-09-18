@@ -18,7 +18,6 @@ from tqdm import tqdm
 
 import eniric
 import eniric.IOmodule as io
-# from eniric.Qcalculator import RVprec_calc, SqrtSumWis
 from eniric.utilities import (band_selector, read_spectrum, rotation_kernel,
                               unitary_gaussian, wav_selector)
 
