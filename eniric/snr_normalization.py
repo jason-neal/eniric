@@ -52,6 +52,9 @@ def normalize_flux(flux, id_string, new=True, snr=100, ref_band="J"):
     """
     # print("Starting norm of {}".format(id_string))
     if new:
+        if ref_band.upper() == "SELF":
+            __, ref_band, __, __ = decompose_id_string(id_string)
+
         wav_ref, flux_ref = get_reference_spectrum(id_string, ref_band)
         norm_const = snr_constant_band(wav_ref, flux_ref, snr=snr, band=ref_band)
     else:
@@ -98,21 +101,16 @@ def get_reference_spectrum(id_string, ref_band="J"):
     # TODO: add option for Alpha into ID-String
     # TODO: Add metalicity and logg into id string
     # TODO: Add metalicity folder
-    ref_band = ref_band.upper()
+
     # Determine the correct reference file to use.
     if ("Alpha=" in id_string) or ("smpl" in id_string):
         raise NotImplementedError
     else:
-        try:
-            # Use band for when ref_band is "self"
-            star, band, vel, res = re.search(r"(M\d)-(\w)-(\d{1,2}\.0)-(\d{2,3}k)", id_string).groups()
-
-            if band not in eniric.bands["all"]:
-                raise ValueError
-        except:
-            raise ValueError("Id-string {} is not valid for normalization.".format(id_string))
+        star, band, vel, res = decompose_id_string(id_string)
 
         smpl = 3.0   # Fixed value atm
+
+    ref_band = ref_band.upper()
     if ref_band == "SELF":
         ref_band = band
 
@@ -243,3 +241,16 @@ def sampling_index(index, sampling=3, array_length=None):
         raise ValueError("Indexes has values less than 0.")
 
     return indexes
+
+
+def decompose_id_string(id_string):
+    """Get the values back out of the id-string."""
+    try:
+        star, band, vel, res = re.search(r"(M\d)-(\w{1,4})-(\d{1,2}\.0)-(\d{2,3}k)", id_string).groups()
+    except:
+        raise ValueError("Id-string {0} is not valid for normalization.".format(id_string))
+
+    if band not in eniric.bands["all"]:
+        raise ValueError("The band '{}' found in id-string is not valid.".format(id_string))
+
+    return star, band, vel, res
