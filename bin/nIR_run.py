@@ -30,7 +30,7 @@ def _parser():
                         help="Wavelength band to select", nargs="+")
     parser.add_argument('--sample_rate', default=[3.0], type=float, nargs="+",
                         help="Resample rate, pixels per FWHM. Default=3.0")
-    parser.add_argument('--noresample', help='Resample output', default=False,
+    parser.add_argument('--noresample', help="Don't Resample output", default=False,
                         action="store_true")
     parser.add_argument('--unnormalized', help='Normalize for wavelength step',
                         action="store_true")
