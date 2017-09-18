@@ -2,14 +2,16 @@
 
 from __future__ import division, print_function
 
+import os
+
 # Test using hypothesis
 import hypothesis.strategies as st
 import numpy as np
 import pytest
 from hypothesis import given, settings
 
-import eniric.utilities as utils
 import eniric
+import eniric.utilities as utils
 
 # For python2.X compatibility
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
@@ -18,8 +20,10 @@ file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 @pytest.mark.xfail(raises=file_error_to_catch)
 def test_read_spectrum():
     """Test reading in a _wave_photon.dat is the same as a _wave.dat."""
-    photon = "data/test_data/sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
-    wave = "data/test_data/sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+    photon = os.path.join(eniric.paths["test_data"],
+        "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
+    wave = os.path.join(eniric.paths["test_data"],
+        "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
     wave_wav, wave_flux = utils.read_spectrum(wave)
     photon_wav, photon_flux = utils.read_spectrum(photon)
 
@@ -30,8 +34,7 @@ def test_read_spectrum():
 @pytest.mark.xfail(raises=file_error_to_catch)
 def test_get_spectrum_name():
     """Test specifing file names with stellar parameters."""
-    test = ("Z-0.0/lte02800-4.50"
-            "-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
+    test = ("Z-0.0/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
 
     assert utils.get_spectrum_name("M6", flux_type="wave") == test
 
@@ -47,15 +50,18 @@ def test_get_spectrum_name():
                    "-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
     assert utils.get_spectrum_name("M6") == test_photon
 
-    # Catch Errors
-    with pytest.raises(NotImplementedError):
-        utils.get_spectrum_name("K1")       # Stellar type not added
-    with pytest.raises(NotImplementedError):
-        utils.get_spectrum_name("A8")       # Stellar type not added
+
+@pytest.mark.parametrize("spec_type", ["MO", "ME", "M11", "X10", "Z3"])
+def test_notimplemented_spectrum_name(spec_type):
     with pytest.raises(ValueError):
-        utils.get_spectrum_name("MO")       # Miss spelled M0
-    with pytest.raises(ValueError):
-        utils.get_spectrum_name("X10")      # Not valid spectral type in [OBAFGKML]
+        """Not valid spectral type in [OBAFGKML] or misspelled"""
+        utils.get_spectrum_name(spec_type)
+
+
+@pytest.mark.parametrize("spec_type", ["O1", "B2", "A3", "F4", "G5", "K6", "M7", "L8"])
+def test_notimplemented_spectrum_name(spec_type):
+    with pytest.raises(NotImplementedError):
+        utils.get_spectrum_name(spec_type)       # Stellar type not added (only M atm)
 
 
 @pytest.mark.parametrize("bad_alpha", [-0.3, 0.3, 1])
@@ -74,7 +80,7 @@ def test_spectrum_name_with_ok_alpha(alpha):
     assert "Alpha=" in name
 
 
-@pytest.mark.xfail(raises=file_error_to_catch)
+#@pytest.mark.xfail(raises=file_error_to_catch)
 def test_org_name():
     """Test org flag of utils.get_spectrum_name, suposed to be temporary."""
     test_org = "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
@@ -90,8 +96,6 @@ def test_wav_selector(x, y, wav_min, wav_max):
     y = [xi + y for xi in x]   # just to make y different
     x1, y1 = utils.wav_selector(x, y, wav_min, wav_max)
 
-    # All values in selected should be less than the max and greater
-    # than the min value.
     assert all(x1 >= wav_min)
     assert all(x1 <= wav_max)
     assert len(x1) == len(y1)
@@ -126,7 +130,7 @@ def test_band_selector(band):
     assert np.all(wav < band_max)
 
 
-@pytest.mark.parametrize("band,error",[
+@pytest.mark.parametrize("band,error", [
     ("X", ValueError),
     ("M0", ValueError),
     (1, AttributeError),

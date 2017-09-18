@@ -8,8 +8,8 @@ import pytest
 
 import eniric.IOmodule as io
 import eniric.Qcalculator as Q
-from bin.prec_1 import calc_prec1
 from bin.nIR_precision import calculate_prec
+from bin.prec_1 import calc_prec1
 
 # For python2.X compatibility
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
