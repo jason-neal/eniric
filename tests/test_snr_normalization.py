@@ -6,9 +6,6 @@ import pytest
 import eniric
 import eniric.IOmodule as Io
 import eniric.Qcalculator as Q
-# Test using hypothesis
-# from hypothesis import given, example
-# import hypothesis.strategies as st
 import eniric.snr_normalization as snrnorm
 import eniric.utilities as utils
 
