@@ -55,7 +55,7 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
         Save results to file.
 
     """
-    os.makedirs(eniric.paths["precision"], exist=True)
+    os.makedirs(eniric.paths["precision"], exist_ok=True)
 
     spectral_types = ["M0", "M3", "M6", "M9"]
     if ("ALL" in bands) or ("None" in bands):
