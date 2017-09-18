@@ -255,3 +255,34 @@ def test_snr_constant_band_with_invalid_wavelength(wav, band):
 
     with pytest.raises(ValueError):
         snrnorm.snr_constant_band(wav, np.ones(50), band=band)
+
+
+@pytest.mark.parametrize("id_string", [
+    "M0-BAD-1.0-100k", "M9-A-5.0-50k", "MO-J-1.0-100k",
+    "N0-J-1.0-100k", "M2--1.0-100k", "M0-J-2-100k",
+    "M9-Z-5.0",  "M0-J-1.0-100", "M0-J-1.0-1k",
+    "M2-100k", "M0"])
+def test_decompose_bad_id_strings_give_errors(id_string):
+
+    with pytest.raises(ValueError):
+        snrnorm.decompose_id_string(id_string)
+
+
+@pytest.mark.parametrize("id_string,expected", [
+    ("M0-H-1.0-100k", ("M0", "H", "1.0", "100k")),
+    ("M9-K-5.0-50k", ("M9", "K", "5.0", "50k")),
+    ("M9-J-5.0-30k", ("M9", "J", "5.0", "30k")),
+    ("M3-VIS-5.0-50k", ("M3", "VIS", "5.0", "50k")),
+    ("M6-NIR-10.0-80k", ("M6", "NIR", "10.0", "80k")),
+        ("M6-CONT-10.0-80k", ("M6", "CONT", "10.0", "80k"))
+])
+def test_decompose_id_string(id_string, expected):
+
+    decomposed = snrnorm.decompose_id_string(id_string)
+
+    assert decomposed == expected
+    assert len(decomposed) == 4
+
+
+# TODO:
+    #  Test normalize_flux() with ref_band == SELF. to check the condition on line 56
