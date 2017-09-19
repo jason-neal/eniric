@@ -5,12 +5,7 @@ python:
     - "3.4"
     - "3.5"
     - "3.6"
-    - nightly
-
-matrix:
-  fast_finish: true
-  allow_failures:
-    - python: nightly
+# sudo: false  # Use container-based infrastructure
 
 before_install:
   # http://conda.pydata.org/docs/travis.html
