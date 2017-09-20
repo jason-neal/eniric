@@ -7,7 +7,7 @@ import yaml
 
 try:
     f = open("config.yaml")
-    config = yaml.load(f)
+    config = yaml.safe_load(f)
     f.close()
 except FileNotFoundError as e:
     default = __file__[:-11] + "config.yaml"
