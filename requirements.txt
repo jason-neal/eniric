@@ -2,5 +2,5 @@ tqdm==4.17.1
 numpy==1.13.1
 pandas==0.20.3
 astropy==2.0.2
-matplotlib
+matplotlib==2.0.2
 multiprocess
