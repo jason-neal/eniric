@@ -1,4 +1,4 @@
-tqdm
+tqdm==4.17.1
 numpy
 pandas
 astropy
