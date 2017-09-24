@@ -1,5 +1,5 @@
 tqdm==4.17.1
-numpy
+numpy==1.13.1
 pandas
 astropy
 matplotlib
