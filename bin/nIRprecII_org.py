@@ -218,31 +218,31 @@ def calculate_prec(plot_atm = False, plot_ste=False, plot_flux=True, paper_plots
         # ax1.vlines(selected_transmission, 0.0, 0.2, colors = "b")
         ax1.set_xlim([wav_atm_Z[0], wav_atm_Z[-1]])
         ax1.yaxis.set_major_locator(MaxNLocator(nbins=len(ax1.get_yticklabels()), prune='lower'))
-        ax1.text(0.9, 0.8. ' Z band ', horizontalalignment='center', verticalalignment='center', transform=ax1.transAxes, size=12, color='black', bbox=dict(facecolor='white'))
+        ax1.text(0.9, 0.8, ' Z band ', horizontalalignment='center', verticalalignment='center', transform=ax1.transAxes, size=12, color='black', bbox=dict(facecolor='white'))
 
         ax2.plot(wav_atm_Y, flux_atm_Y, color='k')
         # ax2.vlines(selected_transmission, 0.0, 0.2, colors = "b")
         ax2.set_xlim([wav_atm_Y[0], wav_atm_Y[-1]])
         ax2.yaxis.set_major_locator(MaxNLocator(nbins=len(ax2.get_yticklabels()), prune='lower'))
-        ax2.text(0.9, 0.8. ' Y band ', horizontalalignment='center', verticalalignment='center', transform=ax2.transAxes, size=12, color='black', bbox=dict(facecolor='white'))
+        ax2.text(0.9, 0.8, ' Y band ', horizontalalignment='center', verticalalignment='center', transform=ax2.transAxes, size=12, color='black', bbox=dict(facecolor='white'))
 
         ax3.plot(wav_atm_J, flux_atm_J, color='k')
         # ax3.vlines(selected_transmission, 0.0, 0.2, colors = "b")
         ax3.set_xlim([wav_atm_J[0], wav_atm_J[-1]])
         ax3.yaxis.set_major_locator(MaxNLocator(nbins=len(ax3.get_yticklabels()), prune='upper'))
-        ax3.text(0.9, 0.8. ' J band', horizontalalignment='center', verticalalignment='center', transform=ax3.transAxes, size=12, color='black', bbox=dict(facecolor='white'))
+        ax3.text(0.9, 0.8, ' J band', horizontalalignment='center', verticalalignment='center', transform=ax3.transAxes, size=12, color='black', bbox=dict(facecolor='white'))
 
         ax4.plot(wav_atm_H, flux_atm_H, color='k')
         # ax4.vlines(selected_transmission, 0.0, 0.2, colors = "b")
         ax4.set_xlim([wav_atm_H[0], wav_atm_H[-1]])
         ax4.yaxis.set_major_locator(MaxNLocator(nbins=len(ax4.get_yticklabels()), prune='lower'))
-        ax4.text(0.9, 0.8. ' H band ', horizontalalignment='center', verticalalignment='center', transform=ax4.transAxes, size=12, color='black', bbox=dict(facecolor='white'))
+        ax4.text(0.9, 0.8, ' H band ', horizontalalignment='center', verticalalignment='center', transform=ax4.transAxes, size=12, color='black', bbox=dict(facecolor='white'))
 
         ax5.plot(wav_atm_K, flux_atm_K, color='k')
         # ax5.vlines(selected_transmission, 0.0, 0.2, colors = "b")
         ax5.set_xlim([wav_atm_K[0], wav_atm_K[-1]])
         ax5.yaxis.set_major_locator(MaxNLocator(nbins=len(ax5.get_yticklabels()), prune='upper'))
-        ax5.text(0.9, 0.8. ' K band ', horizontalalignment='center', verticalalignment='center', transform=ax5.transAxes, size=12, color='black', bbox=dict(facecolor='white'))
+        ax5.text(0.9, 0.8, ' K band ', horizontalalignment='center', verticalalignment='center', transform=ax5.transAxes, size=12, color='black', bbox=dict(facecolor='white'))
 
         plt.xlabel(r"wavelength [ $\mu$m ]")
         f.text(0.06, 0.5, r'Atmospheric Transmission [ ]', ha='center', va='center', rotation='vertical')
@@ -1636,7 +1636,7 @@ def calculate_prec_VIS(plot_atm = False, plot_ste=False, plot_flux=True, paper_p
 
                         id_string = star+"-"+band+"-"+vel+"-"+resolution    # sample was left aside because only one value existed
 
-                        # gettin the wav, flux and mask from the atm model closes to the stellar
+                        # getting the wav, flux and mask from the atm model closes to the stellar
 
                         index_atm = np.searchsorted(wav_atm, wav_stellar)
                         # replace indexes outside the array, at the very end, by the value at the very end
@@ -1654,53 +1654,53 @@ def calculate_prec_VIS(plot_atm = False, plot_ste=False, plot_flux=True, paper_p
                         elif("Z" in id_string):
                             flux_stellar = np.array(flux_stellar)/ratio_0p5
 
-                        if("M0" in id_string):
+                        if "M0" in id_string:
                             # correcting for the different jumps:
-                            if("Y" in id_string or "J" in id_string):
+                            if "Y" in id_string or "J" in id_string:
                                 flux_stellar = np.array(flux_stellar)*(ratios_m0[1]/ratios_m0[0])*(flux_0p5/flux_stellar[1])
-                            elif("H" in id_string):
+                            elif "H" in id_string:
                                 flux_stellar = np.array(flux_stellar)*(ratios_m0[2]/ratios_m0[0])*(flux_0p5/flux_stellar[1])
-                            elif("K" in id_string):
+                            elif "K" in id_string:
                                 flux_stellar = np.array(flux_stellar)*(ratios_m0[3]/ratios_m0[0])*(flux_0p5/flux_stellar[1])
 
                             norm_constant = 4712425.8785
 
-                        elif("M3" in id_string):
-                            if("Y" in id_string or "J" in id_string):
+                        elif "M3" in id_string:
+                            if "Y" in id_string or "J" in id_string:
                                 flux_stellar = np.array(flux_stellar)*(ratios_m3[1]/ratios_m3[0])*(flux_0p5/flux_stellar[1])
-                            elif("H" in id_string):
+                            elif "H" in id_string:
                                 flux_stellar = np.array(flux_stellar)*(ratios_m3[2]/ratios_m3[0])*(flux_0p5/flux_stellar[1])
-                            elif("K" in id_string):
+                            elif "K" in id_string:
                                 flux_stellar = np.array(flux_stellar)*(ratios_m3[3]/ratios_m3[0])*(flux_0p5/flux_stellar[1])
 
                             norm_constant = 3873172.8673
 
-                        elif("M6" in id_string):
-                            if("Y" in id_string or "J" in id_string):
+                        elif "M6" in id_string:
+                            if "Y" in id_string or "J" in id_string:
                                 flux_stellar = np.array(flux_stellar)*(ratios_m6[1]/ratios_m6[0])*(flux_0p5/flux_stellar[1])
-                            elif("H" in id_string):
+                            elif "H" in id_string:
                                 flux_stellar = np.array(flux_stellar)*(ratios_m6[2]/ratios_m6[0])*(flux_0p5/flux_stellar[1])
-                            elif("K" in id_string):
+                            elif "K" in id_string:
                                 flux_stellar = np.array(flux_stellar)*(ratios_m6[3]/ratios_m6[0])*(flux_0p5/flux_stellar[1])
 
-                            if("1.0" in id_string):
+                            if "1.0" in id_string:
                                 norm_constant = 1713987.3947
-                            elif("5.0" in id_string):
+                            elif "5.0" in id_string:
                                 norm_constant = 1713987.3947
                             else:
                                 norm_constant = 1713987.3947
 
-                        elif("M9" in id_string):
-                            if("Y" in id_string or "J" in id_string):
+                        elif "M9" in id_string :
+                            if "Y" in id_string or "J" in id_string:
                                 flux_stellar = np.array(flux_stellar)*(ratios_m9[1]/ratios_m9[0])*(flux_0p5/flux_stellar[1])
-                            elif("H" in id_string):
+                            elif "H" in id_string:
                                 flux_stellar = np.array(flux_stellar)*(ratios_m9[2]/ratios_m9[0])*(flux_0p5/flux_stellar[1])
-                            elif("K" in id_string):
+                            elif "K" in id_string:
                                 flux_stellar = np.array(flux_stellar)*(ratios_m9[3]/ratios_m9[0])*(flux_0p5/flux_stellar[1])
 
-                            if("1.0" in id_string):
+                            if "1.0" in id_string:
                                 norm_constant = 1189097.2706
-                            elif("5.0" in id_string):
+                            elif "5.0" in id_string:
                                 norm_constant = 1189097.2706
                             else:
                                 norm_constant = 1189097.2706

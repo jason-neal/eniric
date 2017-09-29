@@ -8,6 +8,7 @@ from __future__ import division, print_function
 
 import matplotlib.pyplot as plt
 import numpy as np
+from astropy.constants import c
 
 import eniric.IOmodule as io
 import eniric.Qcalculator as Qcalculator
@@ -22,7 +23,7 @@ def prepare_atmopshere(atmmodel):
     return wav_atm, flux_atm, std_flux_atm, mask_atm
 
 
-def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0, consecutive_test=True):
+def barycenter_shift(wav_atm, mask_atm, rv_offset=0.0, consecutive_test=True):
     """Calculating impact of Barycentric movement on mask...
 
     Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
@@ -36,11 +37,11 @@ def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0, consecutive_test=True):
     masked_start = pixels_total - np.sum(mask_atm)
 
     barycenter_rv = 3e4           # 30 km/s in m/s
-    offset_rv = offset_RV * 1.0e3    # Convert to m/s
+    offset_rv = rv_offset * 1.0e3    # Convert to m/s
 
     # Doppler shift  applied to the vectors
-    delta_lambdas = wav_atm * barycenter_rv / Qcalculator.c.value
-    offset_lambdas = wav_atm * offset_rv / Qcalculator.c.value   # offset lambda
+    delta_lambdas = wav_atm * barycenter_rv / c.value
+    offset_lambdas = wav_atm * offset_rv / c.value   # offset lambda
 
     # Dopler shift limits of each pixel
     wav_lower_barys = wav_atm + offset_lambdas - delta_lambdas
@@ -53,7 +54,7 @@ def barycenter_shift(wav_atm, mask_atm, offset_RV=0.0, consecutive_test=True):
 
         # Offset_RV is the offset applied for the star RV.
         if (((mask_val is False) and (mask_iminus1[i] is False) and
-             (mask_iplus1[i] is False) and (offset_RV == 0))):    # If the mask is false and the offset is equal to zero
+             (mask_iplus1[i] is False) and (rv_offset == 0))):    # If the mask is false and the offset is equal to zero
             """If the value and its 2 neighbours are already zero don't do the barycenter shifts"""
             mask_atm_30kms[i] = False
         else:
@@ -132,7 +133,7 @@ def plot_atm_masks(wav, flux, mask, old_mask=None, new_mask=None, block=True):
     return 0
 
 
-def bugged_old_barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
+def bugged_old_barycenter_shift(wav_atm, mask_atm, rv_offset=0.0):
     """Buggy Old version Calculating impact of Barycentric movement on mask...
 
     Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
@@ -142,12 +143,12 @@ def bugged_old_barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
 
     mask_atm_30kms = []
     for value in zip(wav_atm, mask_atm):
-        if (value[1] is False) and (offset_RV == 666.0):    # if the mask is false and the offset is equal to zero
+        if (value[1] is False) and (rv_offset == 666.0):    # if the mask is false and the offset is equal to zero
             mask_atm_30kms.append(value[1])
 
         else:
-            delta_lambda = value[0] * 3.0e4 / Qcalculator.c.value
-            starting_lambda = value[0] * offset_RV * 1.0e3 / Qcalculator.c.value
+            delta_lambda = value[0] * 3.0e4 / c.value
+            starting_lambda = value[0] * rv_offset * 1.0e3 / c.value
             indexes_30kmslice = np.searchsorted(wav_atm, [starting_lambda + value[0] - delta_lambda,
                                                           starting_lambda + value[0] + delta_lambda])
             indexes_30kmslice = [index if(index < len(wav_atm)) else len(wav_atm) - 1 for index in indexes_30kmslice]
@@ -175,7 +176,7 @@ def bugged_old_barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
     return mask_atm
 
 
-def old_barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
+def old_barycenter_shift(wav_atm, mask_atm, rv_offset=0.0):
     """Bug Fiexed old version Calculating impact of Barycentric movement on mask...
 
     Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
@@ -187,12 +188,12 @@ def old_barycenter_shift(wav_atm, mask_atm, offset_RV=0.0):
 
     mask_atm_30kms = []
     for value in zip(wav_atm, mask_atm):
-        if (value[1] is False) and (offset_RV == 666.0):    # if the mask is false and the offset is equal to zero
+        if (value[1] is False) and (rv_offset == 666.0):    # if the mask is false and the offset is equal to zero
             mask_atm_30kms.append(value[1])
 
         else:
-            delta_lambda = value[0] * 3.0e4 / Qcalculator.c.value
-            starting_lambda = value[0] * offset_RV * 1.0e3 / Qcalculator.c.value
+            delta_lambda = value[0] * 3.0e4 / c.value
+            starting_lambda = value[0] * rv_offset * 1.0e3 / c.value
             indexes_30kmslice = np.searchsorted(wav_atm, [starting_lambda + value[0] - delta_lambda,
                                                           starting_lambda + value[0] + delta_lambda])
             indexes_30kmslice = [index if(index < len(wav_atm)) else len(wav_atm) - 1 for index in indexes_30kmslice]

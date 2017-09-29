@@ -6,14 +6,15 @@ from __future__ import division, print_function
 
 import datetime
 
+import eniric
 from eniric.nIRanalysis import convolve_spectra
 
 spectrum_name = "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 
 data_rep = "../data/nIRmodels/"
-results_dir = "../data/results/"
+results_dir = eniric.path["results"]
 
-spectrum_path = data_rep + "PHOENIX-ACES/PHOENIX-ACES-AGSS-COND-2011-HiRes/" + spectrum_name
+spectrum_path = os.path.join(data_rep, "PHOENIX-ACES", "PHOENIX-ACES-AGSS-COND-2011-HiRes", spectrum_name)
 # Some test parameters
 band = "K"
 R = 100000

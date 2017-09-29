@@ -3,6 +3,7 @@
 import numpy as np
 import pytest
 
+import eniric
 import eniric.atmosphere as atm
 
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
@@ -29,23 +30,25 @@ def test_consecutive_truths():
     assert np.sum(rand_array) == np.sum(atm.consecutive_truths(rand_array))
 
 
+@pytest.mark.xfail()
 def test_barycenter_shift():
     """Test barycentric shift code."""
-    pass
+    raise Exception
 
 
+@pytest.mark.xfail()
 def test_old_barycenter_shift():
     """Test old barycentric shift code."""
-    pass
+    raise Exception
 
 
-@pytest.mark.xfail(raises=file_error_to_catch)  # If missing the datafiles
+@pytest.mark.xfail()  # If missing the datafiles
 def test_prepare_atmopshere():
     """Test that an atmopshere file is loaded.
 
     Test band is close to the band limits (accounting for the given offset. +- 100km/s).
     """
-    pass
+    raise Exception
 
 
 # If I multiply the flux by the mask then the smallest flux should be 0.98
