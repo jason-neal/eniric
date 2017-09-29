@@ -72,16 +72,16 @@ def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_
 
     if startype in temps.keys():
         if org:
-            phoenix_name = "PHOENIX-ACES_spectra/lte{0:05d}-{1}-{2}.{3}".format(temps[startype], "4.50", "0.0", base)
+            phoenix_name = "lte{0:05d}-{1}-{2}.{3}".format(temps[startype], "4.50", "0.0", base)
         elif (alpha is not None) and (alpha != 0.0):
             if abs(alpha) > 0.2:
-                print("Warning! Alpha is outside acceptable range -0.2->0.2")
+                raise ValueError("Warning! Alpha is outside acceptable range -0.2->0.2. (for current science case)")
 
-            phoenix_name = ("PHOENIX-ACES_spectra/Z{2:+4.1f}.Alpha={3:+5.2f}/"
+            phoenix_name = ("Z{2:+4.1f}.Alpha={3:+5.2f}/"
                             "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}.{4:s}"
                             "").format(temps[startype], logg, feh, alpha, base)
         else:
-            phoenix_name = ("PHOENIX-ACES_spectra/Z{2:+4.1f}/lte{0:05d}-{1:4.2f}"
+            phoenix_name = ("Z{2:+4.1f}/lte{0:05d}-{1:4.2f}"
                             "{2:+4.1f}.{3:s}").format(temps[startype], logg, feh, base)
 
         spectrum_name = phoenix_name
@@ -111,15 +111,10 @@ def band_selector(wav, flux, band):
     # bands = {"VIS": (0.38, 0.78), "GAP": (0.78, 0.83), "Z": (0.83, 0.93),
     #         "Y": (1.0, 1.1), "J": (1.17, 1.33), "H": (1.5, 1.75),
     #         "K": (2.07, 2.35), "CONT": (0.45, 1.05), "NIR": (0.83, 2.35)}
-    if(band in ["ALL", ""]):
+    if band in ["ALL", ""]:
         return wav, flux
     else:
-        try:
-            # select values from the band
-            bandmin, bandmax = band_limits(band)
-        except (ValueError, AttributeError) as e:
-            print("Unrecognized band tag.")
-            raise
+        bandmin, bandmax = band_limits(band)
         return wav_selector(wav, flux, bandmin, bandmax)
 
 
@@ -185,7 +180,7 @@ def wav_selector(wav, flux, wav_min, wav_max):
     return wav_sel, flux_sel
 
 
-def unitary_Gauss(x, center, fwhm):
+def unitary_gaussian(x, center, fwhm):
     """Gaussian function of area = 1.
 
     Parameters
@@ -202,6 +197,12 @@ def unitary_Gauss(x, center, fwhm):
     result: array-like
         Result of gaussian function sampled at x values.
     """
+    if not isinstance(fwhm, (np.float, np.int)):
+        raise TypeError("The fwhm value is not a number, {0}".format(type(fwhm)))
+    if not isinstance(center, (np.float, np.int)):
+        raise TypeError("The center value is not a number, {0}".format(type(center)))
+    if not isinstance(x, np.ndarray):
+        raise TypeError
 
     sigma = np.abs(fwhm) / (2 * np.sqrt(2 * np.log(2)))
     amp = 1.0 / (sigma * np.sqrt(2 * np.pi))
@@ -227,7 +228,7 @@ def rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon):
 
     Returns
     -------
-        Rotational kernal
+        Rotational kernel
 
     Notes:
     Equations * from .... book.
@@ -242,78 +243,63 @@ def rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon):
     return (c1 * np.sqrt(1.0-lambda_ratio_sqr) + c2 * (1.0-lambda_ratio_sqr))
 
 
-def plotter(spectrum, band, vsini=0, R=0):
-    """
-    Reads and plots the selected spectrum in a given band
-    """
-    wav, flux = read_spectrum(spectrum)
-    wav_band, flux_band = band_selector(wav, flux, band)
-    flux_counts = flux_band
-
-    plt.figure(1)
-    plt.xlabel(r"wavelength [ $\mu$m ])")
-    plt.ylabel(r"flux [counts] ")
-    plt.plot(wav_band, flux_counts, color='k', marker="o", linestyle="-")
-    plt.show()
-    plt.close()
-
-    delta_wav = np.array(wav_band[1:]) - np.array(wav_band[:-1])
-    plt.figure(1)
-    plt.xlabel(r"wavelength [ $\mu$m ])")
-    plt.ylabel(r"Step [$\Delta\,\mu$m] ")
-    plt.plot(wav_band[1:], delta_wav, color='k', marker="o", linestyle="-")
-    plt.show()
-    plt.close()
-
-
-def calculate_ratios(spectrum):
-    """Calculate ratios between the different bands.
-
-    This was labeled WRONG from original code, but including here for reference.
-    """
-    wav, flux = read_spectrum(spectrum)
-    wav_band, flux_band = band_selector(wav, flux, "ALL")
-    # This seams wrong as read_spectrum already turns to photons
-    flux_band = flux_band * wav_band  # passing it to photon counts
-    index = np.searchsorted(wav_band, [0.5, 1.0, 1.5, 2.07])
-
-    flux_0p5 = np.max(flux_band[index[0]-5: index[0]+5])
-    flux_right1 = np.max(flux_band[index[1]: index[1]+10])
-    flux_right1p5 = np.max(flux_band[index[2]: index[2]+10])
-    flux_right2p07 = np.max(flux_band[index[3]: index[3]+10])
-
-    flux_values = [flux_0p5, flux_right1, flux_right1p5, flux_right2p07]
-    return flux_values
-
-
-def list_creator(spectrum, band):
-    """
-    creates a list of potential lines from a brute-force analysis of the band
-    """
-    wav, flux = read_spectrum(spectrum)
-    wav_band, flux_band = band_selector(wav, flux, band)
-
-    print(band + " band list:")
-    short_flux = flux_band[2:-2]
-    left_mask = ((short_flux < flux_band[:-4]) &
-                 (short_flux < flux_band[1:-3]) &
-                 (flux_band[:-4] > flux_band[1:-3]))
-
-    right_mask = ((short_flux < flux_band[3:-1]) &
-                  (short_flux < flux_band[4:]) &
-                  (flux_band[4:] > flux_band[3:-1]))
-
-    line_centers = wav_band[2:-2][left_mask * right_mask]  # find peaks using masking
-    print("Line centers", line_centers * 1.0e4)
-    print("In a spectrum with {0} points".format(len(wav_band)),
-          ", {0} lines were found.".format(len(line_centers)))
-    return line_centers
-
-
 def silentremove(filename):
     """Remove file without failing when it doesn't exist."""
     try:
         os.remove(filename)
-    except OSError as e:  # this would be "except OSError, e:" before Python 2.6
+    except OSError as e:
         if e.errno != errno.ENOENT:  # errno.ENOENT = no such file or directory
             raise  # re-raise exception if a different error occured
+
+
+def resolution2int(resolutions, to=str):
+    """Convert from "100k" or "100000" to 100000."""
+    if not hasattr(resolutions, '__len__') or isinstance(resolutions, str):
+        resolutions = [resolutions]
+        list_flag = True
+    else:
+        list_flag = False
+
+    res_ints = []
+    for res in resolutions:
+        if isinstance(res, (np.int, np.float)):
+            value = res
+        elif isinstance(res, str):
+            if res.lower().endswith("k"):
+                value = float(res[:-1]) * 1000
+            else:
+                value = float(res)
+        else:
+            raise TypeError("Resolution name Type error of type {}".format(type(res)))
+        res_ints.append(int(value))
+
+    if list_flag:
+        return res_ints[0]
+    else:
+        return res_ints
+
+
+def resolution2str(resolutions):
+    if not hasattr(resolutions, '__len__') or isinstance(resolutions, str):
+        resolutions = [resolutions]
+        list_flag = True
+    else:
+        list_flag = False
+
+    res_str = []
+    for res in resolutions:
+        if isinstance(res, (np.int, np.float)):
+            value = res / 1000
+        elif isinstance(res, str):
+            if res.lower().endswith("k"):
+                value = res[:-1]
+            else:
+                value = float(res) / 1000
+        else:
+            raise TypeError("Resolution name Type error of type {}".format(type(res)))
+
+        res_str.append("{0}k".format(int(value)))
+    if list_flag:
+        return res_str[0]
+    else:
+        return res_str

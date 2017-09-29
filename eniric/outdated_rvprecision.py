@@ -2,6 +2,8 @@
 import numpy as np
 
 import eniric.IOmodule as io
+import eniric
+resampled_dir = eniric.paths["resampled"]
 
 
 # Functions from rv precision calculations that were tried for first paper but not used in results

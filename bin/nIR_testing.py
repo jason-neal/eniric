@@ -20,7 +20,7 @@ data_rep = "../data/PHOENIX-ACES_spectra/"
 results_dir = "../data/results/"
 resampled_dir = "../data/resampled/"
 
-spectrum_path = data_rep + spectrum_name
+spectrum_path = os.path.join(data_rep, spectrum_name)
 # Some test parameters
 band = "GAP"
 R = 100000

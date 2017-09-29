@@ -39,7 +39,7 @@ if False:
     print("Starting band", band)
 # New version
     wav, flux = read_spectrum(spectrum_path)
-
+    #raise NotImplementedError("This has broken due to changes in dir structure.")
     wav_band, flux_band, flux_conv = convolution(wav, flux, vsini, R, epsilon,
                                                  fwhm_lim, band=band,
                                                  numprocs=numprocs,

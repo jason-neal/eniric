@@ -4,12 +4,14 @@
 from __future__ import division, print_function
 
 import argparse
+import os
 import sys
 from datetime import datetime as dt
 
+import eniric
 from eniric.nIRanalysis import convolve_spectra
 from eniric.resample import resampler
-from eniric.utilities import get_spectrum_name
+from eniric.utilities import get_spectrum_name, resolution2int
 
 
 def _parser():
@@ -17,43 +19,34 @@ def _parser():
 
     :returns: the args
     """
-    parser = argparse.ArgumentParser(description='Helpful discription')
+    parser = argparse.ArgumentParser(description='Unhelpful description')
     parser.add_argument("-s", '--startype', help='Spectral Type e.g "MO"', type=str, nargs="+")
     parser.add_argument("-v", "--vsini", help="Rotational velocity of source",
                         type=float, nargs="+")
-    parser.add_argument("-R", "--resolution", help="Observational resolution",
-                        type=float, nargs="+")
+    parser.add_argument("-R", "--resolution", help="Observational resolution e.g. 100000 or 100k",
+                        type=str, nargs="+")
     parser.add_argument("-b", "--band", type=str, default="ALL",
                         choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
                         help="Wavelength band to select", nargs="+")
-    parser.add_argument('-d', '--data_dir', help='Data directory', type=str, default=None)
     parser.add_argument('--sample_rate', default=[3.0], type=float, nargs="+",
                         help="Resample rate, pixels per FWHM. Default=3.0")
-    parser.add_argument('--results', default=None, type=str,
-                        help='Result directory Default=data_dir+"/results/"')
-    parser.add_argument('--resamples', default=None, type=str,
-                        help='Resample directory. Default=data_dir+"/resampled/"')
-    parser.add_argument('--noresample', help='Resample output', default=False,
+    parser.add_argument('--noresample', help="Don't Resample output", default=False,
                         action="store_true")
-    parser.add_argument('--normalize', help='Normalize for wavelength step', default=True,
-                        action="store_false")  # This logic needs fixed. (--flag shoud be "unnormalize" to turn normalization off)
+    parser.add_argument('--unnormalized', help='Normalize for wavelength step',
+                        action="store_true")
     parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
                         default=False, action="store_true")
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
-def main(startype, vsini, resolution, band, data_dir=None, results=None,
-         resamples=None, sample_rate=3.0, noresample=False, normalize=True,
-         org=False):
+def main(startype, vsini, resolution, band, sample_rate=3.0,
+         noresample=False, unnormalized=False, org=False):
     """Run convolutions of NIR spectra for the range of given parameters.
 
     Multiple values of startype, vsini, resolution, band, and sample_rate can
     be provided.
 
-    Read files from data_dir + "PHOENIX_ACES_spectra/"
-    Saves results to data_dir + "results/"
-    Resamples results to data_dir + "resamples/"
+    Read files from eniric.paths["phoenix_dat"]"
 
     Parameters
     ----------
@@ -61,32 +54,29 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
     vsini: list of floats
     resolution: list of floats
     band: list of strings
-    data_dir: str, default=None
-    results: str, default=None
-    resample: str, default=None
     sample_rate: list of floats default=[3.0]
     noresample: bool default=False
     normalize: bool default=True
 
     """
+    normalize = not unnormalized
+
     # vsini, resolution, band and sample_rate can all be a series of values
+
+    # Handle K in Resolution
+    resolution = resolution2int(resolution)
+
     start_time = dt.now()
-    if data_dir is None:
-        data_dir = "../data/"
 
-    if results is None:
-        results_dir = data_dir + "results/"
-    else:
-        results_dir = results
-
-    if resamples is None:
-        resampled_dir = data_dir + "resampled/"
-    else:
-        resampled_dir = resamples
+    phoenix_path = eniric.paths["phoenix_dat"]
+    results_dir = eniric.paths["results"]
+    os.makedirs(results_dir, exist_ok=True)
+    resampled_dir = eniric.paths["resampled"]
+    os.makedirs(resampled_dir, exist_ok=True)
 
     counter = 0
     for star in startype:
-        spectrum_name = get_spectrum_name(star, org=org)
+        spectrum_name = os.path.join(phoenix_path, get_spectrum_name(star, org=org))
 
         for b in band:
             for vel in vsini:
@@ -94,14 +84,16 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
                     for sample in sample_rate:
 
                         if normalize:
-                            # when normalize ation is confirmed then can
-                            result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k.txt".format(star, b, vel, int(R / 1000))
+                            # when normalize action is confirmed then can
+                            result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k.txt".format(
+                                star, b, vel, int(R / 1000))
                         else:
-                            result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k_unnormalized.txt".format(star, b, vel, int(R / 1000))
-                        print("Name to be result file", result_name)
+                            result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k_unnormalized.txt".format(
+                                star, b, vel, int(R / 1000))
+                        print("Name to be the result file", result_name)
 
-                        convolve_spectra(data_dir + spectrum_name, b, vel, R, epsilon=0.6, plot=False,
-                                         fwhm_lim=5.0, num_procs=None, data_rep=data_dir,
+                        convolve_spectra(spectrum_name, b, vel, R, epsilon=0.6, plot=False,
+                                         fwhm_lim=5.0, num_procs=None,
                                          results_dir=results_dir, normalize=normalize, output_name=result_name)
 
                         # Resample only the file just made
@@ -118,9 +110,6 @@ def main(startype, vsini, resolution, band, data_dir=None, results=None,
 
 if __name__ == '__main__':
     args = vars(_parser())
-    # startype = args.pop("startype")  # positional arguments
-
     opts = {k: args[k] for k in args}
 
-    # sys.exit(main(startype, **opts))
     sys.exit(main(**opts))
