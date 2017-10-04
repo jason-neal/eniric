@@ -4,13 +4,8 @@ Doesn't involve atmopshere model so can perform realively easily to check
 precision is working.
 """
 
-
-
-# set stuff for latex usage
-# rc('text', usetex=True)
 import argparse
 import os
-# from matplotlib import rc
 import sys
 
 import numpy as np

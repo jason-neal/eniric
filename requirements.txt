@@ -1,7 +1,6 @@
-astropy
-numpy
-matplotlib
-multiprocess
-pandas
-pyaml
-tqdm
+tqdm==4.17.1
+numpy==1.13.3
+pandas==0.20.3
+astropy==2.0.2
+matplotlib==2.0.2
+multiprocess==0.70.5
