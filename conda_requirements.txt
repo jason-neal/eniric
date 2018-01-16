@@ -1,4 +1,4 @@
 astropy==2.0.3
-numpy
+numpy==1.14.0
 matplotlib
 scipy
