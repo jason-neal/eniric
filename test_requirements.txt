@@ -2,6 +2,6 @@ pytest==3.4.0
 pytest-cov==2.5.1
 hypothesis==3.44.26
 python-coveralls==2.9.1
-codeclimate-test-reporter
+codeclimate-test-reporter==0.2.3
 codacy-coverage
 coverage
