@@ -1,7 +1,7 @@
-pytest
-pytest-cov
-hypothesis
-python-coveralls
-codeclimate-test-reporter
-codacy-coverage
-coverage
+pytest==3.4.0
+pytest-cov==2.5.1
+hypothesis==3.44.26
+python-coveralls==2.9.1
+codeclimate-test-reporter==0.2.3
+codacy-coverage==1.3.10
+coverage==4.5
