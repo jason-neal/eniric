@@ -2,7 +2,7 @@
 Plotting functions for nIR_precision.
 
 """
-from sys import exit
+import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -97,7 +97,7 @@ def plot_atmopshere_model(wav_atm, flux_atm, mask_atm):
     # f.savefig('AtmosphericTransmission.pdf', format='pdf')
 
     plt.close()
-    exit(0)
+    sys.exit(0)
 
 
 def plot_stellar_spectum(wav_stellar, flux_stellar, wav_atm_selected, mask_atm_selected):
