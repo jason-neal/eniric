@@ -25,6 +25,7 @@ resampled_dir = eniric.paths["resampled"]
 def normalize_spectrum(*args, **kwargs):
     raise NotImplementedError("Use normalize_flux")
 
+
 def normalize_flux2(*args, **kwargs):
     raise NotImplementedError("Use normalize_flux")
 
@@ -74,9 +75,9 @@ def old_norm_constant(id_string):
     These are the manual values to achieve a SNR of 100 at 1.25 micro
     for the set of parameter combinations presented.
     """
-    if "M0" in id_string and ("1.0"in id_string or "5.0"in id_string or "10.0" in id_string):
+    if "M0" in id_string and ("1.0" in id_string or "5.0" in id_string or "10.0" in id_string):
         norm_constant = 1607
-    elif "M3" in id_string and ("1.0"in id_string or "5.0"in id_string or "10.0" in id_string):
+    elif "M3" in id_string and ("1.0" in id_string or "5.0" in id_string or "10.0" in id_string):
         norm_constant = 1373
     elif "M6" in id_string and "1.0" in id_string:
         norm_constant = 933
@@ -85,7 +86,7 @@ def old_norm_constant(id_string):
     elif "M6" in id_string and "10.0" in id_string:
         norm_constant = 989
     elif "M9" in id_string and "1.0" in id_string:
-         norm_constant = 810
+        norm_constant = 810
     elif "M9" in id_string and "5.0" in id_string:
         norm_constant = 853
     elif "M9" in id_string and "10.0" in id_string:
@@ -109,7 +110,7 @@ def get_reference_spectrum(id_string, ref_band="J"):
     else:
         star, band, vel, res = decompose_id_string(id_string)
 
-        smpl = 3.0   # Fixed value atm
+        smpl = 3.0  # Fixed value atm
 
     ref_band = ref_band.upper()
     if ref_band == "SELF":
@@ -199,7 +200,7 @@ def snr_constant_wav(wav, flux, wav_ref, snr=100, sampling=3):
     snr_estimate = np.sqrt(np.sum(flux[indexes]))
 
     print("\tSanity Check: The S/N for the reference model was of {:4.2f}.".format(snr_estimate))
-    norm_value = (snr_estimate / snr)**2
+    norm_value = (snr_estimate / snr) ** 2
     return norm_value
 
 
@@ -223,7 +224,7 @@ def sampling_index(index, sampling=3, array_length=None):
     """
     import math
     half_sampling = math.floor(sampling / 2)
-    if sampling % 2 == 0:    # even sampling
+    if sampling % 2 == 0:  # even sampling
         # index values must be integer
         indexes = np.arange(index - half_sampling, index + half_sampling, dtype=int)
         assert len(indexes) % 2 == 0  # confirm even

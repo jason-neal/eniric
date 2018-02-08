@@ -123,9 +123,9 @@ def read_col(filename):
         line = f.readline()
 
         if line == "":
-                    break
+            break
         if line[0] == '#':
-                    continue
+            continue
 
         list_data.append(line.strip().split())
 
@@ -146,7 +146,7 @@ def read_2col(filename):
 
     for i, __ in enumerate(list_data):
         # checking if the line is valid
-        if(list_data[i][0][0] != '#'):
+        if (list_data[i][0][0] != '#'):
             col1.append(float(list_data[i][0]))
             col2.append(float(list_data[i][1]))
 
@@ -164,7 +164,7 @@ def read_3col(filename):
 
     for i, __ in enumerate(list_data):
         # checking if the line is valid
-        if(list_data[i][0][0] != '#'):
+        if (list_data[i][0][0] != '#'):
             col1.append(float(list_data[i][0]))
             col2.append(float(list_data[i][1]))
             col3.append(float(list_data[i][2]))
@@ -184,7 +184,7 @@ def read_4col(filename):
 
     for i, __ in enumerate(list_data):
         # checking if the line is valid
-        if(list_data[i][0][0] != '#'):
+        if (list_data[i][0][0] != '#'):
             col1.append(float(list_data[i][0]))
             col2.append(float(list_data[i][1]))
             col3.append(float(list_data[i][2]))
@@ -280,7 +280,7 @@ def write_2col(filename, data1, data2):
     f = open(filename, "w")
 
     for i, __ in enumerate(data1):
-        f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\n")
+        f.write("\t" + str(data1[i]) + "\t\t" + str(data2[i]) + "\n")
 
     f.close()
 
@@ -291,7 +291,7 @@ def write_3col(filename, data1, data2, data3):
     f = open(filename, "w")
 
     for i, __ in enumerate(data1):
-        f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
+        f.write("\t" + str(data1[i]) + "\t\t" + str(data2[i]) + "\t\t" + str(data3[i]) + "\n")
 
     f.close()
 
@@ -351,7 +351,7 @@ def pdwrite_cols(filename, *data, **kwargs):
     index = kwargs.pop('index', False)
     float_format = kwargs.pop('float_format', '%.6f')
     # TODO: See about passing any extra keywords into pandas call
-    if kwargs:   # check for unwanted kewords
+    if kwargs:  # check for unwanted kewords
         raise TypeError('Unexpected **kwargs: {!r}'.format(kwargs))
 
     if header:
@@ -360,7 +360,7 @@ def pdwrite_cols(filename, *data, **kwargs):
 
     data_dict = {}
     for i, data_i in enumerate(data):
-        data_dict[i] = data[i]    # keys are assigned the index value from enumerate
+        data_dict[i] = data[i]  # keys are assigned the index value from enumerate
 
         if len(data[i]) != len(data[0]):
             raise ValueError("The length of the data columns are not equal")
