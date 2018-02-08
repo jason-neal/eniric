@@ -1,4 +1,3 @@
-
 """
 Auxiliary functions for nIRanalysis
 
@@ -7,7 +6,6 @@ import errno
 import os
 import re
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 import eniric.IOmodule as io
@@ -37,7 +35,7 @@ def read_spectrum(spec_name):
         wav, flux = io.pdread_2col(spec_name)
 
         wav_micron = wav * 1.0e-4  # conversion to microns
-        flux_photons = flux * wav_micron   # Convert to photons
+        flux_photons = flux * wav_micron  # Convert to photons
 
     return wav_micron, flux_photons
 
@@ -62,7 +60,7 @@ def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_
     org = original locations (without Z folder option)
     """
     if feh == 0:
-        feh = -0.0    # make zero negative to signed integer.
+        feh = -0.0  # make zero negative to signed integer.
 
     temps = {"M0": 3900, "M3": 3500, "M6": 2800, "M9": 2600}
     if (flux_type == "photon") and (not org):
@@ -85,7 +83,7 @@ def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_
                             "{2:+4.1f}.{3:s}").format(temps[startype], logg, feh, base)
 
         spectrum_name = phoenix_name
-    elif re.match(r"^[OBAFGKML][0-9]$", startype):   # Valid spectral types
+    elif re.match(r"^[OBAFGKML][0-9]$", startype):  # Valid spectral types
         raise NotImplementedError("The spectral type '{0:s}' is not implemented yet.".format(startype))
     else:
         raise ValueError("'{0:s}' is not a valid spectral type.".format(startype))
@@ -206,7 +204,7 @@ def unitary_gaussian(x, center, fwhm):
 
     sigma = np.abs(fwhm) / (2 * np.sqrt(2 * np.log(2)))
     amp = 1.0 / (sigma * np.sqrt(2 * np.pi))
-    tau = -((x - center)**2) / (2 * (sigma**2))
+    tau = -((x - center) ** 2) / (2 * (sigma ** 2))
     result = amp * np.exp(tau)
 
     return result
@@ -235,12 +233,12 @@ def rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon):
 
     """
     denominator = (np.pi * vsini * (1.0 - epsilon / 3.0))
-    lambda_ratio_sqr = (delta_lambdas / delta_lambda_l)**2.0
+    lambda_ratio_sqr = (delta_lambdas / delta_lambda_l) ** 2.0
 
     c1 = 2.0 * (1.0 - epsilon) / denominator
     c2 = 0.5 * np.pi * epsilon / denominator
 
-    return (c1 * np.sqrt(1.0-lambda_ratio_sqr) + c2 * (1.0-lambda_ratio_sqr))
+    return (c1 * np.sqrt(1.0 - lambda_ratio_sqr) + c2 * (1.0 - lambda_ratio_sqr))
 
 
 def silentremove(filename):
