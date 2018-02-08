@@ -2,9 +2,9 @@
 
 """
 Script to run all convolutions for the new NIR analysis.
-Includes adding metalicity and logg parameters
+Includes adding metallicity and logg parameters
 
-Jason Neal, Janurary 2017
+Jason Neal, January 2017
 
 """
 from __future__ import division, print_function
@@ -21,10 +21,9 @@ spectrum_iter = itertools.product(spec_type, loggs, fehs, alphas)
 
 resolution = [60000, 80000, 100000]
 vsini = [1.0, 5.0, 10.0]
-sampling = [1, 3, 6]   # effect of sampling on precision
+sampling = [1, 3, 6]  # effect of sampling on precision
 
 convolution_iter = itertools.product(resolution, vsini)
-
 
 if __name__ == __main__:
     # do convolutions

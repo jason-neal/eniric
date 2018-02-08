@@ -1,4 +1,3 @@
-
 """Split the large atmopsheric model transmission spectra into the separate bands.
 To be able to include the separate files and to speed up performances for
 calculations on individual bands only.
@@ -25,7 +24,7 @@ def _parser():
     parser = argparse.ArgumentParser(description='Band separate out atmopsheric model.')
 
     parser.add_argument('-m', '--model', help='Model name', type=str, default="Average_TAPAS_2014.txt")
-    parser.add_argument("-b", "--bands", type=str, default=None,  nargs="+",
+    parser.add_argument("-b", "--bands", type=str, default=None, nargs="+",
                         choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
                         help="Wavelength band to select, Default='All'")
     parser.add_argument('-d', '--data_dir', help='Telluric model data directory', type=str,
@@ -98,14 +97,14 @@ def main(model="Average_TAPAS_2014.txt", bands=None, new_name=None, data_dir=Non
         band_max = band_max * (1 + rv_extend / c.value)
 
         # Convert band limits (micron) into nanometers (Keeps datafiles cleaner)
-        band_min, band_max = band_min*1e3, band_max*1e3
+        band_min, band_max = band_min * 1e3, band_max * 1e3
 
         band_wav, band_flux = utils.wav_selector(atm_wav, atm_flux, band_min, band_max)
         __, band_std_flux = utils.wav_selector(atm_wav, atm_std_flux, band_min, band_max)
         __, band_mask = utils.wav_selector(atm_wav, atm_mask, band_min, band_max)
         assert ((len(band_wav) == len(band_flux)) &
                 (len(band_std_flux) == len(band_mask)) &
-                (len(band_flux) == len(band_mask)))   # Check lengths are the same
+                (len(band_flux) == len(band_mask)))  # Check lengths are the same
 
         band_mask = np.asarrya(band_mask, dtype=bool)
 
@@ -113,7 +112,8 @@ def main(model="Average_TAPAS_2014.txt", bands=None, new_name=None, data_dir=Non
         filename = os.path.join(data_dir, band_name)
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
 
-        return_vals[i] = io.pdwrite_cols(filename, band_wav, band_flux, band_std_flux, band_mask, sep="\t", header=header, float_format="%10.8f")
+        return_vals[i] = io.pdwrite_cols(filename, band_wav, band_flux, band_std_flux, band_mask, sep="\t",
+                                         header=header, float_format="%10.8f")
 
         return np.sum(return_vals)  # If any extracts fail they will turn up here.
 

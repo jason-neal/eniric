@@ -81,22 +81,25 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
     flux_stellar = flux_stellar[2:-2]
 
     if normalize:
-        id_string = "{0}-{1}-{2:.1f}-{3}".format(star, band, vel, resolution)   # sample was left aside because only one value existed
+        id_string = "{0}-{1}-{2:.1f}-{3}".format(star, band, vel,
+                                                 resolution)  # sample was left aside because only one value existed
     else:
-        id_string = "{0}-{1}-{2:.1f}-{3}-unnorm".format(star, band, vel, resolution)   # sample was left aside because only one value existed
+        id_string = "{0}-{1}-{2:.1f}-{3}-unnorm".format(star, band, vel,
+                                                        resolution)  # sample was left aside because only one value existed
 
     # Normaize to SNR 100 in middle of J band 1.25 micron!
     flux_stellar = normalize_flux(flux_stellar, id_string)
 
     if id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k", "M6-J-1.0-100k", "M9-J-1.0-100k"]:
-        index_reference = np.searchsorted(wav_stellar, [1.25])[0]    # searching for the index closer to 1.25 micron
+        index_reference = np.searchsorted(wav_stellar, [1.25])[0]  # searching for the index closer to 1.25 micron
         sn_estimate = np.sqrt(np.sum(flux_stellar[index_reference - 1:index_reference + 2]))
         print("\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(id_string, sn_estimate))
 
     elif "J" in id_string:
-        index_reference = np.searchsorted(wav_stellar, [1.25])[0]    # searching for the index closer to 1.25 micron
+        index_reference = np.searchsorted(wav_stellar, [1.25])[0]  # searching for the index closer to 1.25 micron
         sn_estimate = np.sqrt(np.sum(flux_stellar[index_reference - 1:index_reference + 2]))
-        print("\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string, sn_estimate))
+        print(
+            "\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string, sn_estimate))
 
     # print("Performing analysis for: ", id_string)
     prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar)

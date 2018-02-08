@@ -2,11 +2,11 @@
 
  e.g. that they exist before trying to calculate the precision.
 
- Jason Neal - Janurary 2017
+ Jason Neal - January 2017
  """
 
-
 import argparse
+import itertools
 
 
 def _parser():
@@ -71,7 +71,7 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None,
     if resolution is None:
         resolution = ["60k", "80k", "100k"]
     else:
-        resolution = ["{0:.0f}k".format(R/1000) for R in resolution]
+        resolution = ["{0:.0f}k".format(R / 1000) for R in resolution]
 
     if sample_rate is None:
         sampling = ["3"]
@@ -81,13 +81,14 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None,
     iterations = itertools.product(spectral_types, bands, vsini, resolution, sampling)
     for (star, band, vel, res, smpl) in iterations:
 
-    # Find if the file exists.
+        # Find if the file exists.
         if exists:
             pass
         else:
             print("{} does not exist!".format(filename))
 
     return 0
+
 
 if __name__ == "__main__":
     args = vars(_parser())

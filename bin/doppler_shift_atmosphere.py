@@ -11,8 +11,8 @@ import sys
 
 import numpy as np
 
-import eniric.atmosphere as atm
 import eniric.IOmodule as io
+import eniric.atmosphere as atm
 
 
 def _parser():
