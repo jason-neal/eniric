@@ -20,7 +20,7 @@ before_install:
   - conda info -a
 # command to install dependencies
 install:
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy astropy matplotlib
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION 
   - source activate test-environment
   - travis_retry pip install -r requirements.txt
   - python setup.py install
