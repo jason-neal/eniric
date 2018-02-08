@@ -1,4 +1,3 @@
-
 """To be run on travis to generate the results data.
 
 Copare to published results and run other tests on it.
@@ -6,7 +5,6 @@ Don't do to many.
 """
 import os
 import subprocess
-
 
 subprocess.call("python bin/prepare_data.py -s M0 M3 M6 M9 -l 4.50 -m 0.0", shell=True)
 
