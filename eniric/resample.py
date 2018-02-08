@@ -54,7 +54,7 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
     wavelength, __, spectrum = io.pdread_3col(read_name, noheader=True)
 
     wavelength_start = wavelength[1]  # because of border effects
-    wavelength_end = wavelength[-2]   # because of border effects
+    wavelength_end = wavelength[-2]  # because of border effects
 
     # match = re.match("Spectrum_(M\d)-PHOENIX-ACES_([A-Z]{1,4})band_vsini
     # (\d{1,2}.?\d?)_R(\d{2,3})k(_conv_normalize)?.txt", spectrum_name)
@@ -76,7 +76,7 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
         resampled_dir, "{0}_res{1}.txt".format(spectrum_name[:-4], int(sampling)))
     io.write_e_2col(filetowrite, wav_grid, interpolated_flux)
 
-    if(plottest):
+    if (plottest):
         plt.figure(1)
         plt.xlabel(r"wavelength [$\mu$m])")
         plt.ylabel(r"flux [counts] ")

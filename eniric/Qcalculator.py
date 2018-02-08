@@ -110,11 +110,11 @@ def sqrt_sum_wis(wavelength, flux):
 
     if isinstance(flux, u.Quantity):
         """Units of variance are squared """
-        flux_variance = flux.value * (flux.unit)**2
+        flux_variance = flux.value * (flux.unit) ** 2
     else:
         flux_variance = flux
 
-    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivf_over_lambda**2.0 /
+    return np.sqrt(np.sum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 /
                           flux_variance[:-1]))
 
 
@@ -191,7 +191,7 @@ def RVprec_calc_masked(wavelength, flux, mask=None):
     # Zeros created from the inital empty array, when skipping single element chunks)
     slice_rvs = slice_rvs[np.nonzero(slice_rvs)]  # Only use nonzero values.
 
-    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / slice_rvs)**2.0)))
+    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / slice_rvs) ** 2.0)))
 
     return rv_value
 
@@ -223,8 +223,8 @@ def mask_clumping(wave, flux, mask):
     # Turn into masked array to use clump_unmasked method.
     mask = np.asarray(mask, dtype=bool)  # Make it bool so ~ works correctly
 
-    masked_wave = np.ma.masked_array(wave, mask=~mask)   # ma mask is inverted
-    masked_flux = np.ma.masked_array(flux, mask=~mask)   # ma mask is inverted
+    masked_wave = np.ma.masked_array(wave, mask=~mask)  # ma mask is inverted
+    masked_flux = np.ma.masked_array(flux, mask=~mask)  # ma mask is inverted
 
     wave_clumps = [wave[s] for s in np.ma.clump_unmasked(masked_wave)]
     flux_clumps = [flux[s] for s in np.ma.clump_unmasked(masked_flux)]
@@ -340,9 +340,9 @@ def sqrt_sum_wis_trans(wavelength, flux, transmission):
 
     if isinstance(flux, u.Quantity):
         """Units of variance are squared"""
-        flux_variance = flux.value * (flux.unit)**2
+        flux_variance = flux.value * (flux.unit) ** 2
     else:
         flux_variance = flux
 
-    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivf_over_lambda**2.0 /
-                          (flux_variance[:-1] / transmission[:-1]**2.0)))
+    return np.sqrt(np.sum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 /
+                          (flux_variance[:-1] / transmission[:-1] ** 2.0)))

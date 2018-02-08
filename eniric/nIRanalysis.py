@@ -29,10 +29,10 @@ results_dir = eniric.paths["results"]
 resampled_dir = eniric.paths["resampled"]
 
 # models form PHOENIX-ACES
-M0_ACES = data_rep+"lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M3_ACES = data_rep+"lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M6_ACES = data_rep+"lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M9_ACES = data_rep+"lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M0_ACES = data_rep + "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M3_ACES = data_rep + "lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M6_ACES = data_rep + "lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M9_ACES = data_rep + "lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 
 
 def run_convolutions(spectrum_string, band):
@@ -75,7 +75,7 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, fwhm_lim=5.0,
 
     """
     print("Reading the data...")
-    wav, flux = read_spectrum(spectrum)    # In microns and  photon flux.
+    wav, flux = read_spectrum(spectrum)  # In microns and  photon flux.
     print("Done.")
 
     wav_band, flux_band, convolved_flux = convolution(wav, flux, vsini, R, band,
@@ -86,10 +86,10 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, fwhm_lim=5.0,
         name_model = name_assignment(spectrum)
         if normalize:
             filename = ("{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k.txt"
-                        "").format(results_dir, name_model, band, vsini, R/1000)
+                        "").format(results_dir, name_model, band, vsini, R / 1000)
         else:
             filename = ("{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k_unnormalized.txt"
-                        "").format(results_dir, name_model, band, vsini, R/1000)
+                        "").format(results_dir, name_model, band, vsini, R / 1000)
     else:
         filename = os.path.join(results_dir, output_name)
 
@@ -99,12 +99,13 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, fwhm_lim=5.0,
         fig = plt.figure(1)
         plt.xlabel(r"wavelength [$\mu$m])")
         plt.ylabel(r"flux [counts] ")
-        plt.plot(wav_band, flux_band/np.max(flux_band), color='k', linestyle="-", label="Original spectra")
-        plt.plot(wav_band, convolved_flux/np.max(convolved_flux), color='b', linestyle="-", label="{0:s} spectrum observed at vsini={1:.2f} and R={2:d} .".format(name_model, vsini, R))
+        plt.plot(wav_band, flux_band / np.max(flux_band), color='k', linestyle="-", label="Original spectra")
+        plt.plot(wav_band, convolved_flux / np.max(convolved_flux), color='b', linestyle="-",
+                 label="{0:s} spectrum observed at vsini={1:.2f} and R={2:d} .".format(name_model, vsini, R))
         plt.legend(loc='best')
         plt.show()
 
-        fig.savefig(filename[:-3]+"pdf", facecolor='w', format='pdf', bbox_inches='tight')
+        fig.savefig(filename[:-3] + "pdf", facecolor='w', format='pdf', bbox_inches='tight')
         plt.close()
 
     return 0
@@ -145,7 +146,7 @@ def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, fwhm_lim=5.0,
     wav_band, flux_band = band_selector(wav, flux, band)
 
     # We need to calculate the fwhm at this value in order to set the starting point for the convolution
-    fwhm_min = wav_band[0] / R    # fwhm at the extremes of vector
+    fwhm_min = wav_band[0] / R  # fwhm at the extremes of vector
     fwhm_max = wav_band[-1] / R
 
     # performing convolution with rotation kernel
@@ -221,10 +222,10 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
 
         args_generator = tqdm([[wav, wav_extended, wav_ext_rotation,
                                 flux_ext_rotation, vsini, epsilon, normalize]
-                              for wav in wav_extended])
+                               for wav in wav_extended])
 
         flux_conv_rot = np.array(mproc_pool.map(wrapper_rot_parallel_convolution,
-                                 args_generator))
+                                                args_generator))
 
         mproc_pool.close()
 
@@ -251,8 +252,8 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
         """Embarisingly parallel component of resolution convolution"""
         fwhm = wav / R
         # Mask of wavelength range within 5 fwhm of wav
-        index_mask = ((wav_extended > (wav - fwhm_lim*fwhm)) &
-                      (wav_extended < (wav + fwhm_lim*fwhm)))
+        index_mask = ((wav_extended > (wav - fwhm_lim * fwhm)) &
+                      (wav_extended < (wav + fwhm_lim * fwhm)))
 
         flux_2convolve = flux_conv_rot[index_mask]
         # Gausian Instrument Profile for given resolution and wavelength
@@ -282,11 +283,11 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
         args_generator = tqdm([[wav, R, wav_extended, flux_conv_rot, fwhm_lim,
                                 normalize] for wav in wav_band])
         flux_conv_res = np.array(mproc_pool.map(wrapper_res_parallel_convolution,
-            args_generator))
+                                                args_generator))
         mproc_pool.close()
 
     else:  # num_procs == 0
-        flux_conv_res = np.empty_like(wav_band)   # Memory assignment
+        flux_conv_res = np.empty_like(wav_band)  # Memory assignment
         for jj, wav in enumerate(tqdm(wav_band)):
             flux_conv_res[jj] = element_res_convolution(wav, R, wav_extended,
                                                         flux_conv_rot, fwhm_lim)
@@ -307,11 +308,11 @@ def name_assignment(spectrum):
     base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
     if (m0_aces in spectrum) and (base in spectrum):
         name = "M0-PHOENIX-ACES"
-    elif(m3_aces in spectrum) and (base in spectrum):
+    elif (m3_aces in spectrum) and (base in spectrum):
         name = "M3-PHOENIX-ACES"
-    elif(m6_aces in spectrum) and (base in spectrum):
+    elif (m6_aces in spectrum) and (base in spectrum):
         name = "M6-PHOENIX-ACES"
-    elif(m9_aces in spectrum) and (base in spectrum):
+    elif (m9_aces in spectrum) and (base in spectrum):
         name = "M9-PHOENIX-ACES"
     else:
         raise ValueError("Name {0} not found!".format(spectrum))
