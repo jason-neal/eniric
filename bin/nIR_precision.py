@@ -10,14 +10,14 @@ import numpy as np
 from matplotlib import rc
 
 import eniric
-import eniric.atmosphere as atm
 import eniric.IOmodule as io
-import eniric.plotting_functions as plt_functions
 import eniric.Qcalculator as Qcalculator
+import eniric.atmosphere as atm
+import eniric.plotting_functions as plt_functions
 import eniric.snr_normalization as snrnorm
 import eniric.utilities as utils
 
-rc('text', usetex=True)   # set stuff for latex usage
+rc('text', usetex=True)  # set stuff for latex usage
 
 
 def _parser():
@@ -35,7 +35,9 @@ def _parser():
     parser.add_argument("-s", "--save", default=False, action="store_true",
                         help="Save results to file.")
     parser.add_argument("--snr", help="Mid-band SNR scaling. (Default=100)", default=100, type=float)
-    parser.add_argument("--ref_band", help="SNR reference band. Default=J. (Default=100). 'self' scales each band relative to the SNR itself.", choices=["self", "VIS", "GAP", "Z", "Y", "J", "H", "K"], default="J", type=str)
+    parser.add_argument("--ref_band",
+                        help="SNR reference band. Default=J. (Default=100). 'self' scales each band relative to the SNR itself.",
+                        choices=["self", "VIS", "GAP", "Z", "Y", "J", "H", "K"], default="J", type=str)
     return parser.parse_args()
 
 
@@ -78,7 +80,7 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
     # Save precision results
     if save:
         output_filename = os.path.join(eniric.paths["precision"],
-            "precision_results_2017_ref_band-{0}_snr-{1}.txt".format(ref_band, snr))
+                                       "precision_results_2017_ref_band-{0}_snr-{1}.txt".format(ref_band, snr))
         ids = []
         prec_1s = []
         prec_2s = []
@@ -115,8 +117,8 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
     # obtained first and applied to each band.
 
     print("using new config.yaml file here!!!!!!!!!!!!!!")
-    results = {}    # creating empty dictionary for the results
-    wav_plot_m0 = []   # creating empty lists for the plots
+    results = {}  # creating empty dictionary for the results
+    wav_plot_m0 = []  # creating empty lists for the plots
     flux_plot_m0 = []
     wav_plot_m3 = []
     flux_plot_m3 = []
@@ -204,29 +206,34 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             # Check mask masks out deep atmosphere absorption
             if np.any(flux_atm_selected[mask_atm_selected] < 0.98):
                 print("####WARNGING####\nThis absorption mask does not mask out deep atmosphere transmission!")
-                print("Min flux_atm_selected[mask_atm_selected] = {} < 0.98\n####".format(np.min(flux_atm_selected[mask_atm_selected])))
+                print("Min flux_atm_selected[mask_atm_selected] = {} < 0.98\n####".format(
+                    np.min(flux_atm_selected[mask_atm_selected])))
 
             # Normaize to SNR 100 in middle of J band 1.25 micron!
             # flux_stellar = normalize_flux(flux_stellar, id_string)
             # flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=True)  # snr=100, ref_band="J"
-            flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=new, snr=snr, ref_band=ref_band)  # snr=100, ref_band="J"
+            flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=new, snr=snr,
+                                                  ref_band=ref_band)  # snr=100, ref_band="J"
 
-            if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k",
-                             "M6-J-1.0-100k", "M9-J-1.0-100k"]):
-                index_ref = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
+            if (id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k",
+                              "M6-J-1.0-100k", "M9-J-1.0-100k"]):
+                index_ref = np.searchsorted(wav_stellar, 1.25)  # searching for the index closer to 1.25 micron
                 snr_estimate = np.sqrt(np.sum(flux_stellar[index_ref - 1:index_ref + 2]))
-                print("\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(id_string, snr_estimate))
-            elif("J" in id_string):
-                index_ref = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
+                print("\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(id_string,
+                                                                                                      snr_estimate))
+            elif ("J" in id_string):
+                index_ref = np.searchsorted(wav_stellar, 1.25)  # searching for the index closer to 1.25 micron
                 snr_estimate = np.sqrt(np.sum(flux_stellar[index_ref - 1:index_ref + 2]))
-                print("\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string, snr_estimate))
+                print("\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string,
+                                                                                                          snr_estimate))
 
             # Precision given by the first method:
             print("Performing analysis for: ", id_string)
             prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar)
 
             # Precision as given by the second_method
-            wav_stellar_chunks, flux_stellar_chunks = Qcalculator.bug_fixed_clumping_method(wav_stellar, flux_stellar, mask_atm_selected)
+            wav_stellar_chunks, flux_stellar_chunks = Qcalculator.bug_fixed_clumping_method(wav_stellar, flux_stellar,
+                                                                                            mask_atm_selected)
 
             prec_2_old = Qcalculator.RVprec_calc_masked(wav_stellar_chunks, flux_stellar_chunks)
             prec_2 = Qcalculator.RVprec_calc_masked(wav_stellar, flux_stellar, mask_atm_selected)
@@ -248,27 +255,27 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             results[id_string] = [prec_1, prec_2, prec_3]
 
             # Prepare/Do for the plotting.
-            if(plot_ste or plot_ste == id_string):
+            if (plot_ste or plot_ste == id_string):
                 plt_functions.plot_stellar_spectum(wav_stellar, flux_stellar,
                                                    wav_atm_selected, mask_atm_selected)
 
             plot_ids = ["M3-Z-1.0-100k", "M3-Y-1.0-100k", "M3-J-1.0-100k",
                         "M3-H-1.0-100k", "M3-K-1.0-100k"]
 
-            if(plot_flux and id_string in plot_ids):
+            if (plot_flux and id_string in plot_ids):
                 wav_plot_m0.append(wav_stellar)
                 flux_plot_m0.append(flux_stellar)
-            if(plot_flux and id_string in plot_ids):
+            if (plot_flux and id_string in plot_ids):
                 wav_plot_m3.append(wav_stellar)
                 flux_plot_m3.append(flux_stellar)
-            if(plot_flux and id_string in plot_ids):
+            if (plot_flux and id_string in plot_ids):
                 wav_plot_m6.append(wav_stellar)
                 flux_plot_m6.append(flux_stellar)
-            if(plot_flux and id_string in plot_ids):
+            if (plot_flux and id_string in plot_ids):
                 wav_plot_m9.append(wav_stellar)
                 flux_plot_m9.append(flux_stellar)
 
-    if(plot_flux):
+    if (plot_flux):
         plt_functions.plot_nIR_flux()
 
     if paper_plots:
@@ -350,7 +357,7 @@ def rv_cumulative(rv_vector):
 def weighted_error(rv_vector):
     """Function that calculates the average weighted error from a vector of errors."""
     rv_vector = np.array(rv_vector)
-    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / rv_vector)**2.0)))
+    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / rv_vector) ** 2.0)))
 
     return rv_value
 

@@ -1,6 +1,8 @@
 """Print the point at which the scale occurs."""
 import os
+
 import matplotlib.pyplot as plt
+
 import eniric
 import eniric.IOmodule as io
 import eniric.utilities as utils

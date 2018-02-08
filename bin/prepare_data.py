@@ -1,13 +1,12 @@
-
 """Prepare_data.py
 
 Code to take all phoenix-aces fits files and create .dat files with wavelength
 and flux.
 Adds them to the data directory of eniric for convolutions etc.
 
-This wastes alot of memory duplicating wavelemgth vector.
+This wastes alot of memory duplicating wavelength vector.
 
-Jason Neal Janurary 2017
+Jason Neal January 2017
 """
 from __future__ import division, print_function
 
@@ -17,7 +16,6 @@ import re
 import sys
 
 import numpy as np
-import pandas as pd
 from astropy.io import fits
 
 import eniric
@@ -34,12 +32,12 @@ def _parser():
                         type=str, nargs="+")
     parser.add_argument("-t", "--temp", help="Temperature of stars to prepare",
                         type=float, nargs="+", default=[3900.0], choices=list(
-                            np.arange(2300, 7000, 100.0)) + list(np.arange(7000, 12001, 200.0)))
+            np.arange(2300, 7000, 100.0)) + list(np.arange(7000, 12001, 200.0)))
     parser.add_argument("-l", "--logg", help="Logg for stellar models.", default=[4.50],
                         type=float, nargs="+", choices=np.arange(0, 6.01, 0.5))
     parser.add_argument("-m", "--metalicity", type=float, default=[0.0],
                         help="Metalicity values.", nargs="+")
-                        # choices=[list(np.arange(-4.0, -2.0, 1))+list(np.arange(-2.0, 1.01, 0.5))]
+    # choices=[list(np.arange(-4.0, -2.0, 1))+list(np.arange(-2.0, 1.01, 0.5))]
     parser.add_argument("-a", "--alpha", type=float, default=[0.0],
                         choices=np.arange(-0.2, 1.201, 0.2),
                         help="Metalicity values.", nargs="+")
@@ -142,20 +140,20 @@ def main(startype, temp, logg, metalicity, alpha, flux_type="photon",
             Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
             """
 
-            spectra_micron = spectra * 10**-4              # Convert   /cm    to  /micron
+            spectra_micron = spectra * 10 ** -4  # Convert   /cm    to  /micron
 
             if flux_type == "photon":
-                wavelength_micron = wavelength * 10**-4    # Convert Angstrom to   micron
+                wavelength_micron = wavelength * 10 ** -4  # Convert Angstrom to   micron
 
                 spectra_photon = spectra_micron * wavelength_micron  # Ignoring constants h*c in photon energy equation
 
                 result = io.pdwrite_cols(output_filename, wavelength_micron, spectra_photon,
-                    header=["# Wavelength (micron)", r"Flux (photon/s/cm^2)"], float_format="%.7f")
+                                         header=["# Wavelength (micron)", r"Flux (photon/s/cm^2)"], float_format="%.7f")
 
             else:
                 result = io.pdwrite_cols(output_filename, wavelength, spectra_micron,
-                    header=["# Wavelength (Angstom)", r"Flux (erg/s/cm^2/micron)"],
-                    float_format=None)
+                                         header=["# Wavelength (Angstom)", r"Flux (erg/s/cm^2/micron)"],
+                                         float_format=None)
 
             if not result:
                 print("Successfully wrote to ", output_filename)
