@@ -73,7 +73,7 @@ def test_sampling_index():
     # Check number of values correct.
     for sample in [1, 2, 3, 4, 5, 7, 10, 15]:
         assert len(snrnorm.sampling_index(20, sample)) == sample
-        assert type(snrnorm.sampling_index(20, sample)[0]) == np.int64  # index values must be int
+        assert isinstance(snrnorm.sampling_index(20, sample)[0], (int, np.integer))  # index values must be int
 
 
 def test_sampling_index_array():
