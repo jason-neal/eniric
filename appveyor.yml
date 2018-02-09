@@ -23,7 +23,7 @@ build: off
 before_test:
   - cmd: "move .test_config.yaml config.yaml"
   # Generate data
-  - cmd: "%PYTHON%\\python.exe bin\\mk_travis_data.py
+  - cmd: "%PYTHON%\\python.exe bin\\mk_travis_data.py"
 
 test_script:
   # Put your test command here.
