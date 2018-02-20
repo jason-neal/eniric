@@ -4,4 +4,4 @@ pandas==0.22.0
 astropy==3.0
 matplotlib==2.1.2
 multiprocess==0.70.5
-scipy
+scipy==1.0.0
