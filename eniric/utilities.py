@@ -250,7 +250,7 @@ def silentremove(filename):
             raise  # re-raise exception if a different error occured
 
 
-def resolution2int(resolutions, to=str):
+def resolution2int(resolutions: Union[List[Any], Any]) -> Union[List[int], int]:
     """Convert from "100k" or "100000" to 100000."""
     if not hasattr(resolutions, '__len__') or isinstance(resolutions, str):
         resolutions = [resolutions]
