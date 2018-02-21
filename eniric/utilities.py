@@ -5,13 +5,15 @@ Auxiliary functions for nIRanalysis
 import errno
 import os
 import re
+from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
+from numpy import ndarray
 
 import eniric.IOmodule as io
 
 
-def read_spectrum(spec_name):
+def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
     """Function that reads a flux spectra from the database!.
 
     If a energy flux spectra is read then it converts it to photons.
@@ -34,13 +36,14 @@ def read_spectrum(spec_name):
     else:
         wav, flux = io.pdread_2col(spec_name)
 
-        wav_micron = wav * 1.0e-4  # conversion to microns
+        wav_micron = wav * 1.0e-4  # Conversion to microns
         flux_photons = flux * wav_micron  # Convert to photons
 
     return wav_micron, flux_photons
 
 
-def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_type="photon"):
+def get_spectrum_name(startype: str, logg: Union[float, int] = 4.50, feh: Union[float, int] = 0.0,
+                      alpha: Optional[Union[int, float]] = None, org: bool = False, flux_type: str = "photon") -> str:
     """Return correct phoenix spectrum filename for a given spectral type.
 
     Based off phoenix_utils module.
@@ -48,15 +51,15 @@ def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_
     Parameters
     ----------
     flux_type: str
-        Indicate which filetype to try find. e.g. "photon", "wave", ("fits" Not Implemented yet)
+        Indicate which file type to try find. e.g. "photon", "wave", ("fits" Not Implemented yet)
 
     Returns
     -------
     spectrum_name: str
-        The name of spectrum with choosen Parameters
+        The name of spectrum with chosen Parameters
 
 
-    Ability to select logg and metalicity (feh) later on.
+    Ability to select logg and metallicity (feh) later on.
     org = original locations (without Z folder option)
     """
     if feh == 0:
@@ -91,7 +94,7 @@ def get_spectrum_name(startype, logg=4.50, feh=0.0, alpha=None, org=False, flux_
     return spectrum_name
 
 
-def band_selector(wav, flux, band):
+def band_selector(wav: ndarray, flux: ndarray, band: str) -> Tuple[ndarray, ndarray]:
     """Select a specific wavelength band.
 
     Parameters
@@ -116,7 +119,7 @@ def band_selector(wav, flux, band):
         return wav_selector(wav, flux, bandmin, bandmax)
 
 
-def band_limits(band):
+def band_limits(band: str) -> Tuple[float, float]:
     """ Get wavelength limits of band in microns.
 
     Parameters
@@ -146,9 +149,10 @@ def band_limits(band):
         raise ValueError("The band {0} requested is not a valid option".format(band))
 
 
-def wav_selector(wav, flux, wav_min, wav_max):
+def wav_selector(wav: Union[ndarray, List[float]], flux: Union[ndarray, List[float]], wav_min: float, wav_max: float) -> \
+        Tuple[ndarray, ndarray]:
     """
-    function that returns wavelength and flux withn a giving range
+    function that returns wavelength and flux within a giving range
 
     Parameters
     ----------
@@ -178,7 +182,8 @@ def wav_selector(wav, flux, wav_min, wav_max):
     return wav_sel, flux_sel
 
 
-def unitary_gaussian(x, center, fwhm):
+def unitary_gaussian(x: Union[range, int, ndarray], center: Union[float, int, str],
+                     fwhm: Union[float, int, str]) -> ndarray:
     """Gaussian function of area = 1.
 
     Parameters
@@ -186,7 +191,7 @@ def unitary_gaussian(x, center, fwhm):
     x: array-like
         Position array
     center: float
-        Central postion of Gaussian
+        Central position of Gaussian
     FHWM: float
         Full Width at Half Maximum
 
@@ -210,7 +215,7 @@ def unitary_gaussian(x, center, fwhm):
     return result
 
 
-def rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon):
+def rotation_kernel(delta_lambdas: ndarray, delta_lambda_l: float, vsini: float, epsilon: float) -> ndarray:
     """Calculate the rotation kernel for a given wavelength
 
     Parameters
@@ -218,7 +223,7 @@ def rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon):
     delta_lambdas: array
         Wavelength values selected within delta_lambda_l around central value. (check)
     delta_lambda_l: float
-        FWHM of rotational broading. (check)
+        FWHM of rotational broadening. (check)
     vsini: float
         Projected rotational velocity [km/s]
     epsilon: float
@@ -241,13 +246,13 @@ def rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon):
     return (c1 * np.sqrt(1.0 - lambda_ratio_sqr) + c2 * (1.0 - lambda_ratio_sqr))
 
 
-def silentremove(filename):
+def silentremove(filename: str) -> None:
     """Remove file without failing when it doesn't exist."""
     try:
         os.remove(filename)
     except OSError as e:
         if e.errno != errno.ENOENT:  # errno.ENOENT = no such file or directory
-            raise  # re-raise exception if a different error occured
+            raise  # re-raise exception if a different error occurred
 
 
 def resolution2int(resolutions: Union[List[Any], Any]) -> Union[List[int], int]:
@@ -277,7 +282,7 @@ def resolution2int(resolutions: Union[List[Any], Any]) -> Union[List[int], int]:
         return res_ints
 
 
-def resolution2str(resolutions):
+def resolution2str(resolutions: Union[List[Any], Any]) -> Union[List[str], str]:
     if not hasattr(resolutions, '__len__') or isinstance(resolutions, str):
         resolutions = [resolutions]
         list_flag = True
