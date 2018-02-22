@@ -15,11 +15,12 @@ import multiprocess as mprocess
 import numpy as np
 from matplotlib import rc
 from tqdm import tqdm
-
+from numpy import ndarray
 import eniric
 import eniric.IOmodule as io
 from eniric.utilities import (band_selector, read_spectrum, rotation_kernel,
                               unitary_gaussian, wav_selector)
+from typing import Optional, List, Tuple, Union
 
 # set stuff for latex usage
 rc('text', usetex=True)
@@ -35,7 +36,7 @@ M6_ACES = data_rep + "lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.d
 M9_ACES = data_rep + "lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 
 
-def run_convolutions(spectrum_string, band):
+def run_convolutions(spectrum_string: str, band: str) -> None:
     """
     Runs the convolutions for a set of spectra in batch
     """
@@ -50,8 +51,8 @@ def run_convolutions(spectrum_string, band):
             convolve_spectra(spectrum, band, vel, res, plot=False)
 
 
-def save_convolution_results(filename, wavelength, flux, convolved_flux):
-    """Saves covolution results to a file.
+def save_convolution_results(filename: str, wavelength: ndarray, flux: ndarray, convolved_flux: ndarray) -> int:
+    """Saves convolution results to a file.
 
     Parameters
     ----------
@@ -115,7 +116,7 @@ def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, fwhm_lim=5.0,
                 num_procs=None, normalize=True, output_name=None):
     """Perform convolution of spectrum.
 
-    Rotational convolution followed by a guassian a a specified resolution R.
+    Rotational convolution followed by a Guassian a a specified resolution R.
 
     Parameters
     ----------
@@ -196,7 +197,7 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
     def element_rot_convolution(wav, wav_extended, wav_ext_rotation,
                                 flux_ext_rotation, vsini, epsilon,
                                 normalize):
-        """Embarisingly parallel part of rotational convolution"""
+        """Embarrassingly parallel part of rotational convolution"""
         # select all values such that they are within the fwhm limits
         delta_lambda_l = wav * vsini / 3.0e5
 
@@ -242,26 +243,26 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
 
 
 def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
-                           num_procs=1, normalize=True):
+                           num_procs: int = 1, normalize: bool = True):
     """Perform Resolution convolution part of convolution.
     """
 
     # Define inner convolution functions
     def element_res_convolution(wav, R, wav_extended, flux_conv_rot, fwhm_lim,
                                 normalize):
-        """Embarisingly parallel component of resolution convolution"""
+        """Embarrassingly parallel component of resolution convolution"""
         fwhm = wav / R
         # Mask of wavelength range within 5 fwhm of wav
         index_mask = ((wav_extended > (wav - fwhm_lim * fwhm)) &
                       (wav_extended < (wav + fwhm_lim * fwhm)))
 
         flux_2convolve = flux_conv_rot[index_mask]
-        # Gausian Instrument Profile for given resolution and wavelength
+        # Gaussian Instrument Profile for given resolution and wavelength
         IP = unitary_gaussian(wav_extended[index_mask], wav, fwhm)
 
         sum_val = np.sum(IP * flux_2convolve)
         if normalize:
-            # Correct for the effect of convolution with non-equidistant postions
+            # Correct for the effect of convolution with non-equidistant positions
             unitary_val = np.sum(IP)  # Affects precision
             return sum_val / unitary_val
         else:
@@ -296,7 +297,7 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
 
 
 ###############################################################################
-def name_assignment(spectrum):
+def name_assignment(spectrum: str):
     """
     assigns a name to the filename in which the spectrum is going to be saved
     """

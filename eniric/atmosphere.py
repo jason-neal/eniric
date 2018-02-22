@@ -1,19 +1,22 @@
-"""Functions to deal with the atmopshere models.
+"""Functions to deal with the atmosphere models.
 
-Manily the barycentric shifting of the absobtion mask.
+Mainly the barycentric shifting of the absorption mask.
 """
 
 from __future__ import division, print_function
 
+from typing import Tuple
+
 import matplotlib.pyplot as plt
 import numpy as np
 from astropy.constants import c
+from numpy import ndarray
 
 import eniric.IOmodule as io
 
 
-def prepare_atmopshere(atmmodel):
-    """Read in atmopheric model and prepare."""
+def prepare_atmopshere(atmmodel: str) -> Tuple[ndarray, ndarray, ndarray, ndarray]:
+    """Read in atmospheric model and prepare."""
     wav_atm, flux_atm, std_flux_atm, mask_atm = io.pdread_4col(atmmodel)
     # pandas already returns numpy arrays
     wav_atm = wav_atm / 1000.0  # conversion from nanometers to micrometers
@@ -21,10 +24,11 @@ def prepare_atmopshere(atmmodel):
     return wav_atm, flux_atm, std_flux_atm, mask_atm
 
 
-def barycenter_shift(wav_atm, mask_atm, rv_offset=0.0, consecutive_test=True):
+def barycenter_shift(wav_atm: ndarray, mask_atm: ndarray, rv_offset: float = 0.0,
+                     consecutive_test: bool = True) -> ndarray:
     """Calculating impact of Barycentric movement on mask...
 
-    Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
+    Extends the masked region to +-30 km/s due to the barycentric motion of the earth.
     """
     # Mask values to the left and right side of mask_atm.
     # To avoid indexing errors have padded with first and last values.
@@ -56,8 +60,8 @@ def barycenter_shift(wav_atm, mask_atm, rv_offset=0.0, consecutive_test=True):
             """If the value and its 2 neighbours are already zero don't do the barycenter shifts"""
             mask_atm_30kms[i] = False
         else:
-            # np.searchsorted is faster then the boolean masking wavlength range
-            # It returns index locations to place the min/max doppler-shifted vals
+            # np.searchsorted is faster then the boolean masking wavelength range
+            # It returns index locations to place the min/max doppler-shifted values
             slice_limits = np.searchsorted(wav_atm, [wav_lower_barys[i], wav_upper_barys[i]])
             slice_limits = [index if (index < len(wav_atm)) else len(wav_atm) - 1
                             for index in slice_limits]  # Fix searchsorted index
@@ -90,7 +94,7 @@ def barycenter_shift(wav_atm, mask_atm, rv_offset=0.0, consecutive_test=True):
     return mask_atm_30kms
 
 
-def consecutive_truths(condition):
+def consecutive_truths(condition: ndarray) -> ndarray:
     """Length of consecutive true values in an bool array.
 
     Parameters
@@ -134,10 +138,10 @@ def plot_atm_masks(wav, flux, mask, old_mask=None, new_mask=None, block=True):
     return 0
 
 
-def bugged_old_barycenter_shift(wav_atm, mask_atm, rv_offset=0.0):
+def bugged_old_barycenter_shift(wav_atm: ndarray, mask_atm: ndarray, rv_offset: float = 0.0):
     """Buggy Old version Calculating impact of Barycentric movement on mask...
 
-    Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
+    Extends the masked region to +-30 km/s due to the barycentric motion of the earth.
     """
     pixels_total = len(mask_atm)
     masked_start = pixels_total - np.sum(mask_atm)
@@ -159,7 +163,7 @@ def bugged_old_barycenter_shift(wav_atm, mask_atm, rv_offset=0.0):
 
             mask_atm_30kmslice_reversed = [not i for i in mask_atm_30kmslice]
 
-            # Found suspected coulpit code
+            # Found suspected culprit code
             clump = np.array_split(mask_atm_30kmslice, np.where(np.diff(mask_atm_30kmslice_reversed))[0] + 1)[
                     ::2]  # This code is the bug!
 
@@ -179,12 +183,12 @@ def bugged_old_barycenter_shift(wav_atm, mask_atm, rv_offset=0.0):
     return mask_atm
 
 
-def old_barycenter_shift(wav_atm, mask_atm, rv_offset=0.0):
-    """Bug Fiexed old version Calculating impact of Barycentric movement on mask...
+def old_barycenter_shift(wav_atm: ndarray, mask_atm: ndarray, rv_offset: float = 0.0) -> ndarray:
+    """Bug Fixed old version Calculating impact of Barycentric movement on mask...
 
-    Extends the masked region to +-30 km/s due to the barycentic motion of the earth.
+    Extends the masked region to +-30 km/s due to the barycentric motion of the earth.
 
-    This fixed verion is used to compare with the new version.
+    This fixed version is used to compare with the new version.
     """
     pixels_total = len(mask_atm)
     masked_start = pixels_total - np.sum(mask_atm)
@@ -206,7 +210,7 @@ def old_barycenter_shift(wav_atm, mask_atm, rv_offset=0.0):
 
             # mask_atm_30kmslice_reversed = [not i for i in mask_atm_30kmslice] # Unneeded
 
-            # Found suspected coulpit code
+            # Found suspected culprit code
             # clump = np.array_split(mask_atm_30kmslice, np.where(np.diff(mask_atm_30kmslice_reversed))[0] + 1)[::2]  # This code is the bug!
             if mask_atm_30kmslice[0]:  # A true first value
                 clump = np.array_split(mask_atm_30kmslice, np.where(np.diff(mask_atm_30kmslice))[0] + 1)[1::2]
