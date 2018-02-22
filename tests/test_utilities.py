@@ -20,9 +20,9 @@ file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 def test_read_spectrum():
     """Test reading in a _wave_photon.dat is the same as a _wave.dat."""
     photon = os.path.join(eniric.paths["test_data"],
-        "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
+                          "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
     wave = os.path.join(eniric.paths["test_data"],
-        "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
+                        "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
     wave_wav, wave_flux = utils.read_spectrum(wave)
     photon_wav, photon_flux = utils.read_spectrum(photon)
 
@@ -60,7 +60,7 @@ def test_spectrum_name_value_error(spec_type):
 @pytest.mark.parametrize("spec_type", ["O1", "B2", "A3", "F4", "G5", "K6", "M7", "L8"])
 def test_notimplemented_spectrum_name(spec_type):
     with pytest.raises(NotImplementedError):
-        utils.get_spectrum_name(spec_type)       # Stellar type not added (only M atm)
+        utils.get_spectrum_name(spec_type)  # Stellar type not added (only M atm)
 
 
 @pytest.mark.parametrize("bad_alpha", [-0.3, 0.3, 1])
@@ -79,7 +79,7 @@ def test_spectrum_name_with_ok_alpha(alpha):
     assert "Alpha=" in name
 
 
-#@pytest.mark.xfail(raises=file_error_to_catch)
+# @pytest.mark.xfail(raises=file_error_to_catch)
 def test_org_name():
     """Test org flag of utils.get_spectrum_name, suposed to be temporary."""
     test_org = "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
@@ -92,7 +92,7 @@ def test_org_name():
        st.floats(allow_nan=False, allow_infinity=False))
 def test_wav_selector(x, y, wav_min, wav_max):
     """Test some properties of wavelength selector."""
-    y = [xi + y for xi in x]   # just to make y different
+    y = [xi + y for xi in x]  # just to make y different
     x1, y1 = utils.wav_selector(x, y, wav_min, wav_max)
 
     assert all(x1 >= wav_min)
@@ -118,10 +118,10 @@ def test_band_limits(band):
 def test_band_selector(band):
     """Test band selector selects the wav and flux in the given band."""
     wav = np.linspace(0.5, 3, 100)
-    flux = wav**2
+    flux = wav ** 2
 
     band_min, band_max = utils.band_limits(band)
-    assert not np.all(wav > band_min)      # Assert wav goes outside band
+    assert not np.all(wav > band_min)  # Assert wav goes outside band
     assert not np.all(wav < band_max)
 
     wav, flux = utils.band_selector(wav, flux, band)
@@ -142,12 +142,12 @@ def test_band_limits_raises_errors(band, error):
         utils.band_limits(band)
 
 
-@pytest.mark.parametrize("band,error",[
+@pytest.mark.parametrize("band,error", [
     ("X", ValueError),
     ("M0", ValueError),
     (1, AttributeError),
     (["list", "of", "strings"], AttributeError),
-    (np.linspace(1,2,10), AttributeError)
+    (np.linspace(1, 2, 10), AttributeError)
 ])
 def test_band_selector_raises_errors(band, error):
     """Test it raises the Value and Attribute Errors"""
@@ -172,7 +172,7 @@ def test_band_selector_with_no_selection(band):
 
 @settings(max_examples=100)
 @given(st.lists(st.floats(min_value=1e-7, max_value=1e-5, allow_infinity=False,
-       allow_nan=False), unique=True, min_size=3, max_size=25),
+                          allow_nan=False), unique=True, min_size=3, max_size=25),
        st.floats(min_value=1e-2, max_value=200), st.floats(min_value=1e-4, max_value=1))
 def test_rotational_kernal(delta_lambdas, vsini, epsilon):
     """Test that the new and original code produces the same output."""
@@ -192,6 +192,7 @@ def test_silent_remove():
     utils.silentremove("a_fake_filename_that_doesnt_exist.fake")
     assert True
 
+
 @given(st.lists(st.floats(min_value=-100, max_value=100, allow_nan=False), min_size=1, unique=True),
        st.floats(min_value=-100, max_value=100, allow_nan=False),
        st.floats(min_value=0.001, max_value=100, allow_nan=False))
@@ -204,7 +205,6 @@ def test_unitary_gaussian(x, center, fwhm):
     # point at center should be the max
     assert len(gaussian) == len(x)
     assert np.allclose(np.max(gaussian), gaussian[np.argmin(abs(x - center))])
-
 
 
 def test_unitary_gaussian_type_errors():
@@ -234,7 +234,6 @@ def test_unitary_gaussian_type_errors():
     (80000, "80k")
 ])
 def test_resolution2str(resolutions, results):
-
     assert results == utils.resolution2str(resolutions)
 
 
@@ -247,7 +246,6 @@ def test_resolution2str(resolutions, results):
     (80000, 80000)
 ])
 def test_resolution2int(resolutions, results):
-
     assert results == utils.resolution2int(resolutions)
 
 
@@ -260,3 +258,23 @@ def test_compatibility_res2int_res2str():
 
     assert res2int(res2int(resolution)) == res2int(resolution)
     assert res2str(res2str(resolution)) == res2str(resolution)
+
+
+@pytest.mark.parametrize("resolutions,results", [
+        (60000, 60000),
+        ("80k",  80000),
+        ("8000", 8000),
+])
+def test_resolution2int_single(resolutions, results):
+    # Test single values
+    assert results == utils.resolution2int(resolutions)
+
+
+@pytest.mark.parametrize("resolutions,results", [
+        (60000, "60k"),
+        (80000, "80k"),
+        (3000, "3k"),
+])
+def test_resolution2str_single(resolutions, results):
+    # Test single values
+    assert results == utils.resolution2str(resolutions)
