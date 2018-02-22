@@ -16,6 +16,8 @@ import numpy as np
 import eniric
 import eniric.IOmodule as Io
 import eniric.utilities as utils
+from typing import List, Tuple, Optional
+from numpy import ndarray, float64
 
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
@@ -30,7 +32,7 @@ def normalize_flux2(*args, **kwargs):
     raise NotImplementedError("Use normalize_flux")
 
 
-def normalize_flux(flux, id_string, new=True, snr=100, ref_band="J"):
+def normalize_flux(flux: ndarray, id_string: str, new: bool = True, snr: int = 100, ref_band: str = "J") -> ndarray:
     """Normalize flux to have SNR of 100 in middle of J band.
 
     Parameters
@@ -38,7 +40,7 @@ def normalize_flux(flux, id_string, new=True, snr=100, ref_band="J"):
     flux_stellar: ndarray
         Photon flux.
     id_string: str
-        Idenitifing sting for spectra.
+        Identifying sting for spectra.
     new: bool default=True
         Choose between new and old constant for testing.
     snr: int default=100
@@ -69,7 +71,7 @@ def normalize_flux(flux, id_string, new=True, snr=100, ref_band="J"):
     return flux / norm_const
 
 
-def old_norm_constant(id_string):
+def old_norm_constant(id_string: str) -> float:
     """Normalization constants for Figueira et al 2016.
 
     These are the manual values to achieve a SNR of 100 at 1.25 micro
@@ -98,11 +100,11 @@ def old_norm_constant(id_string):
     return (norm_constant / 100.0) ** 2.0
 
 
-def get_reference_spectrum(id_string, ref_band="J"):
+def get_reference_spectrum(id_string: str, ref_band: str = "J") -> Tuple[ndarray, ndarray]:
     """From the id_string find the correct Spectrum to calculate norm_constant from."""
     # TODO: add option for Alpha into ID-String
-    # TODO: Add metalicity and logg into id string
-    # TODO: Add metalicity folder
+    # TODO: Add metallicity and logg into id string
+    # TODO: Add metallicity folder
 
     # Determine the correct reference file to use.
     if ("Alpha=" in id_string) or ("smpl" in id_string):
@@ -127,7 +129,7 @@ def get_reference_spectrum(id_string, ref_band="J"):
     return wav_ref, flux_ref
 
 
-def snr_constant_band(wav, flux, snr=100, band="J"):
+def snr_constant_band(wav: ndarray, flux: ndarray, snr: int = 100, band: str = "J") -> float64:
     """Determine the normalization constant to achieve a SNR in the middle of a given band.
 
     SNR estimated by the square root of the number of photons in a resolution element.
@@ -163,7 +165,7 @@ def snr_constant_band(wav, flux, snr=100, band="J"):
     return norm_constant
 
 
-def snr_constant_wav(wav, flux, wav_ref, snr=100, sampling=3):
+def snr_constant_wav(wav: ndarray, flux: ndarray, wav_ref: float, snr: int = 100, sampling: int = 3) -> float64:
     """Determine the normalization constant to achieve a SNR at given wavelength.
 
     SNR estimated by the square root of the number of photons in a resolution element.
@@ -184,7 +186,7 @@ def snr_constant_wav(wav, flux, wav_ref, snr=100, sampling=3):
     Returns
     -------
     norm_value: float
-        Normalization value to divide the flux by to acheive the desired SNR "SNR"
+        Normalization value to divide the flux by to achieve the desired SNR "SNR"
         in resolution element (defined by "sampling") around the wavelength "wav_ref".
 
     Notes
@@ -204,7 +206,7 @@ def snr_constant_wav(wav, flux, wav_ref, snr=100, sampling=3):
     return norm_value
 
 
-def sampling_index(index, sampling=3, array_length=None):
+def sampling_index(index: int, sampling: int = 3, array_length: Optional[int] = None) -> ndarray:
     """Get a small number of index values around the given index value.
 
     Parameters
@@ -245,7 +247,7 @@ def sampling_index(index, sampling=3, array_length=None):
     return indexes
 
 
-def decompose_id_string(id_string):
+def decompose_id_string(id_string: str):
     """Get the values back out of the id-string."""
     try:
         star, band, vel, res = re.search(r"(M\d)-(\w{1,4})-(\d{1,2}\.0)-(\d{2,3}k)", id_string).groups()
