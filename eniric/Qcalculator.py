@@ -9,8 +9,12 @@ import pandas as pd
 from astropy.constants import c
 from astropy.units import Quantity
 
+from astropy.units.quantity import Quantity
+from numpy import float64, int32, ndarray
+from typing import Any, List, Optional, Tuple, Union
 
-def RVprec_test(spectrum_file="resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt"):
+
+def RVprec_test(spectrum_file: str = "resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt") -> Quantity:
     """Test a RVprec_calc for a single spectrum."""
     data = pd.read_table(spectrum_file, comment='#', header=None,
                          names=["wavelength", "flux"], dtype=np.float64,
@@ -20,7 +24,7 @@ def RVprec_test(spectrum_file="resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0
     return RVprec_calc(wavelength, flux)
 
 
-def RVprec_calc(wavelength, flux):
+def RVprec_calc(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]) -> Quantity:
     """Calculate the RV precision achievable on a spectrum.
 
     Parameters
@@ -67,8 +71,9 @@ def RVprec_calc(wavelength, flux):
     return c / sqrt_sum_wis(wavelength, flux)
 
 
-def sqrt_sum_wis(wavelength, flux):
-    """Calculation of the SquareRoot of the sum of the weigths(Wis) for a spectrum.
+def sqrt_sum_wis(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]) -> Union[
+    float64, Quantity]:
+    """Calculation of the SquareRoot of the sum of the weights(Wis) for a spectrum.
 
     Parameters
     ----------
@@ -80,7 +85,7 @@ def sqrt_sum_wis(wavelength, flux):
     Returns
     -------
     sqrt{sum{W(i)}}: float or Quantity scalar
-       Squareroot of the sum of the pixel weigths(Wis)
+       Squareroot of the sum of the pixel weights(Wis)
 
     Notes
     -----
@@ -118,7 +123,8 @@ def sqrt_sum_wis(wavelength, flux):
                           flux_variance[:-1]))
 
 
-def RVprec_calc_masked(wavelength, flux, mask=None):
+def RVprec_calc_masked(wavelength: Union[List[List[Any]], ndarray],
+                       flux: Union[ndarray, List[List[Any]]], mask: Optional[ndarray] = None) -> Quantity:
     """RV precision for split apart spectra.
 
     The same as RVprec_calc, but now wavelength and flux are organized into
@@ -196,7 +202,7 @@ def RVprec_calc_masked(wavelength, flux, mask=None):
     return rv_value
 
 
-def mask_clumping(wave, flux, mask):
+def mask_clumping(wave: ndarray, flux: ndarray, mask: ndarray) -> Tuple[List[ndarray], List[ndarray]]:
     """Clump contiguous wavelength and flux sections into list.
 
     Note: Our value of mask (0 = bad points) is opposite to usage in
@@ -232,10 +238,10 @@ def mask_clumping(wave, flux, mask):
     return wave_clumps, flux_clumps
 
 
-def bug_fixed_clumping_method(wav, flux, mask):
+def bug_fixed_clumping_method(wav: ndarray, flux: ndarray, mask: ndarray) -> Tuple[List[Any], List[Any]]:
     """Old clumping method that is difficult to understand ...[0] + 1)[::2].
 
-    There was a signifcant bug which was fixed.
+    There was a significant bug which was fixed.
     The returned values were dependant on the first value in the mask.
     """
     if mask[0] is False:  # First value of mask is False was a bug in original code
@@ -256,10 +262,10 @@ def bug_fixed_clumping_method(wav, flux, mask):
     return wav_chunks, flux_chunks
 
 
-def bugged_clumping_method(wav, flux, mask):
+def bugged_clumping_method(wav: ndarray, flux: ndarray, mask: ndarray) -> Tuple[List[List[int32]], List[List[int32]]]:
     """Old clumping method that is difficult to understand ...[0] + 1)[::2].
 
-    There was a signifcant bug in which the returned values depend on the first value in mask.
+    There was a significant bug in which the returned values depend on the first value in mask.
     """
     wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[::2]
     wav_chunks = [list(chunk) for chunk in wav_chunks_unformated]
@@ -271,7 +277,7 @@ def bugged_clumping_method(wav, flux, mask):
 
 
 ###############################################################################
-def RV_prec_calc_Trans(wavelength, flux, transmission):
+def RV_prec_calc_Trans(wavelength: ndarray, flux: ndarray, transmission: ndarray) -> Quantity:
     """The same as RV_prec_calc, but considering a transmission different than zero.
 
     Parameters
@@ -292,7 +298,7 @@ def RV_prec_calc_Trans(wavelength, flux, transmission):
     return c / sqrt_sum_wis_trans(wavelength, flux, transmission)
 
 
-def sqrt_sum_wis_trans(wavelength, flux, transmission):
+def sqrt_sum_wis_trans(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray], transmission: Union[Quantity, ndarray]) -> Union[float64, Quantity]:
     """Calculation of the SquareRoot of the sum of the Weights for a spectrum, considering transmission.
 
     The transmission reduces the flux so has an affect on the variance.
@@ -309,7 +315,7 @@ def sqrt_sum_wis_trans(wavelength, flux, transmission):
     Returns
     -------
     sqrt_sum_wis_trans: array-like or Quantity
-        Squarerooted sum of pixel weigths including effects of transmission.
+        Squarerooted sum of pixel weights including effects of transmission.
 
     """
     if not isinstance(wavelength, np.ndarray):
