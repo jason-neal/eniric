@@ -18,21 +18,27 @@ before_install:
   - conda config --set always_yes yes --set changeps1 no
   - travis_retry conda update -q conda
   - conda info -a
-# command to install dependencies
+
+cache:
+  directories:
+    - $HOME/.cache/pip
+
 install:
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION 
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
   - travis_retry pip install -r requirements.txt
+  - travis_retry pip install -r test_requirements.txt
   - python setup.py install
-  # Test requirements
-  - travis_retry pip install pytest pytest-cov hypothesis python-coveralls codeclimate-test-reporter codacy-coverage
 
-# command to run tests
+before_script:
+  - mv .test_config.yaml config.yaml
+
+  # Generate data
+  - python bin/mk_travis_data.py
 script:
     - pytest --cov=eniric --cov-report term-missing --durations 5
-    # coverage run --source eniric -m py.test
-    # coverage report
     - coverage xml
+
 after_success:
   - coveralls
   - codeclimate-test-reporter
