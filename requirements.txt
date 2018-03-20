@@ -1,7 +1,7 @@
-tqdm==4.19.6
-numpy==1.14.1
+tqdm==4.19.8
+numpy==1.14.2
 pandas==0.22.0
-astropy==3.0
-matplotlib==2.2.0
+astropy==3.0.1
+matplotlib==2.2.2
 multiprocess==0.70.5
 scipy==1.0.0
