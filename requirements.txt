@@ -1,4 +1,4 @@
-tqdm==4.20.0
+tqdm==4.22.0
 numpy==1.14.2
 pandas==0.22.0
 astropy==3.0.1
