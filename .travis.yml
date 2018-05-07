@@ -36,7 +36,7 @@ before_script:
   - python bin/mk_travis_data.py
 script:
     - pytest --cov=eniric --cov-report term-missing --durations 5
-    - coverage xml
+    - coverage xml -i
 
 after_success:
   - coveralls
