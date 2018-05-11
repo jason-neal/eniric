@@ -21,8 +21,8 @@ def test_resamplers_equal(wave, sampling, resolution):
     assert np.allclose(grid_1, grid_2)
 
 
-@pytest.mark.parametrize("sampling", [1, 3, 5])
-@pytest.mark.parametrize("resolution", [1000, 50000, 100000])
+@pytest.mark.parametrize("sampling", [1.5, 3, 5])
+@pytest.mark.parametrize("resolution", [10000, 50000, 100000])
 @pytest.mark.parametrize("wave", [
     np.arange(2000, 2100),
     np.arange(100, 110, 0.1),
