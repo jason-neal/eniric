@@ -53,28 +53,18 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
     # theoretical_spectrum = data["model"].values
     wavelength, __, spectrum = io.pdread_3col(read_name, noheader=True)
 
-    wavelength_start = wavelength[1]  # because of border effects
-    wavelength_end = wavelength[-2]  # because of border effects
-
     # match = re.match("Spectrum_(M\d)-PHOENIX-ACES_([A-Z]{1,4})band_vsini
     # (\d{1,2}.?\d?)_R(\d{2,3})k(_conv_normalize)?.txt", spectrum_name)
     match = re.search("_R(\d{2,3})k", spectrum_name)
     resolution = int(match.group(1)) * 1000
-    # wav_grid = [wavelength_start]
-    # while(wav_grid[-1] < wavelength_end):
-    #     wav_grid.append(wav_grid[-1]*(1.0+1.0/(sampling*resolution)))
-    # wav_grid = np.array(wav_grid)
 
-    # Create grid using logarithms with base of (1.0+1.0/(sampling*resolution))
-    base = 1.0 + 1.0 / (sampling * resolution)
-    n = np.log(wavelength_end / wavelength_start) / np.log(base)
-    powers = np.arange(np.ceil(n))
-    wav_grid = wavelength_start * base ** powers
+    wav_grid = log_resample(wavelength, sampling, resolution)
 
     interpolated_flux = np.interp(wav_grid, wavelength, spectrum)
     filetowrite = os.path.join(
         resampled_dir, "{0}_res{1}.txt".format(spectrum_name[:-4], int(sampling)))
-    io.write_e_2col(filetowrite, wav_grid, interpolated_flux)
+
+    io.write_e_2col(filetowrite, wav_grid[1:-2], interpolated_flux[1:-2])  # [1:-2] for border effects
 
     if (plottest):
         plt.figure(1)
@@ -90,3 +80,50 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
         plt.close()
 
     return 0
+
+
+def old_resample(wavelength, sampling, resolution):
+    """Re-sample spectrum with a given sampling per resolution element.
+
+    Inputs:
+    wavelength: np.ndarray
+        Wavelength array.
+    sampling: int, float
+        Points to sample per resolution element
+    resolution: int, float
+        Instrumental resolution
+
+    """
+    wavelength_start = wavelength[0]  # because of border effects
+    wavelength_end = wavelength[-1]  # because of border effects
+
+    wav_grid = [wavelength_start]
+    while (wav_grid[-1] < wavelength_end):
+        wav_grid.append(wav_grid[-1] * (1.0 + 1.0 / (sampling * resolution)))
+    wav_grid = np.array(wav_grid)
+    return wav_grid
+
+
+def log_resample(wavelength, sampling, resolution):
+    """Re-sample spectrum with a given sampling per resolution element.
+
+    Inputs:
+    wavelength: np.ndarray
+        Wavelength array.
+    sampling: int, float
+        Points to sample per resolution element
+    resolution: int, float
+        Instrumental resolution
+
+    Uses faster method using log and powers of a base.
+    The base is (1.0 + 1.0/(sampling*resolution).
+    """
+    wavelength_start = wavelength[0]  # because of border effects
+    wavelength_end = wavelength[-1]  # because of border effects
+
+    # Create grid using logarithms with base of (1.0 + 1.0/(sampling*resolution))
+    base = 1.0 + 1.0 / (sampling * resolution)
+    n = np.log(wavelength_end / wavelength_start) / np.log(base)
+    powers = np.arange(np.ceil(n + 1))
+    wav_grid = wavelength_start * base ** powers
+    return wav_grid
