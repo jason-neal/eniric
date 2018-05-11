@@ -12,24 +12,27 @@ import numpy as np
 
 import eniric
 import eniric.IOmodule as io
+from typing import Union
 
 results_dir = eniric.paths["results"]
 resampled_dir = eniric.paths["resampled"]
 
 
-def resample_allfiles(results_dir=None, resampled_dir=None):
-    """Resample all files inside folder.
+def resample_allfiles(results_dir: str=None, resampled_dir: str=None) -> int:
+    """Resample all files inside results_dir folder.
 
-    Parameters
-    ----------
+    Input
+    -----
     results_dir: str
         Directory containing results to resample.
+    resampled_dir: str
+        Directory to save resampled rsults. 
     """
     if results_dir is None:
         results_dir = eniric.paths["results"]
     if resampled_dir is None:
         resampled_dir = eniric.paths["resampled"]
-    # getting a list of all the files
+    # Getting a list of all the files
     onlyfiles = [f for f in os.listdir(results_dir) if isfile(join(results_dir, f))]
 
     [resampler(spectrum_file, results_dir=results_dir,
@@ -39,31 +42,38 @@ def resample_allfiles(results_dir=None, resampled_dir=None):
     return 0
 
 
-def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
-              results_dir=results_dir, resampled_dir=resampled_dir,
-              sampling=3.0, plottest=False):
-    """
-    resamples a spectrum by interpolation onto a grid with a
+def resampler(spectrum_name: str="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
+              results_dir: str=results_dir, resampled_dir: str=resampled_dir,
+              sampling: Union[int, float]=3.0, plottest: bool=False) -> int:
+    """Resamples a spectrum file by interpolation onto a grid with a
     sampling of 3 pixels per resolution element.
+    
+    Inputs
+    ------
+    spectrum_name: str
+        Name of spctrum.
+    results_dir: str
+        Directory to find the spectrum to load.
+    resample_dir: str
+        Directory to save the results.
+    sampling: float (default=3.0)
+        Sampling per pixel.
+    plottest: bool
+        Plot a test of resampling.
     """
     os.makedirs(resampled_dir, exist_ok=True)
-    # wavelength, theoretical_spectrum, spectrum = read_3col(spectrum_name)
     read_name = os.path.join(results_dir, spectrum_name)
 
-    # theoretical_spectrum = data["model"].values
-    wavelength, __, spectrum = io.pdread_3col(read_name, noheader=True)
-
-    # match = re.match("Spectrum_(M\d)-PHOENIX-ACES_([A-Z]{1,4})band_vsini
-    # (\d{1,2}.?\d?)_R(\d{2,3})k(_conv_normalize)?.txt", spectrum_name)
     match = re.search("_R(\d{2,3})k", spectrum_name)
     resolution = int(match.group(1)) * 1000
 
+    wavelength, __, spectrum = io.pdread_3col(read_name, noheader=True)
     wav_grid = log_resample(wavelength, sampling, resolution)
 
     interpolated_flux = np.interp(wav_grid, wavelength, spectrum)
+    
     filetowrite = os.path.join(
         resampled_dir, "{0}_res{1}.txt".format(spectrum_name[:-4], int(sampling)))
-
     io.write_e_2col(filetowrite, wav_grid[1:-2], interpolated_flux[1:-2])  # [1:-2] for border effects
 
     if (plottest):
@@ -82,10 +92,11 @@ def resampler(spectrum_name="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
     return 0
 
 
-def old_resample(wavelength, sampling, resolution):
+def old_resample(wavelength, sampling: Union[int, float], resolution: Union[int, float]) -> np.ndarray:
     """Re-sample spectrum with a given sampling per resolution element.
 
-    Inputs:
+    Inputs
+    ------
     wavelength: np.ndarray
         Wavelength array.
     sampling: int, float
@@ -104,10 +115,11 @@ def old_resample(wavelength, sampling, resolution):
     return wav_grid
 
 
-def log_resample(wavelength, sampling, resolution):
+def log_resample(wavelength, sampling: Union[int, float], resolution: Union[int, float]) -> np.ndarray:
     """Re-sample spectrum with a given sampling per resolution element.
 
-    Inputs:
+    Inputs
+    ------
     wavelength: np.ndarray
         Wavelength array.
     sampling: int, float
@@ -127,3 +139,4 @@ def log_resample(wavelength, sampling, resolution):
     powers = np.arange(np.ceil(n + 1))
     wav_grid = wavelength_start * base ** powers
     return wav_grid
+
