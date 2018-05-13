@@ -69,9 +69,9 @@ def save_convolution_results(filename: str, wavelength: ndarray, flux: ndarray, 
     return 0
 
 
-def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, fwhm_lim=5.0,
-                     plot=True, num_procs=None, results_dir=results_dir,
-                     normalize=True, output_name=None):
+def convolve_spectra(spectrum, band, vsini, R, epsilon: float = 0.6, fwhm_lim: float = 5.0,
+                     plot: bool = True, num_procs: Optional[int] = None, results_dir: str = results_dir,
+                     normalize: bool = True, output_name: Optional[str] = None) -> int:
     """Load Spectrum, apply convolution and then save results.
 
     """
@@ -112,8 +112,8 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, fwhm_lim=5.0,
     return 0
 
 
-def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, fwhm_lim=5.0,
-                num_procs=None, normalize=True, output_name=None):
+def convolution(wav, flux, vsini, R, band: str = "All", epsilon: float = 0.6, fwhm_lim: float = 5.0,
+                num_procs: Optional[int] = None, normalize: bool = True, output_name=None):
     """Perform convolution of spectrum.
 
     Rotational convolution followed by a Guassian a a specified resolution R.
@@ -195,8 +195,8 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
         return element_rot_convolution(*args)
 
     def element_rot_convolution(wav, wav_extended, wav_ext_rotation,
-                                flux_ext_rotation, vsini, epsilon,
-                                normalize):
+                                flux_ext_rotation, vsini: float, epsilon: float,
+                                normalize: bool):
         """Embarrassingly parallel part of rotational convolution"""
         # select all values such that they are within the fwhm limits
         delta_lambda_l = wav * vsini / 3.0e5
