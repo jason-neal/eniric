@@ -71,6 +71,52 @@ def RVprec_calc(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndar
     return c / sqrt_sum_wis(wavelength, flux)
 
 
+def quality(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]) -> Union[
+    float64, Quantity]:
+    """Calculation of the spectral Quality, Q, for a spectrum.
+
+    Parameters
+    ----------
+    wavelength: array-like or Quantity array
+        Wavelength of spectrum.
+    flux: array-like or Quantity array
+        Flux of spectrum.
+
+    Returns
+    -------
+    sqrt{sum{W(i)}}: float or Quantity scalar
+       sectral quality Squareroot of the sum of the pixel weights(Wis)
+
+    Notes
+    -----
+    Extract from https://arxiv.org/pdf/1511.07468v1.pdf
+
+        Q = sqrt{sum{W(i)}} / sqrt{sum{A_0{i}}
+
+    where, W(i), is the optimal pixel weigths
+
+        W(i) = lambda(i)**2 (d'A_0(i) / d'lambda(i))**2 / (A_0(i) + sigma_D**2)
+
+    in which lambda(i) and A_0(i) are the values of each pixel wave-length and
+    flux, respectively. The weight will be proportional to the information
+    content of the spectrum, given by the derivative of the amplitude, and
+    calculated following Connes (1985).
+
+    The spectral quality, Q, is indpendant of the flux level and is only
+    a function of the spectral profile.
+
+    """
+    if not isinstance(wavelength, np.ndarray):
+        print("Your wavelength and flux should really be numpy arrays! Converting them here.")
+        wavelength = np.asarray(wavelength)
+    if not isinstance(flux, np.ndarray):
+        flux = np.asarray(flux)
+
+    wis = sqrt_sum_wis(wavelength, flux)
+
+    return  wis / np.sqrt(np.sum(flux))
+
+
 def sqrt_sum_wis(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]) -> Union[
     float64, Quantity]:
     """Calculation of the SquareRoot of the sum of the weights(Wis) for a spectrum.

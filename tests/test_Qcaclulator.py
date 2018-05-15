@@ -284,3 +284,19 @@ def test_RVprec_test():
     precision = Q.RVprec_test(spectrum_file)
 
     assert isinstance(precision, astropy.units.Quantity)
+
+@pytest.mark.parametrize("scale", [0.1, 1, 2, 100, 0.1, 0.5])
+def test_quality_independant_of_flux_level(scale):
+    """Q of a spectrum is independant of flux level."""
+    wavelength = np.arange(100)
+    flux = np.random.random(100)
+    assert np.allclose(Q.quality(wavelength, flux),  Q.quality(wavelength, flux*scale))
+
+
+def test_quality_independant_of_units():
+    """Quality should be unitless, or dimensionless_unscaled...
+    
+    Not sure how that will work withif flux in incorrect unitsif flux in incorrect units.
+    """ 
+    assert False
+ 
