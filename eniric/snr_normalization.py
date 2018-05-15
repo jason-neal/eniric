@@ -33,7 +33,7 @@ def normalize_flux2(*args, **kwargs):
 
 
 def normalize_flux(flux: ndarray, id_string: str, new: bool = True, snr: int = 100, ref_band: str = "J") -> ndarray:
-    """Normalize flux to have SNR of 100 in middle of J band.
+    """Normalize flux to have SNR of 100 in middle of reference band.
 
     Parameters
     ----------
@@ -195,6 +195,8 @@ def snr_constant_wav(wav: ndarray, flux: ndarray, wav_ref: float, snr: int = 100
     as the reference it will need to be used for all bands of that spectra.
 
     """
+    if wav_ref < wav[0] or wav_ref > wav[-1]:
+        raise ValueError("Reference wavelength is outside of the wavelength bounds")
     index_ref = np.searchsorted(wav, [wav_ref])[0]  # Searching for the closest index
 
     indexes = sampling_index(index_ref, sampling=sampling, array_length=len(wav))
