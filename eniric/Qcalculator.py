@@ -2,7 +2,7 @@
 
 Using the Quality factor of the spectra.
 """
-
+import warnings
 import astropy.units as u
 import numpy as np
 import pandas as pd
@@ -118,9 +118,12 @@ def sqrt_sum_wis(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, nda
         flux_variance = flux.value * (flux.unit) ** 2
     else:
         flux_variance = flux
-
-    return np.sqrt(np.sum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 /
-                          flux_variance[:-1]))
+    
+    wis = np.sqrt(np.sum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 /
+                         flux_variance[:-1]))
+    if not np.isfinite(wis):
+        warnings.warn("Weight sum is not finite")
+    return wis
 
 
 def RVprec_calc_masked(wavelength: Union[List[List[Any]], ndarray],
