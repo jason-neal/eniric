@@ -19,18 +19,17 @@ def test_snr_normalization():
     Testing on middle of J band.
     """
     test_data = os.path.join(eniric.paths["phoenix_dat"],
-        "Z-0.0/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
+                             "Z-0.0/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
 
     band = "J"
     band_mid = {"J": 1.25}
     wav, flux = utils.read_spectrum(test_data)
 
     for desired_snr in [50.0, 100.0, 150.0, 200.0]:
-
         index_reference = np.searchsorted(wav, [band_mid[band]])[0]  # Searching for the closest index to 1.25
         snr_estimate = np.sqrt(np.sum(flux[index_reference - 1:index_reference + 2]))
 
-        assert round(snr_estimate, 0) != desired_snr     # Assert SNR is not correct
+        assert round(snr_estimate, 0) != desired_snr  # Assert SNR is not correct
 
         norm_const = snrnorm.snr_constant_band(wav, flux, snr=desired_snr, band=band)
 
@@ -81,15 +80,15 @@ def test_sampling_index_array():
     assert np.all(snrnorm.sampling_index(100, 3, array_length=200) == [99, 100, 101])
 
     with pytest.raises(ValueError):
-        snrnorm.sampling_index(3, 10)   # index will be < 0
+        snrnorm.sampling_index(3, 10)  # index will be < 0
     with pytest.raises(ValueError):
-        snrnorm.sampling_index(3, 9, array_length=50)   # index will be < 0
+        snrnorm.sampling_index(3, 9, array_length=50)  # index will be < 0
     with pytest.raises(ValueError):
-        snrnorm.sampling_index(46, 10, array_length=50)   # an index will be > (array_length - 1)
+        snrnorm.sampling_index(46, 10, array_length=50)  # an index will be > (array_length - 1)
 
 
 @pytest.mark.parametrize("bad_string",
-    ["id-string", "M0-K-1.0-100", "M0-P-1.0-100k"])
+                         ["id-string", "M0-K-1.0-100", "M0-P-1.0-100k"])
 def test_errors_in_snr_get_reference_spectrum(bad_string):
     """Testing Eorros in getting the reference spectrum."""
     with pytest.raises(ValueError):
@@ -132,7 +131,8 @@ def test_get_reference_spectrum_in_nonexistent_file():
 
 @pytest.mark.xfail()  # size is too big
 def test_normalize_flux_new_verse_old():
-    test_data = os.path.join(eniric.paths["test_data"], "resampled", "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k_res3.txt")
+    test_data = os.path.join(eniric.paths["test_data"], "resampled",
+                             "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k_res3.txt")
     id_string = "M0-K-1.0-100k"
     wav, flux = utils.read_spectrum(test_data)
     new_norm = snrnorm.normalize_flux(flux, id_string, new=True)
@@ -193,7 +193,7 @@ def test_get_ref_spectrum_with_self(star, band, vel, res, ref_band):
     id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
 
     test_data = os.path.join(eniric.paths["resampled"],
-        "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}_res3.txt".format(star, band, vel, res))
+                             "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}_res3.txt".format(star, band, vel, res))
     wav, flux = Io.pdread_2col(test_data)
 
     wav_ref, flux_ref = snrnorm.get_reference_spectrum(id_string, ref_band=ref_band)
@@ -208,7 +208,7 @@ def test_get_ref_spectrum_with_self(star, band, vel, res, ref_band):
 def test_snr_constant_band_returns_mid_value_const(band):
     size = 100
     np.random.seed(40)
-    flux = 500*np.random.rand(size)  # To give a random spectrum (but consistent between tests)
+    flux = 500 * np.random.rand(size)  # To give a random spectrum (but consistent between tests)
     lim = utils.band_limits(band)
     wav = np.linspace(lim[0], lim[1], size)
 
@@ -241,13 +241,12 @@ def test_snr_normalization_logic(band):
 
 
 @pytest.mark.parametrize("wav,band", [
-    (np.linspace(0.8, 1, 50), "VIS"),   # "VIS": (0.38, 0.78)
-    (np.linspace(2, 3, 50), "J"),       # "J": (1.17, 1.33)
-    (np.linspace(2.0, 2.1, 50), "K"),   # "K": (2.07, 2.35)
-    (np.linspace(2.25, 2.4, 50), "K")   # "K": (2.07, 2.35)
+    (np.linspace(0.8, 1, 50), "VIS"),  # "VIS": (0.38, 0.78)
+    (np.linspace(2, 3, 50), "J"),  # "J": (1.17, 1.33)
+    (np.linspace(2.0, 2.1, 50), "K"),  # "K": (2.07, 2.35)
+    (np.linspace(2.25, 2.4, 50), "K")  # "K": (2.07, 2.35)
 ])
 def test_snr_constant_band_with_invalid_wavelength(wav, band):
-
     with pytest.raises(ValueError):
         snrnorm.snr_constant_band(wav, np.ones(50), band=band)
 
@@ -255,10 +254,9 @@ def test_snr_constant_band_with_invalid_wavelength(wav, band):
 @pytest.mark.parametrize("id_string", [
     "M0-BAD-1.0-100k", "M9-A-5.0-50k", "MO-J-1.0-100k",
     "N0-J-1.0-100k", "M2--1.0-100k", "M0-J-2-100k",
-    "M9-Z-5.0",  "M0-J-1.0-100", "M0-J-1.0-1k",
+    "M9-Z-5.0", "M0-J-1.0-100", "M0-J-1.0-1k",
     "M2-100k", "M0"])
 def test_decompose_bad_id_strings_give_errors(id_string):
-
     with pytest.raises(ValueError):
         snrnorm.decompose_id_string(id_string)
 
@@ -269,15 +267,13 @@ def test_decompose_bad_id_strings_give_errors(id_string):
     ("M9-J-5.0-30k", ("M9", "J", "5.0", "30k")),
     ("M3-VIS-5.0-50k", ("M3", "VIS", "5.0", "50k")),
     ("M6-NIR-10.0-80k", ("M6", "NIR", "10.0", "80k")),
-        ("M6-CONT-10.0-80k", ("M6", "CONT", "10.0", "80k"))
+    ("M6-CONT-10.0-80k", ("M6", "CONT", "10.0", "80k"))
 ])
 def test_decompose_id_string(id_string, expected):
-
     decomposed = snrnorm.decompose_id_string(id_string)
 
     assert decomposed == expected
     assert len(decomposed) == 4
 
-
 # TODO:
-    #  Test normalize_flux() with ref_band == SELF. to check the condition on line 56
+#  Test normalize_flux() with ref_band == SELF. to check the condition on line 56

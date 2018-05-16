@@ -3,7 +3,6 @@
 import numpy as np
 import pytest
 
-import eniric
 import eniric.atmosphere as atm
 
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
@@ -15,7 +14,7 @@ def test_consecutive_truths():
     array2 = np.array([0, 0, 1, 1, 1, 1, 1, 0, 1, 1], dtype=bool)  # [5, 2]
     array3 = np.array([1, 0, 1, 0, 1, 0, 1, 0, 1, 0], dtype=bool)  # [1,1,1,1,1]
     array4 = np.zeros(5, dtype=bool)  # []
-    array5 = np.ones(5, dtype=bool)   # [5]
+    array5 = np.ones(5, dtype=bool)  # [5]
 
     assert np.all(atm.consecutive_truths(array1) == [3, 2, 1])
     assert np.all(atm.consecutive_truths(array2) == [5, 2])
@@ -49,7 +48,6 @@ def test_prepare_atmopshere():
     Test band is close to the band limits (accounting for the given offset. +- 100km/s).
     """
     raise Exception
-
 
 # If I multiply the flux by the mask then the smallest flux should be 0.98
 # If not then there would be an issue.

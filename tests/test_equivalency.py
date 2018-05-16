@@ -94,7 +94,7 @@ def test_pdwrire_cols():
 
     data1 = range(5)
     data2 = range(5, 10)
-    bad_data = range(6)   # Different length
+    bad_data = range(6)  # Different length
 
     # 0 means successful write
     assert 0 == io.pdwrite_cols(pd_multicol_name, data1, data2, data1)

@@ -3,16 +3,15 @@
 Using the Quality factor of the spectra.
 """
 
+from typing import Any, List, Optional, Tuple, Union
+
 import astropy.units as u
 import numpy as np
 import pandas as pd
 from astropy.constants import c
-from astropy.units import Quantity
-
 from astropy.units.quantity import Quantity
 from numpy import float64, int32, ndarray
-from typing import Any, List, Optional, Tuple, Union
-
+import warnings
 
 def RVprec_test(spectrum_file: str = "resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt") -> Quantity:
     """Test a RVprec_calc for a single spectrum."""
@@ -73,7 +72,7 @@ def RVprec_calc(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndar
 
 def sqrt_sum_wis(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]) -> Union[
     float64, Quantity]:
-    """Calculation of the SquareRoot of the sum of the weights(Wis) for a spectrum.
+    """Calculation of the Square root of the sum of the weights(Wis) for a spectrum.
 
     Parameters
     ----------
@@ -85,7 +84,7 @@ def sqrt_sum_wis(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, nda
     Returns
     -------
     sqrt{sum{W(i)}}: float or Quantity scalar
-       Squareroot of the sum of the pixel weights(Wis)
+       Square root of the sum of the pixel weights(Wis)
 
     Notes
     -----
@@ -114,8 +113,8 @@ def sqrt_sum_wis(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, nda
     derivf_over_lambda = delta_flux / delta_lambda
 
     if isinstance(flux, u.Quantity):
-        """Units of variance are squared """
-        flux_variance = flux.value * (flux.unit) ** 2
+        """Units of variance are squared"""
+        flux_variance = flux.value * flux.unit * flux.unit
     else:
         flux_variance = flux
 
@@ -158,10 +157,10 @@ def RVprec_calc_masked(wavelength: Union[List[List[Any]], ndarray],
     Solution for clumping comes from
     https://stackoverflow.com/questions/14605734/numpy-split-1d-array-of-chunks-separated-by-nans-into-a-list-of-the-chunks
 
-    There was a bug in the original clumping code which ment that chose the
+    There was a bug in the original clumping code which meant that chose the
     clump depending on the first element of mask.
     A test for the failing condition is added so that if ever encountered we
-    can investigate the effect on he previously published results.
+    can investigate the effect on the previously published results.
     """
     if mask is not None:
         if mask[0] is False:  # First value of mask is False was a bug in original code
@@ -194,7 +193,7 @@ def RVprec_calc_masked(wavelength: Union[List[List[Any]], ndarray],
             flux_slice = np.asarray(flux_slice)
             slice_rvs[i] = RVprec_calc(wav_slice, flux_slice)
 
-    # Zeros created from the inital empty array, when skipping single element chunks)
+    # Zeros created from the initial empty array, when skipping single element chunks)
     slice_rvs = slice_rvs[np.nonzero(slice_rvs)]  # Only use nonzero values.
 
     rv_value = 1.0 / (np.sqrt(np.sum((1.0 / slice_rvs) ** 2.0)))
@@ -298,8 +297,9 @@ def RV_prec_calc_Trans(wavelength: ndarray, flux: ndarray, transmission: ndarray
     return c / sqrt_sum_wis_trans(wavelength, flux, transmission)
 
 
-def sqrt_sum_wis_trans(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray], transmission: Union[Quantity, ndarray]) -> Union[float64, Quantity]:
-    """Calculation of the SquareRoot of the sum of the Weights for a spectrum, considering transmission.
+def sqrt_sum_wis_trans(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray],
+                       transmission: Union[Quantity, ndarray]) -> Union[float64, Quantity]:
+    """Calculation of the Square root of the sum of the Weights for a spectrum, considering transmission.
 
     The transmission reduces the flux so has an affect on the variance.
 
@@ -315,7 +315,7 @@ def sqrt_sum_wis_trans(wavelength: Union[Quantity, ndarray], flux: Union[Quantit
     Returns
     -------
     sqrt_sum_wis_trans: array-like or Quantity
-        Squarerooted sum of pixel weights including effects of transmission.
+        Square root sum of pixel weights including effects of transmission.
 
     """
     if not isinstance(wavelength, np.ndarray):
@@ -346,7 +346,7 @@ def sqrt_sum_wis_trans(wavelength: Union[Quantity, ndarray], flux: Union[Quantit
 
     if isinstance(flux, u.Quantity):
         """Units of variance are squared"""
-        flux_variance = flux.value * (flux.unit) ** 2
+        flux_variance = flux.value * flux.unit *flux.unit
     else:
         flux_variance = flux
 

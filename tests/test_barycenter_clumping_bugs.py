@@ -5,15 +5,13 @@ Just taking the main components out of the code.
 
 import numpy as np
 
-import eniric
-
 
 # This has the main bug.
 def org_clump_tester(clump):
     """Return False when group of consecutive values in clump has a length >=3."""
     tester = True
     for block in clump:
-        if len(clump) >= 3:     # clump should be block!
+        if len(clump) >= 3:  # clump should be block!
             tester = False
             break
     return tester
@@ -26,7 +24,7 @@ def corrected_clump_tester(clump):
     """
     tester = True
     for block in clump:
-        if len(block) >= 3:     # Fixed block!
+        if len(block) >= 3:  # Fixed block!
             tester = False
             break
     return tester
@@ -51,7 +49,7 @@ def test_clump_tester():
     # Clump 2 does have a group of consutive Falses>3 but not #blocks>3.
     clump2 = [np.array([0, 0, 0, 0, 0], dtype=bool), np.array([0, 0], dtype=bool)]
     # Clump2 should return False!
-    assert org_clump_tester(clump2) is not False   # This is wrong
+    assert org_clump_tester(clump2) is not False  # This is wrong
     assert corrected_clump_tester(clump2) is False
 
     # Test an array of zeros
