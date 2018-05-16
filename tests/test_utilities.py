@@ -261,9 +261,9 @@ def test_compatibility_res2int_res2str():
 
 
 @pytest.mark.parametrize("resolutions,results", [
-        (60000, 60000),
-        ("80k",  80000),
-        ("8000", 8000),
+    (60000, 60000),
+    ("80k", 80000),
+    ("8000", 8000),
 ])
 def test_resolution2int_single(resolutions, results):
     # Test single values
@@ -271,9 +271,9 @@ def test_resolution2int_single(resolutions, results):
 
 
 @pytest.mark.parametrize("resolutions,results", [
-        (60000, "60k"),
-        (80000, "80k"),
-        (3000, "3k"),
+    (60000, "60k"),
+    (80000, "80k"),
+    (3000, "3k"),
 ])
 def test_resolution2str_single(resolutions, results):
     # Test single values
