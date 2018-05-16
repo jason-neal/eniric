@@ -284,3 +284,81 @@ def test_RVprec_test():
     precision = Q.RVprec_test(spectrum_file)
 
     assert isinstance(precision, astropy.units.Quantity)
+
+
+def test_RVprec_masked_raises_warning():
+    size = 20
+    wave = np.arange(size)
+    flux = np.random.randn(size) + 1
+    mask = np.ones_like(wave)
+    mask[0] = 0
+    # Works fine
+    Q.RVprec_calc_masked(wave, flux, mask)
+    # Raises warning when first element is 0
+    with pytest.warns(UserWarning):
+        Q.RVprec_calc_masked(wave, flux, mask)
+
+
+@pytest.mark.parametrize("wave_unit, flux_unit", [
+    (u.nanometer, per_s_cm2),
+    (u.nanometer, 1),
+    (u.micron, 1),
+    (1, per_s_cm2),
+    (1, 1)])
+def test_sqrt_sum_wis_trans_with_quantities(wave_unit, flux_unit):
+    """Assert that wis returns dimensionless."""
+    """Assert that wis returns with quantities is ok."""
+
+    wav = np.arange(1, 101) * wave_unit
+    flux = (np.random.randn(100) + 1) * flux_unit
+    transmission = np.random.rand(len(wav))
+    prevision = Q.sqrt_sum_wis_trans(wav, flux, transmission)
+
+    if isinstance(prevision, u.Quantity):
+        assert prevision.unit == u.dimensionless_unscaled
+
+
+def test_sqrt_sum_wis_trans_dimensionless():
+    """Assert that wis returns dimensionless."""
+
+
+@pytest.mark.parametrize("wave_unit, flux_unit, trans_unit", [
+    (u.nanometer, per_s_cm2, m_per_s),
+    (u.nanometer, 1, per_s_cm2),
+    (u.micron, 1, u.meter),
+    (1, per_s_cm2, u.kilogram),
+    (1, 1, u.second)])
+def test_sqrt_sum_wis_trans_with_trans_unit_fails(wave_unit, flux_unit, trans_unit):
+    """Assert a transmission with a unit fails with type error."""
+
+    wav = np.arange(1, 101) * wave_unit
+    flux = (np.random.randn(100) + 1) * flux_unit
+    transmission = np.random.rand(len(wav))
+
+    with pytest.raises(TypeError):
+        Q.sqrt_sum_wis_trans(wav, flux, transmission * trans_unit)
+
+
+@pytest.mark.parametrize("wave_unit, flux_unit, trans_unit", [
+    (u.nanometer, per_s_cm2, u.dimensionless_unscaled),
+    (u.nanometer, 1, 1),
+    (1, per_s_cm2, 1),
+    (1, 1, u.dimensionless_unscaled),
+    (1, 1, 1)])
+def test_sqrt_sum_wis_transmission_outofbounds(wave_unit, flux_unit,trans_unit):
+    """Transmission must be within 0-1.
+
+       Transmission unit must be unit-less.
+       """
+    wav = np.arange(1, 101) * wave_unit
+    flux = (np.random.randn(100) + 1) * flux_unit
+    transmission1 = np.random.rand(len(wav))
+    transmission2 = np.random.rand(len(wav))
+
+    transmission1[0] = 5  # Outside 0-1
+    transmission2[-1] = -2  # Outside 0-1
+
+    with pytest.raises(ValueError):
+        Q.sqrt_sum_wis_trans(wav, flux, transmission1)
+    with pytest.raises(ValueError):
+        Q.sqrt_sum_wis_trans(wav, flux, transmission2)
