@@ -1,4 +1,3 @@
-
 """To test if the new code produces the same precision values on the published results."""
 
 from __future__ import division, print_function
@@ -6,8 +5,6 @@ from __future__ import division, print_function
 import numpy as np
 import pytest
 
-import eniric.IOmodule as io
-import eniric.Qcalculator as Q
 from bin.nIR_precision import calculate_prec
 from bin.prec_1 import calc_prec1
 
@@ -17,7 +14,7 @@ file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 path = "data/Published_Results/resampled/"
 
 
-@pytest.mark.xfail(raises=file_error_to_catch)   # Data file may not exist
+@pytest.mark.xfail(raises=file_error_to_catch)  # Data file may not exist
 def test_precision_1():
     """New precision 1 test that works."""
     published_results = {1: 3.8, 5: 9.1, 10: 20.7}
@@ -34,7 +31,6 @@ def test_precision_1():
     ("M6", "H", 1.0, "80k", [4.1, 4.4, 4.2])
 ])
 def test_old_calc_precision(SpType, band, vsini, R, expected):
-
     id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(SpType, band, float(vsini), R)
     results = calculate_prec([SpType], [band], [float(vsini)], [R], [3],
                              plot_atm=False, plot_ste=False,

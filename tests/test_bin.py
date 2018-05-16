@@ -6,7 +6,6 @@ import argparse
 
 import pytest
 
-import eniric
 from bin.split_atmmodel import check_positive
 
 
@@ -19,7 +18,7 @@ def test_check_positive():
 @pytest.mark.parametrize("val,error", [
     ("-1", argparse.ArgumentTypeError),
     (-1.0, ValueError),
-    (10, ValueError)])    # Not a float
+    (10, ValueError)])  # Not a float
 def test_check_positive_errors(val, error):
     with pytest.raises(error):
         check_positive(val)

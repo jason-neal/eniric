@@ -1,9 +1,9 @@
 """Functions to read column-separated files."""
+from typing import List, Tuple, Optional
+
 import numpy as np
 import pandas as pd
-
 from numpy import ndarray
-from typing import List, Tuple, Optional
 
 
 # noinspection SpellCheckingInspection,SpellCheckingInspection

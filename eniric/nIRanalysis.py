@@ -9,18 +9,19 @@ from __future__ import division, print_function
 
 import os
 import sys
+from typing import Optional
 
 import matplotlib.pyplot as plt
 import multiprocess as mprocess
 import numpy as np
 from matplotlib import rc
-from tqdm import tqdm
 from numpy import ndarray
+from tqdm import tqdm
+
 import eniric
 import eniric.IOmodule as io
 from eniric.utilities import (band_selector, read_spectrum, rotation_kernel,
                               unitary_gaussian, wav_selector)
-from typing import Optional, List, Tuple, Union
 
 # set stuff for latex usage
 rc('text', usetex=True)

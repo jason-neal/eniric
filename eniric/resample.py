@@ -6,19 +6,19 @@ Functions for file resampling.
 import os
 import re
 from os.path import isfile, join
+from typing import Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 import eniric
 import eniric.IOmodule as io
-from typing import Union
 
 results_dir = eniric.paths["results"]
 resampled_dir = eniric.paths["resampled"]
 
 
-def resample_allfiles(results_dir: str=None, resampled_dir: str=None) -> int:
+def resample_allfiles(results_dir: str = None, resampled_dir: str = None) -> int:
     """Resample all files inside results_dir folder.
 
     Input
@@ -42,9 +42,9 @@ def resample_allfiles(results_dir: str=None, resampled_dir: str=None) -> int:
     return 0
 
 
-def resampler(spectrum_name: str="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
-              results_dir: str=results_dir, resampled_dir: str=resampled_dir,
-              sampling: Union[int, float]=3.0, plottest: bool=False) -> int:
+def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
+              results_dir: str = results_dir, resampled_dir: str = resampled_dir,
+              sampling: Union[int, float] = 3.0, plottest: bool = False) -> int:
     """Resamples a spectrum file by interpolation onto a grid with a
     sampling of 3 pixels per resolution element.
     
@@ -71,7 +71,7 @@ def resampler(spectrum_name: str="Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.t
     wav_grid = log_resample(wavelength, sampling, resolution)
 
     interpolated_flux = np.interp(wav_grid, wavelength, spectrum)
-    
+
     filetowrite = os.path.join(
         resampled_dir, "{0}_res{1}.txt".format(spectrum_name[:-4], int(sampling)))
     io.write_e_2col(filetowrite, wav_grid[1:-2], interpolated_flux[1:-2])  # [1:-2] for border effects
@@ -139,4 +139,3 @@ def log_resample(wavelength, sampling: Union[int, float], resolution: Union[int,
     powers = np.arange(np.ceil(n + 1))
     wav_grid = wavelength_start * base ** powers
     return wav_grid
-
