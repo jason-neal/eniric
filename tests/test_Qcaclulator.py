@@ -320,6 +320,7 @@ def test_sqrt_sum_wis_trans_with_quantities(wave_unit, flux_unit):
 
 def test_sqrt_sum_wis_trans_dimensionless():
     """Assert that wis returns dimensionless."""
+    assert False
 
 
 @pytest.mark.parametrize("wave_unit, flux_unit, trans_unit", [
@@ -345,7 +346,7 @@ def test_sqrt_sum_wis_trans_with_trans_unit_fails(wave_unit, flux_unit, trans_un
     (1, per_s_cm2, 1),
     (1, 1, u.dimensionless_unscaled),
     (1, 1, 1)])
-def test_sqrt_sum_wis_transmission_outofbounds(wave_unit, flux_unit,trans_unit):
+def test_sqrt_sum_wis_transmission_outofbounds(wave_unit, flux_unit, trans_unit):
     """Transmission must be within 0-1.
 
        Transmission unit must be unit-less.
@@ -362,3 +363,19 @@ def test_sqrt_sum_wis_transmission_outofbounds(wave_unit, flux_unit,trans_unit):
         Q.sqrt_sum_wis_trans(wav, flux, transmission1)
     with pytest.raises(ValueError):
         Q.sqrt_sum_wis_trans(wav, flux, transmission2)
+
+
+@pytest.mark.parametrize("scale", [0.1, 1, 2, 100, 0.1, 0.5])
+def test_quality_independant_of_flux_level(scale):
+    """Q of a spectrum is independant of flux level."""
+    wavelength = np.arange(100)
+    flux = np.random.random(100)
+    assert np.allclose(Q.quality(wavelength, flux), Q.quality(wavelength, flux * scale))
+
+
+def test_quality_independant_of_units():
+    """Quality should be unitless, or dimensionless_unscaled...
+    
+    Not sure how that will work withif flux in incorrect unitsif flux in incorrect units.
+    """
+    assert False

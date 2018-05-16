@@ -275,5 +275,15 @@ def test_decompose_id_string(id_string, expected):
     assert decomposed == expected
     assert len(decomposed) == 4
 
+
+@pytest.mark.parametrize("wav_ref", [0.5, 4])
+def test_snr_constant_wav_ref_outside_wav(wav_ref):
+    """Wav-ref outside bounds of wav should raise ValueError"""
+    wav = np.linspace(1, 3, 60)
+    flux = np.random.randn(len(wav))
+
+    with pytest.raises(ValueError):
+        snrnorm.snr_constant_wav(wav, flux, wav_ref)
+
 # TODO:
 #  Test normalize_flux() with ref_band == SELF. to check the condition on line 56
