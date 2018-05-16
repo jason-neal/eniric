@@ -163,8 +163,8 @@ def RVprec_calc_masked(wavelength: Union[List[List[Any]], ndarray],
     can investigate the effect on the previously published results.
     """
     if mask is not None:
-        if mask[0] is False:  # First value of mask is False was a bug in original code
-            print(("{0:s}\nWarning\nA condition that would have given bad "
+        if mask[0] is False or mask[0] == 0:  # First value of mask is False was a bug in original code
+            warnings.warn(("\n{0:s}\nWarning\nA condition that would have given bad "
                    "precision the by broken clumping function was found.\nNeed "
                    "to find the model parameters for this!\n{0:s}\n").format("#" * 40))
         # Turn wavelength and flux into masked arrays
@@ -243,8 +243,8 @@ def bug_fixed_clumping_method(wav: ndarray, flux: ndarray, mask: ndarray) -> Tup
     There was a significant bug which was fixed.
     The returned values were dependant on the first value in the mask.
     """
-    if mask[0] is False:  # First value of mask is False was a bug in original code
-        print(("{0:s}\nWarning\nA condition that would have given bad "
+    if mask[0] is False or mask[0] == 0:  # First value of mask is False was a bug in original code
+        warnings.warn(("\n{0:s}\nWarning\nA condition that would have given bad "
                "precision the by broken clumping function was found.\nNeed "
                "to find the model parameters for this!\n{0:s}\n").format("#" * 40))
 
