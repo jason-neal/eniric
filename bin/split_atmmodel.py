@@ -6,6 +6,7 @@ calculations on individual bands only.
 import argparse
 import os
 import sys
+from typing import Optional, List
 
 import numpy as np
 from astropy.constants import c
@@ -37,8 +38,7 @@ def _parser():
     return parser.parse_args()
 
 
-def check_positive(value):
-    # type: (str) -> float
+def check_positive(value: str) -> float:
     """Function to check if input is positive.
 
     http://stackoverflow.com/questions/14117415/in-python-using-argparse-allow-only-positive-integers.
@@ -50,7 +50,7 @@ def check_positive(value):
 
     Returns
     -------
-    value: float
+    float_value: float
         The value if it is positive as a float.
 
     Raises
@@ -61,13 +61,14 @@ def check_positive(value):
     if not isinstance(value, str):
         raise ValueError("Input value is not a string.")
 
-    value = float(value)
-    if value <= 0:
+    float_value = float(value)
+    if float_value <= 0:
         raise argparse.ArgumentTypeError("{0:s} is an invalid positive value".format(value))
-    return value
+    return float_value
 
 
-def main(model="Average_TAPAS_2014.txt", bands=None, new_name=None, data_dir=None, rv_extend=100):
+def main(model: str = "Average_TAPAS_2014.txt", bands: Optional[List[str]] = None, new_name=None, data_dir=None,
+         rv_extend: float = 100):
     """Split the large atmospheric model transmission spectra into the separate bands.
 
     Keeps wavelength of atmosphere model as nanometers.
