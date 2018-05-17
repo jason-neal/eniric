@@ -6,7 +6,7 @@
 from __future__ import division, print_function
 
 import datetime
-
+import os
 import matplotlib.pyplot as plt
 from eniric.original_code.nIRanalysis import convolution as old_convolution
 from eniric.original_code.nIRanalysis import \
@@ -37,7 +37,7 @@ for band in ["K"]:
     start_time = datetime.datetime.now()
     print("Time at start of {0} band, {1}".format(band, start_time))
     wav_band, flux_band, flux_conv_res = convolve_spectra(spectrum_path, band, vsini, R, epsilon, fwhm_lim, plot,
-                                                          numprocs=numprocs)
+                                                          num_procs=numprocs)
     end_time = datetime.datetime.now()
     print("Time at end, ", end_time)
     print("Time to run {0} band  convolution = {1}".format(band, (end_time - start_time)))

@@ -35,7 +35,7 @@ def test_clump_tester():
 
     This confirms the suspicions of the bugs.
 
-    Note the sampling of the atmopsheric spectra is 10 so 1-2 zeros is
+    Note the sampling of the atmospheric spectra is 10 so 1-2 zeros is
     unlikely to be picked up in a resolution element of spectra.
     Hence we choose a minimum of 3 consecutive zeros.
     """

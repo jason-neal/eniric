@@ -1,6 +1,6 @@
 """Quick and dirty precision 1.
 
-Doesn't involve atmopshere model so can perform realively easily to check
+Doesn't involve atmosphere model so can perform realively easily to check
 precision is working.
 """
 
@@ -13,7 +13,7 @@ import numpy as np
 import eniric
 import eniric.IOmodule as io
 import eniric.Qcalculator as Qcalculator
-# from eniric.plotting_functions import plot_atmopshere_model, plot_stellar_spectum
+# from eniric.plotting_functions import plot_atmosphere_model, plot_stellar_spectum
 from eniric.snr_normalization import normalize_flux
 
 

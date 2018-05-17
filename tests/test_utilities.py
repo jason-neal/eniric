@@ -32,7 +32,7 @@ def test_read_spectrum():
 
 @pytest.mark.xfail(raises=file_error_to_catch)
 def test_get_spectrum_name():
-    """Test specifing file names with stellar parameters."""
+    """Test specifying file names with stellar parameters."""
     test = ("Z-0.0/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
 
     assert utils.get_spectrum_name("M6", flux_type="wave") == test
@@ -65,7 +65,7 @@ def test_notimplemented_spectrum_name(spec_type):
 
 @pytest.mark.parametrize("bad_alpha", [-0.3, 0.3, 1])
 def test_spectrum_name_with_bad_alpha(bad_alpha):
-    """Bad_alpha is outside range -0.2-0.2 for Mdwarf science case."""
+    """Bad_alpha is outside range -0.2-0.2 for M-dwarf science case."""
     with pytest.raises(ValueError):
         utils.get_spectrum_name("M0", alpha=bad_alpha)
 
@@ -81,7 +81,7 @@ def test_spectrum_name_with_ok_alpha(alpha):
 
 # @pytest.mark.xfail(raises=file_error_to_catch)
 def test_org_name():
-    """Test org flag of utils.get_spectrum_name, suposed to be temporary."""
+    """Test org flag of utils.get_spectrum_name, supposed to be temporary."""
     test_org = "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
     assert utils.get_spectrum_name("M0", org=True) == test_org
 

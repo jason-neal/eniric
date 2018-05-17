@@ -101,7 +101,7 @@ def quality(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]
     content of the spectrum, given by the derivative of the amplitude, and
     calculated following Connes (1985).
 
-    The spectral quality, Q, is indpendant of the flux level and is only
+    The spectral quality, Q, is independent of the flux level and is only
     a function of the spectral profile.
 
     """
@@ -226,7 +226,7 @@ def RVprec_calc_masked(wavelength: Union[List[List[Any]], ndarray],
         wavelength_clumps = wavelength
         flux_clumps = flux
 
-    # Turn ndarray into quantity array.
+    # Turn an ndarray into quantity array.
     # Need to use np.zeros instead of np.empty. Unassigned zeros are removed after with nonzero.
     # The "empty" values (1e-300) do not get removed and effect precision
     slice_rvs = Quantity(np.zeros(len(wavelength), dtype=float),
@@ -234,7 +234,7 @@ def RVprec_calc_masked(wavelength: Union[List[List[Any]], ndarray],
 
     for i, (wav_slice, flux_slice) in enumerate(zip(wavelength_clumps, flux_clumps)):
         if len(wav_slice) == 1:
-            """Results in infinate rv, can not determine the slope of single point."""
+            """Results in infinite rv, can not determine the slope of single point."""
             continue
 
         else:
@@ -262,7 +262,7 @@ def mask_clumping(wave: ndarray, flux: ndarray, mask: ndarray) -> Tuple[List[nda
     wave: array-like of floats
         The wavelength array to clump.
     flux: array-like of floats
-        The glux array to clump.
+        The flux array to clump.
     mask: array-like of bool
         Boolean array with True indicating the values to use/keep.
 
@@ -298,14 +298,14 @@ def bug_fixed_clumping_method(wav: ndarray, flux: ndarray, mask: ndarray) -> Tup
                        "to find the model parameters for this!\n{0:s}\n").format("#" * 40))
 
     if mask[0] == 1:
-        wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[::2]
-        flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[::2]
+        wav_chunks_unformatted = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[::2]
+        flux_chunks_unformatted = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[::2]
     else:
-        wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[1::2]
-        flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[1::2]
+        wav_chunks_unformatted = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[1::2]
+        flux_chunks_unformatted = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[1::2]
 
-    wav_chunks = [list(chunk) for chunk in wav_chunks_unformated]
-    flux_chunks = [list(chunk) for chunk in flux_chunks_unformated]
+    wav_chunks = [list(chunk) for chunk in wav_chunks_unformatted]
+    flux_chunks = [list(chunk) for chunk in flux_chunks_unformatted]
 
     return wav_chunks, flux_chunks
 
@@ -315,11 +315,11 @@ def bugged_clumping_method(wav: ndarray, flux: ndarray, mask: ndarray) -> Tuple[
 
     There was a significant bug in which the returned values depend on the first value in mask.
     """
-    wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[::2]
-    wav_chunks = [list(chunk) for chunk in wav_chunks_unformated]
+    wav_chunks_unformatted = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[::2]
+    wav_chunks = [list(chunk) for chunk in wav_chunks_unformatted]
 
-    flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[::2]
-    flux_chunks = [list(chunk) for chunk in flux_chunks_unformated]
+    flux_chunks_unformatted = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[::2]
+    flux_chunks = [list(chunk) for chunk in flux_chunks_unformatted]
 
     return wav_chunks, flux_chunks
 

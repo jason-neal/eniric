@@ -1,4 +1,4 @@
-"""Split the large atmopsheric model transmission spectra into the separate bands.
+"""Split the large atmospheric model transmission spectra into the separate bands.
 To be able to include the separate files and to speed up performances for
 calculations on individual bands only.
 """
@@ -21,7 +21,7 @@ def _parser():
     :returns: the args
     """
 
-    parser = argparse.ArgumentParser(description='Band separate out atmopsheric model.')
+    parser = argparse.ArgumentParser(description='Band separate out atmospheric model.')
 
     parser.add_argument('-m', '--model', help='Model name', type=str, default="Average_TAPAS_2014.txt")
     parser.add_argument("-b", "--bands", type=str, default=None, nargs="+",
@@ -32,7 +32,7 @@ def _parser():
     parser.add_argument('--new_name', default=None, type=str,
                         help='Base name for new files. Default is the original model name.')
     parser.add_argument('--rv_extend', default=100, type=check_positive,
-                        help='Doopler RV (km/s) to extend the wavelength limits of the band. Default=100 km/s')
+                        help='Doppler RV (km/s) to extend the wavelength limits of the band. Default=100 km/s')
 
     return parser.parse_args()
 
@@ -50,7 +50,7 @@ def check_positive(value):
 
     Returns
     -------
-    ivalue: float
+    value: float
         The value if it is positive as a float.
 
     Raises
@@ -61,16 +61,16 @@ def check_positive(value):
     if not isinstance(value, str):
         raise ValueError("Input value is not a string.")
 
-    ivalue = float(value)
-    if ivalue <= 0:
+    value = float(value)
+    if value <= 0:
         raise argparse.ArgumentTypeError("{0:s} is an invalid positive value".format(value))
-    return ivalue
+    return value
 
 
 def main(model="Average_TAPAS_2014.txt", bands=None, new_name=None, data_dir=None, rv_extend=100):
-    """Split the large atmopsheric model transmission spectra into the separate bands.
+    """Split the large atmospheric model transmission spectra into the separate bands.
 
-    Keeps wavelength of atmopshere model as nanometers.
+    Keeps wavelength of atmosphere model as nanometers.
     """
     if bands is None:
         bands = ["All"]
@@ -92,7 +92,7 @@ def main(model="Average_TAPAS_2014.txt", bands=None, new_name=None, data_dir=Non
         band_name = "{0}_{1}.txt".format(new_name, band)
         band_min, band_max = utils.band_limits(band)
 
-        # Doopler shift values to extend saved wavelengths
+        # Doppler shift values to extend saved wavelengths
         band_min = band_min * (1 - rv_extend / c.value)
         band_max = band_max * (1 + rv_extend / c.value)
 

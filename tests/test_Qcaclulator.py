@@ -20,7 +20,7 @@ per_s_cm2 = (1 / u.second) / (u.centimeter ** 2)
 
 
 def test_RVprec_calc():
-    """Test that RVprec_calc can hande inputs as Quantities or unitless and returns a Quantity."""
+    """Test that RVprec_calc can handle inputs as Quantities or unitless and returns a Quantity."""
     wav = np.arange(1, 101)
     flux = np.random.random(100)
 
@@ -374,8 +374,8 @@ def test_quality_independant_of_flux_level(scale):
 
 
 def test_quality_independant_of_units():
-    """Quality should be unitless, or dimensionless_unscaled...
+    """Quality should be unit-less, or dimensionless_unscaled...
     
-    Not sure how that will work withif flux in incorrect unitsif flux in incorrect units.
+    Not sure how that will work with if flux in incorrect units if flux in incorrect units.
     """
     assert False
