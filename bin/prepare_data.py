@@ -97,10 +97,10 @@ def main(startype, temp, logg, metallicity, alpha, flux_type="photon", data_dir=
             try:
                 if "Alpha=" in f:
                     (match_temp, match_logg, match_feh, match_alpha) = (
-                        re.search(r"(\d{5})\-(\d\.\d\d)([\+\-]\d\.\d)\.Alpha=([\+\-]\d\.\d\d)\.", f).groups())
+                        re.search(r"(\d{5})-(\d\.\d\d)([+\-]\d\.\d)\.Alpha=([+\-]\d\.\d\d)\.", f).groups())
                     alpha_cond = float(match_alpha) in alpha
                 else:
-                    (match_temp, match_logg, match_feh) = re.search(r"(\d{5})\-(\d\.\d\d)([\+\-]\d\.\d)", f).groups()
+                    (match_temp, match_logg, match_feh) = re.search(r"(\d{5})-(\d\.\d\d)([+\-]\d\.\d)", f).groups()
                     alpha_cond = True  # To make work
             except AttributeError:
                 """Trying to access NoneType when no match found."""
