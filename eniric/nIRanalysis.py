@@ -117,7 +117,7 @@ def convolution(wav, flux, vsini, R, band: str = "All", epsilon: float = 0.6, fw
                 num_procs: Optional[int] = None, normalize: bool = True, output_name=None):
     """Perform convolution of spectrum.
 
-    Rotational convolution followed by a Guassian a a specified resolution R.
+    Rotational convolution followed by a Gaussian a a specified resolution R.
 
     Parameters
     ----------
@@ -132,7 +132,7 @@ def convolution(wav, flux, vsini, R, band: str = "All", epsilon: float = 0.6, fw
     band: str
         Wavelength band to choose, default="All"
     num_procs: int, None
-        Number of processes to use with multiprocess. If None it is asigned to 1 less then total number of cores.
+        Number of processes to use with multiprocess. If None it is assigned to 1 less then total number of cores.
         If num_procs = 0, then multiprocess is not used.
 
     Returns

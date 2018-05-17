@@ -16,7 +16,7 @@ from eniric.utilities import band_selector
 rc('text', usetex=True)
 
 
-def plot_atmopshere_model(wav_atm, flux_atm, mask_atm):
+def plot_atmosphere_model(wav_atm, flux_atm, mask_atm):
     """Plot atmospheric transmission model for each band.
 
     This is run when plot_atom=True in calculate_prec()"""

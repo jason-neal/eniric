@@ -1,5 +1,5 @@
 """
-Pre-doppler-shift the Tapas atmopshere model for RV Precision.
+Pre-doppler-shift the Tapas atmosphere model for RV Precision.
 
 To make RVprec_cals faster.
 """
@@ -33,7 +33,7 @@ def _parser():
 
 
 def main(bands=None, plot=False):
-    """Preform the barycentric shifting of atmopshere masks and saves result.
+    """Preform the barycentric shifting of atmosphere masks and saves result.
 
     This saves time in the precision determination code.
 
@@ -53,7 +53,7 @@ def main(bands=None, plot=False):
 
         print("Reading atmospheric model...", unshifted_atmmodel)
 
-        wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmopshere(unshifted_atmmodel)
+        wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(unshifted_atmmodel)
         print(("There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}."
                "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)))
         print("The model ranges from {0:4.2f} to {1:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
@@ -63,7 +63,7 @@ def main(bands=None, plot=False):
         org_mask = mask_atm
         mask_atm = atm.barycenter_shift(wav_atm, mask_atm)
 
-        print("Saving doppler-shifted atmopshere model...", shifted_atmmodel)
+        print("Saving doppler-shifted atmosphere model...", shifted_atmmodel)
 
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
 

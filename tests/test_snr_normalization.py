@@ -90,7 +90,7 @@ def test_sampling_index_array():
 @pytest.mark.parametrize("bad_string",
                          ["id-string", "M0-K-1.0-100", "M0-P-1.0-100k"])
 def test_errors_in_snr_get_reference_spectrum(bad_string):
-    """Testing Eorros in getting the reference spectrum."""
+    """Testing Errors in getting the reference spectrum."""
     with pytest.raises(ValueError):
         snrnorm.get_reference_spectrum(bad_string)
 

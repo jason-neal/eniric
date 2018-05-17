@@ -26,7 +26,7 @@ def resample_allfiles(results_dir: str = None, resampled_dir: str = None) -> int
     results_dir: str
         Directory containing results to resample.
     resampled_dir: str
-        Directory to save resampled rsults. 
+        Directory to save resampled results.
     """
     if results_dir is None:
         results_dir = eniric.paths["results"]
@@ -51,7 +51,7 @@ def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k
     Inputs
     ------
     spectrum_name: str
-        Name of spctrum.
+        Name of spectrum.
     results_dir: str
         Directory to find the spectrum to load.
     resample_dir: str

@@ -115,8 +115,8 @@ def band_selector(wav: ndarray, flux: ndarray, band: str) -> Tuple[ndarray, ndar
     if band in ["ALL", ""]:
         return wav, flux
     else:
-        bandmin, bandmax = band_limits(band)
-        return wav_selector(wav, flux, bandmin, bandmax)
+        band_min, band_max = band_limits(band)
+        return wav_selector(wav, flux, band_min, band_max)
 
 
 def band_limits(band: str) -> Tuple[float, float]:
@@ -243,7 +243,7 @@ def rotation_kernel(delta_lambdas: ndarray, delta_lambda_l: float, vsini: float,
     c1 = 2.0 * (1.0 - epsilon) / denominator
     c2 = 0.5 * np.pi * epsilon / denominator
 
-    return (c1 * np.sqrt(1.0 - lambda_ratio_sqr) + c2 * (1.0 - lambda_ratio_sqr))
+    return c1 * np.sqrt(1.0 - lambda_ratio_sqr) + c2 * (1.0 - lambda_ratio_sqr)
 
 
 def silentremove(filename: str) -> None:

@@ -1,10 +1,10 @@
-"""Script to process weekly TAPAS spectra to form an average atmospheric specturm.
+"""Script to process weekly TAPAS spectra to form an average atmospheric spectrum.
 
 Created on Fri Feb  6 00:36:14 2015
 
 @author: pfigueira
 """
-
+import os
 import string
 
 import numpy as np
@@ -30,7 +30,7 @@ def read_tapas(filename):
             continue
         elif (line[0] == '\\'):
             # add everything starting with a \\ to the dictionary
-            # remove the "\" form the beggining and the "\n" from the end
+            # remove the "\" form the beginning and the "\n" from the end
             key_dic, value_dic = string.split(line[1:-1], "=")
             properties_dict[key_dic] = value_dic
         else:

@@ -4,7 +4,7 @@ Code to take all phoenix-aces fits files and create .dat files with wavelength
 and flux.
 Adds them to the data directory of eniric for convolutions etc.
 
-This wastes alot of memory duplicating wavelength vector.
+This wastes a lot of memory duplicating wavelength vector.
 
 Jason Neal January 2017
 """
@@ -27,7 +27,7 @@ def _parser():
 
     :returns: the args
     """
-    parser = argparse.ArgumentParser(description='Helpful discription')
+    parser = argparse.ArgumentParser(description='Convolve and sample spectra to prepare for precision calculations.')
     parser.add_argument("-s", '--startype', help='Spectral Type e.g "MO"', default=["M0"],
                         type=str, nargs="+")
     parser.add_argument("-t", "--temp", help="Temperature of stars to prepare",
@@ -35,12 +35,12 @@ def _parser():
             np.arange(2300, 7000, 100.0)) + list(np.arange(7000, 12001, 200.0)))
     parser.add_argument("-l", "--logg", help="Logg for stellar models.", default=[4.50],
                         type=float, nargs="+", choices=np.arange(0, 6.01, 0.5))
-    parser.add_argument("-m", "--metalicity", type=float, default=[0.0],
-                        help="Metalicity values.", nargs="+")
+    parser.add_argument("-m", "--metallicity", type=float, default=[0.0],
+                        help="Metallicity values.", nargs="+")
     # choices=[list(np.arange(-4.0, -2.0, 1))+list(np.arange(-2.0, 1.01, 0.5))]
     parser.add_argument("-a", "--alpha", type=float, default=[0.0],
                         choices=np.arange(-0.2, 1.201, 0.2),
-                        help="Metalicity values.", nargs="+")
+                        help="Metallicity values.", nargs="+")
     parser.add_argument("-f", "--flux_type", type=str, default="photon",
                         choices=["photon", "energy"],
                         help="Type of flux to use. Default converts it to photons.")
@@ -52,14 +52,13 @@ def _parser():
     return parser.parse_args()
 
 
-def main(startype, temp, logg, metalicity, alpha, flux_type="photon",
-         data_dir=None, phoenix_dir=None):
+def main(startype, temp, logg, metallicity, alpha, flux_type="photon", data_dir=None, phoenix_dir=None):
     """Prepare datafiles for phoenix models that match the input parameters.
 
     This add the wavelength information to each spectra and converts
-    to microns/photons if the flux_tpye="photons" is given.
+    to microns/photons if the flux_type="photons" is given.
     We do realise that this is a waste of space and it would be more
-    storage efficent to just read in the phoenix raw fits files and
+    storage efficient to just read in the phoenix raw fits files and
     wavelength file when needed.
 
     """
@@ -108,7 +107,7 @@ def main(startype, temp, logg, metalicity, alpha, flux_type="photon",
                 continue
 
             temp_cond = float(match_temp) in temp
-            feh_cond = float(match_feh) in metalicity
+            feh_cond = float(match_feh) in metallicity
             logg_cond = float(match_logg) in logg
 
             if np.all([end_cond, temp_cond, feh_cond, logg_cond, alpha_cond]):  # All conditions met
@@ -152,7 +151,7 @@ def main(startype, temp, logg, metalicity, alpha, flux_type="photon",
 
             else:
                 result = io.pdwrite_cols(output_filename, wavelength, spectra_micron,
-                                         header=["# Wavelength (Angstom)", r"Flux (erg/s/cm^2/micron)"],
+                                         header=["# Wavelength (Angstrom)", r"Flux (erg/s/cm^2/micron)"],
                                          float_format=None)
 
             if not result:
