@@ -184,7 +184,7 @@ def convolution(wav, flux, vsini, R, band: str = "All", epsilon: float = 0.6, fw
 
 
 def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
-                           vsini, epsilon, num_procs=None, normalize=True):
+                           vsini, epsilon, num_procs=None, normalize: bool = True):
     """Perform Rotational convolution part of convolution.
     """
 
@@ -238,7 +238,7 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
                                                         wav_ext_rotation,
                                                         flux_ext_rotation,
                                                         vsini, epsilon,
-                                                        normalize)
+                                                        normalize=normalize)
         print("Done.\n")
     return flux_conv_rot
 
@@ -250,7 +250,7 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
 
     # Define inner convolution functions
     def element_res_convolution(wav, R, wav_extended, flux_conv_rot, fwhm_lim,
-                                normalize):
+                                normalize: bool = True):
         """Embarrassingly parallel component of resolution convolution"""
         fwhm = wav / R
         # Mask of wavelength range within 5 fwhm of wav
@@ -292,7 +292,7 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
         flux_conv_res = np.empty_like(wav_band)  # Memory assignment
         for jj, wav in enumerate(tqdm(wav_band)):
             flux_conv_res[jj] = element_res_convolution(wav, R, wav_extended,
-                                                        flux_conv_rot, fwhm_lim)
+                                                        flux_conv_rot, fwhm_lim, normalize=normalize)
         print("Done.\n")
     return flux_conv_res
 
