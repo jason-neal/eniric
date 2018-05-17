@@ -15,7 +15,7 @@ from numpy import ndarray
 import eniric.IOmodule as io
 
 
-def prepare_atmopshere(atmmodel: str) -> Tuple[ndarray, ndarray, ndarray, ndarray]:
+def prepare_atmosphere(atmmodel: str) -> Tuple[ndarray, ndarray, ndarray, ndarray]:
     """Read in atmospheric model and prepare."""
     wav_atm, flux_atm, std_flux_atm, mask_atm = io.pdread_4col(atmmodel)
     # pandas already returns numpy arrays

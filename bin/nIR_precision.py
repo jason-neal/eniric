@@ -132,7 +132,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
         if use_unshifted:
             atmmodel = os.path.join(eniric.paths["atmmodel"], "Average_TAPAS_2014_{}.txt".format(band))
             print("Reading atmospheric model...")
-            wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmopshere(atmmodel)
+            wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(atmmodel)
             print(("There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}."
                    "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)))
 
@@ -144,7 +144,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
         else:
             shifted_atmmodel = os.path.join(eniric.paths["atmmodel"], "Average_TAPAS_2014_{}_bary.txt".format(band))
             print("Reading pre-doppler-shifted atmospheric model...")
-            wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmopshere(shifted_atmmodel)
+            wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(shifted_atmmodel)
         print("Done.")
 
         print(("There were {0:d} unmasked pixels out of {1:d}, or {2:.1%}."
@@ -153,7 +153,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
 
         if plot_atm:
             # moved plotting code to separate code, eniric.plotting_functions.py
-            plt_functions.plot_atmopshere_model(wav_atm, flux_atm, mask_atm)
+            plt_functions.plot_atmosphere_model(wav_atm, flux_atm, mask_atm)
 
         # theoretical ratios calculation
         # wav_m0, flux_m0, wav_m3, flux_m3, wav_m6, flux_m6, wav_m9, flux_m9 = read_nIRspectra()
@@ -187,7 +187,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             flux_stellar = flux_stellar[2:-2]
 
             # sample was left aside because only one value existed
-            # TODO: Add metalicity and logg into id string
+            # TODO: Add metallicity and logg into id string
             id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
 
             # Getting the wav, flux and mask values from the atm model
@@ -209,7 +209,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                 print("Min flux_atm_selected[mask_atm_selected] = {} < 0.98\n####".format(
                     np.min(flux_atm_selected[mask_atm_selected])))
 
-            # Normaize to SNR 100 in middle of J band 1.25 micron!
+            # Normalize to SNR 100 in middle of J band 1.25 micron!
             # flux_stellar = normalize_flux(flux_stellar, id_string)
             # flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=True)  # snr=100, ref_band="J"
             flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=new, snr=snr,
@@ -242,7 +242,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
 
             """
             # histogram checking
-            lengths = [len(chunk) for chunk in flux_stellar_chunks_unformated]
+            lengths = [len(chunk) for chunk in flux_stellar_chunks_unformatted]
             n, bins, patches = plt.hist(lengths, 500, range=[0.5, 500.5], histtype='stepfilled')
             plt.title(id_string)
             plt.show()
@@ -296,19 +296,19 @@ def compare_output():
     convolved = "results_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k.txt"
     sampled = "resampled_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt"
 
-    conv_wav, theor_flux, conv_flux = io.pdread_3col(convolved)
+    conv_wav, theory_flux, conv_flux = io.pdread_3col(convolved)
     sampled_wav, sampled_flux = io.pdread_2col(sampled)
 
-    theor_flux = np.array(theor_flux)
+    theory_flux = np.array(theory_flux)
     conv_flux = np.array(conv_flux)
 
-    ratio_flux = moving_average(conv_flux, 300) / moving_average(theor_flux, 300)
+    ratio_flux = moving_average(conv_flux, 300) / moving_average(theory_flux, 300)
     ratio_flux = ratio_flux / ratio_flux[0]
 
     plt.figure(1)
     plt.xlabel(r"wavelength [$\mu$m])")
     plt.ylabel(r"Flux[ ] ")
-    plt.plot(conv_wav, np.array(theor_flux) / theor_flux[0], color='k')
+    plt.plot(conv_wav, np.array(theory_flux) / theory_flux[0], color='k')
     plt.plot(conv_wav, np.array(conv_flux) / conv_flux[0], color='b')
     plt.plot(conv_wav, ratio_flux, color='g', linestyle='--')
     plt.show()
@@ -319,7 +319,7 @@ def compare_output():
     plt.figure(1)
     plt.xlabel(r"wavelength [$\mu$m])")
     plt.ylabel(r"Flux corrected[ ] ")
-    plt.plot(conv_wav, np.array(theor_flux) / theor_flux[0], color='k')
+    plt.plot(conv_wav, np.array(theory_flux) / theory_flux[0], color='k')
     plt.plot(conv_wav, np.array(conv_flux_corrected) / conv_flux_corrected[0], color='b')
     plt.show()
     plt.close()
@@ -328,7 +328,7 @@ def compare_output():
 def calculate_all_masked(wav_atm, mask_atm):
     """Auxiliary function to calculate masked pixels in banded parts.
 
-    Needs the code to load the atmopsheric data in for each band.
+    Needs the code to load the atmospheric data in for each band.
 
     Need to load a average_tapas file.
     barycenter correct.

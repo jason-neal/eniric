@@ -1,4 +1,4 @@
-"""Test of atmopshere.py functions."""
+"""Test of atmosphere.py functions."""
 
 import numpy as np
 import pytest
@@ -42,8 +42,8 @@ def test_old_barycenter_shift():
 
 
 @pytest.mark.xfail()  # If missing the datafiles
-def test_prepare_atmopshere():
-    """Test that an atmopshere file is loaded.
+def test_prepare_atmosphere():
+    """Test that an atmosphere file is loaded.
 
     Test band is close to the band limits (accounting for the given offset. +- 100km/s).
     """
