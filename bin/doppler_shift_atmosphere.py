@@ -1,7 +1,7 @@
 """
 Pre-doppler-shift the Tapas atmosphere model for RV Precision.
 
-To make RVprec_cals faster.
+To make RV precision calculations faster.
 """
 
 from __future__ import division, print_function
