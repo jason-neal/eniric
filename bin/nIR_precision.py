@@ -171,11 +171,11 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                 wav_stellar, flux_stellar = io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
             except file_error_to_catch:
                 # Turn list of strings into strings without symbols  ["J", "K"] -> J K
-                spectral_str = re.sub(r"[\[\]\"\'\,]", "", str(spectral_types))
-                band_str = re.sub(r"[\[\]\"\'\,]", "", str(bands))
-                vsini_str = re.sub(r"[\[\]\"\'\,]", "", str(vsini))
-                res_str = re.sub(r"[\[\]\"\'\,]", "", str(resolution))
-                sampling_str = re.sub(r"[\[\]\"\'\,]", "", str(sampling))
+                spectral_str = re.sub(r"[\[\]\"\',]", "", str(spectral_types))
+                band_str = re.sub(r"[\[\]\"\',]", "", str(bands))
+                vsini_str = re.sub(r"[\[\]\"\',]", "", str(vsini))
+                res_str = re.sub(r"[\[\]\"\',]", "", str(resolution))
+                sampling_str = re.sub(r"[\[\]\"\',]", "", str(sampling))
 
                 print(("\nFor just this file I suggest you run\n\tpython nIR_run.py -s {0} -b {1} -v {2} -R {3} "
                        "--sample_rate {4}\nOr for all the combinations you ran here\n\tpython nIR_run.py -s {5}"
