@@ -8,8 +8,6 @@ import pytest
 import eniric.IOmodule as io
 import eniric.utilities as utils
 
-# For python2.X compatibility
-file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
 def test_pdread_2col():

@@ -9,10 +9,8 @@ import eniric.Qcalculator as Q
 import eniric.snr_normalization as snrnorm
 import eniric.utilities as utils
 
-file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
-
-@pytest.mark.xfail(raises=file_error_to_catch)
+@pytest.mark.xfail(raises=FileNotFoundError)
 def test_snr_normalization():
     """Test SNR after normalizing function is the desired value.
 
@@ -42,7 +40,7 @@ def test_snr_normalization():
                 snrnorm.snr_constant_wav(wav, flux, 1.25, snr=desired_snr))
 
 
-@pytest.mark.xfail(raises=file_error_to_catch)
+@pytest.mark.xfail(raises=FileNotFoundError)
 def test_band_snr_norm():
     """Compared to wav snr norm."""
     # snr_constant_band
@@ -106,7 +104,7 @@ def test_notimplemented_errors_in_snr_get_reference_spectrum(bad_string):
         snrnorm.get_reference_spectrum(bad_string)
 
 
-@pytest.mark.xfail(raises=file_error_to_catch)
+@pytest.mark.xfail(raises=FileNotFoundError)
 def test_valid_snr_get_reference_spectrum():
     """Testing getting the reference spectrum."""
     ref_band = "J"
@@ -125,7 +123,7 @@ def test_valid_snr_get_reference_spectrum():
 
 def test_get_reference_spectrum_in_nonexistent_file():
     """Testing getting the reference spectrum."""
-    with pytest.raises(file_error_to_catch):
+    with pytest.raises(FileNotFoundError):
         snrnorm.get_reference_spectrum("M1-K-1.0-100k", ref_band="J")
 
 
