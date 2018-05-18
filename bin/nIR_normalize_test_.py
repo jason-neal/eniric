@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # Testing script for nIR analysis
 # Run new and old code to test output.S
 # Jason Neal

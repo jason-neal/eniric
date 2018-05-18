@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Near-Infrared radial velocity precision."""
 import argparse
 import itertools
