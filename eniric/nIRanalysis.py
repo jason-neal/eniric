@@ -6,8 +6,6 @@ Created on Sun Dec 14 15:43:13 2014
 
 Adapted December 2016 by Jason Neal
 """
-from __future__ import division, print_function
-
 import os
 import sys
 from typing import Optional

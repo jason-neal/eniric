@@ -4,8 +4,6 @@
 To make RV precision calculations faster.
 """
 
-from __future__ import division, print_function
-
 import argparse
 import sys
 
