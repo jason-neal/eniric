@@ -10,11 +10,9 @@ from hypothesis import given, settings
 import eniric
 import eniric.utilities as utils
 
-# For python2.X compatibility
-file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
-@pytest.mark.xfail(raises=file_error_to_catch)
+@pytest.mark.xfail(raises=FileNotFoundError)
 def test_read_spectrum():
     """Test reading in a _wave_photon.dat is the same as a _wave.dat."""
     photon = os.path.join(eniric.paths["test_data"],
@@ -28,7 +26,7 @@ def test_read_spectrum():
     assert np.allclose(photon_flux, wave_flux)
 
 
-@pytest.mark.xfail(raises=file_error_to_catch)
+@pytest.mark.xfail(raises=FileNotFoundError)
 def test_get_spectrum_name():
     """Test specifying file names with stellar parameters."""
     test = ("Z-0.0/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
@@ -77,7 +75,7 @@ def test_spectrum_name_with_ok_alpha(alpha):
     assert "Alpha=" in name
 
 
-# @pytest.mark.xfail(raises=file_error_to_catch)
+# @pytest.mark.xfail(raises=FileNotFoundError)
 def test_org_name():
     """Test org flag of utils.get_spectrum_name, supposed to be temporary."""
     test_org = "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"

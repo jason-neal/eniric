@@ -5,8 +5,6 @@ import pytest
 
 import eniric.atmosphere as atm
 
-file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
-
 
 def test_consecutive_truths():
     """Test consecutive truths lists cout of consecutive ones."""
