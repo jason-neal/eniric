@@ -9,8 +9,6 @@ This wastes a lot of memory duplicating wavelength vector.
 
 Jason Neal January 2017
 """
-from __future__ import division, print_function
-
 import argparse
 import os
 import re

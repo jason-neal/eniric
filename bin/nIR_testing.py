@@ -3,8 +3,6 @@
 # Run new and old code to test output.S
 # Jason Neal
 # December 2016
-from __future__ import division, print_function
-
 import datetime
 import os
 import matplotlib.pyplot as plt
