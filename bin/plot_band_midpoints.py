@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Print the point at which the scale occurs."""
 import os
 

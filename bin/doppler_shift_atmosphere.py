@@ -1,5 +1,5 @@
-"""
-Pre-doppler-shift the Tapas atmosphere model for RV Precision.
+#!/usr/bin/env python
+"""Pre-doppler-shift the Tapas atmosphere model for RV Precision.
 
 To make RV precision calculations faster.
 """

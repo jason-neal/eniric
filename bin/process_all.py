@@ -1,5 +1,4 @@
-# process_all.py
-
+#!/usr/bin/env python
 """
 Script to run all convolutions for the new NIR analysis.
 Includes adding metallicity and logg parameters
