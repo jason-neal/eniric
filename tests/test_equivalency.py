@@ -1,7 +1,5 @@
 """To test the equivalence of old and newcode to check if it does the same thing."""
 
-from __future__ import division, print_function
-
 import os
 
 import numpy as np
