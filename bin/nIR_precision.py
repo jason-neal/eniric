@@ -42,9 +42,6 @@ def _parser():
     return parser.parse_args()
 
 
-file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
-
-
 def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
     """Main function that calls calc_precision.
 
@@ -53,7 +50,7 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
     bands: str or list of str or None, Default="J"
         Band letters to use. None does the bands Z through K.
     use_unshifted: bool default=False
-        Flag to start with the undopplershifted atmmodel.
+        Flag to start with the un-Doppler shifted atmmodel.
     save: bool
         Save results to file.
 
@@ -170,7 +167,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             # print("Working on "+file_to_read+".")
             try:
                 wav_stellar, flux_stellar = io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
-            except file_error_to_catch:
+            except FileNotFoundError:
                 # Turn list of strings into strings without symbols  ["J", "K"] -> J K
                 spectral_str = re.sub(r"[\[\]\"\',]", "", str(spectral_types))
                 band_str = re.sub(r"[\[\]\"\',]", "", str(bands))
