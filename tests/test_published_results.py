@@ -6,13 +6,11 @@ import pytest
 from bin.nIR_precision import calculate_prec
 from bin.prec_1 import calc_prec1
 
-# For python2.X compatibility
-file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 path = "data/Published_Results/resampled/"
 
 
-@pytest.mark.xfail(raises=file_error_to_catch)  # Data file may not exist
+@pytest.mark.xfail(raises=FileNotFoundError)  # Data file may not exist
 def test_precision_1():
     """New precision 1 test that works."""
     published_results = {1: 3.8, 5: 9.1, 10: 20.7}
