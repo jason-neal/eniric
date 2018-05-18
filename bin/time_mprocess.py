@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """ Script to time convolution using different number of processors.
 # Jason Neal
 # December 2016

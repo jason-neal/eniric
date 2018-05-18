@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Quick and dirty precision 1.
 
 Doesn't involve atmosphere model so can perform realively easily to check
