@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # Script to perform a convolution on a spectrum.
 # Can take a number of parameters if needed
 from __future__ import division, print_function
