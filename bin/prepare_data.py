@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Prepare_data.py
 
 Code to take all phoenix-aces fits files and create .dat files with wavelength
