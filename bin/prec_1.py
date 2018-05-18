@@ -59,11 +59,10 @@ def _parser():
 
 # atmmodel = "../data/atmmodel/Average_TAPAS_2014.txt"
 resampled_dir = eniric.paths["resampled"]
-file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
 def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
-    """Just caluclate precision for 1st case.
+    """Just calculate precision for 1st case.
 
     resolution in short form e.g 100k
     """
@@ -162,7 +161,7 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
                             try:
                                 id_string, prec_1 = calc_prec1(star, band, vel, R, smpl, normalize=normalize)
                                 precision[id_string] = prec_1
-                            except file_error_to_catch:
+                            except FileNotFoundError:
                                 pass  # When file not found skip
                             except:
                                 print(star, band, vel, R, smpl, "normalized" * normalize, "Failed!")
