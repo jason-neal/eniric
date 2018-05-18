@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Split the large atmospheric model transmission spectra into the separate bands.
 To be able to include the separate files and to speed up performances for
 calculations on individual bands only.

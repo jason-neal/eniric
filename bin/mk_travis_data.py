@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """To be run on travis to generate the results data.
 
 Copare to published results and run other tests on it.
