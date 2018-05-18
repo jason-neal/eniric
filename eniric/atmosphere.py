@@ -3,8 +3,6 @@
 Mainly the barycentric shifting of the absorption mask.
 """
 
-from __future__ import division, print_function
-
 from typing import Tuple
 
 import matplotlib.pyplot as plt

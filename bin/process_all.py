@@ -6,8 +6,6 @@ Includes adding metallicity and logg parameters
 Jason Neal, January 2017
 
 """
-from __future__ import division, print_function
-
 import itertools
 
 import numpy as np

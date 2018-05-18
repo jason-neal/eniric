@@ -1,7 +1,5 @@
 """Tests for functions and bits of code from the scripts in bin."""
 
-from __future__ import division, print_function
-
 import argparse
 
 import pytest
