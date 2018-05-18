@@ -26,7 +26,7 @@ def _parser():
 
     :returns: the args
     """
-    parser = argparse.ArgumentParser(description='Convolve and sample spectra to prepare for precision calculations.')
+    parser = argparse.ArgumentParser(description='Transform spectra to prepare for convolution.')
     parser.add_argument("-s", '--startype', help='Spectral Type e.g "MO"', default=["M0"],
                         type=str, nargs="+")
     parser.add_argument("-t", "--temp", help="Temperature of stars to prepare",
@@ -39,7 +39,7 @@ def _parser():
     # choices=[list(np.arange(-4.0, -2.0, 1))+list(np.arange(-2.0, 1.01, 0.5))]
     parser.add_argument("-a", "--alpha", type=float, default=[0.0],
                         choices=np.arange(-0.2, 1.201, 0.2),
-                        help="Metallicity values.", nargs="+")
+                        help="Alpha values. Default = [0.0]", nargs="+")
     parser.add_argument("-f", "--flux_type", type=str, default="photon",
                         choices=["photon", "energy"],
                         help="Type of flux to use. Default converts it to photons.")
