@@ -111,7 +111,7 @@ def quality(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]
     if not isinstance(flux, np.ndarray):
         flux = np.asarray(flux)
     
-    flux = flux = u.dimensionless_unscaled # Turn into Quantity if not already
+    flux = flux * u.dimensionless_unscaled # Turn into Quantity if not already
     flux = flux / flux.unit  # Remove units from flux (sqrt(N_e) is unitless)
 
     wis = sqrt_sum_wis(wavelength, flux)
