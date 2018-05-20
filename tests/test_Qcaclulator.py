@@ -372,10 +372,20 @@ def test_quality_independant_of_flux_level(scale):
     flux = np.random.random(100)
     assert np.allclose(Q.quality(wavelength, flux), Q.quality(wavelength, flux * scale))
 
-
-def test_quality_independant_of_units():
+@pytest.mark.parametrize("wave_unit", [1, u.centimeter, u.nanometer])
+@pytest.mark.parametrize("flux_unit", [1, 1/u.second/u.micron**2, 1./u.second])
+def test_quality_independant_of_units(wave_unit, flux_unit):
     """Quality should be unitless, or dimensionless_unscaled...
     
-    Not sure how that will work withif flux in incorrect unitsif flux in incorrect units.
+    Needed to remove unit from flux in quality() to make quality unitless.
     """
-    assert False
+    wave = np.arange(10) + 1
+    flux = np.random.randn(10) + 1
+    wave = wave * wave_unit
+    flux = flux * flux_unit
+    q = Q.quality(wave, flux)
+    print(q)
+    if isinstance(q, u.Quantity):
+        assert q.unit == u.dimensionless_unscaled
+    else:
+        assert True
