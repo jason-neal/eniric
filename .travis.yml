@@ -41,7 +41,7 @@ install:
   - python setup.py install
 
 before_script:
-  - mv .test_config.yaml config.yaml
+  - mv tests/config.yaml config.yaml
 
   # Generate data
   - python bin/mk_travis_data.py
