@@ -113,7 +113,7 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon: float = 0.6, fwhm_lim: f
 
 
 def convolution(wav, flux, vsini, R, band: str = "All", epsilon: float = 0.6, fwhm_lim: float = 5.0,
-                num_procs: Optional[int] = None, normalize: bool = True, output_name=None):
+                num_procs: Optional[int] = None, normalize: bool = True):
     """Perform convolution of spectrum.
 
     Rotational convolution followed by a Gaussian of a specified resolution R.
