@@ -29,5 +29,6 @@ bands = config["bands"]
 
 # Turn list into path
 for key, value in paths.items():
-    paths[key] = os.path.join(value)
+    if isinstance(value, list):
+        paths[key] = os.path.join(*value)
 
