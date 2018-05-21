@@ -299,28 +299,22 @@ def test_RVprec_masked_raises_warning():
         Q.RVprec_calc_masked(wave, flux, mask)
 
 
-@pytest.mark.parametrize("wave_unit, flux_unit", [
-    (u.nanometer, per_s_cm2),
-    (u.nanometer, 1),
-    (u.micron, 1),
-    (1, per_s_cm2),
-    (1, 1)])
+@pytest.mark.parametrize("wave_unit", [1, u.centimeter, u.nanometer])
+@pytest.mark.parametrize("flux_unit", [1, per_s_cm2, 1. / u.second])
 def test_sqrt_sum_wis_trans_with_quantities(wave_unit, flux_unit):
-    """Assert that wis returns dimensionless."""
-    """Assert that wis returns with quantities is ok."""
+    """Assert that wis returns dimensionless.
 
+    Assert that wis returns with quantities is ok.
+    """
     wav = np.arange(1, 101) * wave_unit
     flux = (np.random.randn(100) + 1) * flux_unit
     transmission = np.random.rand(len(wav))
-    prevision = Q.sqrt_sum_wis_trans(wav, flux, transmission)
+    wis = Q.sqrt_sum_wis_trans(wav, flux, transmission)
 
-    if isinstance(prevision, u.Quantity):
-        assert prevision.unit == u.dimensionless_unscaled
-
-
-def test_sqrt_sum_wis_trans_dimensionless():
-    """Assert that wis returns dimensionless."""
-    assert False
+    if isinstance(wis, u.Quantity):
+        assert wis.unit == u.dimensionless_unscaled
+    else:
+        assert True
 
 
 @pytest.mark.parametrize("wave_unit, flux_unit, trans_unit", [
