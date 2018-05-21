@@ -116,7 +116,7 @@ def convolution(wav, flux, vsini, R, band: str = "All", epsilon: float = 0.6, fw
                 num_procs: Optional[int] = None, normalize: bool = True, output_name=None):
     """Perform convolution of spectrum.
 
-    Rotational convolution followed by a Gaussian a a specified resolution R.
+    Rotational convolution followed by a Gaussian of a specified resolution R.
 
     Parameters
     ----------
