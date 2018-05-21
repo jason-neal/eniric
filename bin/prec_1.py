@@ -87,7 +87,7 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
         id_string = "{0}-{1}-{2:.1f}-{3}-unnorm".format(star, band, vel,
                                                         resolution)  # sample was left aside because only one value existed
 
-    # Normaize to SNR 100 in middle of J band 1.25 micron!
+    # Normalize to SNR 100 in middle of J band 1.25 micron!
     flux_stellar = normalize_flux(flux_stellar, id_string)
 
     if id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k", "M6-J-1.0-100k", "M9-J-1.0-100k"]:
