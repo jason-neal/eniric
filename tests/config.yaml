@@ -15,7 +15,27 @@ paths:
 bands:
   all: ["VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP"]
 
-# full pathsname: eniric_default
+
+# Keywords needed for Starfish to be used
+outdir : results/
+
+plotdir : plots/
+
+# The parameters defining your raw spectral library live here.
+grid:
+    raw_path: "../../data/PHOENIX-ALL/PHOENIX"
+    parname: ["temp", "logg", "Z"]
+    hdf5_path: ""
+    # raw_path: "../libraries/raw/CIFIST/"plu
+    key_name: "t{0:.0f}g{1:.1f}" # Specifies how the params are stored
+    parname: ["temp", "logg", "Z"]
+    parrange: [[2300, 3700], [4.0, 5.5], [-1.5, 1.5]]
+    wl_range: [6300, 6360]
+    buffer: 50. # AA
+
+data:
+    grid_name: "Eniric"
+    instruments: []
 
 # The parameters defining the spectral libraries live here.
 # paths:
