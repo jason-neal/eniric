@@ -12,6 +12,10 @@ from numpy import ndarray
 
 import eniric.IOmodule as io
 
+import eniric
+from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIX
+from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXALPHA
+
 
 def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
     """Function that reads a flux spectra from the database!.
@@ -306,3 +310,64 @@ def resolution2str(resolutions: Union[List[Any], Any]) -> Union[List[str], str]:
         return res_str[0]
     else:
         return res_str
+
+
+def load_aces_spectrum(params, photons=True):
+    """Load a Phoenix spectrum from the phoenix library using STARFISH.
+
+    Parameters
+    ----------
+    params: ndarray
+         [temp, logg, metallicity(, alpha)]
+    photons: bool
+        Necessary conversions into photons for precisions.
+
+    Returns
+    -------
+    wav_micron: ndarray
+        Wavelength in microns
+    flux_micron: ndarray
+        Photon counts or SED/micron
+    """
+    base = eniric.paths["phoenix_raw"]
+    print("base = ", base)
+    if params[3] == 0:  # Alpha value
+        params = params[:-1]
+        assert len(params) == 3
+        phoenix_grid = PHOENIX(base=base)
+    elif len(params) == 4:
+        print("USING ALPHA in PHOENIX LOADING")
+        phoenix_grid = PHOENIXALPHA(base=base) #, param_names = ["temp", "logg", "Z", "alpha"])
+    else:
+        raise ValueError("Number of parameters is incorrect")
+
+    wav = phoenix_grid.wl
+    flux, hdr = phoenix_grid.load_flux(params)
+
+    # Convert wavelength Angstrom to micron
+    wav_micron = wav * 10 ** -4
+    # Convert SED from /cm  to /micron
+    flux_micron = flux * 10 ** -4
+
+    if photons:
+        # Convert to photons
+        """The energy units of Phoenix fits files is erg/s/cm**2/cm 
+        PHOENIX ACES gives the Spectral Energy Density (SED)
+        We transform the SED into photons by 
+        multiplying the flux by the wavelength (lambda)
+
+            Flux_photon = Flux_energy/Energy_photon
+        with
+            Energy_photon = h*c/lambda
+        Flux_photon = Flux_energy * lambda / (h * c)
+
+        Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/micron
+        Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
+        """
+        # Turn into photon counts
+        flux_micron = flux_micron * wav_micron
+    return wav_micron, flux_micron
+
+
+def load_btsettl_spectrum(params, photons=True):
+    raise NotImplementedError("Need to include BTSETTL")
