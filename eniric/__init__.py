@@ -5,6 +5,7 @@ __all__ = ["atmosphere", "IOmodule", "nIRanalysis", "plotting_functions", "Qcalc
 # If it doesn't exist, print a useful help message
 
 import yaml
+import os
 
 try:
     f = open("config.yaml")
@@ -25,4 +26,8 @@ except FileNotFoundError as e:
 name = config["name"]
 paths = config["paths"]
 bands = config["bands"]
-# use as resamled_dir = eniric.paths["resampled"]
+
+# Turn list into path
+for key, value in paths.items():
+    paths[key] = os.path.join(value)
+
