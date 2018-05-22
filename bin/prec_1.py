@@ -135,7 +135,7 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
     precision = {}  # dict for storing precision value
 
     # TODO: iterate over band last so that the J band normalization value can be
-    # obtained first and applied to each band.
+    # Obtained first and applied to each band.
 
     for star in spectral_types:
         for band in bands:
