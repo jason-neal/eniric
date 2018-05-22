@@ -103,7 +103,7 @@ def main(startype, temp, logg, metallicity, alpha, flux_type="photon", data_dir=
                     (match_temp, match_logg, match_feh) = re.search(r"(\d{5})-(\d\.\d\d)([+\-]\d\.\d)", f).groups()
                     alpha_cond = True  # To make work
             except AttributeError:
-                """Trying to access NoneType when no match found."""
+                print("Trying to access NoneType when no match found.")
                 continue
 
             temp_cond = float(match_temp) in temp
