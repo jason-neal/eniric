@@ -22,7 +22,7 @@ config = {
         'test': ['coverage', 'pytest', 'pytest-cov', 'python-coveralls', 'hypothesis'],
     },
     'packages': ['eniric'],
-    'scripts': [],
+    'scripts': ["bin/mk_travis_data.py"],
     'name': 'eniric',
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     "classifiers": [
