@@ -24,7 +24,7 @@ from eniric.utilities import (band_selector, read_spectrum, rotation_kernel,
                               unitary_gaussian, wav_selector)
 
 # Cache convlution results.
-cachedir = "~/.joblib/"
+cachedir = os.path.join(os.path.expanduser("~"), ".joblib")
 memory = Memory(cachedir=cachedir, verbose=0)
 
 # set stuff for latex usage
