@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """To be run on travis to generate the results data.
 
-Copare to published results and run other tests on it.
+Compare to published results and run other tests on it.
 Don't do to many.
 """
 import os

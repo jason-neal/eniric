@@ -22,7 +22,7 @@ vsini = 10
 epsilon = 0.6
 fwhm_lim = 5
 plot = False
-numprocs = 4
+num_procs = 4
 
 for band in bands:
     pass
@@ -33,7 +33,7 @@ if False:
     # raise NotImplementedError("This has broken due to changes in dir structure.")
     wav_band, flux_band, flux_conv = convolution(wav, flux, vsini, R, epsilon,
                                                  fwhm_lim, band=band,
-                                                 numprocs=numprocs,
+                                                 num_procs=num_procs,
                                                  results_dir="../data/results/unnorm/",
                                                  normalize=False)
 
@@ -42,7 +42,7 @@ if False:
 
     wav_band_norm, flux_band_norm, flux_conv_norm = convolution(wav, flux, vsini, R,
                                                                 epsilon, fwhm_lim, band=band,
-                                                                numprocs=numprocs,
+                                                                num_procs=num_procs,
                                                                 results_dir="../data/results/norm/",
                                                                 normalize=True)
 
@@ -56,8 +56,8 @@ if False:
         plt.legend(loc=0)
         plt.show()
 
-# Calculate RVPresision
-print("Radial velocity Presision, vsini = {0}, R = {1}".format(vsini, R))
+# Calculate RV Precision
+print("Radial velocity Precision, vsini = {0}, R = {1}".format(vsini, R))
 for band in bands:
     # Argument unpacking with *
     norm_wav, norm_flux = io.pdread_2col("../data/resampled/norm/"
@@ -73,13 +73,14 @@ for band in bands:
 
     unnorm_prec = RVprec_calc(unnorm_wav, unnorm_flux)
 
-    # Normaliation with Perdos misterious  / ((1.634e4)**2.0)
-    norm_prec_with_pedro = RVprec_calc(norm_wav, norm_flux / ((1.634e4) ** 2.0))
-    unnorm_prec_with_pedro = RVprec_calc(unnorm_wav, unnorm_flux / ((1.634e4) ** 2.0))
+    # Normalization with Pedro's mysterious factor / ((1.634e4)**2.0)
+    norm_factor = 1.634e4 ** 2.0
+    pedros_norm_prec = RVprec_calc(norm_wav, norm_flux / norm_factor)
+    pedros_unnorm_prec = RVprec_calc(unnorm_wav, unnorm_flux / norm_factor)
 
     print("Unnormalized RV_Precision                           \t{0} band \t= {1:0.4f}".format(band, unnorm_prec))
-    print("Unnormalized RV_Precision with pedros /(1.634e4)**2,\t{0} band \t= {1:6.4f}".format(band,
-                                                                                               unnorm_prec_with_pedro))
+    print("Unnormalized RV_Precision with Pedro's /(1.634e4)**2,\t{0} band \t= {1:6.4f}".format(band,
+                                                                                                pedros_unnorm_prec))
     print("Normalized RV_Precision                             \t{0} band \t= {1:6.4f}".format(band, norm_prec))
-    print("Normalized RV_Precision with pedros /(1.634e4)**2,  \t{0} band \t= {1:6.4f}".format(band,
-                                                                                               norm_prec_with_pedro))
+    print("Normalized RV_Precision with Pedro's /(1.634e4)**2,  \t{0} band \t= {1:6.4f}".format(band,
+                                                                                                pedros_norm_prec))

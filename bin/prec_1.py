@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Quick and dirty precision 1.
 
-Doesn't involve atmosphere model so can perform realively easily to check
+Doesn't involve atmosphere model so can perform relatively easily to check
 precision is working.
 """
 
@@ -81,11 +81,11 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
     flux_stellar = flux_stellar[2:-2]
 
     if normalize:
-        id_string = "{0}-{1}-{2:.1f}-{3}".format(star, band, vel,
-                                                 resolution)  # sample was left aside because only one value existed
+        # sample was left aside because only one value existed
+        id_string = "{0}-{1}-{2:.1f}-{3}".format(star, band, vel, resolution)
     else:
-        id_string = "{0}-{1}-{2:.1f}-{3}-unnorm".format(star, band, vel,
-                                                        resolution)  # sample was left aside because only one value existed
+        # sample was left aside because only one value existed
+        id_string = "{0}-{1}-{2:.1f}-{3}-unnorm".format(star, band, vel, resolution)
 
     # Normalize to SNR 100 in middle of J band 1.25 micron!
     flux_stellar = normalize_flux(flux_stellar, id_string)
@@ -163,7 +163,8 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
                                 precision[id_string] = prec_1
                             except FileNotFoundError:
                                 pass  # When file not found skip
-                            except:
+                            except Exception as e:
+                                print(e)
                                 print(star, band, vel, R, smpl, "normalized" * normalize, "Failed!")
 
     print("id_string\t\tprec_1")

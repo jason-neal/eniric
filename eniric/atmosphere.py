@@ -78,10 +78,8 @@ def barycenter_shift(wav_atm: ndarray, mask_atm: ndarray, rv_offset: float = 0.0
                 else:
                     mask_atm_30kms[i] = True
                     if np.sum(~mask_atm_slice) > 3:
-                        # print(len_consec_zeros)
-                        print(
-                            "There were {0} zeros out of {1} in this barycentric shift but none were 3 consecutive!".format(
-                                np.sum(~mask_atm_slice), len(mask_atm_slice)))
+                        print("There were {0}/{1} zeros in this barycentric shift but None were 3 consecutive!".format(
+                            np.sum(~mask_atm_slice), len(mask_atm_slice)))
             else:
                 mask_atm_30kms[i] = np.product(mask_atm_slice)
     masked_end = pixels_total - np.sum(mask_atm_30kms)
@@ -107,7 +105,8 @@ def consecutive_truths(condition: ndarray) -> ndarray:
 
     Notes
     -----
-    Solution found at http://stackoverflow.com/questions/24342047/count-consecutive-occurences-of-values-varying-in-length-in-a-numpy-array
+    Solution found at {http://stackoverflow.com/questions/24342047/
+                       count-consecutive-occurences-of-values-varying-in-length-in-a-numpy-array}
     """
     if not np.any(condition):  # No match to condition
         return np.array([0])
@@ -209,7 +208,8 @@ def old_barycenter_shift(wav_atm: ndarray, mask_atm: ndarray, rv_offset: float =
             # mask_atm_30kmslice_reversed = [not i for i in mask_atm_30kmslice] # Unneeded
 
             # Found suspected culprit code
-            # clump = np.array_split(mask_atm_30kmslice, np.where(np.diff(mask_atm_30kmslice_reversed))[0] + 1)[::2]  # This code is the bug!
+            # clump = np.array_split(mask_atm_30kmslice,
+            #                        np.where(np.diff(mask_atm_30kmslice_reversed))[0] + 1)[::2]  # <<<<<< Bug!
             if mask_atm_30kmslice[0]:  # A true first value
                 clump = np.array_split(mask_atm_30kmslice, np.where(np.diff(mask_atm_30kmslice))[0] + 1)[1::2]
             else:

@@ -10,7 +10,7 @@ to achieve a consistent SNR at a specific location.
 import os
 # Normalize to SNR 100 in middle of J band 1.25 micron!
 import re
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Union
 
 import numpy as np
 from numpy import ndarray, float64
@@ -31,7 +31,7 @@ def normalize_flux2(*args, **kwargs):
     raise NotImplementedError("Use normalize_flux")
 
 
-def normalize_flux(flux: ndarray, id_string: str, new: bool = True, snr: int = 100, ref_band: str = "J") -> ndarray:
+def normalize_flux(flux: ndarray, id_string: str, new: bool = True, snr: Union[int, float] = 100, ref_band: str = "J") -> ndarray:
     """Normalize flux to have SNR of 100 in middle of reference band.
 
     Parameters
@@ -128,7 +128,7 @@ def get_reference_spectrum(id_string: str, ref_band: str = "J") -> Tuple[ndarray
     return wav_ref, flux_ref
 
 
-def snr_constant_band(wav: ndarray, flux: ndarray, snr: int = 100, band: str = "J") -> float64:
+def snr_constant_band(wav: ndarray, flux: ndarray, snr: Union[int, float] = 100, band: str = "J") -> float64:
     """Determine the normalization constant to achieve a SNR in the middle of a given band.
 
     SNR estimated by the square root of the number of photons in a resolution element.
@@ -164,7 +164,7 @@ def snr_constant_band(wav: ndarray, flux: ndarray, snr: int = 100, band: str = "
     return norm_constant
 
 
-def snr_constant_wav(wav: ndarray, flux: ndarray, wav_ref: float, snr: int = 100, sampling: int = 3) -> float64:
+def snr_constant_wav(wav: ndarray, flux: ndarray, wav_ref: float, snr: Union[int, float] = 100, sampling: int = 3) -> float64:
     """Determine the normalization constant to achieve a SNR at given wavelength.
 
     SNR estimated by the square root of the number of photons in a resolution element.
@@ -252,7 +252,8 @@ def decompose_id_string(id_string: str):
     """Get the values back out of the id-string."""
     try:
         star, band, vel, res = re.search(r"(M\d)-(\w{1,4})-(\d{1,2}\.0)-(\d{2,3}k)", id_string).groups()
-    except:
+    except Exception as e:
+        print(e)
         raise ValueError("Id-string {0} is not valid for normalization.".format(id_string))
 
     if band not in eniric.bands["all"]:
