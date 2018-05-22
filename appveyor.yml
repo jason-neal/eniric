@@ -30,7 +30,7 @@ install:
   # This is not the best place to put this but before_test didn't work.
   - cmd: "move tests\\config.yaml config.yaml"
   # Generate data
-  - cmd: "%PYTHON%\\python.exe bin\\mk_travis_data.py"
+  - cmd: "mk_travis_data.py"
 
 build: off
 
