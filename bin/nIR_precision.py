@@ -37,7 +37,8 @@ def _parser():
                         help="Save results to file.")
     parser.add_argument("--snr", help="Mid-band SNR scaling. (Default=100)", default=100, type=float)
     parser.add_argument("--ref_band",
-                        help="SNR reference band. Default=J. (Default=100). 'self' scales each band relative to the SNR itself.",
+                        help="SNR reference band. Default=J. (Default=100). "
+                             "'self' scales each band relative to the SNR itself.",
                         choices=["self", "VIS", "GAP", "Z", "Y", "J", "H", "K"], default="J", type=str)
     return parser.parse_args()
 
@@ -213,13 +214,13 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=new, snr=snr,
                                                   ref_band=ref_band)  # snr=100, ref_band="J"
 
-            if (id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k",
-                              "M6-J-1.0-100k", "M9-J-1.0-100k"]):
+            if id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k",
+                              "M6-J-1.0-100k", "M9-J-1.0-100k"]:
                 index_ref = np.searchsorted(wav_stellar, 1.25)  # searching for the index closer to 1.25 micron
                 snr_estimate = np.sqrt(np.sum(flux_stellar[index_ref - 1:index_ref + 2]))
                 print("\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(id_string,
                                                                                                       snr_estimate))
-            elif ("J" in id_string):
+            elif "J" in id_string:
                 index_ref = np.searchsorted(wav_stellar, 1.25)  # searching for the index closer to 1.25 micron
                 snr_estimate = np.sqrt(np.sum(flux_stellar[index_ref - 1:index_ref + 2]))
                 print("\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string,
@@ -253,27 +254,27 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             results[id_string] = [prec_1, prec_2, prec_3]
 
             # Prepare/Do for the plotting.
-            if (plot_ste or plot_ste == id_string):
+            if plot_ste or plot_ste == id_string:
                 plt_functions.plot_stellar_spectum(wav_stellar, flux_stellar,
                                                    wav_atm_selected, mask_atm_selected)
 
             plot_ids = ["M3-Z-1.0-100k", "M3-Y-1.0-100k", "M3-J-1.0-100k",
                         "M3-H-1.0-100k", "M3-K-1.0-100k"]
 
-            if (plot_flux and id_string in plot_ids):
+            if plot_flux and id_string in plot_ids:
                 wav_plot_m0.append(wav_stellar)
                 flux_plot_m0.append(flux_stellar)
-            if (plot_flux and id_string in plot_ids):
+            if plot_flux and id_string in plot_ids:
                 wav_plot_m3.append(wav_stellar)
                 flux_plot_m3.append(flux_stellar)
-            if (plot_flux and id_string in plot_ids):
+            if plot_flux and id_string in plot_ids:
                 wav_plot_m6.append(wav_stellar)
                 flux_plot_m6.append(flux_stellar)
-            if (plot_flux and id_string in plot_ids):
+            if plot_flux and id_string in plot_ids:
                 wav_plot_m9.append(wav_stellar)
                 flux_plot_m9.append(flux_stellar)
 
-    if (plot_flux):
+    if plot_flux:
         plt_functions.plot_nIR_flux()
 
     if paper_plots:
