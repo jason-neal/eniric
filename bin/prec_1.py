@@ -14,16 +14,7 @@ import numpy as np
 import eniric
 import eniric.IOmodule as io
 import eniric.Qcalculator as Qcalculator
-# from eniric.plotting_functions import plot_atmosphere_model, plot_stellar_spectum
 from eniric.snr_normalization import normalize_flux
-
-
-# import matplotlib.pyplot as plt
-
-# to remove labels in one tick
-# from matplotlib.ticker import MaxNLocator
-
-# from eniric.utilities import band_selector
 
 
 def _parser():
@@ -48,12 +39,8 @@ def _parser():
                         help='Result directory Default=data_dir+"/results/"')
     parser.add_argument('--resamples', default=None, type=str,
                         help='Resample directory. Default=data_dir+"/resampled/"')
-    parser.add_argument('--noresample', help='Resample output', default=False,
-                        action="store_true")
     parser.add_argument('--normalize', help='Use convolution normalized spectra', default=True,
                         action="store_false")
-    parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
-                        default=False, action="store_true")
     return parser.parse_args()
 
 
@@ -108,9 +95,8 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
     return id_string, prec_1
 
 
-def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, results=None,
-         resamples=None, sample_rate=3.0, noresample=False, normalize=True,
-         org=False):
+def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, results=None, resamples=None,
+         sample_rate=3.0, normalize=True):
     """Script that calculates the RV precision without atmosphere."""
     if data_dir is None:
         data_dir = "../data/"
@@ -180,4 +166,4 @@ if __name__ == '__main__':
 
     opts = {k: args[k] for k in args}
 
-    sys.exit(main(**opts))
+    sys.exit(main())
