@@ -56,6 +56,6 @@ build:
     - pytest --cov=. --cov-report=xml:shippable/codecoverage/coverage.xml --durations=10
     # - pytest --cov=. --cov-report term-missing
 
-# after_success:
+after_success:
   - coverage xml -i
 
