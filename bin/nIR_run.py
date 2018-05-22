@@ -54,7 +54,7 @@ def main(startype, vsini, resolution, band, sample_rate=3.0,
     band: list of strings
     sample_rate: list of floats default=[3.0]
     noresample: bool default=False
-    normalize: bool default=True
+    unnormalized: bool default=False
 
     """
     normalize = not unnormalized

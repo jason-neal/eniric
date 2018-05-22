@@ -28,8 +28,8 @@ def test_resamplers_equal(wave, sampling, resolution):
     np.arange(100, 110, 0.1),
     np.arange(2.10, 2.15, 0.01)
 ])
-def test_log_resamplers_faster(wave, sampling, resolution):
-    """Test that the log resampling is faster."""
+def test_log_resample_faster(wave, sampling, resolution):
+    """Test that the log_resample is faster then old_resample."""
     t1 = datetime.now()
     old_resample(wave, sampling, resolution)
     t2 = datetime.now()
@@ -37,4 +37,4 @@ def test_log_resamplers_faster(wave, sampling, resolution):
     t3 = datetime.now()
     print((t3 - t2))
     print((t2 - t1))
-    assert (t3 - t2) < ((t2 - t1))  # * 0.1)  # 10 x Faster
+    assert (t3 - t2) < (t2 - t1)  # log-resampling function faster

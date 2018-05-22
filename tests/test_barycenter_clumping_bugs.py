@@ -46,7 +46,7 @@ def test_clump_tester():
     assert org_clump_tester(clump1) is not True  # This is wrong
     assert corrected_clump_tester(clump1) is True
 
-    # Clump 2 does have a group of consutive Falses>3 but not #blocks>3.
+    # Clump 2 does have a group of consecutive Falses>3 but not #blocks>3.
     clump2 = [np.array([0, 0, 0, 0, 0], dtype=bool), np.array([0, 0], dtype=bool)]
     # Clump2 should return False!
     assert org_clump_tester(clump2) is not False  # This is wrong
@@ -113,7 +113,7 @@ def test_zero_clumper():
     clumps1_corr = correct_zeros_clumper(mask1)
 
     for i, __ in enumerate(clumps1):
-        assert not (np.all(clumps1[i] == expected_clump1[i]))  # Failed orginal case
+        assert not (np.all(clumps1[i] == expected_clump1[i]))  # Failed original case
         assert (np.all(clumps1_corr[i] == expected_clump1[i]))
 
     # Testing corner cases
