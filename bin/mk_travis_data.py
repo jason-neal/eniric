@@ -6,6 +6,7 @@ Don't do to many.
 """
 import os
 import subprocess
+from datetime import datetime
 
 subprocess.call("python bin/prepare_data.py -s M0 M3 M6 M9 -l 4.50 -m 0.0", shell=True)
 
@@ -19,8 +20,14 @@ parameters = [("M0", "Z", 1, "60k"),
               ("M6", "J", 10, "100k"),
               ("M3", "Y", 5, "80k")]
 
+counter = 0
+start_time = datetime.now()
 for sptype, band, vel, res in parameters:
     subprocess.call(["python bin/nIR_run.py -s {0} -b {1} -R {2} -v {3}".format(sptype, band, res, vel)], shell=True)
+    counter += 1
+end_time = datetime.now()
 
 # List data files
 print([d for d in os.walk("data")])
+
+print("Preformed {} convolutions in {}".format(counter, end_time-start_time))
