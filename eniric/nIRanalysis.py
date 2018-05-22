@@ -13,6 +13,7 @@ from typing import Optional
 import matplotlib.pyplot as plt
 import multiprocess as mprocess
 import numpy as np
+from joblib import Memory
 from matplotlib import rc
 from numpy import ndarray
 from tqdm import tqdm
@@ -21,6 +22,10 @@ import eniric
 import eniric.IOmodule as io
 from eniric.utilities import (band_selector, read_spectrum, rotation_kernel,
                               unitary_gaussian, wav_selector)
+
+# Cache convlution results.
+cachedir = "~/.joblib/"
+memory = Memory(cachedir=cachedir, verbose=0)
 
 # set stuff for latex usage
 rc('text', usetex=True)
@@ -112,6 +117,7 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon: float = 0.6, fwhm_lim: f
     return 0
 
 
+@memory.cache
 def convolution(wav, flux, vsini, R, band: str = "All", epsilon: float = 0.6, fwhm_lim: float = 5.0,
                 num_procs: Optional[int] = None, normalize: bool = True):
     """Perform convolution of spectrum.
