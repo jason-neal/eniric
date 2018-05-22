@@ -3,14 +3,14 @@ Auxiliary functions for nIRanalysis
 
 """
 import errno
-import os
-import re
-from typing import Any, List, Optional, Tuple, Union
+from numpy import ndarray
 
 import numpy as np
-from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIX
-from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXALPHA
-from numpy import ndarray
+import os
+import re
+from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
+from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
+from typing import Any, List, Optional, Tuple, Union
 
 import eniric
 import eniric.IOmodule as io
@@ -334,10 +334,10 @@ def load_aces_spectrum(params, photons=True):
     if params[3] == 0:  # Alpha value
         params = params[:-1]
         assert len(params) == 3
-        phoenix_grid = PHOENIX(base=base)
+        phoenix_grid = PHOENIXNoAlpha(base=base)
     elif len(params) == 4:
         print("USING ALPHA in PHOENIX LOADING")
-        phoenix_grid = PHOENIXALPHA(base=base)  # , param_names = ["temp", "logg", "Z", "alpha"])
+        phoenix_grid = PHOENIX(base=base)  # , param_names = ["temp", "logg", "Z", "alpha"])
     else:
         raise ValueError("Number of parameters is incorrect")
 
@@ -369,5 +369,6 @@ def load_aces_spectrum(params, photons=True):
     return wav_micron, flux_micron
 
 
+# TODO: Use BT-Settl also
 def load_btsettl_spectrum(params, photons=True):
     raise NotImplementedError("Need to include BT-SETTL")
