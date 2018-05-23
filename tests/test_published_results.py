@@ -3,8 +3,8 @@
 import numpy as np
 import pytest
 
-from bin.nIR_precision import calculate_prec
-from bin.prec_1 import calc_prec1
+from eniric_scripts.nIR_precision import calculate_prec
+from eniric_scripts.prec_1 import calc_prec1
 
 
 path = "data/Published_Results/resampled/"
