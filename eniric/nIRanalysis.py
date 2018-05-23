@@ -87,15 +87,16 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon: float = 0.6, fwhm_lim: f
     wav_band, flux_band, convolved_flux = convolution(wav, flux, vsini, R, band,
                                                       epsilon=epsilon, fwhm_lim=fwhm_lim,
                                                       num_procs=num_procs, normalize=normalize)
+    if not normalize:
+        norm_ = "_unnormalized"
+    else:
+        norm_ = ""
 
     if output_name is None:
         name_model = name_assignment(spectrum)
-        if normalize:
-            filename = ("{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k.txt"
-                        "").format(results_dir, name_model, band, vsini, R / 1000)
-        else:
-            filename = ("{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k_unnormalized.txt"
-                        "").format(results_dir, name_model, band, vsini, R / 1000)
+
+        filename = "{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k{5}.txt".format(
+            results_dir, name_model, band, vsini, R / 1000, norm_)
     else:
         filename = os.path.join(results_dir, output_name)
 

@@ -52,29 +52,29 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
 
     Resolution in short form e.g 100k
 
-    Loads in the file, and calculates RVprec on full band.
+    Loads in the file, and calculates RV precision on full band.
     """
     vel = float(vel)
-    if normalize:
-        file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2:.01f}_R{3}"
-                        "_res{4}.txt").format(star, band, vel, resolution, smpl)
+
+    if not normalize:
+        norm_ = "_unnormalized"
+        norm_id = "-unnorm"
     else:
-        file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini"
-                        "{2:.2}_R{3}_unnormalized_res{4}.txt"
-                        "").format(star, band, vel, resolution, smpl)
+        norm_ = ""
+        norm_id = ""
+    print(star, band, vel, resolution, smpl, norm_)
+    print(type(star), type(band), type(vel), type(resolution), type(smpl), type(norm_))
+    file_to_read = ("Spectrum_{0:s}-PHOENIX-ACES_{1:s}band_vsini{2:.01f}_R{3:s}{5:s}_res{4:d}.txt"
+                    "").format(star, band, vel, resolution, smpl, norm_)
+
+    # sample was left aside because only one value existed
+    id_string = "{0}-{1}-{2:.01f}-{3}{4}".format(star, band, vel, resolution, norm_id)
 
     wav_stellar, flux_stellar = io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
 
     # removing boundary effects
     wav_stellar = wav_stellar[2:-2]
     flux_stellar = flux_stellar[2:-2]
-
-    if normalize:
-        # sample was left aside because only one value existed
-        id_string = "{0}-{1}-{2:.01f}-{3}".format(star, band, vel, resolution)
-    else:
-        # sample was left aside because only one value existed
-        id_string = "{0}-{1}-{2:.01f}-{3}-unnorm".format(star, band, vel, resolution)
 
     # Normalize to SNR 100 in middle of J band 1.25 micron!
     flux_stellar = normalize_flux(flux_stellar, id_string)
