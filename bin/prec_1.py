@@ -176,7 +176,6 @@ def main(startype=None, vsini=None, resolution=None, bands=None, data_dir=None, 
                                 precision[id_string] = prec_1
                             except FileNotFoundError:
                                 print("File Not found ", star, band, vel, R, smpl, normalize)
-                                pass  # When file not found skip
                             except Exception as e:
                                 print(e)
                                 print(star, band, vel, R, smpl, "normalized" * normalize, "Failed!")
