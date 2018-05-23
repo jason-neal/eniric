@@ -44,7 +44,7 @@ build:
   # pre_ci:
   #   - mv tests/config.yaml config.yaml
   #   # Generate data
-  #   - python bin/mk_travis_data.py
+  #   - python eniric_scripts/mk_travis_data.py
 
   ci:
     # Create folders for test and code coverage
