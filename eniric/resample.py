@@ -47,7 +47,7 @@ def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k
               sampling: Union[int, float] = 3.0, plottest: bool = False) -> int:
     """Resamples a spectrum file by interpolation onto a grid with a
     sampling of 3 pixels per resolution element.
-    
+
     Inputs
     ------
     spectrum_name: str
@@ -72,11 +72,11 @@ def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k
 
     interpolated_flux = np.interp(wav_grid, wavelength, spectrum)
 
-    filetowrite = os.path.join(
-        resampled_dir, "{0}_res{1}.txt".format(spectrum_name[:-4], int(sampling)))
+    output_path = [resampled_dir, "{0}_res{1}.txt".format(spectrum_name[:-4], int(sampling))]
+    filetowrite = os.path.join(*output_path)
     io.write_e_2col(filetowrite, wav_grid[1:-2], interpolated_flux[1:-2])  # [1:-2] for border effects
 
-    if (plottest):
+    if plottest:
         plt.figure(1)
         plt.xlabel(r"wavelength [$\mu$m])")
         plt.ylabel(r"flux [counts] ")

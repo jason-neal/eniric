@@ -1,5 +1,4 @@
-"""To test the equivalence of old and newcode to check if it does the same thing."""
-
+"""To test the equivalence of old and new code to check if it does the same thing."""
 import os
 
 import numpy as np
@@ -69,10 +68,10 @@ def test_pdwriter():
     assert np.allclose(c[2], d[2])
 
     # clean-up
-    utils.silentremove(pd2col_name)
-    utils.silentremove(pd3col_name)
-    utils.silentremove(twocol_name)
-    utils.silentremove(threecol_name)
+    utils.silent_remove(pd2col_name)
+    utils.silent_remove(pd3col_name)
+    utils.silent_remove(twocol_name)
+    utils.silent_remove(threecol_name)
 
 
 def test_prepared_dat_files():
@@ -99,7 +98,7 @@ def test_pdwrire_cols():
                                 header=["headers", "for", "column", "labels"])
     assert 0 == io.pdwrite_cols(pd_multicol_name, data1, data2, sep=",", index=True)
 
-    # test uneven dats lengths
+    # test uneven data lengths
     with pytest.raises(ValueError):
         io.pdwrite_cols(pd_multicol_name, data1, data2, bad_data)
 
@@ -111,4 +110,4 @@ def test_pdwrire_cols():
         io.pdwrite_cols(pd_multicol_name, data1, bad="keyword")
 
     # clean-up
-    utils.silentremove(pd_multicol_name)
+    utils.silent_remove(pd_multicol_name)

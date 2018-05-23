@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Quick and dirty precision 1.
 
-Doesn't involve atmosphere model so can perform realively easily to check
+Doesn't involve atmosphere model so can perform relatively easily to check
 precision is working.
 """
 
@@ -14,16 +14,7 @@ import numpy as np
 import eniric
 import eniric.IOmodule as io
 import eniric.Qcalculator as Qcalculator
-# from eniric.plotting_functions import plot_atmosphere_model, plot_stellar_spectum
 from eniric.snr_normalization import normalize_flux
-
-
-# import matplotlib.pyplot as plt
-
-# to remove labels in one tick
-# from matplotlib.ticker import MaxNLocator
-
-# from eniric.utilities import band_selector
 
 
 def _parser():
@@ -48,12 +39,8 @@ def _parser():
                         help='Result directory Default=data_dir+"/results/"')
     parser.add_argument('--resamples', default=None, type=str,
                         help='Resample directory. Default=data_dir+"/resampled/"')
-    parser.add_argument('--noresample', help='Resample output', default=False,
-                        action="store_true")
     parser.add_argument('--normalize', help='Use convolution normalized spectra', default=True,
                         action="store_false")
-    parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
-                        default=False, action="store_true")
     return parser.parse_args()
 
 
@@ -64,16 +51,18 @@ resampled_dir = eniric.paths["resampled"]
 def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
     """Just calculate precision for 1st case.
 
-    resolution in short form e.g 100k
+    Resolution in short form e.g 100k
+
+    Loads in the file, and calculates RVprec on full band.
     """
     if normalize:
-        file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2:.1f}_R{3}"
+        file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2:.2}_R{3}"
                         "_res{4}.txt").format(star, band, vel, resolution, smpl)
     else:
         file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini"
-                        "{2:.1f}_R{3}_unnormalized_res{4}.txt"
+                        "{2:.2}_R{3}_unnormalized_res{4}.txt"
                         "").format(star, band, vel, resolution, smpl)
-    # print("Working on " + file_to_read)
+
     wav_stellar, flux_stellar = io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
 
     # removing boundary effects
@@ -81,11 +70,11 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
     flux_stellar = flux_stellar[2:-2]
 
     if normalize:
-        id_string = "{0}-{1}-{2:.1f}-{3}".format(star, band, vel,
-                                                 resolution)  # sample was left aside because only one value existed
+        # sample was left aside because only one value existed
+        id_string = "{0}-{1}-{2:.1f}-{3}".format(star, band, vel, resolution)
     else:
-        id_string = "{0}-{1}-{2:.1f}-{3}-unnorm".format(star, band, vel,
-                                                        resolution)  # sample was left aside because only one value existed
+        # sample was left aside because only one value existed
+        id_string = "{0}-{1}-{2:.1f}-{3}-unnorm".format(star, band, vel, resolution)
 
     # Normalize to SNR 100 in middle of J band 1.25 micron!
     flux_stellar = normalize_flux(flux_stellar, id_string)
@@ -108,10 +97,32 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
     return id_string, prec_1
 
 
-def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, results=None,
-         resamples=None, sample_rate=3.0, noresample=False, normalize=True,
-         org=False):
-    """Script that calculates the RV precision without atmosphere."""
+def main(startype=None, vsini=None, resolution=None, bands=None, data_dir=None, results=None, resamples=None,
+         sample_rate=None, normalize: bool = True):
+    """Script that calculates the RV precision without atmosphere.
+
+    Parameters
+    ----------
+    startype: List[str]
+        Spectral type of star.
+    vsini: List [str, float]
+        Rotation of star.
+    resolution: List[str, int]
+            Spectral resolutions.
+    bands: list[str]
+        Spectral bands to use.
+    data_dir : Optional[str]
+        Directory for data.
+    results: Optional[str]
+        Directory for results.
+    resamples: Optional[str]
+        Directory for resampled spectra.
+    sample_rate: Optional[int]
+        Sample rate of spectrum. Default = 3.0.
+    normalize: bool
+        Normalize the convolution. Default=True.
+
+    """
     if data_dir is None:
         data_dir = "../data/"
 
@@ -126,13 +137,11 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
         resampled_dir = resamples
 
     if startype is None:
-        spectral_types = ["M0", "M3", "M6", "M9"]
-    else:
-        spectral_types = startype
-    if band is None:
+        startype = ["M0", "M3", "M6", "M9"]
+
+    if bands is None:
         bands = ["Z", "Y", "J", "H", "K"]
-    else:
-        bands = band
+
     if vsini is None:
         vsini = ["1.0", "5.0", "10.0"]
 
@@ -142,28 +151,33 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
         resolution = ["{0:.0f}k".format(R / 1000) for R in resolution]
 
     if sample_rate is None:
-        sampling = ["3"]
-    else:
-        sampling = sample_rate
+        sample_rate = ["3"]
+
+    # Check the inputs are correct format. (lists)
+    for f_input, f_name in zip([startype, bands, vsini, resolution, sample_rate],
+                               ["startype", "band", "vsini", "resolution", "sample_rate"]):
+        if not isinstance(f_input, list):
+            print(f_name, type(f_input), type(f_name))
+            raise TypeError("Input {0} is not list".format(f_name))
 
     precision = {}  # dict for storing precision value
 
     # TODO: iterate over band last so that the J band normalization value can be
-    # obtained first and applied to each band.
+    # Obtained first and applied to each band.
 
-    for star in spectral_types:
+    for star in startype:
         for band in bands:
             for vel in vsini:
                 for R in resolution:
-                    for smpl in sampling:
+                    for smpl in sample_rate:
                         for normalize in [True, False]:
-                            # print(star, band, vel, R, smpl)
                             try:
                                 id_string, prec_1 = calc_prec1(star, band, vel, R, smpl, normalize=normalize)
                                 precision[id_string] = prec_1
                             except FileNotFoundError:
-                                pass  # When file not found skip
-                            except:
+                                print("File Not found ", star, band, vel, R, smpl, normalize)
+                            except Exception as e:
+                                print(e)
                                 print(star, band, vel, R, smpl, "normalized" * normalize, "Failed!")
 
     print("id_string\t\tprec_1")
@@ -174,9 +188,7 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None, r
 
 
 if __name__ == '__main__':
+    print("hello")
     args = vars(_parser())
-    # startype = args.pop("startype")  # positional arguments
-
     opts = {k: args[k] for k in args}
-
-    sys.exit(main(**opts))
+    sys.exit(main())

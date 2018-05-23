@@ -85,10 +85,8 @@ def main(model: str = "Average_TAPAS_2014.txt", bands: Optional[List[str]] = Non
 
     atm_wav, atm_flux, atm_std_flux, atm_mask = io.pdread_4col(model_name)
 
-    # atm_wav = atm_wav * 1e-3    # conversion from nanometers to micrometers
-
     # Return value from saving each band
-    return_vals = np.empty_like(bands, dtype=int)
+    write_status = np.empty_like(bands, dtype=int)
 
     for i, band in enumerate(bands):
         band_name = "{0}_{1}.txt".format(new_name, band)
@@ -114,10 +112,10 @@ def main(model: str = "Average_TAPAS_2014.txt", bands: Optional[List[str]] = Non
         filename = os.path.join(data_dir, band_name)
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
 
-        return_vals[i] = io.pdwrite_cols(filename, band_wav, band_flux, band_std_flux, band_mask, sep="\t",
+        write_status[i] = io.pdwrite_cols(filename, band_wav, band_flux, band_std_flux, band_mask, sep="\t",
                                          header=header, float_format="%10.8f")
 
-        return np.sum(return_vals)  # If any extracts fail they will turn up here.
+        return np.sum(write_status)  # If any extracts fail they will turn up here.
 
 
 if __name__ == '__main__':

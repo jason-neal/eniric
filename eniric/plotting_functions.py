@@ -600,13 +600,13 @@ def plot_paper_plots():
     positiony_max = np.max(
         [np.max(RV_cumulative(y1_60k_top)), np.max(RV_cumulative(y1_60k_bottom)), np.max(RV_cumulative(y1_80k_top)),
          np.max(RV_cumulative(y1_80k_bottom)), np.max(RV_cumulative(y1_100k_top)),
-         np.max(RV_cumulative(y1_100k_bottom)), \
+         np.max(RV_cumulative(y1_100k_bottom)),
          np.max(RV_cumulative(y2_60k_top)), np.max(RV_cumulative(y2_60k_bottom)), np.max(RV_cumulative(y2_80k_top)),
          np.max(RV_cumulative(y2_80k_bottom)), np.max(RV_cumulative(y2_100k_top)),
-         np.max(RV_cumulative(y2_100k_bottom)), \
+         np.max(RV_cumulative(y2_100k_bottom)),
          np.max(RV_cumulative(y3_60k_top)), np.max(RV_cumulative(y3_60k_bottom)), np.max(RV_cumulative(y3_80k_top)),
          np.max(RV_cumulative(y3_80k_bottom)), np.max(RV_cumulative(y3_100k_top)),
-         np.max(RV_cumulative(y3_100k_bottom)), \
+         np.max(RV_cumulative(y3_100k_bottom)),
          np.max(RV_cumulative(y4_60k_top)), np.max(RV_cumulative(y4_60k_bottom)), np.max(RV_cumulative(y4_80k_top)),
          np.max(RV_cumulative(y4_80k_bottom)), np.max(RV_cumulative(y4_100k_top)),
          np.max(RV_cumulative(y4_100k_bottom))])
@@ -614,13 +614,13 @@ def plot_paper_plots():
     positiony_min = np.min(
         [np.min(RV_cumulative(y1_60k_top)), np.min(RV_cumulative(y1_60k_bottom)), np.min(RV_cumulative(y1_80k_top)),
          np.min(RV_cumulative(y1_80k_bottom)), np.min(RV_cumulative(y1_100k_top)),
-         np.min(RV_cumulative(y1_100k_bottom)), \
+         np.min(RV_cumulative(y1_100k_bottom)),
          np.min(RV_cumulative(y2_60k_top)), np.min(RV_cumulative(y2_60k_bottom)), np.min(RV_cumulative(y2_80k_top)),
          np.min(RV_cumulative(y2_80k_bottom)), np.min(RV_cumulative(y2_100k_top)),
-         np.min(RV_cumulative(y2_100k_bottom)), \
+         np.min(RV_cumulative(y2_100k_bottom)),
          np.min(RV_cumulative(y3_60k_top)), np.min(RV_cumulative(y3_60k_bottom)), np.min(RV_cumulative(y3_80k_top)),
          np.min(RV_cumulative(y3_80k_bottom)), np.min(RV_cumulative(y3_100k_top)),
-         np.min(RV_cumulative(y3_100k_bottom)), \
+         np.min(RV_cumulative(y3_100k_bottom)),
          np.min(RV_cumulative(y4_60k_top)), np.min(RV_cumulative(y4_60k_bottom)), np.min(RV_cumulative(y4_80k_top)),
          np.min(RV_cumulative(y4_80k_bottom)), np.min(RV_cumulative(y4_100k_top)),
          np.min(RV_cumulative(y4_100k_bottom))])
@@ -850,21 +850,21 @@ def plot_paper_plots():
 
     positiony_max = np.max(
         [np.max(y1_60k_top), np.max(y1_60k_bottom), np.max(y1_80k_top), np.max(y1_80k_bottom), np.max(y1_100k_top),
-         np.max(y1_100k_bottom), \
+         np.max(y1_100k_bottom),
          np.max(y2_60k_top), np.max(y2_60k_bottom), np.max(y2_80k_top), np.max(y2_80k_bottom), np.max(y2_100k_top),
-         np.max(y2_100k_bottom), \
+         np.max(y2_100k_bottom),
          np.max(y3_60k_top), np.max(y3_60k_bottom), np.max(y3_80k_top), np.max(y3_80k_bottom), np.max(y3_100k_top),
-         np.max(y3_100k_bottom), \
+         np.max(y3_100k_bottom),
          np.max(y4_60k_top), np.max(y4_60k_bottom), np.max(y4_80k_top), np.max(y4_80k_bottom), np.max(y4_100k_top),
          np.max(y4_100k_bottom)])
 
     positiony_min = np.min(
         [np.min(y1_60k_top), np.min(y1_60k_bottom), np.min(y1_80k_top), np.min(y1_80k_bottom), np.min(y1_100k_top),
-         np.min(y1_100k_bottom), \
+         np.min(y1_100k_bottom),
          np.min(y2_60k_top), np.min(y2_60k_bottom), np.min(y2_80k_top), np.min(y2_80k_bottom), np.min(y2_100k_top),
-         np.min(y2_100k_bottom), \
+         np.min(y2_100k_bottom),
          np.min(y3_60k_top), np.min(y3_60k_bottom), np.min(y3_80k_top), np.min(y3_80k_bottom), np.min(y3_100k_top),
-         np.min(y3_100k_bottom), \
+         np.min(y3_100k_bottom),
          np.min(y4_60k_top), np.min(y4_60k_bottom), np.min(y4_80k_top), np.min(y4_80k_bottom), np.min(y4_100k_top),
          np.min(y4_100k_bottom)])
 
@@ -1115,21 +1115,21 @@ def plot_paper_plots():
 
     positiony_max = np.max(
         [np.max(y1_60k_top), np.max(y1_60k_bottom), np.max(y1_80k_top), np.max(y1_80k_bottom), np.max(y1_100k_top),
-         np.max(y1_100k_bottom), \
+         np.max(y1_100k_bottom),
          np.max(y2_60k_top), np.max(y2_60k_bottom), np.max(y2_80k_top), np.max(y2_80k_bottom), np.max(y2_100k_top),
-         np.max(y2_100k_bottom), \
+         np.max(y2_100k_bottom),
          np.max(y3_60k_top), np.max(y3_60k_bottom), np.max(y3_80k_top), np.max(y3_80k_bottom), np.max(y3_100k_top),
-         np.max(y3_100k_bottom), \
+         np.max(y3_100k_bottom),
          np.max(y4_60k_top), np.max(y4_60k_bottom), np.max(y4_80k_top), np.max(y4_80k_bottom), np.max(y4_100k_top),
          np.max(y4_100k_bottom)])
 
     positiony_min = np.min(
         [np.min(y1_60k_top), np.min(y1_60k_bottom), np.min(y1_80k_top), np.min(y1_80k_bottom), np.min(y1_100k_top),
-         np.min(y1_100k_bottom), \
+         np.min(y1_100k_bottom),
          np.min(y2_60k_top), np.min(y2_60k_bottom), np.min(y2_80k_top), np.min(y2_80k_bottom), np.min(y2_100k_top),
-         np.min(y2_100k_bottom), \
+         np.min(y2_100k_bottom),
          np.min(y3_60k_top), np.min(y3_60k_bottom), np.min(y3_80k_top), np.min(y3_80k_bottom), np.min(y3_100k_top),
-         np.min(y3_100k_bottom), \
+         np.min(y3_100k_bottom),
          np.min(y4_60k_top), np.min(y4_60k_bottom), np.min(y4_80k_top), np.min(y4_80k_bottom), np.min(y4_100k_top),
          np.min(y4_100k_bottom)])
 
@@ -1286,21 +1286,21 @@ def plot_paper_plots():
     # correction figure
     positiony_max = np.max(
         [np.max(y1_60k_vsini1), np.max(y1_60k_vsini10), np.max(y1_80k_vsini1), np.max(y1_80k_vsini10),
-         np.max(y1_100k_vsini1), np.max(y1_100k_vsini10), \
+         np.max(y1_100k_vsini1), np.max(y1_100k_vsini10),
          np.max(y2_60k_vsini1), np.max(y2_60k_vsini10), np.max(y2_80k_vsini1), np.max(y2_80k_vsini10),
-         np.max(y2_100k_vsini1), np.max(y2_100k_vsini10), \
+         np.max(y2_100k_vsini1), np.max(y2_100k_vsini10),
          np.max(y3_60k_vsini1), np.max(y3_60k_vsini10), np.max(y3_80k_vsini1), np.max(y3_80k_vsini10),
-         np.max(y3_100k_vsini1), np.max(y3_100k_vsini10), \
+         np.max(y3_100k_vsini1), np.max(y3_100k_vsini10),
          np.max(y4_60k_vsini1), np.max(y4_60k_vsini10), np.max(y4_80k_vsini1), np.max(y4_80k_vsini10),
          np.max(y4_100k_vsini1), np.max(y4_100k_vsini10)])
 
     positiony_min = np.min(
         [np.min(y1_60k_vsini1), np.min(y1_60k_vsini10), np.min(y1_80k_vsini1), np.min(y1_80k_vsini10),
-         np.min(y1_100k_vsini1), np.min(y1_100k_vsini10), \
+         np.min(y1_100k_vsini1), np.min(y1_100k_vsini10),
          np.min(y2_60k_vsini1), np.min(y2_60k_vsini10), np.min(y2_80k_vsini1), np.min(y2_80k_vsini10),
-         np.min(y2_100k_vsini1), np.min(y2_100k_vsini10), \
+         np.min(y2_100k_vsini1), np.min(y2_100k_vsini10),
          np.min(y3_60k_vsini1), np.min(y3_60k_vsini10), np.min(y3_80k_vsini1), np.min(y3_80k_vsini10),
-         np.min(y3_100k_vsini1), np.min(y3_100k_vsini10), \
+         np.min(y3_100k_vsini1), np.min(y3_100k_vsini10),
          np.min(y4_60k_vsini1), np.min(y4_60k_vsini10), np.min(y4_80k_vsini1), np.min(y4_80k_vsini10),
          np.min(y4_100k_vsini1), np.min(y4_100k_vsini10)])
 
