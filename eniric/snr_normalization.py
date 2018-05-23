@@ -36,10 +36,10 @@ def normalize_flux(flux: ndarray, id_string: str, new: bool = True, snr: Union[i
 
     Parameters
     ----------
-    flux_stellar: ndarray
+    flux: ndarray
         Photon flux.
     id_string: str
-        Identifying sting for spectra.
+        Identifying string for spectra.
     new: bool default=True
         Choose between new and old constant for testing.
     snr: int default=100

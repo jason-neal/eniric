@@ -1,5 +1,4 @@
 """To test the equivalence of old and new code to check if it does the same thing."""
-
 import os
 
 import numpy as np

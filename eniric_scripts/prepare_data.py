@@ -48,11 +48,13 @@ def _parser():
                         type=str, default=None)
     parser.add_argument('-p', '--phoenix_dir', default=None, type=str,
                         help='Phoenix directory to find fits files')
+    parser.add_argument('-r', '--replace', action="store_true",
+                        help='Replace data files if already created.')
 
     return parser.parse_args()
 
 
-def main(startype, temp, logg, metallicity, alpha, flux_type="photon", data_dir=None, phoenix_dir=None):
+def main(startype, temp, logg, metallicity, alpha, flux_type="photon", data_dir=None, phoenix_dir=None, replace=False):
     """Prepare datafiles for phoenix models that match the input parameters.
 
     This add the wavelength information to each spectra and converts
@@ -103,7 +105,7 @@ def main(startype, temp, logg, metallicity, alpha, flux_type="photon", data_dir=
                     (match_temp, match_logg, match_feh) = re.search(r"(\d{5})-(\d\.\d\d)([+\-]\d\.\d)", f).groups()
                     alpha_cond = True  # To make work
             except AttributeError:
-                print("Trying to access NoneType when no match found.")
+                # This file doesn't match what we want so continue with next loop
                 continue
 
             temp_cond = float(match_temp) in temp
@@ -122,7 +124,9 @@ def main(startype, temp, logg, metallicity, alpha, flux_type="photon", data_dir=
             os.makedirs(os.path.join(data_dir, z_folder), exist_ok=True)  # make folder if doesn't exit
             output_filename = os.path.join(data_dir, z_folder,
                                            phoenix_file[:-5] + file_suffix)  # Name of .dat file
-
+            if os.path.exists(output_filename) and not replace:
+                print("Skipping as {0} already exists (use -r to replace)".format(output_filename))
+                continue
             spectra = fits.getdata(os.path.join(path, phoenix_file))
 
             # Need to add conversions pedro preformed to flux!
