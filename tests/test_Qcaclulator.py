@@ -43,7 +43,7 @@ def test_rvprev_calc():
 
 
 def test_rvprev_calc_with_lists():
-    """Test that it can hande list input also."""
+    """Test that it can handle list input also."""
     wav = list(np.arange(100))
     flux = list(np.random.random(100))
 
@@ -68,7 +68,7 @@ def test_sqrt_sum_wis():
     sqrtsumwis2 = Q.sqrt_sum_wis(wav * u.micron, (flux / u.second) / (u.centimeter ** 2))  # with some units
     assert not hasattr(sqrtsumwis2.value, '__len__')  # assert value is a scalar
     assert isinstance(sqrtsumwis2, u.Quantity)
-    assert sqrtsumwis2.unit == u.dimensionless_unscaled  # unscaled and dimentionless quantitiy
+    assert sqrtsumwis2.unit == u.dimensionless_unscaled  # unscaled and dimensionless quantity
 
     assert sqrtsumwis == sqrtsumwis2.value
 
@@ -105,7 +105,7 @@ def test_RV_prec_calc_Trans():
 
 
 def test_SQRTSumWisTrans():
-    """Test squareroot sum of weights when incuding change of variance due to atmospheric transmission."""
+    """Test square root sum of weights when including change of variance due to atmospheric transmission."""
     wav = np.arange(1, 101)
     flux = np.random.random(100)
     trans = np.random.random(100)
@@ -118,12 +118,12 @@ def test_SQRTSumWisTrans():
     sqrtsum_trans2 = Q.sqrt_sum_wis_trans(wav, flux, trans * u.dimensionless_unscaled)
     assert not hasattr(sqrtsum_trans2.value, '__len__')  # assert scalar
     assert isinstance(sqrtsum_trans2, u.Quantity)
-    assert sqrtsum_trans2.unit == u.dimensionless_unscaled  # unscaled and dimentionless quantitiy
+    assert sqrtsum_trans2.unit == u.dimensionless_unscaled  # unscaled and dimensionless quantity
 
     sqrtsum_trans3 = Q.sqrt_sum_wis_trans(wav * u.micron, flux, trans)
     assert not hasattr(sqrtsum_trans3.value, '__len__')  # assert value is a scalar
     assert isinstance(sqrtsum_trans3, u.Quantity)
-    assert sqrtsum_trans3.unit == u.dimensionless_unscaled  # unscaled and dimentionless quantitiy
+    assert sqrtsum_trans3.unit == u.dimensionless_unscaled  # unscaled and dimensionless quantity
 
     with pytest.raises(TypeError):
         # transmission mistakenly given as a flux unit
@@ -137,7 +137,7 @@ def test_SQRTSumWisTrans():
 
 
 def test_transmission_reduces_precision():
-    """Check that a transmission vector reduces precision calcualtion."""
+    """Check that a transmission vector reduces precision calculation."""
     wav = np.arange(100.)
     flux = np.random.random(100)
     transmission = np.random.random(100)
@@ -231,7 +231,7 @@ def test_bugs_in_old_clumping_method():
     mask2 = np.array([1, 1, 1, 0, 1, 1, 0, 0, 0, 1], dtype=bool)
     expected2 = [np.arange(3), np.arange(4, 6), np.array([9])]
 
-    # Failling examples with bugged code
+    # Failing examples with bugged code
     mask3 = np.zeros(10, dtype=bool)
     expected3 = []
     unexpected3 = [val]
@@ -366,8 +366,8 @@ def test_sqrt_sum_wis_transmission_outofbounds(wave_unit, flux_unit):
 
 
 @pytest.mark.parametrize("scale", [0.1, 1, 2, 100, 0.1, 0.5])
-def test_quality_independant_of_flux_level(scale):
-    """Q of a spectrum is independant of flux level."""
+def test_quality_independent_of_flux_level(scale):
+    """Q of a spectrum is independent of flux level."""
     wavelength = np.arange(100)
     flux = np.random.random(100)
     assert np.allclose(Q.quality(wavelength, flux), Q.quality(wavelength, flux * scale))
@@ -377,7 +377,7 @@ def test_quality_independant_of_flux_level(scale):
 @pytest.mark.parametrize("flux_unit", [1, 1 / u.second / u.micron ** 2, 1. / u.second])
 def test_quality_independent_of_units(wave_unit, flux_unit):
     """Quality should be unitless, or dimensionless_unscaled...
-    
+
     Needed to remove unit from flux in quality() to make quality unitless.
     """
     wave = np.arange(10) + 1
