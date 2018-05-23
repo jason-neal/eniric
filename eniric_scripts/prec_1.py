@@ -39,8 +39,7 @@ def _parser():
                         help='Result directory Default=data_dir+"/results/"')
     parser.add_argument('--resamples', default=None, type=str,
                         help='Resample directory. Default=data_dir+"/resampled/"')
-    parser.add_argument('--normalize', help='Use convolution normalized spectra', default=True,
-                        action="store_false")
+    parser.add_argument('--normalize', help='Turn off convolution normalization.', action="store_false")
     return parser.parse_args()
 
 
@@ -55,8 +54,9 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
 
     Loads in the file, and calculates RVprec on full band.
     """
+    vel = float(vel)
     if normalize:
-        file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2:.2}_R{3}"
+        file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2:.01f}_R{3}"
                         "_res{4}.txt").format(star, band, vel, resolution, smpl)
     else:
         file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini"
@@ -71,10 +71,10 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
 
     if normalize:
         # sample was left aside because only one value existed
-        id_string = "{0}-{1}-{2:.1f}-{3}".format(star, band, vel, resolution)
+        id_string = "{0}-{1}-{2:.01f}-{3}".format(star, band, vel, resolution)
     else:
         # sample was left aside because only one value existed
-        id_string = "{0}-{1}-{2:.1f}-{3}-unnorm".format(star, band, vel, resolution)
+        id_string = "{0}-{1}-{2:.01f}-{3}-unnorm".format(star, band, vel, resolution)
 
     # Normalize to SNR 100 in middle of J band 1.25 micron!
     flux_stellar = normalize_flux(flux_stellar, id_string)
@@ -153,6 +153,12 @@ def main(startype=None, vsini=None, resolution=None, bands=None, data_dir=None, 
     if sample_rate is None:
         sample_rate = ["3"]
 
+    if normalize is None:
+        normalize = [True, False]
+    else:
+        if isinstance(normalize, bool):
+            normalize = [normalize]
+
     # Check the inputs are correct format. (lists)
     for f_input, f_name in zip([startype, bands, vsini, resolution, sample_rate],
                                ["startype", "band", "vsini", "resolution", "sample_rate"]):
@@ -170,12 +176,12 @@ def main(startype=None, vsini=None, resolution=None, bands=None, data_dir=None, 
             for vel in vsini:
                 for R in resolution:
                     for smpl in sample_rate:
-                        for normalize in [True, False]:
+                        for norm in normalize:
                             try:
-                                id_string, prec_1 = calc_prec1(star, band, vel, R, smpl, normalize=normalize)
+                                id_string, prec_1 = calc_prec1(star, band, vel, R, smpl, normalize=norm)
                                 precision[id_string] = prec_1
                             except FileNotFoundError:
-                                print("File Not found ", star, band, vel, R, smpl, normalize)
+                                print("File Not found ", star, band, vel, R, smpl, norm)
                                 continue
 
     print("id_string\t\tprec_1")
