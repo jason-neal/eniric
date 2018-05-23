@@ -7,10 +7,10 @@ Don't do to many.
 import os
 import subprocess
 from datetime import datetime
-from bin.nIR_run import main as nir_run
-from bin.prepare_data import main as prepare_data
+from eniric_scripts.nIR_run import main as nir_run
+from eniric_scripts.prepare_data import main as prepare_data
 
-# subprocess.call("python bin/prepare_data.py -s M0 M3 M6 M9 -l 4.50 -m 0.0", shell=True)
+# subprocess.call("python eniric_scripts/prepare_data.py -s M0 M3 M6 M9 -l 4.50 -m 0.0", shell=True)
 prepare_data(startype=["M0", "M3", "M6", "M9"], temp=[], logg=[4.50], metallicity=[0], alpha=[0])
 
 parameters = [("M0", "Z", 1, "60k"),
@@ -26,7 +26,7 @@ parameters = [("M0", "Z", 1, "60k"),
 counter = 0
 start_time = datetime.now()
 for sptype, band, vel, res in parameters:
-    # subprocess.call(["python bin/nIR_run.py -s {0} -b {1} -R {2} -v {3}".format(sptype, band, res, vel)], shell=True)
+    # subprocess.call(["python eniric_scripts/nIR_run.py -s {0} -b {1} -R {2} -v {3}".format(sptype, band, res, vel)], shell=True)
     if not isinstance(res, list):
         res = [res]
     nir_run(startype=[sptype], vsini=[vel], resolution=res, band=[band])
