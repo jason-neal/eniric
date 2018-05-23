@@ -5,10 +5,10 @@
 # December 2016
 import datetime
 import os
+
 import matplotlib.pyplot as plt
 from eniric.original_code.nIRanalysis import convolution as old_convolution
-from eniric.original_code.nIRanalysis import \
-    resample_allfiles as old_resample_allfiles
+from eniric.original_code.nIRanalysis import resample_allfiles as old_resample_allfiles
 
 from eniric.nIRanalysis import convolve_spectra, resample_allfiles
 
@@ -26,7 +26,7 @@ vsini = 1
 epsilon = 0.6
 fwhm_lim = 5
 plot = False
-numprocs = 4
+num_procs = 4
 do_old = False
 
 # for band in ["GAP", "Y", "J", "K"]:
@@ -35,7 +35,7 @@ for band in ["K"]:
     start_time = datetime.datetime.now()
     print("Time at start of {0} band, {1}".format(band, start_time))
     wav_band, flux_band, flux_conv_res = convolve_spectra(spectrum_path, band, vsini, R, epsilon, fwhm_lim, plot,
-                                                          num_procs=numprocs)
+                                                          num_procs=num_procs)
     end_time = datetime.datetime.now()
     print("Time at end, ", end_time)
     print("Time to run {0} band  convolution = {1}".format(band, (end_time - start_time)))

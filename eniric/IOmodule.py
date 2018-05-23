@@ -35,9 +35,9 @@ def pdread_2col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray
         else:
             data = pd.read_table(filename, comment='#', names=["col1", "col2"],
                                  dtype=np.float64, delim_whitespace=True)
-    except:
+    except Exception as e:
         print("There was an error trying to read in the file \n{}".format(filename))
-        raise
+        raise e
 
     return data["col1"].values, data["col2"].values
 
@@ -70,9 +70,9 @@ def pdread_3col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray
         else:
             data = pd.read_table(filename, comment='#', names=["col1", "col2", "col3"],
                                  dtype=np.float64, delim_whitespace=True)
-    except:
+    except Exception as e:
         print("There was an error trying to read in the file \n{}".format(filename))
-        raise
+        raise e
 
     return data["col1"].values, data["col2"].values, data["col3"].values
 
@@ -107,9 +107,9 @@ def pdread_4col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray
         else:
             data = pd.read_table(filename, comment='#', names=["col1", "col2", "col3", "col4"],
                                  dtype=np.float64, delim_whitespace=True)
-    except:
+    except Exception as e:
         print("There was an error trying to read in the file \n{}".format(filename))
-        raise
+        raise e
 
     return data["col1"].values, data["col2"].values, data["col3"].values, data["col4"].values
 

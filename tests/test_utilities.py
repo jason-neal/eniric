@@ -46,6 +46,7 @@ def test_get_spectrum_name():
     assert utils.get_spectrum_name("M6") == test_photon
 
 
+# noinspection SpellCheckingInspection
 @pytest.mark.parametrize("spec_type", ["MO", "ME", "M11", "X10", "Z3"])
 def test_spectrum_name_value_error(spec_type):
     """Not valid spectral type in [OBAFGKML] or misspelled"""
@@ -170,7 +171,7 @@ def test_band_selector_with_no_selection(band):
 @given(st.lists(st.floats(min_value=1e-7, max_value=1e-5, allow_infinity=False,
                           allow_nan=False), unique=True, min_size=3, max_size=25),
        st.floats(min_value=1e-2, max_value=200), st.floats(min_value=1e-4, max_value=1))
-def test_rotational_kernal(delta_lambdas, vsini, epsilon):
+def test_rotational_kernel(delta_lambdas, vsini, epsilon):
     """Test that the new and original code produces the same output."""
     delta_lambdas = np.sort(np.asarray(delta_lambdas), kind='quicksort')
     delta_lambdas = np.append(np.flipud(delta_lambdas), np.insert(delta_lambdas, 0, 0))
@@ -185,7 +186,7 @@ def test_rotational_kernal(delta_lambdas, vsini, epsilon):
 def test_silent_remove():
     """Test this doesn't raise and issue.
     Not really a good test."""
-    utils.silentremove("a_fake_filename_that_doesnt_exist.fake")
+    utils.silent_remove("a_fake_filename_that_doesnt_exist.fake")
     assert True
 
 

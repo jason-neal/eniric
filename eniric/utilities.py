@@ -8,13 +8,12 @@ import re
 from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
+from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
+from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
 from numpy import ndarray
 
-import eniric.IOmodule as io
-
 import eniric
-from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIX
-from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXALPHA
+import eniric.IOmodule as io
 
 
 def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
@@ -75,6 +74,7 @@ def get_spectrum_name(startype: str, logg: Union[float, int] = 4.50, feh: Union[
     else:
         base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 
+    # noinspection SpellCheckingInspection
     if startype in temps.keys():
         if org:
             phoenix_name = "lte{0:05d}-{1}-{2}.{3}".format(temps[startype], "4.50", "0.0", base)
@@ -196,7 +196,7 @@ def unitary_gaussian(x: Union[range, int, ndarray], center: Union[float, int, st
         Position array
     center: float
         Central position of Gaussian
-    FHWM: float
+    fwhm: float
         Full Width at Half Maximum
 
     Returns
@@ -250,7 +250,7 @@ def rotation_kernel(delta_lambdas: ndarray, delta_lambda_l: float, vsini: float,
     return c1 * np.sqrt(1.0 - lambda_ratio_sqr) + c2 * (1.0 - lambda_ratio_sqr)
 
 
-def silentremove(filename: str) -> None:
+def silent_remove(filename: str) -> None:
     """Remove file without failing when it doesn't exist."""
     try:
         os.remove(filename)
@@ -329,15 +329,15 @@ def load_aces_spectrum(params, photons=True):
     flux_micron: ndarray
         Photon counts or SED/micron
     """
-    base = eniric.paths["phoenix_raw"]
+    base = eniric.paths["phoenix_raw"] + "/"
     print("base = ", base)
     if params[3] == 0:  # Alpha value
         params = params[:-1]
         assert len(params) == 3
-        phoenix_grid = PHOENIX(base=base)
+        phoenix_grid = PHOENIXNoAlpha(base=base)
     elif len(params) == 4:
         print("USING ALPHA in PHOENIX LOADING")
-        phoenix_grid = PHOENIXALPHA(base=base) #, param_names = ["temp", "logg", "Z", "alpha"])
+        phoenix_grid = PHOENIX(base=base)  # , param_names = ["temp", "logg", "Z", "alpha"])
     else:
         raise ValueError("Number of parameters is incorrect")
 
@@ -351,9 +351,9 @@ def load_aces_spectrum(params, photons=True):
 
     if photons:
         # Convert to photons
-        """The energy units of Phoenix fits files is erg/s/cm**2/cm 
+        """The energy units of Phoenix fits files is erg/s/cm**2/cm
         PHOENIX ACES gives the Spectral Energy Density (SED)
-        We transform the SED into photons by 
+        We transform the SED into photons by
         multiplying the flux by the wavelength (lambda)
 
             Flux_photon = Flux_energy/Energy_photon
@@ -369,5 +369,6 @@ def load_aces_spectrum(params, photons=True):
     return wav_micron, flux_micron
 
 
+# TODO: Use BT-Settl also
 def load_btsettl_spectrum(params, photons=True):
-    raise NotImplementedError("Need to include BTSETTL")
+    raise NotImplementedError("Need to include BT-SETTL")

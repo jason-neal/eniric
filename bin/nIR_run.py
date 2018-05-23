@@ -37,7 +37,7 @@ def _parser():
     return parser.parse_args()
 
 
-def main(startype, vsini, resolution, band, sample_rate=3.0,
+def main(startype, vsini, resolution, band, sample_rate=None,
          noresample=False, unnormalized=False, org=False):
     """Run convolutions of NIR spectra for the range of given parameters.
 
@@ -54,10 +54,20 @@ def main(startype, vsini, resolution, band, sample_rate=3.0,
     band: list of strings
     sample_rate: list of floats default=[3.0]
     noresample: bool default=False
-    normalize: bool default=True
+    unnormalized: bool default=False
 
     """
     normalize = not unnormalized
+    if sample_rate is None:
+        # Default sample rate
+        sample_rate = [3.0]
+
+    # Check the inputs are correct format. (lists)
+    for f_input, f_name in zip([startype, band, vsini, resolution, sample_rate],
+                               ["startype", "band", "vsini", "resolution", "sample_rate"]):
+        if not isinstance(f_input, list):
+            print(f_name, type(f_input), type(f_name))
+            raise TypeError("Input {0} is not list".format(f_name))
 
     # vsini, resolution, band and sample_rate can all be a series of values
 

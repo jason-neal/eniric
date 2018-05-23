@@ -30,8 +30,9 @@ def _parser():
     parser.add_argument("-s", '--startype', help='Spectral Type e.g "MO"', default=["M0"],
                         type=str, nargs="+")
     parser.add_argument("-t", "--temp", help="Temperature of stars to prepare",
-                        type=float, nargs="+", default=[3900.0], choices=list(
-            np.arange(2300, 7000, 100.0)) + list(np.arange(7000, 12001, 200.0)))
+                        type=float, nargs="+", default=[3900.0],
+                        choices=list(np.arange(2300, 7000, 100.0)) +
+                                list(np.arange(7000, 12001, 200.0)))
     parser.add_argument("-l", "--logg", help="Logg for stellar models.", default=[4.50],
                         type=float, nargs="+", choices=np.arange(0, 6.01, 0.5))
     parser.add_argument("-m", "--metallicity", type=float, default=[0.0],
@@ -102,7 +103,7 @@ def main(startype, temp, logg, metallicity, alpha, flux_type="photon", data_dir=
                     (match_temp, match_logg, match_feh) = re.search(r"(\d{5})-(\d\.\d\d)([+\-]\d\.\d)", f).groups()
                     alpha_cond = True  # To make work
             except AttributeError:
-                """Trying to access NoneType when no match found."""
+                print("Trying to access NoneType when no match found.")
                 continue
 
             temp_cond = float(match_temp) in temp
