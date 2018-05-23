@@ -39,8 +39,7 @@ def _parser():
                         help='Result directory Default=data_dir+"/results/"')
     parser.add_argument('--resamples', default=None, type=str,
                         help='Resample directory. Default=data_dir+"/resampled/"')
-    parser.add_argument('--normalize', help='Use convolution normalized spectra', default=True,
-                        action="store_false")
+    parser.add_argument('--normalize', help='Turn off convolution normalization.', action="store_false")
     return parser.parse_args()
 
 
@@ -53,28 +52,29 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
 
     Resolution in short form e.g 100k
 
-    Loads in the file, and calculates RVprec on full band.
+    Loads in the file, and calculates RV precision on full band.
     """
-    if normalize:
-        file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2:.2}_R{3}"
-                        "_res{4}.txt").format(star, band, vel, resolution, smpl)
+    vel = float(vel)
+
+    if not normalize:
+        norm_ = "_unnormalized"
+        norm_id = "-unnorm"
     else:
-        file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini"
-                        "{2:.2}_R{3}_unnormalized_res{4}.txt"
-                        "").format(star, band, vel, resolution, smpl)
+        norm_ = ""
+        norm_id = ""
+    print(star, band, vel, resolution, smpl, norm_)
+    print(type(star), type(band), type(vel), type(resolution), type(smpl), type(norm_))
+    file_to_read = ("Spectrum_{0:s}-PHOENIX-ACES_{1:s}band_vsini{2:.01f}_R{3:s}{5:s}_res{4:d}.txt"
+                    "").format(star, band, vel, resolution, smpl, norm_)
+
+    # sample was left aside because only one value existed
+    id_string = "{0}-{1}-{2:.01f}-{3}{4}".format(star, band, vel, resolution, norm_id)
 
     wav_stellar, flux_stellar = io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
 
     # removing boundary effects
     wav_stellar = wav_stellar[2:-2]
     flux_stellar = flux_stellar[2:-2]
-
-    if normalize:
-        # sample was left aside because only one value existed
-        id_string = "{0}-{1}-{2:.1f}-{3}".format(star, band, vel, resolution)
-    else:
-        # sample was left aside because only one value existed
-        id_string = "{0}-{1}-{2:.1f}-{3}-unnorm".format(star, band, vel, resolution)
 
     # Normalize to SNR 100 in middle of J band 1.25 micron!
     flux_stellar = normalize_flux(flux_stellar, id_string)
@@ -153,6 +153,12 @@ def main(startype=None, vsini=None, resolution=None, bands=None, data_dir=None, 
     if sample_rate is None:
         sample_rate = ["3"]
 
+    if normalize is None:
+        normalize = [True, False]
+    else:
+        if isinstance(normalize, bool):
+            normalize = [normalize]
+
     # Check the inputs are correct format. (lists)
     for f_input, f_name in zip([startype, bands, vsini, resolution, sample_rate],
                                ["startype", "band", "vsini", "resolution", "sample_rate"]):
@@ -170,16 +176,13 @@ def main(startype=None, vsini=None, resolution=None, bands=None, data_dir=None, 
             for vel in vsini:
                 for R in resolution:
                     for smpl in sample_rate:
-                        for normalize in [True, False]:
+                        for norm in normalize:
                             try:
-                                id_string, prec_1 = calc_prec1(star, band, vel, R, smpl, normalize=normalize)
+                                id_string, prec_1 = calc_prec1(star, band, vel, R, smpl, normalize=norm)
                                 precision[id_string] = prec_1
                             except FileNotFoundError:
-                                print("File Not found ", star, band, vel, R, smpl, normalize)
-                                pass  # When file not found skip
-                            except Exception as e:
-                                print(e)
-                                print(star, band, vel, R, smpl, "normalized" * normalize, "Failed!")
+                                print("File Not found ", star, band, vel, R, smpl, norm)
+                                continue
 
     print("id_string\t\tprec_1")
     for key in precision:
