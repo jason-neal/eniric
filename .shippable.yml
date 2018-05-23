@@ -27,7 +27,18 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
 
+  # Install Starfish
+  - cd $HOME
+  - travis_retry git clone https://github.com/iancze/Starfish.git
+  - cd Starfish
+  - travis_retry conda install --yes astropy cython emcee h5py matplotlib pytest pyyaml scikit-learn scipy
+  - travis_retry pip install -r requirements.txt
+  - python setup.py build_ext --inplace
+  - python setup.py develop
+
+  # Now install eniric
   # Install requirements
+  - cd $SHIPPABLE_BUILD_DIR
   - travis_retry pip install -r test_requirements.txt
   - travis_retry pip install -r requirements.txt
 
