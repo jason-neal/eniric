@@ -34,11 +34,13 @@ def _parser():
                         action="store_true")
     parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
                         default=False, action="store_true")
+    parser.add_argument('-r', '--replace', action="store_true",
+                        help='Replace data files if already created.')
     return parser.parse_args()
 
 
 def main(startype, vsini, resolution, band, sample_rate=None,
-         noresample=False, unnormalized=False, org=False):
+         noresample=False, unnormalized=False, org=False, replace=False):
     """Run convolutions of NIR spectra for the range of given parameters.
 
     Multiple values of startype, vsini, resolution, band, and sample_rate can
@@ -98,8 +100,12 @@ def main(startype, vsini, resolution, band, sample_rate=None,
                         else:
                             result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k_unnormalized.txt".format(
                                 star, b, vel, int(R / 1000))
-                        print("Name to be the result file", result_name)
 
+                        if os.path.exists(os.path.join(results_dir, result_name)) and not replace:
+                            print("Skipping convolution as {} already exists".format(result_name))
+                            continue
+
+                        print("Name to be the result file", result_name)
                         convolve_spectra(spectrum_name, b, vel, R, epsilon=0.6, plot=False,
                                          fwhm_lim=5.0, num_procs=None,
                                          results_dir=results_dir, normalize=normalize, output_name=result_name)
