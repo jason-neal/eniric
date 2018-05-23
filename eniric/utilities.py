@@ -3,14 +3,14 @@ Auxiliary functions for nIRanalysis
 
 """
 import errno
-from numpy import ndarray
-
-import numpy as np
 import os
 import re
+from typing import Any, List, Optional, Tuple, Union
+
+import numpy as np
 from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
 from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
-from typing import Any, List, Optional, Tuple, Union
+from numpy import ndarray
 
 import eniric
 import eniric.IOmodule as io
@@ -329,7 +329,7 @@ def load_aces_spectrum(params, photons=True):
     flux_micron: ndarray
         Photon counts or SED/micron
     """
-    base = eniric.paths["phoenix_raw"]+"/"
+    base = eniric.paths["phoenix_raw"] + "/"
     print("base = ", base)
     if params[3] == 0:  # Alpha value
         params = params[:-1]
