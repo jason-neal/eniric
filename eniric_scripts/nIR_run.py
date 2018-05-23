@@ -72,7 +72,7 @@ def main(startype, vsini, resolution, band, sample_rate=None,
             raise TypeError("Input {0} is not list".format(f_name))
 
     # vsini, resolution, band and sample_rate can all be a series of values
-
+    vsini = [float(v) for v in vsini]  # turn to floats
     # Handle K in Resolution
     resolution = resolution2int(resolution)
 
@@ -84,6 +84,11 @@ def main(startype, vsini, resolution, band, sample_rate=None,
     resampled_dir = eniric.paths["resampled"]
     os.makedirs(resampled_dir, exist_ok=True)
 
+    if not normalize:
+        norm_ = "_unnormalized"
+    else:
+        norm_ = ""
+
     counter = 0
     for star in startype:
         spectrum_name = os.path.join(phoenix_path, get_spectrum_name(star, org=org))
@@ -93,13 +98,8 @@ def main(startype, vsini, resolution, band, sample_rate=None,
                 for R in resolution:
                     for sample in sample_rate:
 
-                        if normalize:
-                            # when normalize action is confirmed then can
-                            result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k.txt".format(
-                                star, b, vel, int(R / 1000))
-                        else:
-                            result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}k_unnormalized.txt".format(
-                                star, b, vel, int(R / 1000))
+                        result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2:.01f}_R{3}k{4}.txt".format(
+                            star, b, vel, int(R / 1000), norm_)
 
                         if os.path.exists(os.path.join(results_dir, result_name)) and not replace:
                             print("Skipping convolution as {} already exists".format(result_name))
