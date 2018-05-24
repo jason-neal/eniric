@@ -32,7 +32,7 @@
 # 
 # I also do not mask out/shade the regions of high telluric absorption.
 
-# In[ ]:
+# In[1]:
 
 
 import os
@@ -41,19 +41,20 @@ import numpy as np
 from eniric.Qcalculator import quality
 
 from astropy.io import fits
+from IPython.display import Image
 
 
-# In[ ]:
+# In[2]:
 
 
 Phoniex_path = os.path.join("/home", "jneal", "Phd", "data", "PHOENIX-ALL","PHOENIX")
 wav = fits.getdata(os.path.join(Phoniex_path, "WAVE_PHOENIX-ACES-AGSS-COND-2011.fits"))
 
-# Barnards star
+# Barnards star Phoenix model
 data = fits.getdata(os.path.join(Phoniex_path, "Z-0.5", "lte03200-5.00-0.5.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits"))
 
 
-# In[ ]:
+# In[3]:
 
 
 wav = wav/10000  # micrometers
@@ -61,17 +62,11 @@ mask = (wav >= 0.4) & (wav <= 5)
 wav2 = wav[mask]
 data2 = data[mask]
 
-
-# In[ ]:
-
-
 # Showning selected spectrum region out to 2.5 micron
 plt.plot(wav, data)
 plt.plot(wav2, data2)
 plt.show()
-
-
-# In[ ]:
+# In[4]:
 
 
 def log_chunks(wavelength, percent):
@@ -83,7 +78,7 @@ def log_chunks(wavelength, percent):
     return wavelength[0] * base ** powers
 
 
-# In[ ]:
+# In[5]:
 
 
 # Slices of given Delta lambda/lambda
@@ -107,12 +102,14 @@ for ii in range(len(chunks)-1):
     m = (wav2 <= xmax) & (wav2 >= xmin)
 
     qual.append(quality(wav2[m], data2[m]))
-    # print("ii", ii, "quality =", qual[-1])    
-# plt.plot(center, qual, "*", label=l, color=cl)
-# plt.step(center, qual, where="mid", label="model", color="C1")
+
+
+# In[6]:
+
+
+
+# Plotting with different y scales
 plt.loglog(center, qual, "o", label="model", color="C1")
-
-
 plt.legend()
 plt.axvline(2.5)
 plt.xlabel("Wavelength ($\mu$m)")
@@ -121,30 +118,16 @@ plt.title("Artigau et.  al. 2018, Fig. 2 (loglog)")
 plt.show()
 
 
-qual = []
-center = []
-
-for ii in range(len(chunks)-1):
-    xmin = chunks[ii]
-    xmax = chunks[ii+1]
-
-    this_center = (xmax + xmin)/2
-    center.append(this_center)
-    m = (wav2 <= xmax) & (wav2 >= xmin)
-
-    qual.append(quality(wav2[m], data2[m]))
-    # print("ii", ii, "quality =", qual[-1])    
-# plt.plot(center, qual, "*", label=l, color=cl)
-# plt.step(center, qual, where="mid", label="model", color="C1")
 plt.semilogy(center, qual, "o", label="model", color="C1")
-
-
 plt.legend()
 plt.axvline(2.5)
 plt.xlabel("Wavelength ($\mu$m)")
 plt.ylabel(r"Q$_{0.2\%}$")
 plt.title("Artigau et.  al. 2018, Fig. 2 (semilogy)")
 plt.show()
+
+# Artigau 2018 Fig 2
+Image("artigau_fig2.png")
 
 
 # This does not account for the convolution by a 1D profile corresponding to a circular fiber as done in the paper.
@@ -159,7 +142,7 @@ plt.show()
 # 
 # 5% steps between 0.5-2.25 micron
 
-# In[ ]:
+# In[7]:
 
 
 Phoenix_path = os.path.join("/home", "jneal", "Phd", "data", "PHOENIX-ALL","PHOENIX")
@@ -172,10 +155,6 @@ field = fits.getdata(os.path.join(Phoenix_path, "Z-0.0", "lte03200-5.00-0.0.PHOE
 # Young
 young = fits.getdata(os.path.join(Phoenix_path, "Z-0.0", "lte03200-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits"))
 
-
-# In[ ]:
-
-
 # Showning selected spectrum region out to 2.5 micron
 
 plt.plot(wav, young, label="Young")
@@ -184,9 +163,7 @@ plt.plot(wav, barnard, label="Barnard")
 plt.legend()
 plt.xlabel(r"Wavelegnth $\mu$m")
 plt.show()
-
-
-# In[ ]:
+# In[8]:
 
 
 mask = (wav >= 0.47) & (wav <= 2.6)
@@ -196,18 +173,13 @@ young = young[mask]
 field = field[mask]
 
 
-# In[ ]:
-
-
 plt.plot(wav, young, label="Young")
 plt.plot(wav, field, label="Field")
 plt.plot(wav, barnard, label="Barnard")
 plt.legend()
 plt.xlabel(r"Wavelegnth $\mu$m")
 plt.show()
-
-
-# In[ ]:
+# In[9]:
 
 
 # Slices of given Delta lambda/lambda
@@ -217,8 +189,6 @@ chunks = log_chunks(wav, 5)  # 5%
 print( "len chunks", len(chunks))
 print("diff chunks/wav",  (np.diff(chunks)/chunks[:-1])[:5])
 # Artigau turn it into 0.2% chunks in which  $(\Delta \lambda) / lambda$ = 0.2% 
-
-
 
 center_store = {}
 qual_store = {}
@@ -236,20 +206,17 @@ for target, label in zip([barnard, field, young], ["Barnard", "Field", "Young"])
         m = (wav <= xmax) & (wav >= xmin)
 
         qual.append(quality(wav[m], target[m]))
-        # print("ii", ii, "quality =", qual[-1])    
-    # plt.plot(center, qual, "*", label=l, color=cl)
-    # plt.step(center, qual, where="mid", label="model", color="C1")
+
     qual_store[label] = np.asarray(qual)
     center_store[label] = np.asarray(center)
-    #plt.semilogy(center, qual, label=label)
 
+    
 plt.figure()
 ax1 = plt.subplot(211)
 for label in ["Barnard", "Field", "Young"]:
     plt.semilogy(center_store[label], qual_store[label], label=label)
     plt.legend()
-#plt.axvline(2.5)
-
+    # plt.axvline(2.5)
     plt.ylabel(r"Q$_{5\%}$")
     
 ax2 = plt.subplot(212, sharex=ax1)
@@ -259,6 +226,10 @@ plt.xlabel("Wavelength ($\mu$m)")
 plt.suptitle("Artigau et.  al. 2018, Fig. 4")
 plt.legend()
 plt.show()
+
+
+# Artigau 2018 Fig 4
+Image("artigau_fig4.png")
 
 
 # This shows a similar shape to Artigau 2018, but not quite the same.
@@ -273,7 +244,7 @@ plt.show()
 # - F9V - 6000K-4.5
 # - F2V - 7000K-4.5
 
-# In[ ]:
+# In[10]:
 
 
 wav = fits.getdata(os.path.join(Phoniex_path, "WAVE_PHOENIX-ACES-AGSS-COND-2011.fits"))
@@ -284,7 +255,7 @@ F9V = fits.getdata(os.path.join(Phoniex_path, "Z-0.0", "lte06000-4.50-0.0.PHOENI
 F2V = fits.getdata(os.path.join(Phoniex_path, "Z-0.0", "lte07000-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits"))
 
 
-# In[ ]:
+# In[11]:
 
 
 plt.plot(wav, K5V, label="K5V")
@@ -298,7 +269,7 @@ plt.title("Full SED")
 plt.show()
 
 
-# In[ ]:
+# In[12]:
 
 
 mask = (wav >= 3800) & (wav <= 7000)
@@ -308,7 +279,7 @@ F9V = F9V[mask]
 F2V = F2V[mask]
 
 
-# In[ ]:
+# In[13]:
 
 
 plt.plot(wav, K5V, label="K5V")
@@ -321,7 +292,7 @@ plt.xlabel("Wavelength (nm)")
 plt.show()
 
 
-# In[ ]:
+# In[14]:
 
 
 # Is quality the same with SED and counts spectra?
@@ -336,7 +307,7 @@ q2 = quality(wav, F2V*wav)
 print("F2V", q1, q2)
 
 
-# In[ ]:
+# In[15]:
 
 
 # Is quality the same when scaled?
@@ -358,7 +329,7 @@ print("F2V", q1, q2)
 # 
 # When I was multiplying by wave above it changed the spectral shape, hence a change in quality.
 
-# In[ ]:
+# In[18]:
 
 
 # slices of 100A
@@ -384,8 +355,6 @@ for f, l, cl in zip(fluxes, labels, colors):
         m = (wav <= xmax) & (wav >= xmin)
         
         qual.append(quality(wav[m], f[m])/1e4)
-        # print("ii", ii, "quality =", qual[-1])    
-    #plt.plot(center, qual, "*", label=l, color=cl)
     plt.step(center, qual, where="mid", label=l, color=cl)
 
 
@@ -396,11 +365,15 @@ plt.title("Bouchy et al. 2001")
 plt.show()
 
 
+# Bouchy 2001 Fig 1
+Image("bouchy_fig1.png")
+
+
 # This reproduction is very similar to Bouchy 2001 [2](#cite-bouchy_fundamental_2001) Figure 1. (as it should be) 
 # 
 # The values here are slightly higher than Bouchy. Their plot maximum quality for K5V is ~7.2 (ours is ~8.5)
 
-# In[ ]:
+# In[17]:
 
 
 <!--bibtex
