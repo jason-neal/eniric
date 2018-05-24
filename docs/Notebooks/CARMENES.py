@@ -13,7 +13,385 @@
 # 
 # Using Barnard's star so can also compare to Artigau 2018 [2](#cite-artigau_optical_2018)
 
-# In[ ]:
+# In[1]:
+
+
+# Module to read data
+import numpy as np
+from astropy.io import fits
+import os
+import matplotlib.pyplot as plt
+import os
+import matplotlib.pyplot as plt
+import numpy as np
+from eniric.Qcalculator import quality
+
+from astropy.io import fits
+
+def tac_molecfit(filename):
+    # Read result file after the fit over full wavelength range and
+    # telluric correction (= division by the atmospheric transmission)
+    # wavelengths (wl) in microns and vacuum
+    hdu_molecfit = fits.open(filename)
+    data_molecfit = hdu_molecfit[1].data
+    wl_input = data_molecfit.field('lambda')
+    wl_model = data_molecfit.field('mlambda')
+    input_flux = data_molecfit.field('flux')
+    corr_flux = data_molecfit.field('cflux')
+    mtrans = data_molecfit.field('mtrans')
+    weight = data_molecfit.field('weight')
+    mweight = data_molecfit.field('mweight')
+    qual = data_molecfit.field('qual')
+    return wl_input, wl_model, input_flux, corr_flux, mtrans, qual, weight, mweight
+
+
+def molecfit_fit(filename):
+    # result file after the fit
+    # in the fitting regions
+    # Wl in microns and vacuum
+    hdu_molecfit = fits.open(filename)
+    data_molecfit = hdu_molecfit[1].data
+    wl_input = data_molecfit.field('lambda')
+    input_flux = data_molecfit.field('flux')
+    weight = data_molecfit.field('weight')
+    mrange = data_molecfit.field('mrange')
+    wl_model = data_molecfit.field('mlambda')
+    mscal = data_molecfit.field('mscal')
+    mflux = data_molecfit.field('mflux')
+    mweight = data_molecfit.field('mweight')
+    dev = data_molecfit.field('dev')
+    mtrans = data_molecfit.field('mtrans')
+    return wl_input, input_flux, weight, mrange, wl_model, mscal, mflux, mweight, dev, mtrans
+
+
+def TAC_molecfit(filename):
+    # Read file TAC
+    # the wavelength are in the original format
+    # ------------------------------------------
+    hdu = fits.open(filename)
+    header = hdu[1].header
+    name = os.path.basename(filename)
+    wl = hdu[1].data.field('WAVE')
+    input_flux = hdu[1].data.field('SPEC')
+    input_cont = hdu[1].data.field('CONT')
+    input_error = hdu[1].data.field('SIG')
+    corr_flux = hdu[1].data.field('tacflux')
+    mtrans = hdu[1].data.field('mtrans')
+    qual = hdu[1].data.field('tacqual')
+    return name, header, wl*0.001, input_flux, input_cont, input_error, corr_flux, mtrans, qual
+
+
+
+# In[2]:
+
+
+def log_chunks(wavelength, percent):
+    """Define bounds at which $(Delta \lambda)/\lambda = X\%$"""
+    base = 1 + percent/100
+    n = np.log(wavelength[-1]/wavelength[0]) / np.log(base)
+    powers = np.arange(np.ceil(n))
+    
+    return wavelength[0] * base ** powers
+
+
+# In[3]:
+
+
+path = "/home/jneal/Phd/Collaborations/Carmenes-correction/barnard_star"
+import os
+os.chdir(path)
+
+
+# In[4]:
+
+
+# Load spectrum example
+file0 = 'car-20160325T05h28m38s'
+filename = 'output/' + file0 + '-sci-gtoc-nir_A_tell_tac.fits'
+filename2 = 'output/' + file0 + '-sci-gtoc-nir_A_tell_fit.fits'
+filename3 = 'output/' + 'car-20160325T05h28m38s-sci-gtoc-nir_A_input_TAC.fits'
+wl_input, wl_model, input_flux, corr_flux, mtrans, qual, weight, mweight = tac_molecfit(filename)
+plt.plot(wl_input, corr_flux, 'g--', label='telluric corrected')
+plt.plot(wl_input, input_flux, 'k-', label='input data')
+wl_input, input_flux, weight, mrange, wl_model, mscal, mflux, mweight, dev, mtrans = molecfit_fit(filename2)
+plt.plot(wl_input, mtrans*mscal, 'r-', label='atmospheric transmission')
+plt.xlabel('Wavelength (microns and vacuum)')
+plt.ylabel('Flux')
+plt.legend()
+plt.show()
+
+name, header, wl, input_flux, input_cont, input_error, corr_flux, mtrans, qual = TAC_molecfit(filename3)
+
+
+# In[5]:
+
+
+# Load tac.fits spectrum
+wl_input, wl_model, input_flux, corr_flux, mtrans, qual, weight, mweight = tac_molecfit(filename)
+
+# Using corr flux
+assert np.all(qual >=0)
+assert np.all(qual <=1)
+
+cut_wl = wl_input[np.where(qual)]
+wl_diff = np.diff(cut_wl) * 1e3  # nanometer
+len(wl_diff)
+plt.hist(wl_diff, bins=np.arange(0.5, 5, .2))
+plt.xlabel("Wavelength (nm)")
+
+big_gaps = np.where(wl_diff > 1.5)
+
+
+# In[6]:
+
+
+# 
+gap = 1 # nanometer 
+print("blue lines indicate start of {}nm gaps".format(gap))
+big_gaps = np.where(wl_diff > 1)  # nanometer
+
+# Cuts for poor correction
+cut1 = [1.105, 1.165]
+cut2 = [1.3, 1.5]
+
+for line in cut1:
+    plt.axvline(line, color="red")
+plt.plot(wl_input, corr_flux, 'g--', label='telluric corrected')
+plt.plot(wl_input, input_flux, 'k-', label='input data')
+for line in cut_wl[big_gaps]:
+    plt.axvline(line)
+plt.xlim((0.9,1.2))
+plt.show()
+
+plt.plot(wl_input, corr_flux, 'g--', label='telluric corrected')
+plt.plot(wl_input, input_flux, 'k-', label='input data')
+for line in cut_wl[big_gaps]:
+    plt.axvline(line)
+plt.xlim((1.5,1.72))
+plt.show()
+
+
+
+plt.plot(wl_input, corr_flux, 'g--', label='telluric corrected')
+plt.plot(wl_input, input_flux, 'k-', label='input data')
+for line in cut_wl[big_gaps]:
+    plt.axvline(line)
+for line in cut1:
+    plt.axvline(line, color="red")
+for line in cut2:
+    plt.axvline(line, color="red")
+plt.show()
+
+
+# # Spectral Quality 
+
+# In[7]:
+
+
+from eniric.Qcalculator import quality
+# Naive Q
+naive_q_uncorrected = quality(wl_input[np.where(qual)], input_flux[np.where(qual)])
+print("naive_q", naive_q_uncorrected)
+
+# Telluric corrected spectra decreases in quality (less lines)
+naive_q_corrected = quality(wl_input[np.where(qual)], corr_flux[np.where(qual)])
+print("naive_corrected_q", naive_q_corrected)
+
+
+# In[8]:
+
+
+# Phoenix spectrum of barnards star (Artigau 2018)
+Phoniex_path = os.path.join("/home", "jneal", "Phd", "data", "PHOENIX-ALL","PHOENIX")
+wav = fits.getdata(os.path.join(Phoniex_path, "WAVE_PHOENIX-ACES-AGSS-COND-2011.fits"))
+
+# Barnards star
+data = fits.getdata(os.path.join(Phoniex_path, "Z-0.5", "lte03200-5.00-0.5.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits"))
+wav = wav/10000  # micrometers
+
+data *= wav  # approx Transform to counts
+
+mask = (wav >= wl_input[0]) & (wav <= wl_input[-1])
+
+wav2 = wav[mask]
+data2 = data[mask]
+
+mask3 = (wav >= 0.4) & (wav <= 5)
+wav3 = wav[mask3]
+data3 = data[mask3]
+
+plt.plot(wav3, data3)
+plt.plot(wav2, data2)
+plt.title("PHOENIX - Barnard's Star (counts)")
+plt.show()
+from spectrum_overload.spectrum import Spectrum
+
+continuum2 = Spectrum(xaxis=wav2, flux=data2).continuum(method="cubic")
+data2 = data2/continuum2.flux
+
+
+continuum3 = Spectrum(xaxis=wav3, flux=data3).continuum(method="cubic")
+data3 = data3/continuum3.flux
+
+#plt.plot(wav3, data3, label="3")
+plt.plot(wav2, data2, "r")
+plt.title("PHOENIX - Barnard's Star (counts)")
+plt.ylabel("Continuum normalized flux ")
+plt.show()
+
+
+# In[9]:
+
+
+## Artigau 2018 % slicing
+
+
+# In[10]:
+
+
+# Slices of given Delta lambda/lambda
+
+# Break into small chunks 0.2%  (delta lambda)/lambda
+chunks = log_chunks(wav3, 0.2)
+
+print( "len chunks", len(chunks))
+print("diff chunks/wav", (np.diff(chunks)/chunks[:-1])[:5])
+# Artigau turn it into 0.2% chunks in which  $(\Delta \lambda) / lambda$ = 0.2% 
+
+ph_qual = []
+center = []
+for ii in range(len(chunks)-1):
+    xmin = chunks[ii]
+    xmax = chunks[ii+1]
+
+    this_center = (xmax + xmin)/2
+    center.append(this_center)
+    m = (wav3 <= xmax) & (wav3 >= xmin)
+    ph_qual.append(quality(wav3[m], data3[m]))
+
+plt.semilogy(center, ph_qual, "o", label="model", color="C1")
+plt.legend()
+plt.axvline(2.5)
+plt.xlabel("Wavelength ($\mu$m)")
+plt.ylabel(r"Q$_{0.2\%}$")
+plt.title("Artigau et.  al. 2018, Fig. 2 (semilogy)")
+plt.show()
+
+
+# In[11]:
+
+
+# With CARMENES
+# mask out where qual is zero but use original wal_input to create chunks.
+wl_input_qual = wl_input[np.where(qual)]
+corr_flux_qual = corr_flux[np.where(qual)]
+
+carm_chunks = log_chunks(wl_input, 25)
+
+carm_qual = []
+carm_center = []
+
+for ii in range(len(carm_chunks)-1):
+    xmin = carm_chunks[ii]
+    xmax = carm_chunks[ii+1]
+
+    this_center = (xmax + xmin) / 2
+    carm_center.append(this_center)
+    m = (wl_input_qual <= xmax) & (wl_input_qual >= xmin)
+    print(ii)
+    print(xmin, xmax)
+    print("mask", m)
+    print("sum mask", sum(m))
+    print("wl",wl_input_qual[m])
+    print("corr",corr_flux_qual[m])
+    quality_ = quality(wl_input_qual[m], corr_flux_qual[m])
+    print("quality = ",quality_)
+    carm_qual.append(quality(wl_input_qual[m], corr_flux_qual[m]))
+    
+
+
+# In[12]:
+
+
+
+plt.semilogy(carm_center, carm_qual, "o", label="carmenes", color="C1")
+plt.legend()
+plt.xlabel("Wavelength ($\mu$m)")
+plt.ylabel(r"Q$_{0.2\%}$")
+plt.title("Carmenes")
+plt.show()
+# print(carm_center)
+# print(carm_qual)
+
+
+# In[13]:
+
+
+# PHOENIX interpolated to CARMENES wavelengths
+phoenix_carmenes = np.interp(wl_input, wav2, data2)
+
+carm_ph_qual = []
+carm_ph_center = []
+
+for ii in range(len(chunks)-1):
+    xmin = chunks[ii]
+    xmax = chunks[ii+1]
+
+    this_center = (xmax + xmin)/2
+    carm_ph_center.append(this_center)
+    m = (wl_input <= xmax) & (wl_input >= xmin)
+    
+    carm_ph_qual.append(quality(wl_input[m], phoenix_carmenes[m]))
+    plt.plot(wl_input[m], phoenix_carmenes[m], label=quality(wl_input[m], phoenix_carmenes[m]))
+plt.show()
+
+
+# In[14]:
+
+
+
+plt.semilogy(center, ph_qual, "s", label="orig", color="C1")
+plt.semilogy(carm_ph_center, carm_ph_qual, "o", label="phoenix (unnormalized)", color="C0")
+plt.legend()
+plt.axvline(2.5)
+plt.xlabel("Wavelength ($\mu$m)")
+plt.ylabel(r"Q$_{0.2\%}$")
+plt.title("Artigau et.  al. 2018, Fig. 2 (semilogy)")
+plt.show()
+
+
+# In[15]:
+
+
+plt.semilogy(carm_center, carm_qual, "o", label="carmenes", color="C1")
+
+plt.semilogy(carm_ph_center, carm_ph_qual, "o", label="phoenix (unnormalized)", color="C0")
+
+plt.legend()
+plt.axvline(2.5)
+plt.xlabel("Wavelength ($\mu$m)")
+plt.ylabel(r"Q$_{0.2\%}$")
+plt.title("Artigau et.  al. 2018, Fig. 2 (semilogy)")
+plt.show()
+
+
+# In[16]:
+
+
+
+plt.semilogy(carm_center, carm_qual, "o", label="carmenes", color="C1")
+
+#plt.semilogy(carm_ph_center, carm_ph_qual, "o", label="phoenix (unnormalized)", color="C0")
+
+plt.legend()
+plt.axvline(2.5)
+plt.xlabel("Wavelength ($\mu$m)")
+plt.ylabel(r"Q$_{0.2\%}$")
+plt.title("Artigau et.  al. 2018, Fig. 2 (semilogy)")
+plt.show()
+
+
+# In[17]:
 
 
 <!--bibtex
