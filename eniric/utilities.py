@@ -250,6 +250,43 @@ def rotation_kernel(delta_lambdas: ndarray, delta_lambda_l: float, vsini: float,
     return c1 * np.sqrt(1.0 - lambda_ratio_sqr) + c2 * (1.0 - lambda_ratio_sqr)
 
 
+def oned_circle_kernel(x, center, fwhm):
+    """Calculate the convolution kernel for a circular fiber.
+
+    Parameters
+    ----------
+    x: array
+        Value to evaluate kernel at.
+    center: float
+        Center of kernel.
+    fwhm: float
+        FWHM of desired kernel.
+
+    Returns
+    -------
+        Collapsed circle kernel
+
+    Notes:
+    Tries to represent the broadening by the fiber of a fiber feed spectrograph.
+
+    Artigau 2018 - stated mathematically equivalent to a cosine between -pi/2 and pi/2. This is what has tried to be created.
+    """
+    fwhm_scale = 2.0943951  # Numerically derived
+
+    A = 1  # Amplitude
+    B = fwhm_scale / fwhm  # Scale to give specific fwhm
+
+    result = A * np.cos(B * (x - center))
+
+    # Limit to main cos lobe only
+    upper_xi = center + np.pi / 2 / B
+    lower_xi = center - np.pi / 2 / B
+    mask = (x < upper_xi) & (x > lower_xi)
+    result[~mask] = 0
+
+    return result
+
+
 def silent_remove(filename: str) -> None:
     """Remove file without failing when it doesn't exist."""
     try:
