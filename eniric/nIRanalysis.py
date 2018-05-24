@@ -23,7 +23,7 @@ import eniric.IOmodule as io
 from eniric.utilities import (band_selector, read_spectrum, rotation_kernel,
                               unitary_gaussian, wav_selector)
 
-# Cache convlution results.
+# Cache convolution results.
 cachedir = os.path.join(os.path.expanduser("~"), ".joblib")
 memory = Memory(cachedir=cachedir, verbose=0)
 
