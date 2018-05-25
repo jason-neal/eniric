@@ -59,7 +59,7 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
         norm_id = ""
     print(star, band, vel, resolution, smpl, norm_)
     print(type(star), type(band), type(vel), type(resolution), type(smpl), type(norm_))
-    file_to_read = ("Spectrum_{0:s}-PHOENIX-ACES_{1:s}band_vsini{2:.01f}_R{3:s}{5:s}_res{4:d}.txt"
+    file_to_read = ("Spectrum_{0:s}-PHOENIX-ACES_{1:s}band_vsini{2:.01f}_R{3:s}{5:s}_res{4:s}.txt"
                     "").format(star, band, vel, resolution, smpl, norm_)
 
     # sample was left aside because only one value existed
