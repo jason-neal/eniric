@@ -1401,7 +1401,8 @@ def plot_paper_plots():
             for vel in vsini:
                 for resolution in R:
                     for smpl in sampling:
-                        id_string = star + "-" + band + "-" + vel + "-" + resolution  # sample was left aside because only one value existed
+                        id_string = "{0:s}-{1:s}-{2:.01f}-{3:s}-{4:2.01f}".format(star, band, float(vel),
+                                                                                  res, float(smpl))
                         precision = results[id_string]
                         print("{0!s}: & {1:.1f}\t & {2:.1f}\t & {3:.1f} \\\\".format(id_string, precision[0],
                                                                                      precision[1], precision[2]))
