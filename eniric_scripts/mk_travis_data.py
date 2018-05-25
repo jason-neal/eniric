@@ -5,7 +5,7 @@ Compare to published results and run other tests on it.
 Don't do to many.
 """
 import os
-import subprocess
+# import subprocess
 from datetime import datetime
 from eniric_scripts.nIR_run import main as nir_run
 from eniric_scripts.prepare_data import main as prepare_data
