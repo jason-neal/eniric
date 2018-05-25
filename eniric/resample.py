@@ -72,7 +72,7 @@ def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k
 
     interpolated_flux = np.interp(wav_grid, wavelength, spectrum)
 
-    output_path = [resampled_dir, "{0}_res{1}.txt".format(spectrum_name[:-4], int(sampling))]
+    output_path = [resampled_dir, "{0}_res{1:2.01f}.txt".format(spectrum_name[:-4], float(sampling))]
     filetowrite = os.path.join(*output_path)
     io.write_e_2col(filetowrite, wav_grid[1:-2], interpolated_flux[1:-2])  # [1:-2] for border effects
 

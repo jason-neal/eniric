@@ -111,14 +111,14 @@ def get_reference_spectrum(id_string: str, ref_band: str = "J") -> Tuple[ndarray
     else:
         star, band, vel, res = decompose_id_string(id_string)
 
-        smpl = 3.0  # Fixed value atm
+    smpl = 3.0  # Fixed value atm
 
     ref_band = ref_band.upper()
     if ref_band == "SELF":
         ref_band = band
 
     file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}"
-                    "_res{4:1.0f}.txt").format(star, ref_band, vel, res, smpl)
+                    "_res{4:2.01f}.txt").format(star, ref_band, vel, res, float(smpl))
 
     try:
         wav_ref, flux_ref = Io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))

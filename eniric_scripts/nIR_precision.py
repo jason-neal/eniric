@@ -164,7 +164,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
         #             for smpl in sampling:
         for (star, vel, res, smpl) in iterations:
             file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}"
-                            "_res{4}.txt").format(star, band, vel, res, smpl)
+                            "_res{4:2.01f}.txt").format(star, band, vel, res, float(smpl))
             # print("Working on "+file_to_read+".")
             try:
                 wav_stellar, flux_stellar = io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
