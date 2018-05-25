@@ -1399,7 +1399,7 @@ def plot_paper_plots():
     for star in spectral_types:
         for band in bands:
             for vel in vsini:
-                for resolution in R:
+                for res in R:
                     for smpl in sampling:
                         id_string = "{0:s}-{1:s}-{2:.01f}-{3:s}-{4:2.01f}".format(star, band, float(vel),
                                                                                   res, float(smpl))
