@@ -3,11 +3,12 @@
 
  e.g. that they exist before trying to calculate the precision.
 
- Jason Neal - January 2017
  """
 
 import argparse
 import itertools
+
+import eniric
 
 
 def _parser():
@@ -25,39 +26,15 @@ def _parser():
     parser.add_argument("-b", "--band", type=str, default="ALL",
                         choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
                         help="Wavelength band to select", nargs="+")
-    parser.add_argument('-d', '--data_dir', help='Data directory', type=str, default=None)
     parser.add_argument('--sample_rate', default=None, type=float, nargs="*",
                         help="Resample rate, pixels per FWHM. Default=3.0")
-    parser.add_argument('--results', default=None, type=str,
-                        help='Result directory Default=data_dir+"/results/"')
-    parser.add_argument('--resamples', default=None, type=str,
-                        help='Resample directory. Default=data_dir+"/resampled/"')
-    parser.add_argument('--noresample', help='Resample output', default=False,
-                        action="store_true")
     parser.add_argument('--normalize', help='Use convolution normalized spectra', default=True,
                         action="store_false")
-    parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
-                        default=False, action="store_true")
     return parser.parse_args()
 
 
-def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None,
-         results=None, resamples=None, sample_rate=3.0, noresample=False,
-         normalize=True, org=False):
+def main(startype=None, vsini=None, resolution=None, band=None, sample_rate=None, normalize=True):
     """Check if all the results files are ready for precision calculation."""
-    if data_dir is None:
-        data_dir = "../data/"
-
-    if results is None:
-        results_dir = data_dir + "results/"
-    else:
-        results_dir = results
-
-    if resamples is None:
-        resampled_dir = data_dir + "resampled/"
-    else:
-        resampled_dir = resamples
-
     if startype is None:
         spectral_types = ["M0", "M3", "M6", "M9"]
     else:
@@ -79,13 +56,21 @@ def main(startype=None, vsini=None, resolution=None, band=None, data_dir=None,
     else:
         sampling = sample_rate
 
+    if not normalize:
+        norm_ = "_unnormalized"
+    else:
+        norm_ = ""
+
     iterations = itertools.product(spectral_types, bands, vsini, resolution, sampling)
     for (star, band, vel, res, smpl) in iterations:
 
+        file_to_read = ("Spectrum_{0:s}-PHOENIX-ACES_{1:s}band_vsini{2:.01f}_R{3:s}{5:s}_res{4:d}.txt"
+                        "").format(star, band, float(vel), res, smpl, norm_)
+
+        full_name = os.path.join(eniric.paths["resampled"], file_to_read)
+
         # Find if the file exists.
-        if exists:
-            pass
-        else:
+        if not os.path.exists(full_name):
             print("{} does not exist!".format(filename))
 
     return 0
