@@ -32,13 +32,8 @@ def _parser():
     parser.add_argument("-b", "--band", type=str, default=["ALL"],
                         choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
                         help="Wavelength band to select", nargs="+")
-    parser.add_argument('-d', '--data_dir', help='Data directory', type=str, default=None)
     parser.add_argument('--sample_rate', default=None, type=float, nargs="*",
                         help="Resample rate, pixels per FWHM. Default=3.0")
-    parser.add_argument('--results', default=None, type=str,
-                        help='Result directory Default=data_dir+"/results/"')
-    parser.add_argument('--resamples', default=None, type=str,
-                        help='Resample directory. Default=data_dir+"/resampled/"')
     parser.add_argument('--normalize', help='Turn off convolution normalization.', action="store_false")
     return parser.parse_args()
 
@@ -97,8 +92,7 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
     return id_string, prec_1
 
 
-def main(startype=None, vsini=None, resolution=None, bands=None, data_dir=None, results=None, resamples=None,
-         sample_rate=None, normalize: bool = True):
+def main(startype=None, vsini=None, resolution=None, bands=None, sample_rate=None, normalize: bool = True):
     """Script that calculates the RV precision without atmosphere.
 
     Parameters
@@ -111,31 +105,12 @@ def main(startype=None, vsini=None, resolution=None, bands=None, data_dir=None, 
             Spectral resolutions.
     bands: list[str]
         Spectral bands to use.
-    data_dir : Optional[str]
-        Directory for data.
-    results: Optional[str]
-        Directory for results.
-    resamples: Optional[str]
-        Directory for resampled spectra.
     sample_rate: Optional[int]
         Sample rate of spectrum. Default = 3.0.
     normalize: bool
         Normalize the convolution. Default=True.
 
     """
-    if data_dir is None:
-        data_dir = "../data/"
-
-    if results is None:
-        results_dir = data_dir + "results/"
-    else:
-        results_dir = results
-
-    if resamples is None:
-        resampled_dir = data_dir + "resampled/"
-    else:
-        resampled_dir = resamples
-
     if startype is None:
         startype = ["M0", "M3", "M6", "M9"]
 
