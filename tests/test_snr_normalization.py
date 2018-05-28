@@ -45,7 +45,7 @@ def test_band_snr_norm():
     """Compared to wav snr norm."""
     # snr_constant_band
     test_data = os.path.join(
-        eniric.paths["test_data"], "resampled", "Spectrum_M0-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt")
+        eniric.paths["test_data"], "resampled", "Spectrum_M0-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.0.txt")
     wav, flux = Io.pdread_2col(test_data)
 
     assert (snrnorm.snr_constant_band(wav, flux, band="J", snr=100) ==
@@ -130,7 +130,7 @@ def test_get_reference_spectrum_in_nonexistent_file():
 @pytest.mark.xfail()  # size is too big
 def test_normalize_flux_new_verse_old():
     test_data = os.path.join(eniric.paths["test_data"], "resampled",
-                             "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k_res3.txt")
+                             "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k_res3.0.txt")
     id_string = "M0-K-1.0-100k"
     wav, flux = utils.read_spectrum(test_data)
     new_norm = snrnorm.normalize_flux(flux, id_string, new=True)
@@ -143,7 +143,7 @@ def test_normalize_flux_new_verse_old():
 
 
 def test_old_does_does_not_handle_changed_band():
-    test_data = os.path.join(eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Kband_vsini5.0_R100k_res3.txt")
+    test_data = os.path.join(eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Kband_vsini5.0_R100k_res3.0.txt")
     id_string = "M0-K-5.0-100k"
     wav, flux = utils.read_spectrum(test_data)
     with pytest.raises(ValueError):
@@ -191,7 +191,7 @@ def test_get_ref_spectrum_with_self(star, band, vel, res, ref_band):
     id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
 
     test_data = os.path.join(eniric.paths["resampled"],
-                             "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}_res3.txt".format(star, band, vel, res))
+                             "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}_res3.0.txt".format(star, band, vel, res))
     wav, flux = Io.pdread_2col(test_data)
 
     wav_ref, flux_ref = snrnorm.get_reference_spectrum(id_string, ref_band=ref_band)

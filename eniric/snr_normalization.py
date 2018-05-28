@@ -118,7 +118,7 @@ def get_reference_spectrum(id_string: str, ref_band: str = "J") -> Tuple[ndarray
         ref_band = band
 
     file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}"
-                    "_res{4:2.01f}.txt").format(star, ref_band, vel, res, float(smpl))
+                    "_res{4:3.01f}.txt").format(star, ref_band, vel, res, float(smpl))
 
     try:
         wav_ref, flux_ref = Io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
@@ -164,7 +164,7 @@ def snr_constant_band(wav: ndarray, flux: ndarray, snr: Union[int, float] = 100,
     return norm_constant
 
 
-def snr_constant_wav(wav: ndarray, flux: ndarray, wav_ref: float, snr: Union[int, float] = 100, sampling: int = 3) -> float64:
+def snr_constant_wav(wav: ndarray, flux: ndarray, wav_ref: float, snr: Union[int, float] = 100, sampling: Union[int, float] = 3.0) -> float64:
     """Determine the normalization constant to achieve a SNR at given wavelength.
 
     SNR estimated by the square root of the number of photons in a resolution element.
@@ -179,7 +179,7 @@ def snr_constant_wav(wav: ndarray, flux: ndarray, wav_ref: float, snr: Union[int
         Wavelength to set the SNR per resolution element.
     snr: int,  default = 100
         SNR to set.
-    sampling: int
+    sampling: int or float
        Number of pixels per resolution element.
 
     Returns
