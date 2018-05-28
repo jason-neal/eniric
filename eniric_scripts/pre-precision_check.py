@@ -64,7 +64,7 @@ def main(startype=None, vsini=None, resolution=None, band=None, sample_rate=None
     iterations = itertools.product(spectral_types, bands, vsini, resolution, sampling)
     for (star, band, vel, res, smpl) in iterations:
 
-        file_to_read = ("Spectrum_{0:s}-PHOENIX-ACES_{1:s}band_vsini{2:.01f}_R{3:s}{5:s}_res{4:2.01f}.txt"
+        file_to_read = ("Spectrum_{0:s}-PHOENIX-ACES_{1:s}band_vsini{2:.01f}_R{3:s}{5:s}_res{4:3.01f}.txt"
                         "").format(star, band, float(vel), res, float(smpl), norm_)
 
         full_name = os.path.join(eniric.paths["resampled"], file_to_read)
