@@ -1,4 +1,5 @@
 import argparse
+import itertools
 
 import numpy as np
 
@@ -100,13 +101,6 @@ if __name__ == "__main__":
     args = _parser()
     print(args.bands)
 
-    # Load the relevant spectra
-
-    t = args.temp[0]
-    m = args.metal[0]
-    l = args.logg[0]
-    import itertools
-
     try:
         num_procs = args.num_procs
     except AttributeError:
@@ -118,16 +112,18 @@ if __name__ == "__main__":
 
     conv_kwargs = {"epsilon": 0.6, "fwhm_lim": 5.0, "num_procs": num_procs, "normalize": normalize}
 
+    # Load the relevant spectra
     models_list = itertools.product(args.temp, args.logg, args.metal, args.alpha)
-    params_list = itertools.product(args.resolution, args.bands, args.vsini, args.sampling)
 
     with open("Result_text_file.txt", "w") as f:
         f.write("Star Model \t Parameters \t Results\n")
         for model in models_list:
             print("model", model)
-            for pars in params_list:
-                R, band, vsini, sample = pars
-                result = do_analysis(model, vsini=vsini, R=R, band=band, conv_kwargs=conv_kwargs)
+            
+            # Create generator for params_list
+            params_list = itertools.product(args.resolution, args.bands, args.vsini, args.sampling)
+
+            for (R, band, vsini, sample) in params_list:
                 print(model, pars, [res.value for res in result])
 
                 f.write("{0}\t{1}\t{2}\n".format(model, pars, [res.value for res in result]))
