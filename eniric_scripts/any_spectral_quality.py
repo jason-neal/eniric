@@ -14,6 +14,7 @@ def _parser():
     """Take care of all the argparse stuff.
 
     :returns: the args
+
     """
     parser = argparse.ArgumentParser(description='Calculate quality for any library spectra.')
     parser.add_argument("-t", "--temp", type=int,
@@ -38,15 +39,18 @@ def _parser():
                         help="Spectral models to use. Default=phoenix.")
     parser.add_argument("--save", default=False, action="store_true",
                         help="Save results to file.")
-    # parser.add_argument("--snr", help="Mid-band SNR scaling. (Default=100)", default=100, type=float)
-    # parser.add_argument("--ref_band",
-    #                    help="SNR reference band. Default=J. (Default=100). "
-    #                         "'self' scales each band relative to the SNR itself.",
-    #                    choices=["self", "VIS", "GAP", "Z", "Y", "J", "H", "K"], default="J", type=str)
+    parser.add_argument("--snr", help="Mid-band SNR scaling. (Default=100)", default=100,
+                        type=float)
+    parser.add_argument("--ref_band",
+                        help="SNR reference band. Default=J. (Default=100). "
+                             "'self' scales each band relative to the SNR itself.",
+                        choices=["self", "VIS", "GAP", "Z", "Y", "J", "H", "K"], default="J",
+                        type=str)
     return parser.parse_args()
 
 
-def do_analysis(star_params, vsini, R, band, sampling=3.0, conv_kwargs=None):
+def do_analysis(star_params, vsini: float, R: float, band: str, sampling: float = 3.0,
+                conv_kwargs=None, snr: float = 100.0, ref_band: str = "J"):
     """Precision and Quality for specific parameter set."""
     if conv_kwargs is None:
         conv_kwargs = {"epsilon": 0.6, "fwhm_lim": 5.0, "num_procs": 1, "normalize": True}
@@ -68,8 +72,6 @@ def do_analysis(star_params, vsini, R, band, sampling=3.0, conv_kwargs=None):
     q = quality(wav_grid, sampled_flux)
 
     # Scale normalization for precision
-    ref_band = "J"
-    snr = 100
     wav_ref, sampled_ref = convolve_and_resample(wav, flux, vsini, R, ref_band, sampling, conv_kwargs)
     snr_normalize = snr_constant_band(wav_ref, sampled_ref, snr=snr, band=ref_band)
     sampled_flux = sampled_flux / snr_normalize
@@ -110,6 +112,9 @@ if __name__ == "__main__":
     except AttributeError:
         normalize = True
 
+    snr = args.snr
+    ref_band = args.ref_band
+
     conv_kwargs = {"epsilon": 0.6, "fwhm_lim": 5.0, "num_procs": num_procs, "normalize": normalize}
 
     # Load the relevant spectra
@@ -119,11 +124,13 @@ if __name__ == "__main__":
         f.write("Star Model \t Parameters \t Results\n")
         for model in models_list:
             print("model", model)
-            
+
             # Create generator for params_list
             params_list = itertools.product(args.resolution, args.bands, args.vsini, args.sampling)
 
             for (R, band, vsini, sample) in params_list:
+                result = do_analysis(model, vsini=vsini, R=R, band=band, conv_kwargs=conv_kwargs,
+                                     snr=snr, ref_band=ref_band)
                 print(model, pars, [res.value for res in result])
 
                 f.write("{0}\t{1}\t{2}\n".format(model, pars, [res.value for res in result]))
