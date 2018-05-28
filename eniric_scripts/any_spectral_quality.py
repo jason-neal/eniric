@@ -58,40 +58,36 @@ def do_analysis(star_params, vsini: float, R: float, band: str, sampling: float 
     # Full photon count spectrum
     wav, flux = load_aces_spectrum(star_params, photons=True)
 
-    # Convolutions
-    # This limits the spectrum to the required band
-    # wav_band, flux_band, convolved_flux = convolution(wav, flux, vsini, R, band, **conv_kwargs)
-    #
-    # # Re-sample to sampling per resolution element.
-    # wav_grid = log_resample(wav_band, sampling, R)
-    #
-    # sampled_flux = np.interp(wav_grid, wav_band, convolved_flux)
     wav_grid, sampled_flux = convolve_and_resample(wav, flux, vsini, R, band, sampling, conv_kwargs)
 
     # Spectral Quality
     q = quality(wav_grid, sampled_flux)
 
     # Scale normalization for precision
-    wav_ref, sampled_ref = convolve_and_resample(wav, flux, vsini, R, ref_band, sampling, conv_kwargs)
+    wav_ref, sampled_ref = convolve_and_resample(wav, flux, vsini, R, ref_band, sampling,
+                                                 conv_kwargs)
     snr_normalize = snr_constant_band(wav_ref, sampled_ref, snr=snr, band=ref_band)
     sampled_flux = sampled_flux / snr_normalize
-
-    q2 = quality(wav_grid, sampled_flux)  # After scaling
 
     if band == "J":
         index_ref = np.searchsorted(wav_grid, 1.25)  # searching for the index closer to 1.25 micron
         snr_estimate = np.sqrt(np.sum(sampled_flux[index_ref - 1:index_ref + 2]))
-        print("\tSanity Check: The S/N at 1.25 micron = {0:4.2f}, (should be {1:g}).".format(snr_estimate, snr))
+        print("\tSanity Check: The S/N at 1.25 micron = {0:4.2f}, (should be {1:g}).".format(
+            snr_estimate, snr))
 
     # Spectral Precision
     prec1 = RVprec_calc(wav_grid, sampled_flux)
-    # prec2 =
-    # prec3 =
 
-    return [q, q2, prec1]  # ], prec2, prec3]
+    prec2 = None
+
+    prec3 = None
+
+    return [q, prec1, prec2, prec3]
 
 
-def convolve_and_resample(wav, flux, vsini, R, band, sampling, conv_kwargs):
+def convolve_and_resample(wav: np.ndarray, flux: np.ndarray, vsini: float, R: float, band: str,
+                          sampling: float,
+                          conv_kwargs):
     wav_band, flux_band, convolved_flux = convolution(wav, flux, vsini, R, band, **conv_kwargs)
     # Re-sample to sampling per resolution element.
     wav_grid = log_resample(wav_band, sampling, R)
