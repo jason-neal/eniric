@@ -46,6 +46,7 @@ def _parser():
                              "'self' scales each band relative to the SNR itself.",
                         choices=["self", "VIS", "GAP", "Z", "Y", "J", "H", "K"], default="J",
                         type=str)
+    parser.add_argument("-o", "--output", help="Filename for results", default="quality_results.csv", type=str)
     return parser.parse_args()
 
 
@@ -116,7 +117,7 @@ if __name__ == "__main__":
     # Load the relevant spectra
     models_list = itertools.product(args.temp, args.logg, args.metal, args.alpha)
 
-    with open("Result_text_file.txt", "w") as f:
+    with open(args.output, "w") as f:
         f.write("Star Model \t Parameters \t Results\n")
         for model in models_list:
             print("model", model)
