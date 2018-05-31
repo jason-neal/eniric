@@ -11,8 +11,7 @@ import eniric
 import eniric.utilities as utils
 
 
-
-@pytest.mark.xfail(raises=FileNotFoundError)
+# @pytest.mark.xfail(raises=FileNotFoundError)
 def test_read_spectrum():
     """Test reading in a _wave_photon.dat is the same as a _wave.dat."""
     photon = os.path.join(eniric.paths["test_data"],
@@ -26,10 +25,10 @@ def test_read_spectrum():
     assert np.allclose(photon_flux, wave_flux)
 
 
-@pytest.mark.xfail(raises=FileNotFoundError)
+# @pytest.mark.xfail(raises=FileNotFoundError)
 def test_get_spectrum_name():
     """Test specifying file names with stellar parameters."""
-    test = ("Z-0.0/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
+    test = "Z-0.0/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 
     assert utils.get_spectrum_name("M6", flux_type="wave") == test
 
@@ -205,12 +204,10 @@ def test_unitary_gaussian(x, center, fwhm):
 
 
 def test_unitary_gaussian_type_errors():
-    """Just a quick simple test."""
+    """Testing for type errors."""
     x = np.arange(-10, 10)
     center = 0
     fwhm = 3
-
-    gaussian = utils.unitary_gaussian(x, center, fwhm)
 
     with pytest.raises(TypeError):
         utils.unitary_gaussian(x, center, "fwhm")
@@ -231,6 +228,7 @@ def test_unitary_gaussian_type_errors():
     (80000, "80k")
 ])
 def test_resolution2str(resolutions, results):
+    """Test transformation from integer to string resolutions."""
     assert results == utils.resolution2str(resolutions)
 
 
@@ -243,18 +241,28 @@ def test_resolution2str(resolutions, results):
     (80000, 80000)
 ])
 def test_resolution2int(resolutions, results):
+    """Test transformation from string to integer resolutions."""
     assert results == utils.resolution2int(resolutions)
 
 
-def test_compatibility_res2int_res2str():
-    resolution = [60000, "80000", "100k"]
+@pytest.mark.parametrize("resolution", [
+    1000, 10000, [100000, 2000000],
+    "1k", "10k", ["100k", "2000k"]
+])
+def test_compatibility_res2int_res2str(resolution):
+    """Test res2int and rest2str reversible and do not change when operated twice.
+
+    Single value and lists.
+    """
+    resolution = resolution
     res2str = utils.resolution2str
     res2int = utils.resolution2int
-    assert res2str(resolution) == res2str(res2int(resolution))
-    assert res2int(resolution) == res2int(res2str(resolution))
 
-    assert res2int(res2int(resolution)) == res2int(resolution)
-    assert res2str(res2str(resolution)) == res2str(resolution)
+    assert res2str(resolution) == res2str(res2int(resolution))
+    assert res2str(resolution) == res2str(res2str(resolution))
+
+    assert res2int(resolution) == res2int(res2str(resolution))
+    assert res2int(resolution) == res2int(res2int(resolution))
 
 
 @pytest.mark.parametrize("resolutions,results", [
@@ -263,7 +271,7 @@ def test_compatibility_res2int_res2str():
     ("8000", 8000),
 ])
 def test_resolution2int_single(resolutions, results):
-    # Test single values
+    """Test single values in res2int"""
     assert results == utils.resolution2int(resolutions)
 
 
@@ -273,5 +281,5 @@ def test_resolution2int_single(resolutions, results):
     (3000, "3k"),
 ])
 def test_resolution2str_single(resolutions, results):
-    # Test single values
+    """Test single values in  res2str"""
     assert results == utils.resolution2str(resolutions)
