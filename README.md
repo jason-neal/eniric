@@ -11,8 +11,19 @@ They undergo two convolutions, one for rotational broadining and one for instrum
 The slope of the spectra are used as a proxy for the radial velocity precision attainable.
 
 The purpose of this work is to:
-- Extend the previous analysis to a range of different metallicity values.
+- Extend the previous analysis to a range of different parameter values.
 
+# Usage
+You can now calculate the theoretical rv precision for any Phoenix-ACES model.
+You will need to configure the path to the phoenix models in ´config.yaml´
+
+e.g.
+
+    any_spectral_quality.py -t 3900 -l 4.5, -m 0.5 -r 100000 -v 1.0 -b J K --sampling=3
+
+For more details type
+
+    any_spectral_quality.py -h 
 
 ## Background
 The origin of this code was used in [this paper](https://arxiv.org/abs/1511.07468).
@@ -21,15 +32,15 @@ The origin of this code was used in [this paper](https://arxiv.org/abs/1511.0746
     Radial velocity information content of M dwarf spectra in the near-infrared,
     Astronomy and Astrophysics, 586, A101
 
-It has a number of effecincy problems which need to be improved upon before the new analysis is performed.
+It has a number of effecincy problems which have been preformed.
 
 1) Use numpy mapping slicing instead of comprehension lists.  (~>250 times faster)
-2) Use joblib to parallelize the convolutions.
+2) Use joblib to parallelize the convolutions. (Embarisingly parrallel)
 
 
 ## Runtime results:
 Comparing the same calculation perfromed between the old and new code after a series of changes.
-On laptop after replacing the comprehension lists:
+Replacing the comprehension lists with numpy arrays and masking was the major factor:
 
     new convolution = 27 seconds
     old convolution = 1hr 22 minutes
@@ -37,4 +48,4 @@ Rediculous!
 
 
 ## Bugs:
-A number of bugs were found when improving this code. Manily affecting the condition invovling telluric line masking. This alters the RV in this column, sometimes significantly. This, however, does **NOT** alter the conclusions in the published paper. 
+A number of bugs were found when improving this code. Manily affecting the condition invovling telluric line masking. This alters the RV in this column, sometimes significantly. This, however, does **NOT** alter the conclusions in the published paper. A corrected table will be included in an upcomming publication Neal et. al. 2018 (in prep.).
