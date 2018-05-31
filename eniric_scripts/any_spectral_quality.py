@@ -117,16 +117,22 @@ if __name__ == "__main__":
     models_list = itertools.product(args.temp, args.logg, args.metal, args.alpha)
 
     with open("Result_text_file.txt", "w") as f:
-        f.write("Star Model \t Parameters \t Results\n")
-        for model in models_list:
-            print("model", model)
+        f.write(
+            "Temp, logg, [Fe/H], Alpha, Band, Resoluton, vsini, Sampling, Quality, Cond_1, Cond_2, Cond_3\n")
 
+        for model in models_list:
             # Create generator for params_list
             params_list = itertools.product(args.resolution, args.bands, args.vsini, args.sampling)
 
             for (R, band, vsini, sample) in params_list:
+                pars = (R, band, vsini, sample)
                 result = do_analysis(model, vsini=vsini, R=R, band=band, conv_kwargs=conv_kwargs,
-                                     snr=snr, ref_band=ref_band)
-                print(model, pars, [res.value for res in result])
+                                     snr=snr, ref_band=ref_band, sampling=sample)
+                result = [round(res.value, 1) if res is not None else None for res in result]
 
-                f.write("{0}\t{1}\t{2}\n".format(model, pars, [res.value for res in result]))
+                f.write(
+                    ("{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:6d},"
+                     " {6:4.01f}, {7:3.01f}, {8:5d}, {9:4.01f}, {10}, {11}\n").format(
+                        int(model[0]), float(model[1]), float(model[2]), float(model[3]),
+                        band, int(R), float(vsini), float(sample),
+                        int(result[0]), result[1], result[2], result[3]))
