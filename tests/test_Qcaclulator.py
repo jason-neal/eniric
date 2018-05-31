@@ -280,7 +280,7 @@ def test_bugs_in_old_clumping_method():
 
 
 def test_rvprev_test():
-    spectrum_file = os.path.join(eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt")
+    spectrum_file = os.path.join(eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.0.txt")
     precision = Q.RVprec_test(spectrum_file)
 
     assert isinstance(precision, astropy.units.Quantity)
