@@ -115,7 +115,6 @@ def test_notimplemented_errors_in_snr_get_reference_spectrum(bad_string):
         snrnorm.get_reference_spectrum(bad_string)
 
 
-# @pytest.mark.xfail(raises=FileNotFoundError)
 def test_valid_snr_get_reference_spectrum():
     """Testing getting the reference spectrum."""
     ref_band = "J"
