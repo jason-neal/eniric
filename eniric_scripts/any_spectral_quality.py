@@ -77,11 +77,20 @@ def do_analysis(star_params, vsini: float, R: float, band: str, sampling: float 
             snr_estimate, snr))
 
     # Spectral Precision
+
+    # Precision given by the first condition:
     prec1 = RVprec_calc(wav_grid, sampled_flux)
 
+    # Precision as given by the second condition
     prec2 = None
+    # wav_stellar_chunks, flux_stellar_chunks = bug_fixed_clumping_method(wav_stellar, flux_stellar,
+    #                                                                                 mask_atm_selected)
+    # prec_2 = RVprec_calc_masked(wav_stellar, flux_stellar, mask_atm_selected)
 
+
+    # Precision as given by the third condition
     prec3 = None
+    # prec_3 = RV_prec_calc_Trans(wav_stellar, flux_stellar, flux_atm_selected)
 
     return [q, prec1, prec2, prec3]
 
