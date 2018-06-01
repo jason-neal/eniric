@@ -156,6 +156,24 @@ def band_limits(band: str) -> Tuple[float, float]:
         raise ValueError("The band {0} requested is not a valid option".format(band))
 
 
+def band_middle(band):
+    """Calculate band mid-point.
+
+    Input
+    -----
+    band: str
+        Band label
+
+    Return
+    -------
+    middle: float
+        Wavelength at middle band.
+    """
+    band_min, band_max = band_limits(band)
+
+    return (band_min + band_max) / 2
+
+
 def wav_selector(wav: Union[ndarray, List[float]], flux: Union[ndarray, List[float]], wav_min: float, wav_max: float) -> \
         Tuple[ndarray, ndarray]:
     """

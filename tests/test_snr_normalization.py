@@ -10,33 +10,46 @@ import eniric.snr_normalization as snrnorm
 import eniric.utilities as utils
 
 
-def test_snr_normalization():
+@pytest.mark.parametrize("temp", [2800, 2600])
+@pytest.mark.parametrize("desired_snr", [100.0, 150.0])
+@pytest.mark.parametrize("band", ["J", "Y", "VIS"])
+def test_snr_normalization(desired_snr, band, temp):
     """Test SNR after normalizing function is the desired value.
 
     Testing on middle of J band.
     """
-    test_data = os.path.join(eniric.paths["phoenix_dat"],
-                             "Z-0.0/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
+    test_data = os.path.join(eniric.paths["phoenix_dat"], "Z-0.0",
+                             "lte0{0}-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat".format(temp))
 
-    band = "J"
-    band_mid = {"J": 1.25}
+    band_mid = utils.band_middle(band)
     wav, flux = utils.read_spectrum(test_data)
 
-    for desired_snr in [50.0, 100.0, 150.0, 200.0]:
-        index_reference = np.searchsorted(wav, [band_mid[band]])[0]  # Searching for the closest index to 1.25
-        snr_estimate = np.sqrt(np.sum(flux[index_reference - 1:index_reference + 2]))
+    index_reference = np.searchsorted(wav, [band_mid])[0]  # Searching for the closest index to 1.25
+    snr_estimate = np.sqrt(np.sum(flux[index_reference - 1:index_reference + 2]))
 
-        assert round(snr_estimate, 0) != desired_snr  # Assert SNR is not correct
+    assert round(snr_estimate, 1) != desired_snr  # Assert SNR is not correct
 
-        norm_const = snrnorm.snr_constant_band(wav, flux, snr=desired_snr, band=band)
+    norm_const = snrnorm.snr_constant_band(wav, flux, snr=desired_snr, band=band)
 
-        new_flux = flux / norm_const
-        new_snr_estimate = np.sqrt(np.sum(new_flux[index_reference - 1:index_reference + 2]))
+    new_flux = flux / norm_const
+    new_snr_estimate = np.sqrt(np.sum(new_flux[index_reference - 1:index_reference + 2]))
 
-        assert round(new_snr_estimate, 0) == desired_snr
+    assert round(new_snr_estimate, 0) == desired_snr
 
-        assert (snrnorm.snr_constant_band(wav, flux, band="J", snr=desired_snr) ==
-                snrnorm.snr_constant_wav(wav, flux, 1.25, snr=desired_snr))
+
+@pytest.mark.parametrize("temp", [3900, 3500])
+@pytest.mark.parametrize("desired_snr", [50.0, 200.0])
+@pytest.mark.parametrize("band", ["H", "GAP", "K"])
+def test_snr_normalization_constant(desired_snr, band, temp):
+    """Test snr_constant_band and snr_constant_wav produce same result."""
+    test_data = os.path.join(eniric.paths["phoenix_dat"], "Z-0.0",
+                             "lte0{0}-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat".format(temp))
+
+    band_mid = utils.band_middle(band)
+    wav, flux = utils.read_spectrum(test_data)
+
+    assert (snrnorm.snr_constant_band(wav, flux, band=band, snr=desired_snr) ==
+            snrnorm.snr_constant_wav(wav, flux, band_mid, snr=desired_snr))
 
 
 def test_band_snr_norm():
@@ -199,7 +212,7 @@ def test_get_ref_spectrum_with_self(star, band, vel, res, ref_band):
 
 
 @pytest.mark.parametrize("band", [
-    "VIS", "Z", "NIR"])
+    "VIS", "Z", "NIR", "J", "Y"])
 def test_snr_constant_band_returns_mid_value_const(band):
     size = 100
     np.random.seed(40)
@@ -208,7 +221,7 @@ def test_snr_constant_band_returns_mid_value_const(band):
     wav = np.linspace(lim[0], lim[1], size)
 
     band_const = snrnorm.snr_constant_band(wav, flux, band=band)
-    wav_const = snrnorm.snr_constant_wav(wav, flux, wav_ref=(lim[0] + lim[1]) / 2)
+    wav_const = snrnorm.snr_constant_wav(wav, flux, wav_ref=utils.band_middle(band))
 
     assert isinstance(band_const, float)
     assert isinstance(wav_const, float)

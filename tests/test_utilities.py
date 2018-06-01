@@ -283,6 +283,25 @@ def test_resolution2int_single(resolutions, results):
 def test_resolution2str_single(resolutions, results):
     """Test single values in  res2str"""
     assert results == utils.resolution2str(resolutions)
+
+
+@pytest.mark.parametrize("band", ["H", "J", "K", "VIS", "Z"])
+def test_band_middle(band):
+    """Test band middle is middle of band.
+    Some repeated coding.
+    """
+    lower, upper = utils.band_limits(band)
+    middle = utils.band_middle(band)
+
+    assert lower < middle and middle < upper
+    assert (lower + upper) / 2 == middle
+
+
+def test_band_midpoint_J():
+    """Middle of J is 1.25 microns."""
+    assert utils.band_middle("J") == 1.25
+
+
 @pytest.mark.parametrize("filename", [
     os.path.join(eniric.paths["test_data"], "results",
                  "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k.txt"),
