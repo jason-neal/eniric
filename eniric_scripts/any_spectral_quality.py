@@ -46,7 +46,10 @@ def _parser():
                              "'self' scales each band relative to the SNR itself.",
                         choices=["self", "VIS", "GAP", "Z", "Y", "J", "H", "K"], default="J",
                         type=str)
-    parser.add_argument("-o", "--output", help="Filename for results", default="quality_results.csv", type=str)
+    parser.add_argument("-o", "--output", help="Filename for results",
+                        default="quality_results.csv", type=str)
+    parser.add_argument("--rv", help="Radial velocity shift. (Not Implemented)", default=0.0,
+                        type=float)
     return parser.parse_args()
 
 
@@ -87,7 +90,6 @@ def do_analysis(star_params, vsini: float, R: float, band: str, sampling: float 
     #                                                                                 mask_atm_selected)
     # prec_2 = RVprec_calc_masked(wav_stellar, flux_stellar, mask_atm_selected)
 
-
     # Precision as given by the third condition
     prec3 = None
     # prec_3 = RV_prec_calc_Trans(wav_stellar, flux_stellar, flux_atm_selected)
@@ -125,6 +127,9 @@ if __name__ == "__main__":
 
     # Load the relevant spectra
     models_list = itertools.product(args.temp, args.logg, args.metal, args.alpha)
+
+    if args.doppler != 0.0:
+        raise NotImplementedError("Still to add doppler option.")
 
     with open(args.output, "w") as f:
         f.write(
