@@ -7,6 +7,7 @@ Don't do to many.
 import os
 # import subprocess
 from datetime import datetime
+
 from eniric_scripts.nIR_run import main as nir_run
 from eniric_scripts.prepare_data import main as prepare_data
 
@@ -16,7 +17,7 @@ prepare_data(startype=["M0", "M3", "M6", "M9"], temp=[], logg=[4.50], metallicit
 parameters = [("M0", "Z", 1, "60k"),
               ("M0", "H", 1, "60k"),
               ("M0", "Y", 10, "100k"),
-              ("M0", "K", 5, ["60k", "100k"]),
+              ("M0", "K", [1, 5], ["60k", "100k"]),
               ("M6", "H", 1, "80k"),
               ("M9", "K", 5, "60k"),
               ("M9", "H", 1, "100k"),

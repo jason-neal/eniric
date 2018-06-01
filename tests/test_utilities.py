@@ -283,3 +283,13 @@ def test_resolution2int_single(resolutions, results):
 def test_resolution2str_single(resolutions, results):
     """Test single values in  res2str"""
     assert results == utils.resolution2str(resolutions)
+@pytest.mark.parametrize("filename", [
+    os.path.join(eniric.paths["test_data"], "results",
+                 "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k.txt"),
+    os.path.join(eniric.paths["test_data"], "resampled",
+                 "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k_res3.0.txt")
+])
+def test_resampled_spectra_isnot_read_by_read_spectrum(filename):
+    """Doesn't allow names with _vsini or _res in them."""
+    with pytest.raises(ValueError, match="Using wrong function"):
+        utils.read_spectrum(filename)

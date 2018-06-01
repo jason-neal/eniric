@@ -34,6 +34,9 @@ def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
         Photon flux.
 
     """
+    if "_res" in spec_name or "_vsini" in spec_name:
+        raise ValueError("Using wrong function to load resampled spectrum.")
+
     if "photon" in spec_name:
         wav_micron, flux_photons = io.pdread_2col(spec_name)
     else:
