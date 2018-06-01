@@ -10,7 +10,6 @@ import eniric.snr_normalization as snrnorm
 import eniric.utilities as utils
 
 
-@pytest.mark.xfail(raises=FileNotFoundError)
 def test_snr_normalization():
     """Test SNR after normalizing function is the desired value.
 
@@ -40,7 +39,6 @@ def test_snr_normalization():
                 snrnorm.snr_constant_wav(wav, flux, 1.25, snr=desired_snr))
 
 
-@pytest.mark.xfail(raises=FileNotFoundError)
 def test_band_snr_norm():
     """Compared to wav snr norm."""
     # snr_constant_band
@@ -104,7 +102,7 @@ def test_notimplemented_errors_in_snr_get_reference_spectrum(bad_string):
         snrnorm.get_reference_spectrum(bad_string)
 
 
-@pytest.mark.xfail(raises=FileNotFoundError)
+# @pytest.mark.xfail(raises=FileNotFoundError)
 def test_valid_snr_get_reference_spectrum():
     """Testing getting the reference spectrum."""
     ref_band = "J"
@@ -127,12 +125,11 @@ def test_get_reference_spectrum_in_nonexistent_file():
         snrnorm.get_reference_spectrum("M1-K-1.0-100k", ref_band="J")
 
 
-@pytest.mark.xfail()  # size is too big
 def test_normalize_flux_new_verse_old():
     test_data = os.path.join(eniric.paths["test_data"], "resampled",
                              "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k_res3.0.txt")
     id_string = "M0-K-1.0-100k"
-    wav, flux = utils.read_spectrum(test_data)
+    wav, flux = Io.pdread_2col(test_data)
     new_norm = snrnorm.normalize_flux(flux, id_string, new=True)
     old_norm = snrnorm.normalize_flux(flux, id_string, new=False)
 
@@ -145,7 +142,7 @@ def test_normalize_flux_new_verse_old():
 def test_old_does_does_not_handle_changed_band():
     test_data = os.path.join(eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Kband_vsini5.0_R100k_res3.0.txt")
     id_string = "M0-K-5.0-100k"
-    wav, flux = utils.read_spectrum(test_data)
+    wav, flux = Io.pdread_2col(test_data)
     with pytest.raises(ValueError):
         snrnorm.normalize_flux(flux, id_string, new=False, ref_band="K")
 
