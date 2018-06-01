@@ -43,7 +43,7 @@ def barycenter_shift(wav_atm: ndarray, mask_atm: ndarray, rv_offset: float = 0.0
     delta_lambdas = wav_atm * barycenter_rv / c.value
     offset_lambdas = wav_atm * offset_rv / c.value  # offset lambda
 
-    # Dopler shift limits of each pixel
+    # Doppler shift limits of each pixel
     wav_lower_barys = wav_atm + offset_lambdas - delta_lambdas
     wav_upper_barys = wav_atm + offset_lambdas + delta_lambdas
 
@@ -232,3 +232,15 @@ def old_barycenter_shift(wav_atm: ndarray, mask_atm: ndarray, rv_offset: float =
            " spectrum").format((masked_end - masked_start) / pixels_total))
     print(("Pedros Pixels start = {1}, Pixel_end = {0}, Total = {2}").format(masked_end, masked_start, pixels_total))
     return mask_atm
+
+
+def dopplershift(wav, flux):
+    """Doppler shift the flux of spectrum."""
+
+    # return newflux
+
+def atm_mask(flux, cutoff=0.98):
+    """Mask flux below the cutoff value."""
+    if not isinstance(flux, np.ndarray):
+        flux = np.asarary(flux)
+    return flux < cutoff
