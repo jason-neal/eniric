@@ -152,9 +152,7 @@ def snr_constant_band(wav: ndarray, flux: ndarray, snr: Union[int, float] = 100,
         in the middle of the band.
 
     """
-    band_min, band_max = utils.band_limits(band)
-
-    band_middle = (band_min + band_max) / 2
+    band_middle = utils.band_middle(band)
 
     if not (wav[0] < band_middle < wav[-1]):
         raise ValueError("Band center not in wavelength range.")
