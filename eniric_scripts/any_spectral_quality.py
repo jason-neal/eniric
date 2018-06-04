@@ -1,13 +1,15 @@
 import argparse
 import itertools
+import os
 
 import numpy as np
 
+import eniric
 from eniric.Qcalculator import quality, RVprec_calc
 from eniric.nIRanalysis import convolution
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
-from eniric.utilities import load_aces_spectrum
+from eniric.utilities import load_aces_spectrum, band_middle
 
 
 def _parser():
@@ -44,7 +46,8 @@ def _parser():
     parser.add_argument("--ref_band",
                         help="SNR reference band. Default=J. (Default=100). "
                              "'self' scales each band relative to the SNR itself.",
-                        choices=["self", "VIS", "GAP", "Z", "Y", "J", "H", "K"], default="J",
+                        choices=["SELF", "self", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
+                        default="J",
                         type=str)
     parser.add_argument("-o", "--output", help="Filename for results",
                         default="quality_results.csv", type=str)
@@ -59,6 +62,8 @@ def do_analysis(star_params, vsini: float, R: float, band: str, sampling: float 
     if conv_kwargs is None:
         conv_kwargs = {"epsilon": 0.6, "fwhm_lim": 5.0, "num_procs": 1, "normalize": True}
 
+    if ref_band.upper() == "SELF":
+        ref_band = band
     # Full photon count spectrum
     wav, flux = load_aces_spectrum(star_params, photons=True)
 
@@ -73,11 +78,13 @@ def do_analysis(star_params, vsini: float, R: float, band: str, sampling: float 
     snr_normalize = snr_constant_band(wav_ref, sampled_ref, snr=snr, band=ref_band)
     sampled_flux = sampled_flux / snr_normalize
 
-    if band == "J":
-        index_ref = np.searchsorted(wav_grid, 1.25)  # searching for the index closer to 1.25 micron
+    if ref_band == band:
+        mid_point = band_middle(ref_band)
+        index_ref = np.searchsorted(wav_grid,
+                                    mid_point)  # searching for the index closer to 1.25 micron
         snr_estimate = np.sqrt(np.sum(sampled_flux[index_ref - 1:index_ref + 2]))
-        print("\tSanity Check: The S/N at 1.25 micron = {0:4.2f}, (should be {1:g}).".format(
-            snr_estimate, snr))
+        print("\tSanity Check: The S/N at {0:4.02} micron = {1:4.2f}, (should be {2:g}).".format(
+            mid_point, snr_estimate, snr))
 
     # Spectral Precision
 
@@ -98,8 +105,7 @@ def do_analysis(star_params, vsini: float, R: float, band: str, sampling: float 
 
 
 def convolve_and_resample(wav: np.ndarray, flux: np.ndarray, vsini: float, R: float, band: str,
-                          sampling: float,
-                          conv_kwargs):
+                          sampling: float, conv_kwargs):
     wav_band, flux_band, convolved_flux = convolution(wav, flux, vsini, R, band, **conv_kwargs)
     # Re-sample to sampling per resolution element.
     wav_grid = log_resample(wav_band, sampling, R)
@@ -109,7 +115,7 @@ def convolve_and_resample(wav: np.ndarray, flux: np.ndarray, vsini: float, R: fl
 
 if __name__ == "__main__":
     args = _parser()
-    print(args.bands)
+    # print(args.bands)
 
     try:
         num_procs = args.num_procs
@@ -128,12 +134,12 @@ if __name__ == "__main__":
     # Load the relevant spectra
     models_list = itertools.product(args.temp, args.logg, args.metal, args.alpha)
 
-    if args.doppler != 0.0:
+    if args.rv != 0.0:
         raise NotImplementedError("Still to add doppler option.")
 
     with open(args.output, "w") as f:
         f.write(
-            "Temp, logg, [Fe/H], Alpha, Band, Resoluton, vsini, Sampling, Quality, Cond_1, Cond_2, Cond_3\n")
+            "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, Quality, Cond. 1, Cond. 2, Cond. 3\n")
 
         for model in models_list:
             # Create generator for params_list
@@ -144,10 +150,11 @@ if __name__ == "__main__":
                 result = do_analysis(model, vsini=vsini, R=R, band=band, conv_kwargs=conv_kwargs,
                                      snr=snr, ref_band=ref_band, sampling=sample)
                 result = [round(res.value, 1) if res is not None else None for res in result]
+                result[0] = int(result[0]) if result[0] is not None else None
 
                 f.write(
-                    ("{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:6d},"
-                     " {6:4.01f}, {7:3.01f}, {8:5d}, {9:4.01f}, {10}, {11}\n").format(
+                    ("{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
+                     " {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, {11:5.01f}\n").format(
                         int(model[0]), float(model[1]), float(model[2]), float(model[3]),
-                        band, int(R), float(vsini), float(sample),
-                        int(result[0]), result[1], result[2], result[3]))
+                        band, int(R / 1000), float(vsini), float(sample),
+                        result[0], result[1], result[2], result[3]))

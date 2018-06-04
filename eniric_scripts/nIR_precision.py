@@ -95,7 +95,7 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
                         prec_3s.append(results[id_string][2].value)
 
         io.pdwrite_cols(output_filename, ids, prec_1s, prec_2s, prec_3s,
-                        header=["# id", r"prec_1 [m/s]", r"prec_2 [m/s]", r"prec_3 [m/s]"], float_format="%.2f")
+                        header=["# id", r"prec_1 [m/s]", r"prec_2 [m/s]", r"prec_3 [m/s]"], float_format="%5.01f")
         print("saved results to {}".format(output_filename))
     # return results
 
