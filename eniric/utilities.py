@@ -388,7 +388,7 @@ def load_aces_spectrum(params, photons=True):
         Photon counts or SED/micron
     """
     base = eniric.paths["phoenix_raw"] + "/"
-    print("base = ", base)
+
     if params[3] == 0:  # Alpha value
         params = params[:-1]
         assert len(params) == 3

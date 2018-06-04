@@ -23,7 +23,11 @@ config = {
     },
     'packages': ['eniric', 'eniric_scripts'],
     'scripts': ["eniric_scripts/mk_travis_data.py",
-                "eniric_scripts/any_spectral_quality.py"],
+                "eniric_scripts/any_spectral_quality.py",
+                "eniric_scripts/nIR_run.py",
+                "eniric_scripts/nIR_precision.py",
+                "eniric_scripts/prepare_data.py",
+                ],
     'name': 'eniric',
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     "classifiers": [
