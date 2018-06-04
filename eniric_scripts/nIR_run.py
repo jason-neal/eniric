@@ -17,7 +17,8 @@ def _parser():
 
     :returns: the args
     """
-    parser = argparse.ArgumentParser(description='Unhelpful description')
+    parser = argparse.ArgumentParser(
+        description='Perform Convolution in preparation for nIR_precision.')
     parser.add_argument("-s", '--startype', help='Spectral Type e.g "MO"', type=str, nargs="+")
     parser.add_argument("-v", "--vsini", help="Rotational velocity of source",
                         type=float, nargs="+")

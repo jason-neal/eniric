@@ -200,7 +200,7 @@ def snr_constant_wav(wav: ndarray, flux: ndarray, wav_ref: float, snr: Union[int
 
     snr_estimate = np.sqrt(np.sum(flux[indexes]))
 
-    print("\tSanity Check: The S/N for the reference model was of {:4.2f}.".format(snr_estimate))
+    print("\tSanity Check: The reference S/N at {1:3.02f} was of {0:4.2f}.".format(snr_estimate, wav_ref))
     norm_value = (snr_estimate / snr) ** 2
     return norm_value
 

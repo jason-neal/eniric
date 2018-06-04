@@ -236,7 +236,7 @@ def old_barycenter_shift(wav_atm: ndarray, mask_atm: ndarray, rv_offset: float =
 
 def dopplershift(wav, flux):
     """Doppler shift the flux of spectrum."""
-
+    pass
     # return newflux
 
 def atm_mask(flux, cutoff=0.98):
