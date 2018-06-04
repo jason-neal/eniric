@@ -5,7 +5,8 @@ import os
 import numpy as np
 
 import eniric
-from eniric.Qcalculator import quality, RVprec_calc
+import eniric.atmosphere as atm
+from eniric.Qcalculator import quality, RVprec_calc, RVprec_calc_masked, RV_prec_calc_Trans
 from eniric.nIRanalysis import convolution
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
@@ -64,6 +65,7 @@ def do_analysis(star_params, vsini: float, R: float, band: str, sampling: float 
 
     if ref_band.upper() == "SELF":
         ref_band = band
+
     # Full photon count spectrum
     wav, flux = load_aces_spectrum(star_params, photons=True)
 
@@ -92,15 +94,13 @@ def do_analysis(star_params, vsini: float, R: float, band: str, sampling: float 
     prec1 = RVprec_calc(wav_grid, sampled_flux)
 
     # Precision as given by the second condition
-    prec2 = None
-    # wav_stellar_chunks, flux_stellar_chunks = bug_fixed_clumping_method(wav_stellar, flux_stellar,
-    #                                                                                 mask_atm_selected)
-    # prec_2 = RVprec_calc_masked(wav_stellar, flux_stellar, mask_atm_selected)
+    wav_atm, flux_atm, mask_atm = get_corresponding_atm(wav_grid, bary=True)
+    # When mask is given to RVprec_calc_masked it clumps the spectra itself.
+    prec2 = RVprec_calc_masked(wav_grid, sampled_flux, mask_atm)
 
     # Precision as given by the third condition
-    prec3 = None
-    # prec_3 = RV_prec_calc_Trans(wav_stellar, flux_stellar, flux_atm_selected)
-
+    prec3 = RV_prec_calc_Trans(wav_grid, sampled_flux, flux_atm)
+    # print([star_params[0], band, vsini, R, q.value, prec1.value, prec2.value, prec3.value])
     return [q, prec1, prec2, prec3]
 
 
@@ -111,6 +111,39 @@ def convolve_and_resample(wav: np.ndarray, flux: np.ndarray, vsini: float, R: fl
     wav_grid = log_resample(wav_band, sampling, R)
     sampled_flux = np.interp(wav_grid, wav_band, convolved_flux)
     return wav_grid, sampled_flux
+
+
+def get_corresponding_atm(wav, bary=True):
+    """Bary: bool
+        Use the +/- 30km/s shifted atmospheric masks."""
+    # Load atmosphere
+    if bary:
+        atmmodel = os.path.join(eniric.paths["atmmodel"],
+                                "Average_TAPAS_2014_{}_bary.txt".format(band))
+    else:
+        atmmodel = os.path.join(eniric.paths["atmmodel"], "Average_TAPAS_2014_{}.txt".format(band))
+    wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(atmmodel)
+
+    # Getting the wav, flux and mask values from the atm model
+    # that are the closest to the stellar wav values, see
+    # https://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
+    index_atm = np.searchsorted(wav_atm, wav)
+    # replace indexes outside the array, at the very end, by the value at the very end
+    # index_atm = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in index_atm]
+    index_mask = (index_atm >= len(wav_atm))  # find broken indices
+    index_atm[index_mask] = len(wav_atm) - 1  # replace with index of end.
+
+    wav_atm_selected = wav_atm[index_atm]
+    flux_atm_selected = flux_atm[index_atm]
+    mask_atm_selected = mask_atm[index_atm]
+
+    assert len(mask_atm_selected) == len(wav)
+    assert len(wav_atm_selected) == len(wav)
+    if not bary:
+        # Check 2% mask
+        assert np.all((flux_atm_selected > 0.98) == mask_atm_selected)
+
+    return wav_atm_selected, flux_atm_selected, mask_atm_selected
 
 
 if __name__ == "__main__":
