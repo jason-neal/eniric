@@ -14,10 +14,14 @@ import eniric.utilities as utils
 # @pytest.mark.xfail(raises=FileNotFoundError)
 def test_read_spectrum():
     """Test reading in a _wave_photon.dat is the same as a _wave.dat."""
-    photon = os.path.join(eniric.paths["test_data"],
-                          "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
-    wave = os.path.join(eniric.paths["test_data"],
-                        "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
+    photon = os.path.join(
+        eniric.paths["test_data"],
+        "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat",
+    )
+    wave = os.path.join(
+        eniric.paths["test_data"],
+        "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat",
+    )
     wave_wav, wave_flux = utils.read_spectrum(wave)
     photon_wav, photon_flux = utils.read_spectrum(photon)
 
@@ -32,16 +36,20 @@ def test_get_spectrum_name():
 
     assert utils.get_spectrum_name("M6", flux_type="wave") == test
 
-    test_alpha = os.path.join("Z-0.0.Alpha=+0.20",
-                  "lte02600-6.00-0.0.Alpha=+0.20.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
+    test_alpha = os.path.join(
+        "Z-0.0.Alpha=+0.20",
+        "lte02600-6.00-0.0.Alpha=+0.20.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat",
+    )
     assert utils.get_spectrum_name("M9", logg=6, alpha=0.2) == test_alpha
 
-    test_pos_feh = os.path.join("Z+0.5",
-                    "lte03500-0.00+0.5.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
+    test_pos_feh = os.path.join(
+        "Z+0.5", "lte03500-0.00+0.5.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
+    )
     assert utils.get_spectrum_name("M3", logg=0, feh=0.5, alpha=0.0) == test_pos_feh
 
-    test_photon = os.path.join("Z-0.0",
-                               "lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
+    test_photon = os.path.join(
+        "Z-0.0", "lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
+    )
     assert utils.get_spectrum_name("M6") == test_photon
 
 
@@ -82,10 +90,12 @@ def test_org_name():
     assert utils.get_spectrum_name("M0", org=True) == test_org
 
 
-@given(st.lists(st.floats(allow_nan=False, allow_infinity=False)),
-       st.floats(allow_nan=False, allow_infinity=False),
-       st.floats(allow_nan=False, allow_infinity=False),
-       st.floats(allow_nan=False, allow_infinity=False))
+@given(
+    st.lists(st.floats(allow_nan=False, allow_infinity=False)),
+    st.floats(allow_nan=False, allow_infinity=False),
+    st.floats(allow_nan=False, allow_infinity=False),
+    st.floats(allow_nan=False, allow_infinity=False),
+)
 def test_wav_selector(x, y, wav_min, wav_max):
     """Test some properties of wavelength selector."""
     y = [xi + y for xi in x]  # just to make y different
@@ -98,8 +108,7 @@ def test_wav_selector(x, y, wav_min, wav_max):
     assert isinstance(y1, np.ndarray)
 
 
-@pytest.mark.parametrize("band", [
-    "VIS", "GAP", "z", "Y", "h", "J", "K", "CONT", "NIR"])
+@pytest.mark.parametrize("band", ["VIS", "GAP", "z", "Y", "h", "J", "K", "CONT", "NIR"])
 def test_band_limits(band):
     """Test getting limits out of band."""
     band_min, band_max = utils.band_limits(band)
@@ -125,26 +134,32 @@ def test_band_selector(band):
     assert np.all(wav < band_max)
 
 
-@pytest.mark.parametrize("band,error", [
-    ("X", ValueError),
-    ("M0", ValueError),
-    (1, AttributeError),
-    (np.array(1), AttributeError),
-    (["list", "of", "strings"], AttributeError),
-])
+@pytest.mark.parametrize(
+    "band,error",
+    [
+        ("X", ValueError),
+        ("M0", ValueError),
+        (1, AttributeError),
+        (np.array(1), AttributeError),
+        (["list", "of", "strings"], AttributeError),
+    ],
+)
 def test_band_limits_raises_errors(band, error):
     """Test it raises the Value and Attribute Errors."""
     with pytest.raises(error):
         utils.band_limits(band)
 
 
-@pytest.mark.parametrize("band,error", [
-    ("X", ValueError),
-    ("M0", ValueError),
-    (1, AttributeError),
-    (["list", "of", "strings"], AttributeError),
-    (np.linspace(1, 2, 10), AttributeError)
-])
+@pytest.mark.parametrize(
+    "band,error",
+    [
+        ("X", ValueError),
+        ("M0", ValueError),
+        (1, AttributeError),
+        (["list", "of", "strings"], AttributeError),
+        (np.linspace(1, 2, 10), AttributeError),
+    ],
+)
 def test_band_selector_raises_errors(band, error):
     """Test it raises the Value and Attribute Errors"""
     wav = np.linspace(0.5, 3, 100)
@@ -167,12 +182,21 @@ def test_band_selector_with_no_selection(band):
 
 
 @settings(max_examples=100)
-@given(st.lists(st.floats(min_value=1e-7, max_value=1e-5, allow_infinity=False,
-                          allow_nan=False), unique=True, min_size=3, max_size=25),
-       st.floats(min_value=1e-2, max_value=200), st.floats(min_value=1e-4, max_value=1))
+@given(
+    st.lists(
+        st.floats(
+            min_value=1e-7, max_value=1e-5, allow_infinity=False, allow_nan=False
+        ),
+        unique=True,
+        min_size=3,
+        max_size=25,
+    ),
+    st.floats(min_value=1e-2, max_value=200),
+    st.floats(min_value=1e-4, max_value=1),
+)
 def test_rotational_kernel(delta_lambdas, vsini, epsilon):
     """Test that the new and original code produces the same output."""
-    delta_lambdas = np.sort(np.asarray(delta_lambdas), kind='quicksort')
+    delta_lambdas = np.sort(np.asarray(delta_lambdas), kind="quicksort")
     delta_lambdas = np.append(np.flipud(delta_lambdas), np.insert(delta_lambdas, 0, 0))
     delta_lambda_l = np.max(delta_lambdas) * 2
 
@@ -189,9 +213,15 @@ def test_silent_remove():
     assert True
 
 
-@given(st.lists(st.floats(min_value=-100, max_value=100, allow_nan=False), min_size=1, unique=True),
-       st.floats(min_value=-100, max_value=100, allow_nan=False),
-       st.floats(min_value=0.001, max_value=100, allow_nan=False))
+@given(
+    st.lists(
+        st.floats(min_value=-100, max_value=100, allow_nan=False),
+        min_size=1,
+        unique=True,
+    ),
+    st.floats(min_value=-100, max_value=100, allow_nan=False),
+    st.floats(min_value=0.001, max_value=100, allow_nan=False),
+)
 def test_unitary_gaussian(x, center, fwhm):
     """Just a quick simple test."""
     x = np.asarray(x)
@@ -219,36 +249,41 @@ def test_unitary_gaussian_type_errors():
         utils.unitary_gaussian(1, "center", fwhm)
 
 
-@pytest.mark.parametrize("resolutions,results", [
-    (["60k", "80k", "100k"], ["60k", "80k", "100k"]),
-    ([60000, 80000, 100000], ["60k", "80k", "100k"]),
-    (["60000", "80K", "100k"], ["60k", "80k", "100k"]),
-    ([np.float("60000"), np.int("2000")], ["60k", "2k"]),
-    ("60k", "60k"),
-    (80000, "80k")
-])
+@pytest.mark.parametrize(
+    "resolutions,results",
+    [
+        (["60k", "80k", "100k"], ["60k", "80k", "100k"]),
+        ([60000, 80000, 100000], ["60k", "80k", "100k"]),
+        (["60000", "80K", "100k"], ["60k", "80k", "100k"]),
+        ([np.float("60000"), np.int("2000")], ["60k", "2k"]),
+        ("60k", "60k"),
+        (80000, "80k"),
+    ],
+)
 def test_resolution2str(resolutions, results):
     """Test transformation from integer to string resolutions."""
     assert results == utils.resolution2str(resolutions)
 
 
-@pytest.mark.parametrize("resolutions,results", [
-    ([60000, 80000, 100000], [60000, 80000, 100000]),
-    (["60k", "80k", "100k"], [60000, 80000, 100000]),
-    (["6000", "8000", "100000"], [6000, 8000, 100000]),
-    (["10000", "20k", "300K"], [10000, 20000, 300000]),
-    ("60k", 60000),
-    (80000, 80000)
-])
+@pytest.mark.parametrize(
+    "resolutions,results",
+    [
+        ([60000, 80000, 100000], [60000, 80000, 100000]),
+        (["60k", "80k", "100k"], [60000, 80000, 100000]),
+        (["6000", "8000", "100000"], [6000, 8000, 100000]),
+        (["10000", "20k", "300K"], [10000, 20000, 300000]),
+        ("60k", 60000),
+        (80000, 80000),
+    ],
+)
 def test_resolution2int(resolutions, results):
     """Test transformation from string to integer resolutions."""
     assert results == utils.resolution2int(resolutions)
 
 
-@pytest.mark.parametrize("resolution", [
-    1000, 10000, [100000, 2000000],
-    "1k", "10k", ["100k", "2000k"]
-])
+@pytest.mark.parametrize(
+    "resolution", [1000, 10000, [100000, 2000000], "1k", "10k", ["100k", "2000k"]]
+)
 def test_compatibility_res2int_res2str(resolution):
     """Test res2int and rest2str reversible and do not change when operated twice.
 
@@ -265,21 +300,17 @@ def test_compatibility_res2int_res2str(resolution):
     assert res2int(resolution) == res2int(res2int(resolution))
 
 
-@pytest.mark.parametrize("resolutions,results", [
-    (60000, 60000),
-    ("80k", 80000),
-    ("8000", 8000),
-])
+@pytest.mark.parametrize(
+    "resolutions,results", [(60000, 60000), ("80k", 80000), ("8000", 8000)]
+)
 def test_resolution2int_single(resolutions, results):
     """Test single values in res2int"""
     assert results == utils.resolution2int(resolutions)
 
 
-@pytest.mark.parametrize("resolutions,results", [
-    (60000, "60k"),
-    (80000, "80k"),
-    (3000, "3k"),
-])
+@pytest.mark.parametrize(
+    "resolutions,results", [(60000, "60k"), (80000, "80k"), (3000, "3k")]
+)
 def test_resolution2str_single(resolutions, results):
     """Test single values in  res2str"""
     assert results == utils.resolution2str(resolutions)
@@ -302,12 +333,21 @@ def test_band_midpoint_J():
     assert utils.band_middle("J") == 1.25
 
 
-@pytest.mark.parametrize("filename", [
-    os.path.join(eniric.paths["test_data"], "results",
-                 "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k.txt"),
-    os.path.join(eniric.paths["test_data"], "resampled",
-                 "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k_res3.0.txt")
-])
+@pytest.mark.parametrize(
+    "filename",
+    [
+        os.path.join(
+            eniric.paths["test_data"],
+            "results",
+            "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k.txt",
+        ),
+        os.path.join(
+            eniric.paths["test_data"],
+            "resampled",
+            "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k_res3.0.txt",
+        ),
+    ],
+)
 def test_resampled_spectra_isnot_read_by_read_spectrum(filename):
     """Doesn't allow names with _vsini or _res in them."""
     with pytest.raises(ValueError, match="Using wrong function"):
