@@ -48,8 +48,14 @@ def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
     return wav_micron, flux_photons
 
 
-def get_spectrum_name(startype: str, logg: Union[float, int] = 4.50, feh: Union[float, int] = 0.0,
-                      alpha: Optional[Union[int, float]] = None, org: bool = False, flux_type: str = "photon") -> str:
+def get_spectrum_name(
+    startype: str,
+    logg: Union[float, int] = 4.50,
+    feh: Union[float, int] = 0.0,
+    alpha: Optional[Union[int, float]] = None,
+    org: bool = False,
+    flux_type: str = "photon",
+) -> str:
     """Return correct phoenix spectrum filename for a given spectral type.
 
     Based off phoenix_utils module.
@@ -80,22 +86,34 @@ def get_spectrum_name(startype: str, logg: Union[float, int] = 4.50, feh: Union[
     # noinspection SpellCheckingInspection
     if startype in temps.keys():
         if org:
-            phoenix_name = "lte{0:05d}-{1}-{2}.{3}".format(temps[startype], "4.50", "0.0", base)
+            phoenix_name = "lte{0:05d}-{1}-{2}.{3}".format(
+                temps[startype], "4.50", "0.0", base
+            )
         elif (alpha is not None) and (alpha != 0.0):
             if abs(alpha) > 0.2:
-                raise ValueError("Warning! Alpha is outside acceptable range -0.2->0.2. (for current science case)")
+                raise ValueError(
+                    "Warning! Alpha is outside acceptable range -0.2->0.2. (for current science case)"
+                )
 
-            phoenix_name = os.path.join("Z{0:+4.1f}.Alpha={1:+5.2f}".format(feh, alpha),
-                                        "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}.{4:s}".format(
-                                            temps[startype], logg, feh, alpha, base))
+            phoenix_name = os.path.join(
+                "Z{0:+4.1f}.Alpha={1:+5.2f}".format(feh, alpha),
+                "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}.{4:s}".format(
+                    temps[startype], logg, feh, alpha, base
+                ),
+            )
         else:
-            phoenix_name = os.path.join("Z{0:+4.1f}".format(feh),
-                                        "lte{0:05d}-{1:4.2f}{2:+4.1f}.{3:s}".format(
-                                            temps[startype], logg, feh, base))
+            phoenix_name = os.path.join(
+                "Z{0:+4.1f}".format(feh),
+                "lte{0:05d}-{1:4.2f}{2:+4.1f}.{3:s}".format(
+                    temps[startype], logg, feh, base
+                ),
+            )
 
         spectrum_name = phoenix_name
     elif re.match(r"^[OBAFGKML][0-9]$", startype):  # Valid spectral types
-        raise NotImplementedError("The spectral type '{0:s}' is not implemented yet.".format(startype))
+        raise NotImplementedError(
+            "The spectral type '{0:s}' is not implemented yet.".format(startype)
+        )
     else:
         raise ValueError("'{0:s}' is not a valid spectral type.".format(startype))
 
@@ -147,9 +165,17 @@ def band_limits(band: str) -> Tuple[float, float]:
     else:
         band = band.upper()
 
-    bands = {"VIS": (0.38, 0.78), "GAP": (0.78, 0.83), "Z": (0.83, 0.93),
-             "Y": (1.0, 1.1), "J": (1.17, 1.33), "H": (1.5, 1.75),
-             "K": (2.07, 2.35), "CONT": (0.45, 1.05), "NIR": (0.83, 2.35)}
+    bands = {
+        "VIS": (0.38, 0.78),
+        "GAP": (0.78, 0.83),
+        "Z": (0.83, 0.93),
+        "Y": (1.0, 1.1),
+        "J": (1.17, 1.33),
+        "H": (1.5, 1.75),
+        "K": (2.07, 2.35),
+        "CONT": (0.45, 1.05),
+        "NIR": (0.83, 2.35),
+    }
 
     if band in bands:
         return bands[band]
@@ -175,8 +201,12 @@ def band_middle(band):
     return (band_min + band_max) / 2
 
 
-def wav_selector(wav: Union[ndarray, List[float]], flux: Union[ndarray, List[float]], wav_min: float, wav_max: float) -> \
-        Tuple[ndarray, ndarray]:
+def wav_selector(
+    wav: Union[ndarray, List[float]],
+    flux: Union[ndarray, List[float]],
+    wav_min: float,
+    wav_max: float,
+) -> Tuple[ndarray, ndarray]:
     """
     function that returns wavelength and flux within a giving range
 
@@ -208,8 +238,11 @@ def wav_selector(wav: Union[ndarray, List[float]], flux: Union[ndarray, List[flo
     return wav_sel, flux_sel
 
 
-def unitary_gaussian(x: Union[range, int, ndarray], center: Union[float, int, str],
-                     fwhm: Union[float, int, str]) -> ndarray:
+def unitary_gaussian(
+    x: Union[range, int, ndarray],
+    center: Union[float, int, str],
+    fwhm: Union[float, int, str],
+) -> ndarray:
     """Gaussian function of area = 1.
 
     Parameters
@@ -241,7 +274,9 @@ def unitary_gaussian(x: Union[range, int, ndarray], center: Union[float, int, st
     return result
 
 
-def rotation_kernel(delta_lambdas: ndarray, delta_lambda_l: float, vsini: float, epsilon: float) -> ndarray:
+def rotation_kernel(
+    delta_lambdas: ndarray, delta_lambda_l: float, vsini: float, epsilon: float
+) -> ndarray:
     """Calculate the rotation kernel for a given wavelength
 
     Parameters
@@ -263,7 +298,7 @@ def rotation_kernel(delta_lambdas: ndarray, delta_lambda_l: float, vsini: float,
     Equations * from .... book.
 
     """
-    denominator = (np.pi * vsini * (1.0 - epsilon / 3.0))
+    denominator = np.pi * vsini * (1.0 - epsilon / 3.0)
     lambda_ratio_sqr = (delta_lambdas / delta_lambda_l) ** 2.0
 
     c1 = 2.0 * (1.0 - epsilon) / denominator
@@ -320,7 +355,7 @@ def silent_remove(filename: str) -> None:
 
 def resolution2int(resolutions: Union[List[Any], Any]) -> Union[List[int], int]:
     """Convert from "100k" or "100000" to 100000."""
-    if not hasattr(resolutions, '__len__') or isinstance(resolutions, str):
+    if not hasattr(resolutions, "__len__") or isinstance(resolutions, str):
         resolutions = [resolutions]
         list_flag = True
     else:
@@ -346,7 +381,7 @@ def resolution2int(resolutions: Union[List[Any], Any]) -> Union[List[int], int]:
 
 
 def resolution2str(resolutions: Union[List[Any], Any]) -> Union[List[str], str]:
-    if not hasattr(resolutions, '__len__') or isinstance(resolutions, str):
+    if not hasattr(resolutions, "__len__") or isinstance(resolutions, str):
         resolutions = [resolutions]
         list_flag = True
     else:
@@ -396,7 +431,9 @@ def load_aces_spectrum(params, photons=True):
         phoenix_grid = PHOENIXNoAlpha(base=base)
     elif len(params) == 4:
         print("USING ALPHA in PHOENIX LOADING")
-        phoenix_grid = PHOENIX(base=base)  # , param_names = ["temp", "logg", "Z", "alpha"])
+        phoenix_grid = PHOENIX(
+            base=base
+        )  # , param_names = ["temp", "logg", "Z", "alpha"])
     else:
         raise ValueError("Number of parameters is incorrect")
 
