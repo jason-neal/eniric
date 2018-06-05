@@ -7,6 +7,7 @@ import numpy as np
 import eniric
 import eniric.atmosphere as atm
 from eniric.Qcalculator import quality, RVprec_calc, RVprec_calc_masked, RV_prec_calc_Trans
+from eniric.corrections import correct_artigau_2018
 from eniric.nIRanalysis import convolution
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
@@ -53,6 +54,8 @@ def _parser():
     parser.add_argument("-o", "--output", help="Filename for results",
                         default="quality_results.csv", type=str)
     parser.add_argument("--rv", help="Radial velocity shift. (Not Implemented)", default=0.0,
+                        type=float)
+    parser.add_argument("--correct", help="Apply RV corrections", action="store_false",
                         type=float)
     return parser.parse_args()
 
@@ -172,7 +175,7 @@ if __name__ == "__main__":
 
     with open(args.output, "w") as f:
         f.write(
-            "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, Quality, Cond. 1, Cond. 2, Cond. 3\n")
+            "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, Quality, Cond. 1, Cond. 2, Cond. 3, correction\n")
 
         for model in models_list:
             # Create generator for params_list
@@ -183,11 +186,19 @@ if __name__ == "__main__":
                 result = do_analysis(model, vsini=vsini, R=R, band=band, conv_kwargs=conv_kwargs,
                                      snr=snr, ref_band=ref_band, sampling=sample)
                 result = [round(res.value, 1) if res is not None else None for res in result]
+
+                if args.correct:
+                    # Apply Artigau 2018 Corrections
+                    corr_value = correct_artigau_2018(band)
+                    for ii, res in enumerate(result):
+                        if ii > 0:  # Not the quality
+                            result[ii] = res * corr_value
+
                 result[0] = int(result[0]) if result[0] is not None else None
 
                 f.write(
                     ("{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
-                     " {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, {11:5.01f}\n").format(
+                     " {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, {11:5.01f}, {12:5s}\n").format(
                         int(model[0]), float(model[1]), float(model[2]), float(model[3]),
                         band, int(R / 1000), float(vsini), float(sample),
-                        result[0], result[1], result[2], result[3]))
+                        result[0], result[1], result[2], result[3], args.correct))
