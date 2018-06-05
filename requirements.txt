@@ -4,7 +4,7 @@ matplotlib==2.2.2
 multiprocess==0.70.5
 numpy==1.14.3
 pandas==0.23.0
-pyyaml
+pyyaml==3.12
 scipy==1.1.0
 tqdm==4.23.3
 
