@@ -32,16 +32,16 @@ def test_get_spectrum_name():
 
     assert utils.get_spectrum_name("M6", flux_type="wave") == test
 
-    test_alpha = ("Z-0.0.Alpha=+0.20/"
+    test_alpha = os.path.join("Z-0.0.Alpha=+0.20",
                   "lte02600-6.00-0.0.Alpha=+0.20.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
     assert utils.get_spectrum_name("M9", logg=6, alpha=0.2) == test_alpha
 
-    test_pos_feh = ("Z+0.5/"
+    test_pos_feh = os.path.join("Z+0.5",
                     "lte03500-0.00+0.5.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
     assert utils.get_spectrum_name("M3", logg=0, feh=0.5, alpha=0.0) == test_pos_feh
 
-    test_photon = ("Z-0.0/lte02800-4.50"
-                   "-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
+    test_photon = os.path.join("Z-0.0",
+                               "lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
     assert utils.get_spectrum_name("M6") == test_photon
 
 

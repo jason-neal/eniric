@@ -85,12 +85,13 @@ def get_spectrum_name(startype: str, logg: Union[float, int] = 4.50, feh: Union[
             if abs(alpha) > 0.2:
                 raise ValueError("Warning! Alpha is outside acceptable range -0.2->0.2. (for current science case)")
 
-            phoenix_name = ("Z{2:+4.1f}.Alpha={3:+5.2f}/"
-                            "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}.{4:s}"
-                            "").format(temps[startype], logg, feh, alpha, base)
+            phoenix_name = os.path.join("Z{0:+4.1f}.Alpha={1:+5.2f}".format(feh, alpha),
+                                        "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}.{4:s}".format(
+                                            temps[startype], logg, feh, alpha, base))
         else:
-            phoenix_name = ("Z{2:+4.1f}/lte{0:05d}-{1:4.2f}"
-                            "{2:+4.1f}.{3:s}").format(temps[startype], logg, feh, base)
+            phoenix_name = os.path.join("Z{0:+4.1f}".format(feh),
+                                        "lte{0:05d}-{1:4.2f}{2:+4.1f}.{3:s}".format(
+                                            temps[startype], logg, feh, base))
 
         spectrum_name = phoenix_name
     elif re.match(r"^[OBAFGKML][0-9]$", startype):  # Valid spectral types
