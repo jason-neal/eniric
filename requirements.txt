@@ -6,5 +6,5 @@ numpy==1.14.3
 pandas==0.23.0
 pyyaml==3.12
 scipy==1.1.0
-tqdm==4.23.3
+tqdm==4.23.4
 
