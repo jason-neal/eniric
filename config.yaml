@@ -14,7 +14,7 @@ paths:
 
 bands:
   all: ["VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP"]
-# full pathsname: eniric_default
+
 
 # Keywords needed for Starfish to be used
 outdir : results/
