@@ -9,17 +9,19 @@
 
 # [Connes 1985](#cite-Connes1985)   https://doi.org/10.1007/BF00653671
 
-# In[1]:
+# In[36]:
 
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import ArrowStyle
+plt.rc('text', usetex=True)
 
 
-# In[2]:
+# In[42]:
 
 
-x = np.arange(0,  1.6, 0.01)
+x = np.arange(0,  1.1, 0.01)
 
 sigma = 0.2
 mean = .7
@@ -29,39 +31,66 @@ g1 = lambda x: 1 - 0.5/np.sqrt(2*np.pi*sigma**2) * np.exp(-(x-mean)**2 / 2 / sig
 g2 = lambda x: 1 - 0.5/np.sqrt(2*np.pi*sigma**2) * np.exp(-(x-mean2)**2 / 2 / sigma**2) 
 #y2 = np.cos(x + np.pi/12)
 
-ax.plot(x, g1(x), ".", label="A$_0$")
-ax.plot(x, g2(x), ".", label="A")
+ax.plot(x, g2(x),"-.",  label=r"$A(\lambda)$")
+ax.plot(x, g1(x), label=r"$A_{0}(\lambda)$")
 
-#plt.axvline(0.5, -.5, g1(0.5))
-#plt.axvline(x=0, ymin=0, ymax=1, hold=None, **kwargs)
-get_ipython().run_line_magic('pinfo', 'plt.axvline')
-x1 = 0.48
-x2 = 0.55
-y1 = g1(x1)
-y2 = g2(x1)
-y3 = g2(x2)
 
-ax.axvline(x=x1, ymin=0, ymax=y2, color="blue")
-ax.axvline(x=x1, ymin=0, ymax=y1, color="red")
-ax.axvline(x=x2, ymin=0, ymax=y3, color="orange")
-ax.axhline(y=y2, xmin=0, xmax=x1, color="green")
-ax.axhline(y=y3, xmin=0, xmax=x2, color="black")
+x3 = 0.42
+x2 = 0.49
+x1 = 0.505  # d lambda
+y11 = g1(x1)
+y12 = g1(x2)
+y21 = g2(x1)
+y22 = g2(x2)
+#y4 = g2(x2)
 
-plt.xlabel("$\lambda$")
-plt.annotate(s="$\delta \lambda$", xy=(0.32, 0.2), xycoords="axes fraction")
-plt.annotate(s="$A$", xy=(0.01, 0.7), xycoords="axes fraction")
-plt.annotate(s="$A_0$", xy=(0.01, 0.5), xycoords="axes fraction")
+# d lambda
 
-plt.legend()
+plt.annotate(s=r"d$\lambda$", xy=(x2-.02, -0.07), xycoords="data")
+ax.vlines(x=x1, ymin=0, ymax=y21, color="orange")
+ax.vlines(x=x2, ymin=0, ymax=y21, color="orange")
+
+
+# Horizontal lines
+ax.hlines(y=y11, xmin=0, xmax=x1, color="k", alpha=0.6)
+plt.annotate(s=r"$A_{0}$", xy=(0.01, y11-0.07), xycoords="data")
+ax.hlines(y=y21, xmin=0, xmax=x1, color="k", alpha=0.6)
+plt.annotate(s=r"$A$", xy=(0.01, y21-0.07), xycoords="data")
+
+
+# Spectral range
+s1 = 0.1
+As1  = g1(s1)
+s2 = 1.0
+As2 = g1(s2)
+#plt.hlines(y=-0.1, xmin=s1, xmax=s2, color="black", linestyles="dashed", alpha=0.6)
+plt.vlines(x=s2, ymin=-0.1, ymax=As2, color="black", linestyles="dashed", alpha=0.6)
+plt.vlines(x=s1, ymin=-0.1, ymax=As1, color="black", linestyles="dashed", alpha=0.6)
+plt.annotate(s="$\Sigma$", xy=((s2+s1)/2, -0.17), xycoords="data")  # Add end ticks
+plt.annotate("", xy=(s1, -0.1), xytext=(s2, -0.1), 
+             arrowprops=dict(arrowstyle="<->", color="k",linestyle="dashed",alpha=.6, lw=1.1))
+
+# \delta lambda
+plt.annotate(s="$\delta \lambda$", xy=((x1+x3-0.04)/2, 0.85), xycoords="data")
+plt.vlines(x=x1, ymin=y21, ymax=0.9, color="grey", linestyles="dashed")
+plt.vlines(x=x3, ymin=y21, ymax=0.9, color="grey", linestyles="dashed")
+plt.annotate("", xy=(x1, 0.86), xytext=(x1+0.07, 0.86), arrowprops=dict(arrowstyle="->"))
+plt.annotate("", xy=(x3, 0.86), xytext=(x3-0.07, 0.86), arrowprops=dict(arrowstyle="->"))
+
+# Hide Ticks
+ax.axes.get_xaxis().set_ticks([])
+ax.axes.get_yaxis().set_ticks([])
+
+plt.legend(loc="best")
+plt.ylabel(r"$A(\lambda)$")
+plt.xlabel(r"$\lambda$")
+
+# Hide the right and top spines
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+
+plt.ylim([-0.2,1.1])
 plt.show()
-
-
-# In[3]:
-
-
-plt.plot()
-plt.axvline(0.5, 0, 0.5)
-plt.axhline(0.5, 0, 0.5, color="red")
 
 
 # In[ ]:
