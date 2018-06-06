@@ -55,8 +55,7 @@ def _parser():
                         default="quality_results.csv", type=str)
     parser.add_argument("--rv", help="Radial velocity shift. (Not Implemented)", default=0.0,
                         type=float)
-    parser.add_argument("--correct", help="Apply RV corrections", action="store_false",
-                        type=float)
+    parser.add_argument("--correct", help="Apply RV corrections", action="store_true")
     return parser.parse_args()
 
 
@@ -175,7 +174,7 @@ if __name__ == "__main__":
 
     with open(args.output, "w") as f:
         f.write(
-            "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, Quality, Cond. 1, Cond. 2, Cond. 3, correction\n")
+            "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, Quality, Cond. 1, Cond. 2, Cond. 3, correct flag\n")
 
         for model in models_list:
             # Create generator for params_list
@@ -198,7 +197,7 @@ if __name__ == "__main__":
 
                 f.write(
                     ("{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
-                     " {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, {11:5.01f}, {12:5s}\n").format(
+                     " {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, {11:5.01f}, {12:1d}\n").format(
                         int(model[0]), float(model[1]), float(model[2]), float(model[3]),
                         band, int(R / 1000), float(vsini), float(sample),
-                        result[0], result[1], result[2], result[3], args.correct))
+                        result[0], result[1], result[2], result[3], int(args.correct)))
