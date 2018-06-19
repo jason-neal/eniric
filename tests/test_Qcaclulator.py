@@ -173,8 +173,6 @@ def test_mask_clumping():
 
     wav_chunks, flux_chunks = Q.bug_fixed_clumping_method(wav, flux, mask)
     wav_masked, flux_masked = Q.mask_clumping(wav, flux, mask)
-    # assert len(wav_chunks) == len(wav_masked)
-    # assert len(flux_chunks) == len(flux_masked)
     for i, __ in enumerate(wav_chunks):
         assert np.all(wav_chunks[i] == wav_masked[i])
         assert np.all(flux_chunks[i] == flux_masked[i])
@@ -219,64 +217,6 @@ def test_manual_clumping():
     for i, __ in enumerate(mask_clumped):
         assert np.all(mask_clumped[i])
         assert np.all(mask2_clumped[i])
-
-
-def test_bugs_in_old_clumping_method():
-    """Test that it actually works on small tests."""
-    val = np.arange(10)
-
-    # Define masks and expected results from val
-    mask1 = np.ones(10, dtype=bool)
-    expected1 = [val]
-    mask2 = np.array([1, 1, 1, 0, 1, 1, 0, 0, 0, 1], dtype=bool)
-    expected2 = [np.arange(3), np.arange(4, 6), np.array([9])]
-
-    # Failing examples with bugged code
-    mask3 = np.zeros(10, dtype=bool)
-    expected3 = []
-    unexpected3 = [val]
-    mask4 = np.array([0, 1, 0, 0, 0, 1, 1, 1, 1, 0], dtype=bool)
-    expected4 = [np.array([1]), np.arange(5, 9)]
-    unexpected4 = [np.arange(1), np.arange(2, 5), np.array([9])]
-
-    x1, y1 = Q.bug_fixed_clumping_method(val, val, mask1)
-    x1_bugged, y1_bugged = Q.bugged_clumping_method(val, val, mask1)  # This will work
-    for i, __ in enumerate(x1):
-        assert np.all(x1[i] == y1[i])
-        assert np.all(x1[i] == x1_bugged[i])
-        assert np.all(y1[i] == y1_bugged[i])
-        assert np.all(x1[i] == expected1[i])
-
-    x2, y2 = Q.bug_fixed_clumping_method(val, val, mask2)
-    x2_bugged, y2_bugged = Q.bugged_clumping_method(val, val, mask2)  # This will work
-    for i, __ in enumerate(x2):
-        assert np.all(x2[i] == y2[i])
-        assert np.all(x2[i] == x2_bugged[i])
-        assert np.all(y2[i] == y2_bugged[i])
-        assert np.all(x2[i] == expected2[i])
-
-    # Failing examples where mask starts with 0.
-    x3, y3 = Q.bug_fixed_clumping_method(val, val, mask3)
-    x3_bugged, y3_bugged = Q.bugged_clumping_method(val, val, mask3)  # This will fail
-    for i, __ in x3:
-        assert np.all(x3[i] == y3[i])
-        assert np.all(x3_bugged[i] == y3_bugged[i])
-        assert not np.all(x3[i] == x3_bugged[i])
-        assert not np.all(y3[i] == y3_bugged[i])
-        assert np.all(x3[i] == expected3[i])
-        assert not np.all(x3_bugged[i] == expected3[i])
-        assert np.all(x3_bugged[i] == unexpected3[i])
-
-    x4, y4 = Q.bug_fixed_clumping_method(val, val, mask4)
-    x4_bugged, y4_bugged = Q.bugged_clumping_method(val, val, mask4)  # This will fail
-    for i, __ in enumerate(x4):
-        assert np.all(x4[i] == y4[i])
-        assert np.all(x4_bugged[i] == y4_bugged[i])
-        assert not np.all(x4[i] == x4_bugged[i])
-        assert not np.all(y4[i] == y4_bugged[i])
-        assert np.all(x4[i] == expected4[i])
-        assert not np.all(x4_bugged[i] == expected4[i])
-        assert np.all(x4_bugged[i] == unexpected4[i])
 
 
 def test_rvprev_test():
