@@ -23,7 +23,7 @@ install:
   # Installing eniric now
   - cmd: "cd c:\\projects\\eniric"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
-  - "%PYTHON%\\python.exe -m pip install -r test_requirements.txt"
+  - "%PYTHON%\\python.exe -m pip install -r requirements_dev.txt"
   - "%PYTHON%\\python.exe setup.py install"
 
   # Setup config and make data

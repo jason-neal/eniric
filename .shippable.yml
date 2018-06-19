@@ -39,7 +39,7 @@ install:
   # Now install eniric
   # Install requirements
   - cd $SHIPPABLE_BUILD_DIR
-  - travis_retry pip install -r test_requirements.txt
+  - travis_retry pip install -r requirements_dev.txt
   - travis_retry pip install -r requirements.txt
 
   # Install eniric
