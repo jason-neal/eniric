@@ -191,16 +191,10 @@ def main(
                 pass
 
         for phoenix_file in phoenix_files:
-            print("Debug: phoenix file=", phoenix_file)
-            print("Debug: path =", path)
-            print("Debug: dirs", dirs)
-            print("Debug: split with /", path.split("/"))
-            print("Debug: split with os.sep", path.split(os.sep))
             z_folder = path.split(os.sep)[-1]
-            print("Debug: z-folder = ", z_folder)
             os.makedirs(
                 os.path.join(data_dir, z_folder), exist_ok=True
-            )  # make folder if doesn't exit
+            )
             output_filename = os.path.join(
                 data_dir, z_folder, phoenix_file[:-5] + file_suffix
             )  # Name of .dat file
