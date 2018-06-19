@@ -353,7 +353,7 @@ def calculate_prec(
             prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar)
 
             # Precision as given by the second_method
-            wav_stellar_chunks, flux_stellar_chunks = Qcalculator.bug_fixed_clumping_method(
+            wav_stellar_chunks, flux_stellar_chunks = Qcalculator.mask_clumping(
                 wav_stellar, flux_stellar, mask_atm_selected
             )
 
