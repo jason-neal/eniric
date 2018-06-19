@@ -6,10 +6,10 @@ name: eniric_default
 paths:
   phoenix_raw: "data/test_data/PHOENIX-raw"
   phoenix_dat: "data/test_data/PHOENIX-ACES_spectra"
-  atmmodel: "data/test_data/atmmodel"
   results: "data/test_data/results"
   resampled: "data/test_data/resampled"
   test_data: "data/test_data/"
+  atmmodel: "data/atmmodel"
   precision: "precision/"
 
 bands:
