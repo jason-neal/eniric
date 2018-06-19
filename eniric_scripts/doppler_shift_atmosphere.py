@@ -18,14 +18,26 @@ def _parser():
 
     :returns: the args
     """
-    parser = argparse.ArgumentParser(description=('Calculate radial velocity'
-                                                  'precision of model spectra.'))
+    parser = argparse.ArgumentParser(
+        description=("Calculate radial velocity" "precision of model spectra.")
+    )
 
-    parser.add_argument("-b", "--bands", type=str, default="J",
-                        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", None, "visible"],
-                        help="Wavelength bands to select. Default=J.", nargs="+")
-    parser.add_argument("-p", "--plot", action="store_true", default=False,
-                        help="Plot the atmosphere model with masks.")
+    parser.add_argument(
+        "-b",
+        "--bands",
+        type=str,
+        default="J",
+        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", None, "visible"],
+        help="Wavelength bands to select. Default=J.",
+        nargs="+",
+    )
+    parser.add_argument(
+        "-p",
+        "--plot",
+        action="store_true",
+        default=False,
+        help="Plot the atmosphere model with masks.",
+    )
     _args = parser.parse_args()
     return _args
 
@@ -51,10 +63,19 @@ def main(bands=None, plot=False):
 
         print("Reading atmospheric model...", unshifted_atmmodel)
 
-        wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(unshifted_atmmodel)
-        print(("There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}."
-               "").format(np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)))
-        print("The model ranges from {0:4.2f} to {1:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
+        wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(
+            unshifted_atmmodel
+        )
+        print(
+            ("There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}." "").format(
+                np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)
+            )
+        )
+        print(
+            "The model ranges from {0:4.2f} to {1:4.2f} micron.".format(
+                wav_atm[0], wav_atm[-1]
+            )
+        )
         print("Done.")
 
         print("Calculating impact of Barycentric movement on mask...")
@@ -66,12 +87,20 @@ def main(bands=None, plot=False):
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
 
         # Turn wav_atm back to nanometers for saving.
-        io.pdwrite_cols(shifted_atmmodel, wav_atm * 1000, flux_atm, std_flux_atm,
-                        mask_atm, header=header, float_format="%11.8f")
+        io.pdwrite_cols(
+            shifted_atmmodel,
+            wav_atm * 1000,
+            flux_atm,
+            std_flux_atm,
+            mask_atm,
+            header=header,
+            float_format="%11.8f",
+        )
 
         if plot:
-            atm.plot_atm_masks(wav_atm, flux_atm, org_mask, new_mask=mask_atm,
-                               block=True)
+            atm.plot_atm_masks(
+                wav_atm, flux_atm, org_mask, new_mask=mask_atm, block=True
+            )
 
 
 if __name__ == "__main__":

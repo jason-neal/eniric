@@ -5,6 +5,7 @@ Compare to published results and run other tests on it.
 Don't do to many.
 """
 import os
+
 # import subprocess
 from datetime import datetime
 
@@ -15,19 +16,22 @@ from eniric_scripts.prepare_data import main as prepare_data
 print("Eniric paths: {}".format(eniric.paths))
 
 # subprocess.call("python eniric_scripts/prepare_data.py -s M0 M3 M6 M9 -l 4.50 -m 0.0", shell=True)
-prepare_data(startype=["M0", "M3", "M6", "M9"], temp=[], logg=[4.50], metallicity=[0], alpha=[0])
+prepare_data(
+    startype=["M0", "M3", "M6", "M9"], temp=[], logg=[4.50], metallicity=[0], alpha=[0]
+)
 
-parameters = [("M0", "Z", 1, "60k"),
-              ("M0", "H", 1, "60k"),
-              ("M0", "Y", 10, "100k"),
-              ("M0", "K", [1, 5], ["60k", "100k"]),
-              ("M6", "H", 1, "80k"),
-              ("M9", "K", 5, "60k"),
-              ("M9", "H", 1, "100k"),
-              ("M6", "J", 10, "100k"),
-              ("M3", "Y", 5, "80k"),
-              (["M0", "M3", "M6", "M9"], "J", [1, 5, 10], ["60k", "80k", "100k"]),
-              ]
+parameters = [
+    ("M0", "Z", 1, "60k"),
+    ("M0", "H", 1, "60k"),
+    ("M0", "Y", 10, "100k"),
+    ("M0", "K", [1, 5], ["60k", "100k"]),
+    ("M6", "H", 1, "80k"),
+    ("M9", "K", 5, "60k"),
+    ("M9", "H", 1, "100k"),
+    ("M6", "J", 10, "100k"),
+    ("M3", "Y", 5, "80k"),
+    (["M0", "M3", "M6", "M9"], "J", [1, 5, 10], ["60k", "80k", "100k"]),
+]
 
 counter = 0
 start_time = datetime.now()

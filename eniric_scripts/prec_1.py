@@ -22,19 +22,53 @@ def _parser():
 
     :returns: the args
     """
-    parser = argparse.ArgumentParser(description='Calculate perfect precision of all convolved spectra.')
+    parser = argparse.ArgumentParser(
+        description="Calculate perfect precision of all convolved spectra."
+    )
 
-    parser.add_argument('-s', '--startype', help='Spectral Type e.g "MO"', type=str, nargs="*", default=None)
-    parser.add_argument("-v", "--vsini", help="Rotational velocity of source",
-                        type=float, nargs="*", default=None)
-    parser.add_argument("-R", "--resolution", help="Observational resolution",
-                        type=float, nargs="*", default=None)
-    parser.add_argument("-b", "--band", type=str, default=["ALL"],
-                        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
-                        help="Wavelength band to select", nargs="+")
-    parser.add_argument('--sample_rate', default=None, type=float, nargs="*",
-                        help="Resample rate, pixels per FWHM. Default=3.0")
-    parser.add_argument('--normalize', help='Turn off convolution normalization.', action="store_false")
+    parser.add_argument(
+        "-s",
+        "--startype",
+        help='Spectral Type e.g "MO"',
+        type=str,
+        nargs="*",
+        default=None,
+    )
+    parser.add_argument(
+        "-v",
+        "--vsini",
+        help="Rotational velocity of source",
+        type=float,
+        nargs="*",
+        default=None,
+    )
+    parser.add_argument(
+        "-R",
+        "--resolution",
+        help="Observational resolution",
+        type=float,
+        nargs="*",
+        default=None,
+    )
+    parser.add_argument(
+        "-b",
+        "--band",
+        type=str,
+        default=["ALL"],
+        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
+        help="Wavelength band to select",
+        nargs="+",
+    )
+    parser.add_argument(
+        "--sample_rate",
+        default=None,
+        type=float,
+        nargs="*",
+        help="Resample rate, pixels per FWHM. Default=3.0",
+    )
+    parser.add_argument(
+        "--normalize", help="Turn off convolution normalization.", action="store_false"
+    )
     return parser.parse_args()
 
 
@@ -59,13 +93,17 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
         norm_id = ""
     print(star, band, vel, resolution, smpl, norm_)
     print(type(star), type(band), type(vel), type(resolution), type(smpl), type(norm_))
-    file_to_read = ("Spectrum_{0:s}-PHOENIX-ACES_{1:s}band_vsini{2:.01f}_R{3:s}{5:s}_res{4:3.01f}.txt"
-                    "").format(star, band, vel, resolution, float(smpl), norm_)
+    file_to_read = (
+        "Spectrum_{0:s}-PHOENIX-ACES_{1:s}band_vsini{2:.01f}_R{3:s}{5:s}_res{4:3.01f}.txt"
+        ""
+    ).format(star, band, vel, resolution, float(smpl), norm_)
 
     # sample was left aside because only one value existed
     id_string = "{0}-{1}-{2:.01f}-{3}{4}".format(star, band, vel, resolution, norm_id)
 
-    wav_stellar, flux_stellar = io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
+    wav_stellar, flux_stellar = io.pdread_2col(
+        os.path.join(eniric.paths["resampled"], file_to_read)
+    )
 
     # removing boundary effects
     wav_stellar = wav_stellar[2:-2]
@@ -74,16 +112,36 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
     # Normalize to SNR 100 in middle of J band 1.25 micron!
     flux_stellar = normalize_flux(flux_stellar, id_string)
 
-    if id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k", "M6-J-1.0-100k", "M9-J-1.0-100k"]:
-        index_reference = np.searchsorted(wav_stellar, [1.25])[0]  # searching for the index closer to 1.25 micron
-        sn_estimate = np.sqrt(np.sum(flux_stellar[index_reference - 1:index_reference + 2]))
-        print("\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(id_string, sn_estimate))
+    if id_string in [
+        "M0-J-1.0-100k",
+        "M3-J-1.0-100k",
+        "M6-J-1.0-100k",
+        "M9-J-1.0-100k",
+    ]:
+        index_reference = np.searchsorted(wav_stellar, [1.25])[
+            0
+        ]  # searching for the index closer to 1.25 micron
+        sn_estimate = np.sqrt(
+            np.sum(flux_stellar[index_reference - 1 : index_reference + 2])
+        )
+        print(
+            "\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(
+                id_string, sn_estimate
+            )
+        )
 
     elif "J" in id_string:
-        index_reference = np.searchsorted(wav_stellar, [1.25])[0]  # searching for the index closer to 1.25 micron
-        sn_estimate = np.sqrt(np.sum(flux_stellar[index_reference - 1:index_reference + 2]))
+        index_reference = np.searchsorted(wav_stellar, [1.25])[
+            0
+        ]  # searching for the index closer to 1.25 micron
+        sn_estimate = np.sqrt(
+            np.sum(flux_stellar[index_reference - 1 : index_reference + 2])
+        )
         print(
-            "\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string, sn_estimate))
+            "\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(
+                id_string, sn_estimate
+            )
+        )
 
     # print("Performing analysis for: ", id_string)
     prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar)
@@ -92,7 +150,14 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
     return id_string, prec_1
 
 
-def main(startype=None, vsini=None, resolution=None, bands=None, sample_rate=None, normalize: bool = True):
+def main(
+    startype=None,
+    vsini=None,
+    resolution=None,
+    bands=None,
+    sample_rate=None,
+    normalize: bool = True,
+):
     """Script that calculates the RV precision without atmosphere.
 
     Parameters
@@ -135,8 +200,10 @@ def main(startype=None, vsini=None, resolution=None, bands=None, sample_rate=Non
             normalize = [normalize]
 
     # Check the inputs are correct format. (lists)
-    for f_input, f_name in zip([startype, bands, vsini, resolution, sample_rate],
-                               ["startype", "band", "vsini", "resolution", "sample_rate"]):
+    for f_input, f_name in zip(
+        [startype, bands, vsini, resolution, sample_rate],
+        ["startype", "band", "vsini", "resolution", "sample_rate"],
+    ):
         if not isinstance(f_input, list):
             print(f_name, type(f_input), type(f_name))
             raise TypeError("Input {0} is not list".format(f_name))
@@ -153,7 +220,9 @@ def main(startype=None, vsini=None, resolution=None, bands=None, sample_rate=Non
                     for smpl in sample_rate:
                         for norm in normalize:
                             try:
-                                id_string, prec_1 = calc_prec1(star, band, vel, R, smpl, normalize=norm)
+                                id_string, prec_1 = calc_prec1(
+                                    star, band, vel, R, smpl, normalize=norm
+                                )
                                 precision[id_string] = prec_1
                             except FileNotFoundError:
                                 print("File Not found ", star, band, vel, R, smpl, norm)
@@ -166,7 +235,7 @@ def main(startype=None, vsini=None, resolution=None, bands=None, sample_rate=Non
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("hello")
     args = vars(_parser())
     opts = {k: args[k] for k in args}
