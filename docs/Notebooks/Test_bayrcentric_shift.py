@@ -7,20 +7,16 @@
 # In[ ]:
 
 
-import numpy as np
 import matplotlib.pyplot as plt
-
+import numpy as np
 # to remove labels in one tick
 from matplotlib.ticker import MaxNLocator
 
 import eniric.IOmodule as IOmodule
 import eniric.Qcalculator as Qcalculator
-
-from eniric.utilities import band_selector
-
-from eniric.plotting_functions import plot_atmosphere_model, plot_stellar_spectum
-from eniric.utilities import wav_selector
-
+from eniric.plotting_functions import (plot_atmosphere_model,
+                                       plot_stellar_spectum)
+from eniric.utilities import band_selector, wav_selector
 
 # In[ ]:
 
@@ -174,4 +170,3 @@ mask_atm = np.array(mask_atm_30kms, dtype=bool)
 pixels_end = np.sum(mask_atm)
 print(("Barycentric impact masks out {:04.1}\% more of the atmospheric"
           " spectrum").format((pixels_end-pixels_start)/pixels_total))
-

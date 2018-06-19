@@ -8,12 +8,12 @@ import re
 from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
-from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
-from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
 from numpy import ndarray
 
 import eniric
 import eniric.IOmodule as io
+from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
+from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
 
 
 def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:

@@ -8,7 +8,6 @@ import eniric.IOmodule as io
 import eniric.utilities as utils
 
 
-
 def test_pdread_2col():
     """Test reading 2cols with pandas."""
     spectrum_1 = "data/test_data/Sample_input_phoenix.dat"

@@ -10,15 +10,14 @@ to achieve a consistent SNR at a specific location.
 import os
 # Normalize to SNR 100 in middle of J band 1.25 micron!
 import re
-from typing import Tuple, Optional, Union
+from typing import Optional, Tuple, Union
 
 import numpy as np
-from numpy import ndarray, float64
+from numpy import float64, ndarray
 
 import eniric
 import eniric.IOmodule as Io
 import eniric.utilities as utils
-
 
 resampled_dir = eniric.paths["resampled"]
 
