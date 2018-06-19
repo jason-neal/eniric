@@ -5,7 +5,6 @@ Compare to published results and run other tests on it.
 Don't do to many.
 """
 import os
-
 # import subprocess
 from datetime import datetime
 

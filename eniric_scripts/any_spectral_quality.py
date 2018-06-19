@@ -6,17 +6,13 @@ import numpy as np
 
 import eniric
 import eniric.atmosphere as atm
-from eniric.Qcalculator import (
-    quality,
-    RVprec_calc,
-    RVprec_calc_masked,
-    RV_prec_calc_Trans,
-)
 from eniric.corrections import correct_artigau_2018
 from eniric.nIRanalysis import convolution
+from eniric.Qcalculator import (RV_prec_calc_Trans, RVprec_calc,
+                                RVprec_calc_masked, quality)
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
-from eniric.utilities import load_aces_spectrum, band_middle
+from eniric.utilities import band_middle, load_aces_spectrum
 
 
 def _parser():

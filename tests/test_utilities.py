@@ -2,13 +2,13 @@
 
 import os
 
-import hypothesis.strategies as st
 import numpy as np
 import pytest
-from hypothesis import given, settings
 
 import eniric
 import eniric.utilities as utils
+import hypothesis.strategies as st
+from hypothesis import given, settings
 
 
 # @pytest.mark.xfail(raises=FileNotFoundError)
