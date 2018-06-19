@@ -23,18 +23,39 @@ def _parser():
     :returns: the args
     """
 
-    parser = argparse.ArgumentParser(description='Band separate out atmospheric model.')
+    parser = argparse.ArgumentParser(description="Band separate out atmospheric model.")
 
-    parser.add_argument('-m', '--model', help='Model name', type=str, default="Average_TAPAS_2014.txt")
-    parser.add_argument("-b", "--bands", type=str, default=None, nargs="+",
-                        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
-                        help="Wavelength band to select, Default='All'")
-    parser.add_argument('-d', '--data_dir', help='Telluric model data directory', type=str,
-                        default=eniric.paths["atmmodel"])
-    parser.add_argument('--new_name', default=None, type=str,
-                        help='Base name for new files. Default is the original model name.')
-    parser.add_argument('--rv_extend', default=100, type=check_positive,
-                        help='Doppler RV (km/s) to extend the wavelength limits of the band. Default=100 km/s')
+    parser.add_argument(
+        "-m", "--model", help="Model name", type=str, default="Average_TAPAS_2014.txt"
+    )
+    parser.add_argument(
+        "-b",
+        "--bands",
+        type=str,
+        default=None,
+        nargs="+",
+        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
+        help="Wavelength band to select, Default='All'",
+    )
+    parser.add_argument(
+        "-d",
+        "--data_dir",
+        help="Telluric model data directory",
+        type=str,
+        default=eniric.paths["atmmodel"],
+    )
+    parser.add_argument(
+        "--new_name",
+        default=None,
+        type=str,
+        help="Base name for new files. Default is the original model name.",
+    )
+    parser.add_argument(
+        "--rv_extend",
+        default=100,
+        type=check_positive,
+        help="Doppler RV (km/s) to extend the wavelength limits of the band. Default=100 km/s",
+    )
 
     return parser.parse_args()
 
@@ -64,12 +85,19 @@ def check_positive(value: str) -> float:
 
     float_value = float(value)
     if float_value <= 0:
-        raise argparse.ArgumentTypeError("{0:s} is an invalid positive value".format(value))
+        raise argparse.ArgumentTypeError(
+            "{0:s} is an invalid positive value".format(value)
+        )
     return float_value
 
 
-def main(model: str = "Average_TAPAS_2014.txt", bands: Optional[List[str]] = None, new_name=None, data_dir=None,
-         rv_extend: float = 100):
+def main(
+    model: str = "Average_TAPAS_2014.txt",
+    bands: Optional[List[str]] = None,
+    new_name=None,
+    data_dir=None,
+    rv_extend: float = 100,
+):
     """Split the large atmospheric model transmission spectra into the separate bands.
 
     Keeps wavelength of atmosphere model as nanometers.
@@ -100,11 +128,15 @@ def main(model: str = "Average_TAPAS_2014.txt", bands: Optional[List[str]] = Non
         band_min, band_max = band_min * 1e3, band_max * 1e3
 
         band_wav, band_flux = utils.wav_selector(atm_wav, atm_flux, band_min, band_max)
-        __, band_std_flux = utils.wav_selector(atm_wav, atm_std_flux, band_min, band_max)
+        __, band_std_flux = utils.wav_selector(
+            atm_wav, atm_std_flux, band_min, band_max
+        )
         __, band_mask = utils.wav_selector(atm_wav, atm_mask, band_min, band_max)
-        assert ((len(band_wav) == len(band_flux)) &
-                (len(band_std_flux) == len(band_mask)) &
-                (len(band_flux) == len(band_mask)))  # Check lengths are the same
+        assert (
+            (len(band_wav) == len(band_flux))
+            & (len(band_std_flux) == len(band_mask))
+            & (len(band_flux) == len(band_mask))
+        )  # Check lengths are the same
 
         band_mask = np.asarrya(band_mask, dtype=bool)
 
@@ -112,13 +144,21 @@ def main(model: str = "Average_TAPAS_2014.txt", bands: Optional[List[str]] = Non
         filename = os.path.join(data_dir, band_name)
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
 
-        write_status[i] = io.pdwrite_cols(filename, band_wav, band_flux, band_std_flux, band_mask, sep="\t",
-                                         header=header, float_format="%10.8f")
+        write_status[i] = io.pdwrite_cols(
+            filename,
+            band_wav,
+            band_flux,
+            band_std_flux,
+            band_mask,
+            sep="\t",
+            header=header,
+            float_format="%10.8f",
+        )
 
         return np.sum(write_status)  # If any extracts fail they will turn up here.
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     args = vars(_parser())
     opts = {k: args[k] for k in args}
     sys.exit(main(**opts))
