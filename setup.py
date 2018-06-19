@@ -22,7 +22,7 @@ config = {
         'test': ['coverage', 'pytest', 'pytest-cov', 'python-coveralls', 'hypothesis'],
     },
     'packages': ['eniric', 'eniric_scripts'],
-    'scripts': ["eniric_scripts/mk_travis_data.py",
+    'scripts': ["eniric_scripts/make_test_data.py",
                 "eniric_scripts/any_spectral_quality.py",
                 "eniric_scripts/nIR_run.py",
                 "eniric_scripts/nIR_precision.py",
