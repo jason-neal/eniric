@@ -1,5 +1,5 @@
 """Functions to read column-separated files."""
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
 import numpy as np
 import pandas as pd

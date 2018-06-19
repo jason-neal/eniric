@@ -11,10 +11,10 @@ import numpy as np
 from matplotlib import rc
 
 import eniric
-import eniric.IOmodule as io
-import eniric.Qcalculator as Qcalculator
 import eniric.atmosphere as atm
+import eniric.IOmodule as io
 import eniric.plotting_functions as plt_functions
+import eniric.Qcalculator as Qcalculator
 import eniric.snr_normalization as snrnorm
 import eniric.utilities as utils
 

@@ -7,7 +7,7 @@ calculations on individual bands only.
 import argparse
 import os
 import sys
-from typing import Optional, List
+from typing import List, Optional
 
 import numpy as np
 from astropy.constants import c
