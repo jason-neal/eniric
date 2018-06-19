@@ -423,7 +423,7 @@ def load_aces_spectrum(params, photons=True):
     flux_micron: ndarray
         Photon counts or SED/micron
     """
-    base = eniric.paths["phoenix_raw"] + "/"
+    base = eniric.paths["phoenix_raw"] + os.sep
 
     if params[3] == 0:  # Alpha value
         params = params[:-1]
