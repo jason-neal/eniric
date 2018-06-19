@@ -65,7 +65,8 @@ def test_sqrt_sum_wis():
     assert not isinstance(sqrtsumwis, u.Quantity)  # Doesn't turn into quantity if does not have to.
     assert not hasattr(sqrtsumwis, '__len__')  # assert value is a scalar
 
-    sqrtsumwis2 = Q.sqrt_sum_wis(wav * u.micron, (flux / u.second) / (u.centimeter ** 2))  # with some units
+    sqrtsumwis2 = Q.sqrt_sum_wis(wav * u.micron,
+                                 (flux / u.second) / (u.centimeter ** 2))  # with some units
     assert not hasattr(sqrtsumwis2.value, '__len__')  # assert value is a scalar
     assert isinstance(sqrtsumwis2, u.Quantity)
     assert sqrtsumwis2.unit == u.dimensionless_unscaled  # unscaled and dimensionless quantity
@@ -111,7 +112,8 @@ def test_SQRTSumWisTrans():
     trans = np.random.random(100)
 
     swrtsum_trans = Q.sqrt_sum_wis_trans(wav, flux, trans)
-    assert not isinstance(swrtsum_trans, u.Quantity)  # Doesn't turn into quantity if does not have to.
+    assert not isinstance(swrtsum_trans,
+                          u.Quantity)  # Doesn't turn into quantity if does not have to.
     assert not hasattr(swrtsum_trans, '__len__')  # assert scalar
 
     # dimensionless_unscaled unit is ok for transmission
@@ -220,23 +222,11 @@ def test_manual_clumping():
 
 
 def test_rvprev_test():
-    spectrum_file = os.path.join(eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.0.txt")
+    spectrum_file = os.path.join(eniric.paths["resampled"],
+                                 "Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.0.txt")
     precision = Q.RVprec_test(spectrum_file)
 
     assert isinstance(precision, astropy.units.Quantity)
-
-
-def test_rvprev_masked_raises_warning():
-    size = 20
-    wave = np.arange(size)
-    flux = np.random.randn(size) + 1
-    mask = np.ones_like(wave)
-    mask[0] = 0
-    # Works fine
-    Q.RVprec_calc_masked(wave, flux, mask)
-    # Raises warning when first element is 0
-    with pytest.warns(UserWarning):
-        Q.RVprec_calc_masked(wave, flux, mask)
 
 
 @pytest.mark.parametrize("wave_unit", [1, u.centimeter, u.nanometer])
