@@ -21,7 +21,7 @@ outdir : results/
 
 plotdir : plots/
 
-# The parameters defining your raw spectral library live here.
+# Starfish parameters defining your raw spectral library live here.
 grid:
     raw_path: "../../data/PHOENIX-ALL/PHOENIX"
     parname: ["temp", "logg", "Z"]
@@ -36,14 +36,3 @@ grid:
 data:
     grid_name: "Eniric"
     instruments: []
-
-# The parameters defining the spectral libraries live here.
-# paths:
-#   phoenix_raw: "/home/jneal/Phd/data/PHOENIX-ALL/PHOENIX"
-#   phoenix_dat: "/home/jneal/Phd/Codes/eniric/data/PHOENIX-ACES_spectra"
-#   atmmodel: "/home/jneal/Phd/Codes/eniric/data/atmmodel"
-#   results: "/home/jneal/Phd/Codes/eniric/data/results"
-#   resampled: "/home/jneal/Phd/Codes/eniric/data/resampled"
-#
-# test:
-#     test_data_path: "../../test/data"

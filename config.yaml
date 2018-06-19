@@ -21,7 +21,7 @@ outdir : results/
 
 plotdir : plots/
 
-# The parameters defining your raw spectral library live here.
+# Starfish parameters defining your raw spectral library live here.
 grid:
     raw_path: "../../data/PHOENIX-ALL/PHOENIX"
     parname: ["temp", "logg", "Z"]
@@ -36,4 +36,3 @@ grid:
 data:
     grid_name: "Eniric"
     instruments: []
-
