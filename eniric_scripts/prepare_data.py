@@ -129,6 +129,7 @@ def main(
     if data_dir is None:
         data_dir = eniric.paths["phoenix_dat"]
     os.makedirs(data_dir, exist_ok=True)
+
     if phoenix_dir is None:
         phoenix_dir = eniric.paths["phoenix_raw"]
 
@@ -190,8 +191,9 @@ def main(
                 pass
 
         for phoenix_file in phoenix_files:
-
+            print("Debug: phoenix file", phoenix_file)
             z_folder = path.split("/")[-1]
+            print("Debug: z-folder = ", z_folder)
             os.makedirs(
                 os.path.join(data_dir, z_folder), exist_ok=True
             )  # make folder if doesn't exit
