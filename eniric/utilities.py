@@ -231,12 +231,16 @@ def wav_selector(
     wav = np.asarray(wav, dtype="float64")
     flux = np.asarray(flux, dtype="float64")
 
-    mask = (wav > wav_min) & (wav < wav_max)
+    mask = mask_between(wav, wav_min, wav_max)
     flux_sel = flux[mask]
     wav_sel = wav[mask]
 
     return wav_sel, flux_sel
 
+
+def mask_between(x, xmin, xmax):
+    """Create boolean mask of x between xmin and xmax."""
+    return (x >= xmin) & (x < xmax)
 
 def unitary_gaussian(
     x: Union[range, int, ndarray],
