@@ -2,13 +2,14 @@
 
 import os
 
+import hypothesis.strategies as st
 import numpy as np
 import pytest
+from hypothesis import given, settings
 
 import eniric
 import eniric.utilities as utils
-import hypothesis.strategies as st
-from hypothesis import given, settings
+from eniric.utilities import mask_between
 
 
 # @pytest.mark.xfail(raises=FileNotFoundError)
@@ -352,3 +353,18 @@ def test_resampled_spectra_isnot_read_by_read_spectrum(filename):
     """Doesn't allow names with _vsini or _res in them."""
     with pytest.raises(ValueError, match="Using wrong function"):
         utils.read_spectrum(filename)
+
+
+@given(st.lists(st.floats(allow_infinity=False, allow_nan=False), max_size=50), st.floats(1, 100),
+       st.floats(1, 100))
+def test_mask_between(x, x1, x2):
+    """Correctly masks out values."""
+    x = np.array(x)
+    xmin = min(x1, x2)
+    xmax = max(x1, x2)
+    mask = mask_between(x, xmin, xmax)
+
+    assert np.all(x[mask] >= xmin)
+    assert np.all(x[mask] < xmax)
+    # Dropped values are all outside range.
+    assert np.all((x[~mask] >= xmax) | (x[~mask] < xmin))
