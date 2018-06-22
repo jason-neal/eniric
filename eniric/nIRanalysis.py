@@ -21,7 +21,7 @@ from tqdm import tqdm
 import eniric
 import eniric.IOmodule as io
 from eniric.utilities import (band_selector, read_spectrum, rotation_kernel,
-                              unitary_gaussian, wav_selector)
+                              unitary_gaussian, wav_selector, mask_between)
 
 # Cache convolution results.
 cachedir = os.path.join(os.path.expanduser("~"), ".joblib")
@@ -208,8 +208,8 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
         # select all values such that they are within the fwhm limits
         delta_lambda_l = wav * vsini / 3.0e5
 
-        index_mask = ((wav_ext_rotation > (wav - delta_lambda_l)) &
-                      (wav_ext_rotation < (wav + delta_lambda_l)))
+        index_mask = mask_between(wav_ext_rotation, wav - delta_lambda_l, wav + delta_lambda_l)
+
         flux_2convolve = flux_ext_rotation[index_mask]
         rotation_profile = rotation_kernel(wav_ext_rotation[index_mask] - wav, delta_lambda_l, vsini, epsilon)
 
@@ -259,9 +259,9 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
                                 normalize: bool = True):
         """Embarrassingly parallel component of resolution convolution"""
         fwhm = wav / R
-        # Mask of wavelength range within 5 fwhm of wav
-        index_mask = ((wav_extended > (wav - fwhm_lim * fwhm)) &
-                      (wav_extended < (wav + fwhm_lim * fwhm)))
+        # Mask of wavelength range within fwhm_lim* fwhm of wav
+        fwhm_space = fwhm_lim * fwhm
+        index_mask = mask_between(wav_extended, wav - fwhm_space, wav + fwhm_space)
 
         flux_2convolve = flux_conv_rot[index_mask]
         # Gaussian Instrument Profile for given resolution and wavelength
