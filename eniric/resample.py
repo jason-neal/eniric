@@ -129,9 +129,13 @@ def log_resample(wavelength, sampling: Union[int, float], resolution: Union[int,
 
     Uses faster method using log and powers of a base.
     The base is (1.0 + 1.0/(sampling*resolution).
+
+    Almost equivalent to using
+    np.logspace(np.log(wavelength)/np.log(base), np.log(wavelength)/np.log(base),
+        np.log(wavelength_end / wavelength_start) / np.log(base), base).
     """
-    wavelength_start = wavelength[0]  # because of border effects
-    wavelength_end = wavelength[-1]  # because of border effects
+    wavelength_start = np.nanmin(wavelength)
+    wavelength_end = np.nanmax(wavelength)
 
     # Create grid using logarithms with base of (1.0 + 1.0/(sampling*resolution))
     base = 1.0 + 1.0 / (sampling * resolution)
