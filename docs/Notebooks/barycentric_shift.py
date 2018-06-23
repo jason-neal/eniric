@@ -97,7 +97,7 @@ def new_inner_function():
 # In[ ]:
 
 
-atmmodel = "../data/atmmodel/Average_TAPAS_2014_KJ.txt"
+atmmodel = "../data/atmmodel/Average_TAPAS_2014_K.txt"
 # w_min = 2.0
 # w_max = 2.1
 
