@@ -18,6 +18,14 @@ help:
 	@echo "		Check style with flake8."
 	@echo "	test"
 	@echo "		Run py.test"
+	@echo "	init"
+	@echo "		Initalize by installing requirements"
+	@echo "	init-dev"
+	@echo "		Initalize by installing normal and dev requirements"
+	@echo "	cov"
+	@echo "		Produce coverage report"
+	@echo "	mypy"
+	@echo "		Run type checking with mypy"
 
 clean-pyc:
 	find . -name '*.pyc' -exec rm --force {} +
@@ -45,3 +53,19 @@ lint:
 
 test: clean-pyc
 	py.test --verbose --color=yes $(TEST_PATH)
+
+init:
+	pip install -r requirements.txt
+
+init-dev:
+	pip install -r requirements.txt
+	pip install -r requirements_dev.txt
+
+cov: $(module)/*
+	py.test --cov=$(module) 
+	coverage html
+
+mypy:
+	# py.test --mypy
+	mypy --ignore-missing-imports .
+
