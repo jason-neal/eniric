@@ -20,8 +20,8 @@ from tqdm import tqdm
 
 import eniric
 import eniric.IOmodule as io
-from eniric.utilities import (band_selector, read_spectrum, rotation_kernel,
-                              unitary_gaussian, wav_selector)
+from eniric.utilities import (band_selector, mask_between, read_spectrum,
+                              rotation_kernel, unitary_gaussian, wav_selector)
 
 # Cache convolution results.
 cachedir = os.path.join(os.path.expanduser("~"), ".joblib")
@@ -56,7 +56,8 @@ def run_convolutions(spectrum_string: str, band: str) -> None:
             convolve_spectra(spectrum, band, vel, res, plot=False)
 
 
-def save_convolution_results(filename: str, wavelength: ndarray, flux: ndarray, convolved_flux: ndarray) -> int:
+def save_convolution_results(filename: str, wavelength: ndarray, flux: ndarray,
+                             convolved_flux: ndarray) -> int:
     """Saves convolution results to a file.
 
     Parameters
@@ -75,7 +76,8 @@ def save_convolution_results(filename: str, wavelength: ndarray, flux: ndarray, 
 
 
 def convolve_spectra(spectrum, band, vsini, R, epsilon: float = 0.6, fwhm_lim: float = 5.0,
-                     plot: bool = True, num_procs: Optional[int] = None, results_dir: str = results_dir,
+                     plot: bool = True, num_procs: Optional[int] = None,
+                     results_dir: str = results_dir,
                      normalize: bool = True, output_name: Optional[str] = None) -> int:
     """Load Spectrum, apply convolution and then save results.
 
@@ -106,9 +108,11 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon: float = 0.6, fwhm_lim: f
         fig = plt.figure(1)
         plt.xlabel(r"wavelength [$\mu$m])")
         plt.ylabel(r"flux [counts] ")
-        plt.plot(wav_band, flux_band / np.max(flux_band), color='k', linestyle="-", label="Original spectra")
+        plt.plot(wav_band, flux_band / np.max(flux_band), color='k', linestyle="-",
+                 label="Original spectra")
         plt.plot(wav_band, convolved_flux / np.max(convolved_flux), color='b', linestyle="-",
-                 label="{0:s} spectrum observed at vsini={1:.2f} and R={2:d} .".format(name_model, vsini, R))
+                 label="{0:s} spectrum observed at vsini={1:.2f} and R={2:d} .".format(name_model,
+                                                                                       vsini, R))
         plt.legend(loc='best')
         plt.show()
 
@@ -189,6 +193,7 @@ def convolution(wav, flux, vsini, R, band: str = "All", epsilon: float = 0.6, fw
     return wav_band, flux_band, flux_conv_res
 
 
+@memory.cache
 def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
                            vsini, epsilon, num_procs=None, normalize: bool = True):
     """Perform Rotational convolution part of convolution.
@@ -208,10 +213,11 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
         # select all values such that they are within the fwhm limits
         delta_lambda_l = wav * vsini / 3.0e5
 
-        index_mask = ((wav_ext_rotation > (wav - delta_lambda_l)) &
-                      (wav_ext_rotation < (wav + delta_lambda_l)))
+        index_mask = mask_between(wav_ext_rotation, wav - delta_lambda_l, wav + delta_lambda_l)
+
         flux_2convolve = flux_ext_rotation[index_mask]
-        rotation_profile = rotation_kernel(wav_ext_rotation[index_mask] - wav, delta_lambda_l, vsini, epsilon)
+        rotation_profile = rotation_kernel(wav_ext_rotation[index_mask] - wav, delta_lambda_l,
+                                           vsini, epsilon)
 
         sum_val = np.sum(rotation_profile * flux_2convolve)
 
@@ -249,19 +255,19 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
     return flux_conv_rot
 
 
+@memory.cache
 def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
                            num_procs: int = 1, normalize: bool = True):
-    """Perform Resolution convolution part of convolution.
-    """
+    """Perform Resolution convolution part of convolution."""
 
     # Define inner convolution functions
     def element_res_convolution(wav, R, wav_extended, flux_conv_rot, fwhm_lim,
                                 normalize: bool = True):
         """Embarrassingly parallel component of resolution convolution"""
         fwhm = wav / R
-        # Mask of wavelength range within 5 fwhm of wav
-        index_mask = ((wav_extended > (wav - fwhm_lim * fwhm)) &
-                      (wav_extended < (wav + fwhm_lim * fwhm)))
+        # Mask of wavelength range within fwhm_lim* fwhm of wav
+        fwhm_space = fwhm_lim * fwhm
+        index_mask = mask_between(wav_extended, wav - fwhm_space, wav + fwhm_space)
 
         flux_2convolve = flux_conv_rot[index_mask]
         # Gaussian Instrument Profile for given resolution and wavelength
@@ -298,7 +304,8 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
         flux_conv_res = np.empty_like(wav_band)  # Memory assignment
         for jj, wav in enumerate(tqdm(wav_band)):
             flux_conv_res[jj] = element_res_convolution(wav, R, wav_extended,
-                                                        flux_conv_rot, fwhm_lim, normalize=normalize)
+                                                        flux_conv_rot, fwhm_lim,
+                                                        normalize=normalize)
         print("Done.\n")
     return flux_conv_res
 
