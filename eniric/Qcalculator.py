@@ -170,7 +170,7 @@ def sqrt_sum_wis(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, nda
     wis = np.sqrt(np.nansum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 /
                          flux_variance[:-1]))
     if not np.isfinite(wis):
-        warnings.warn("Weight sum is not finite")
+        warnings.warn("Weight sum is not finite = {}".format(wis))
     return wis
 
 
