@@ -5,11 +5,11 @@ Functions for file resampling.
 
 import os
 import re
-from os.path import isfile, join
 from typing import Union
 
 import matplotlib.pyplot as plt
 import numpy as np
+from os.path import isfile, join
 
 import eniric
 import eniric.IOmodule as io
@@ -90,29 +90,6 @@ def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k
         plt.close()
 
     return 0
-
-
-def old_resample(wavelength, sampling: Union[int, float], resolution: Union[int, float]) -> np.ndarray:
-    """Re-sample spectrum with a given sampling per resolution element.
-
-    Inputs
-    ------
-    wavelength: np.ndarray
-        Wavelength array.
-    sampling: int, float
-        Points to sample per resolution element
-    resolution: int, float
-        Instrumental resolution
-
-    """
-    wavelength_start = wavelength[0]  # because of border effects
-    wavelength_end = wavelength[-1]  # because of border effects
-
-    wav_grid = [wavelength_start]
-    while (wav_grid[-1] < wavelength_end):
-        wav_grid.append(wav_grid[-1] * (1.0 + 1.0 / (sampling * resolution)))
-    wav_grid = np.array(wav_grid)
-    return wav_grid
 
 
 def log_resample(wavelength, sampling: Union[int, float], resolution: Union[int, float]) -> np.ndarray:
