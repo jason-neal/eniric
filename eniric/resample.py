@@ -5,11 +5,11 @@ Functions for file resampling.
 
 import os
 import re
+from os.path import isfile, join
 from typing import Union
 
 import matplotlib.pyplot as plt
 import numpy as np
-from os.path import isfile, join
 
 import eniric
 import eniric.IOmodule as io
@@ -21,8 +21,8 @@ resampled_dir = eniric.paths["resampled"]
 def resample_allfiles(results_dir: str = None, resampled_dir: str = None) -> int:
     """Resample all files inside results_dir folder.
 
-    Input
-    -----
+    Parameters
+    ----------
     results_dir: str
         Directory containing results to resample.
     resampled_dir: str
@@ -48,8 +48,8 @@ def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k
     """Resamples a spectrum file by interpolation onto a grid with a
     sampling of 3 pixels per resolution element.
 
-    Inputs
-    ------
+    Parameters
+    ----------
     spectrum_name: str
         Name of spectrum.
     results_dir: str
@@ -72,9 +72,11 @@ def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k
 
     interpolated_flux = np.interp(wav_grid, wavelength, spectrum)
 
-    output_path = [resampled_dir, "{0}_res{1:3.01f}.txt".format(spectrum_name[:-4], float(sampling))]
+    output_path = [resampled_dir,
+                   "{0}_res{1:3.01f}.txt".format(spectrum_name[:-4], float(sampling))]
     filetowrite = os.path.join(*output_path)
-    io.write_e_2col(filetowrite, wav_grid[1:-2], interpolated_flux[1:-2])  # [1:-2] for border effects
+    io.write_e_2col(filetowrite, wav_grid[1:-2],
+                    interpolated_flux[1:-2])  # [1:-2] for border effects
 
     if plottest:
         plt.figure(1)
@@ -92,11 +94,12 @@ def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k
     return 0
 
 
-def log_resample(wavelength, sampling: Union[int, float], resolution: Union[int, float]) -> np.ndarray:
+def log_resample(wavelength, sampling: Union[int, float],
+                 resolution: Union[int, float]) -> np.ndarray:
     """Re-sample spectrum with a given sampling per resolution element.
 
-    Inputs
-    ------
+    Parameters
+    ----------
     wavelength: np.ndarray
         Wavelength array.
     sampling: int, float
