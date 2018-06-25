@@ -3,13 +3,14 @@ import itertools
 import os
 
 import numpy as np
+from numpy import ndarray
 
 import eniric
 import eniric.atmosphere as atm
-from eniric.corrections import correct_artigau_2018
-from eniric.nIRanalysis import convolution
 from eniric.Qcalculator import (RV_prec_calc_Trans, RVprec_calc,
                                 RVprec_calc_masked, quality)
+from eniric.corrections import correct_artigau_2018
+from eniric.nIRanalysis import convolution
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import band_middle, load_aces_spectrum
@@ -93,7 +94,7 @@ def _parser():
     parser.add_argument(
         "--ref_band",
         help="SNR reference band. Default=J. (Default=100). "
-        "'self' scales each band relative to the SNR itself.",
+             "'self' scales each band relative to the SNR itself.",
         choices=["SELF", "self", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
         default="J",
         type=str,
@@ -113,14 +114,14 @@ def _parser():
 
 
 def do_analysis(
-    star_params,
-    vsini: float,
-    R: float,
-    band: str,
-    sampling: float = 3.0,
-    conv_kwargs=None,
-    snr: float = 100.0,
-    ref_band: str = "J",
+        star_params,
+        vsini: float,
+        R: float,
+        band: str,
+        sampling: float = 3.0,
+        conv_kwargs=None,
+        snr: float = 100.0,
+        ref_band: str = "J",
 ):
     """Precision and Quality for specific parameter set."""
     if conv_kwargs is None:
@@ -156,7 +157,7 @@ def do_analysis(
         index_ref = np.searchsorted(
             wav_grid, mid_point
         )  # searching for the index closer to 1.25 micron
-        snr_estimate = np.sqrt(np.sum(sampled_flux[index_ref - 1 : index_ref + 2]))
+        snr_estimate = np.sqrt(np.sum(sampled_flux[index_ref - 1: index_ref + 2]))
         print(
             "\tSanity Check: The S/N at {0:4.02} micron = {1:4.2f}, (should be {2:g}).".format(
                 mid_point, snr_estimate, snr
@@ -180,14 +181,23 @@ def do_analysis(
 
 
 def convolve_and_resample(
-    wav: np.ndarray,
-    flux: np.ndarray,
-    vsini: float,
-    R: float,
-    band: str,
-    sampling: float,
-    conv_kwargs,
-):
+        wav: ndarray,
+        flux: ndarray,
+        vsini: float,
+        R: float,
+        band: str,
+        sampling: float,
+        conv_kwargs,
+) -> Tuple[ndarray, ndarray]:
+    """Convolve and resample functions together.
+
+    Returns
+    -------
+    wav_grid: ndarray
+        Resampled wavelength array
+    sampled_flux: ndarray
+        Convolved and resampled flux array
+    """
     wav_band, flux_band, convolved_flux = convolution(
         wav, flux, vsini, R, band, **conv_kwargs
     )
