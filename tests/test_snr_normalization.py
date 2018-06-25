@@ -137,18 +137,46 @@ def test_get_reference_spectrum_in_nonexistent_file():
         snrnorm.get_reference_spectrum("M1-K-1.0-100k", ref_band="J")
 
 
-def test_normalize_flux_new_verse_old():
+@pytest.mark.parametrize("startype, band, vsini, res", [
+    ("M0", "Z", 1, "60k"),
+    # ("M0", "H", 1, "60k"),
+    # ("M0", "Y", 10, "100k"),
+    # ("M0", "K", 5, "60k"),
+    # ("M0", "K", 5, "100k"),
+    # ("M6", "H", 1, "80k"),
+    # ("M9", "K", 5, "60k"),
+    ("M9", "H", 1, "100k"),
+    ("M6", "J", 10, "100k"),
+    ("M3", "Y", 5, "80k")
+])
+def test_normalize_flux_new_verse_old(startype, band, vsini, res):
     test_data = os.path.join(eniric.paths["test_data"], "resampled",
                              "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k_res3.0.txt")
-    id_string = "M0-K-1.0-100k"
+    id_string = "{0:s}-{1:s}-{2:3.01f}-{3:s}".format(startype, band, float(vsini), res)
+    # wav, flux = utils.read_spectrum(test_data)
     wav, flux = Io.pdread_2col(test_data)
+
+    print("wav in max =", wav[0], wav[-1])
     new_norm = snrnorm.normalize_flux(flux, id_string, new=True)
     old_norm = snrnorm.normalize_flux(flux, id_string, new=False)
 
+    print(new_norm)
+    print(old_norm)
+    #    index_ref = np.searchsorted(wav, [utils.band_middle(band)])[0]  # Searching for the closest index
+    #   indexes = sampling_index(index_ref, sampling=3.0, array_length=len(wav))
+
+    # old_snr_estimate = np.sqrt(np.sum(old_norm[indexes]))
+    # new_snr_estimate = np.sqrt(np.sum(new_norm[indexes]))
+
+    #  print("\tSanity Check: The S/N for the old model was of {:4.2f}.".format(old_snr_estimate))
+    # print("\tSanity Check: The S/N for the new model was of {:4.2f}.".format(new_snr_estimate))
+    # norm_value = (snr_estimate / snr) ** 2
     rvprec_new = Q.RVprec_calc(wav, new_norm)
     rvprec_old = Q.RVprec_calc(wav, old_norm)
 
-    assert abs(rvprec_new.value - rvprec_old.value) < 1
+    print(new_norm, old_norm)
+    print(rvprec_new, rvprec_old)
+    assert np.abs(rvprec_new.value - rvprec_old.value) < 0.4
 
 
 def test_old_does_does_not_handle_changed_band():

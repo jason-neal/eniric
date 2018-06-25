@@ -33,7 +33,7 @@ def test_read_spectrum():
 # @pytest.mark.xfail(raises=FileNotFoundError)
 def test_get_spectrum_name():
     """Test specifying file names with stellar parameters."""
-    test = "Z-0.0/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+    test = os.path.join("Z-0.0", "lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
 
     assert utils.get_spectrum_name("M6", flux_type="wave") == test
 
