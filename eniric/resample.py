@@ -116,7 +116,34 @@ def log_resample(wavelength, sampling: Union[int, float], resolution: Union[int,
 
     # Create grid using logarithms with base of (1.0 + 1.0/(sampling*resolution))
     base = 1.0 + 1.0 / (sampling * resolution)
-    n = np.log(wavelength_end / wavelength_start) / np.log(base)
-    powers = np.arange(np.ceil(n + 1))
-    wav_grid = wavelength_start * base ** powers
-    return wav_grid
+    return my_logspace(wavelength_start, wavelength_end, base, end_point=True)
+
+
+def my_logspace(start, stop, base, end_point: bool = False):
+    """Like np.logspace but start and stop in wavelength units.
+
+
+    Parameters
+    ----------
+    start: float
+        Starting point (in real units)
+    stop: float
+        End point (in real units)
+    base: float
+        Logarithmic base to jump between points.
+    end_point: bool
+        Make sure to include/go past the end point
+
+    Returns
+    -------
+    logspace: ndarray
+        Array of points with a spacing such that x[ii+1] = x[ii] * base
+        between start and stop (or stop*base if end_point = True).
+
+    """
+    n = np.log(stop / start) / np.log(base)
+    # to use the end point
+    if end_point:
+        n = n + 1
+    powers = np.arange(np.ceil(n))
+    return start * base ** powers
