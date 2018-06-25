@@ -116,7 +116,7 @@ def quality(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]
 
     wis = sqrt_sum_wis(wavelength, flux)
 
-    return wis / np.sqrt(np.sum(flux))
+    return wis / np.sqrt(np.nansum(flux))
 
 
 def sqrt_sum_wis(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]) -> Union[
@@ -167,10 +167,10 @@ def sqrt_sum_wis(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, nda
     else:
         flux_variance = flux
 
-    wis = np.sqrt(np.sum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 /
+    wis = np.sqrt(np.nansum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 /
                          flux_variance[:-1]))
     if not np.isfinite(wis):
-        warnings.warn("Weight sum is not finite")
+        warnings.warn("Weight sum is not finite = {}".format(wis))
     return wis
 
 
@@ -243,8 +243,7 @@ def RVprec_calc_masked(wavelength: Union[List[List[Any]], ndarray],
 
     # Zeros created from the initial empty array, when skipping single element chunks)
     slice_rvs = slice_rvs[np.nonzero(slice_rvs)]  # Only use nonzero values.
-
-    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / slice_rvs) ** 2.0)))
+    rv_value = 1.0 / (np.sqrt(np.nansum((1.0 / slice_rvs) ** 2.0)))
 
     return rv_value
 
@@ -379,5 +378,5 @@ def sqrt_sum_wis_trans(wavelength: Union[Quantity, ndarray], flux: Union[Quantit
     else:
         flux_variance = flux
 
-    return np.sqrt(np.sum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 /
+    return np.sqrt(np.nansum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 /
                           (flux_variance[:-1] / transmission[:-1] ** 2.0)))
