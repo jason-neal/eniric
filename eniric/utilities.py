@@ -49,12 +49,12 @@ def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
 
 
 def get_spectrum_name(
-    startype: str,
-    logg: Union[float, int] = 4.50,
-    feh: Union[float, int] = 0.0,
-    alpha: Optional[Union[int, float]] = None,
-    org: bool = False,
-    flux_type: str = "photon",
+        startype: str,
+        logg: Union[float, int] = 4.50,
+        feh: Union[float, int] = 0.0,
+        alpha: Optional[Union[int, float]] = None,
+        org: bool = False,
+        flux_type: str = "photon",
 ) -> str:
     """Return correct phoenix spectrum filename for a given spectral type.
 
@@ -175,6 +175,8 @@ def band_limits(band: str) -> Tuple[float, float]:
         "K": (2.07, 2.35),
         "CONT": (0.45, 1.05),
         "NIR": (0.83, 2.35),
+        "CARMENES_NIR": (0.96, 1.71),
+        "CARMENES_VIS": (0.52, 0.96),
     }
 
     if band in bands:
@@ -202,10 +204,10 @@ def band_middle(band):
 
 
 def wav_selector(
-    wav: Union[ndarray, List[float]],
-    flux: Union[ndarray, List[float]],
-    wav_min: float,
-    wav_max: float,
+        wav: Union[ndarray, List[float]],
+        flux: Union[ndarray, List[float]],
+        wav_min: float,
+        wav_max: float,
 ) -> Tuple[ndarray, ndarray]:
     """
     function that returns wavelength and flux within a giving range
@@ -242,10 +244,11 @@ def mask_between(x, xmin, xmax):
     """Create boolean mask of x between xmin and xmax."""
     return (x >= xmin) & (x < xmax)
 
+
 def unitary_gaussian(
-    x: Union[range, int, ndarray],
-    center: Union[float, int, str],
-    fwhm: Union[float, int, str],
+        x: Union[range, int, ndarray],
+        center: Union[float, int, str],
+        fwhm: Union[float, int, str],
 ) -> ndarray:
     """Gaussian function of area = 1.
 
@@ -279,7 +282,7 @@ def unitary_gaussian(
 
 
 def rotation_kernel(
-    delta_lambdas: ndarray, delta_lambda_l: float, vsini: float, epsilon: float
+        delta_lambdas: ndarray, delta_lambda_l: float, vsini: float, epsilon: float
 ) -> ndarray:
     """Calculate the rotation kernel for a given wavelength
 
@@ -342,7 +345,7 @@ def oned_circle_kernel(x, center, fwhm):
     # Limit to main cos lobe only
     upper_xi = center + np.pi / 2 / B
     lower_xi = center - np.pi / 2 / B
-    mask = (x < upper_xi) & (x > lower_xi)
+    mask = mask_between(x, lower_xi, upper_xi)
     result[~mask] = 0
 
     return result
