@@ -277,19 +277,28 @@ def test_silent_remove():
 # Test Resolution conversions
 
 @pytest.mark.parametrize(
-    "resolutions,results",
+    "resolution,result",
     [
-        (["60k", "80k", "100k"], ["60k", "80k", "100k"]),
-        ([60000, 80000, 100000], ["60k", "80k", "100k"]),
-        (["60000", "80K", "100k"], ["60k", "80k", "100k"]),
-        ([np.float("60000"), np.int("2000")], ["60k", "2k"]),
-        ("60k", "60k"),
-        (80000, "80k"),
+        ("60k", 60000),
+        (80000, 80000),
+        ("2000", 2000),
     ],
 )
-def test_resolution2str(resolutions, results):
-    """Test transformation from integer to string resolutions."""
-    assert results == utils.resolution2str(resolutions)
+def test_res2int(resolution, result):
+    assert result == utils.res2int(resolution)
+
+
+@pytest.mark.parametrize(
+    "resolution,result", [(60000, "60k"),
+                          ("20000", "20k"),
+                          (np.float("20000"), "20k"),
+                          ("60k", "60k"),
+                          (80000, "80k"),
+                          (3000, "3k")]
+)
+def test_res2str(resolution, result):
+    """Test single values in res2str"""
+    assert result == utils.res2str(resolution)
 
 
 @pytest.mark.parametrize(
@@ -299,26 +308,43 @@ def test_resolution2str(resolutions, results):
         (["60k", "80k", "100k"], [60000, 80000, 100000]),
         (["6000", "8000", "100000"], [6000, 8000, 100000]),
         (["10000", "20k", "300K"], [10000, 20000, 300000]),
-        ("60k", 60000),
-        (80000, 80000),
     ],
 )
-def test_resolution2int(resolutions, results):
-    """Test transformation from string to integer resolutions."""
-    assert results == utils.resolution2int(resolutions)
+def test_resolutions2ints_lists(resolutions, results):
+    """Test transformation of resolutions to integer resolutions."""
+    assert results == utils.resolutions2ints(resolutions)
 
 
 @pytest.mark.parametrize(
-    "resolution", [1000, 10000, [100000, 2000000], "1k", "10k", ["100k", "2000k"]]
+    "resolutions,results",
+    [
+        (["60k", "80k", "100k"], ["60k", "80k", "100k"]),
+        ([60000, 80000, 100000], ["60k", "80k", "100k"]),
+        (["60000", "80K", "100k"], ["60k", "80k", "100k"]),
+        ([np.float("60000"), np.int("2000")], ["60k", "2k"]),
+    ],
+)
+def test_resolutions2strs_list(resolutions, results):
+    """Test transformation of a list of resolutions to strings."""
+    assert results == utils.resolutions2strs(resolutions)
+
+
+@given(st.integers(min_value=1, max_value=1000000))
+def test_res2int_doesnt_change_int(resolution):
+    assert resolution == utils.res2int(resolution)
+
+
+@pytest.mark.parametrize(
+    "resolution", [1000, 10000, 200000, "1k", "10k", "100k", "2000k"]
 )
 def test_compatibility_res2int_res2str(resolution):
     """Test res2int and rest2str reversible and do not change when operated twice.
 
-    Single value and lists.
+    These are single values.
     """
     resolution = resolution
-    res2str = utils.resolution2str
-    res2int = utils.resolution2int
+    res2str = utils.res2str
+    res2int = utils.res2int
 
     assert res2str(resolution) == res2str(res2int(resolution))
     assert res2str(resolution) == res2str(res2str(resolution))
@@ -328,26 +354,68 @@ def test_compatibility_res2int_res2str(resolution):
 
 
 @pytest.mark.parametrize(
-    "resolutions,results", [(60000, 60000), ("80k", 80000), ("8000", 8000)]
+    "resolution",
+    [[1000, 10000, 50000], [100000, 2000000], ["1k"], ["10k", "20k"], ["100k", "2000k"]]
 )
-def test_resolution2int_single(resolutions, results):
-    """Test single values in res2int"""
-    assert results == utils.resolution2int(resolutions)
+def test_compatibility_resolutions2ints_resolutions2strs(resolution):
+    """Test resolutions2ints and resolutions2strs reversible and do not change when operated twice.
+
+    These are lists of values.
+    """
+
+    res2str = utils.resolutions2strs
+    res2int = utils.resolutions2ints
+
+    assert res2str(resolution) == res2str(res2int(resolution))
+    assert res2str(resolution) == res2str(res2str(resolution))
+
+    assert res2int(resolution) == res2int(res2str(resolution))
+    assert res2int(resolution) == res2int(res2int(resolution))
 
 
-@pytest.mark.parametrize(
-    "resolutions,results", [(60000, "60k"), (80000, "80k"), (3000, "3k")]
-)
-def test_resolution2str_single(resolutions, results):
-    """Test single values in  res2str"""
-    assert results == utils.resolution2str(resolutions)
+@pytest.mark.parametrize("resolutions", [
+    [60000, "20000"],
+    ["50k", "10k"],
+    ["100000", "10000"],
+    ["100000", "10000"],
+])
+def test_res2int_fails_on_list(resolutions):
+    with pytest.raises(TypeError):
+        utils.res2int(resolutions)
 
 
+@pytest.mark.parametrize("resolutions", [
+    60000,
+    "10k"
+    "100000",
+])
+def test_resolutions2ints_fails_on_single(resolutions):
+    with pytest.raises(TypeError):
+        utils.resolutions2ints(resolutions)
 
 
+@pytest.mark.parametrize("resolutions", [
+    [60000, "20000"],
+    ["50k", "10k"],
+    ["100000", "10000"],
+    ["100000", "10000"],
+])
+def test_res2str_fails_on_list(resolutions):
+    with pytest.raises(TypeError):
+        utils.res2str(resolutions)
 
 
+@pytest.mark.parametrize("resolutions", [
+    60000,
+    "10k"
+    "100000",
+])
+def test_resolutions2strs_fails_on_single(resolutions):
+    with pytest.raises(TypeError):
+        utils.resolutions2strs(resolutions)
 
+
+###############################################
 @pytest.mark.parametrize(
     "filename",
     [
