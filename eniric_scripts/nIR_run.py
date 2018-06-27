@@ -5,11 +5,12 @@ import argparse
 import os
 import sys
 from datetime import datetime as dt
+from typing import List, Optional, Union, Sequence
 
 import eniric
 from eniric.nIRanalysis import convolve_spectra
 from eniric.resample import resampler
-from eniric.utilities import get_spectrum_name, resolution2int
+from eniric.utilities import get_spectrum_name, resolutions2ints
 
 
 def _parser():
@@ -71,15 +72,15 @@ def _parser():
 
 
 def main(
-    startype,
-    vsini,
-    resolution,
-    band,
-    sample_rate=None,
-    noresample=False,
-    unnormalized=False,
-    org=False,
-    replace=False,
+        startype: Sequence[str],
+        vsini: Sequence[float],
+        resolution: Sequence[str],
+        band: Sequence[str],
+        sample_rate: Optional[List[Union[int, float]]] = None,
+        noresample: bool = False,
+        unnormalized: bool = False,
+        org: bool = False,
+        replace: bool = False,
 ):
     """Run convolutions of NIR spectra for the range of given parameters.
 
@@ -106,8 +107,8 @@ def main(
 
     # Check the inputs are correct format. (lists)
     for f_input, f_name in zip(
-        [startype, band, vsini, resolution, sample_rate],
-        ["startype", "band", "vsini", "resolution", "sample_rate"],
+            [startype, band, vsini, resolution, sample_rate],
+            ["startype", "band", "vsini", "resolution", "sample_rate"],
     ):
         if not isinstance(f_input, list):
             print(f_name, type(f_input), type(f_name))
@@ -117,7 +118,7 @@ def main(
     vsini = [float(v) for v in vsini]  # turn to floats
 
     # Handle K in Resolution
-    resolution = resolution2int(resolution)
+    res = resolutions2ints(resolution)
 
     start_time = dt.now()
 
@@ -140,16 +141,16 @@ def main(
 
         for b in band:
             for vel in vsini:
-                for R in resolution:
+                for R in res:
                     for sample in sample_rate:
-
+                        r = int(float(R) / 1000)
                         result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2:.01f}_R{3}k{4}.txt".format(
-                            star, b, vel, int(R / 1000), norm_
+                            star, b, vel, r, norm_
                         )
 
                         if (
-                            os.path.exists(os.path.join(results_dir, result_name))
-                            and not replace
+                                os.path.exists(os.path.join(results_dir, result_name))
+                                and not replace
                         ):
                             print(
                                 "Skipping convolution as {} already exists".format(
