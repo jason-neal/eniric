@@ -2,18 +2,19 @@
 Auxiliary functions for nIRanalysis
 
 """
+import collections
 import errno
 import os
 import re
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union, Sequence
 
 import numpy as np
+from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
+from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
 from numpy import ndarray
 
 import eniric
 import eniric.IOmodule as io
-from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
-from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
 
 
 def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
@@ -360,58 +361,78 @@ def silent_remove(filename: str) -> None:
             raise  # re-raise exception if a different error occurred
 
 
-def resolution2int(resolutions: Union[List[Any], Any]) -> Union[List[int], int]:
+####################################################
+def issequenceforme(obj):
+    if isinstance(obj, str):
+        return False
+    return isinstance(obj, collections.Sequence)
+
+
+def resolutions2ints(resolution: Sequence[Any]) -> List[int]:
+    """List of resolutions to list of integer resolutions.
+
+    Convert from ["100k", "30000"] to [100000, 30000].
+    """
+    if not issequenceforme(resolution):
+        raise TypeError("resolution was a {} but needs to be a Sequence".format(type(resolution)))
+
+    res_list = []
+    for res in resolution:
+        res_list.append(res2int(res))
+    return res_list
+
+
+def res2int(res: Any) -> int:
     """Convert from "100k" or "100000" to 100000."""
-    if not hasattr(resolutions, "__len__") or isinstance(resolutions, str):
-        resolutions = [resolutions]
-        list_flag = True
-    else:
-        list_flag = False
+    if issequenceforme(res):
+        raise TypeError("res was a {} but needs to be a non-Sequence".format(type(res)))
 
-    res_ints = []
-    for res in resolutions:
-        if isinstance(res, (np.int, np.float)):
-            value = res
-        elif isinstance(res, str):
-            if res.lower().endswith("k"):
-                value = float(res[:-1]) * 1000
-            else:
-                value = float(res)
+    if isinstance(res, (np.int, np.float, int, float)):
+        value = res
+    elif isinstance(res, str):
+        if res.lower().endswith("k"):
+            value = float(res[:-1]) * 1000
         else:
-            raise TypeError("Resolution name Type error of type {}".format(type(res)))
-        res_ints.append(int(value))
-
-    if list_flag:
-        return res_ints[0]
+            value = float(res)
     else:
-        return res_ints
+        raise TypeError("Resolution name Type error of type {}".format(type(res)))
+
+    return int(value)
 
 
-def resolution2str(resolutions: Union[List[Any], Any]) -> Union[List[str], str]:
-    if not hasattr(resolutions, "__len__") or isinstance(resolutions, str):
-        resolutions = [resolutions]
-        list_flag = True
-    else:
-        list_flag = False
+def resolutions2strs(resolution: Sequence[Any]) -> List[str]:
+    """List of resolutions to list of string resolutions.
 
-    res_str = []
-    for res in resolutions:
-        if isinstance(res, (np.int, np.float)):
-            value = res / 1000
-        elif isinstance(res, str):
-            if res.lower().endswith("k"):
-                value = res[:-1]
-            else:
-                value = float(res) / 1000
+    Convert from ["100000", 10000] to ["100k", "10k"].
+    """
+    if not issequenceforme(resolution):
+        raise TypeError("resolution was a {} but needs to be a Sequence".format(type(resolution)))
+
+    res_list = []
+    for res in resolution:
+        res_list.append(res2str(res))
+    return res_list
+
+
+def res2str(res: Any) -> str:
+    """Convert from "100000" or 100000 to "100k"."""
+    if issequenceforme(res):
+        raise TypeError("resolution was a {} but needs to be a non-Sequence".format(type(res)))
+
+    if isinstance(res, (np.int, np.float)):
+        value = res / 1000
+    elif isinstance(res, str):
+        if res.lower().endswith("k"):
+            value = res[:-1]
         else:
-            raise TypeError("Resolution name Type error of type {}".format(type(res)))
-
-        res_str.append("{0}k".format(int(value)))
-    if list_flag:
-        return res_str[0]
+            value = float(res) / 1000
     else:
-        return res_str
+        raise TypeError("Resolution name TypeError of type {}".format(type(res)))
 
+    return "{0}k".format(int(value))
+
+
+#################################
 
 def load_aces_spectrum(params, photons=True):
     """Load a Phoenix spectrum from the phoenix library using STARFISH.
