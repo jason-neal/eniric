@@ -1,4 +1,5 @@
 """Module with functions that have precision corrections."""
+from typing import Dict
 
 
 def correct_artigau_2018(band: str) -> float:

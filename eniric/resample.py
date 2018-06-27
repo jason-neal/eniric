@@ -6,7 +6,7 @@ Functions for file resampling.
 import os
 import re
 from os.path import isfile, join
-from typing import Union
+from typing import Union, Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,7 +18,8 @@ results_dir = eniric.paths["results"]
 resampled_dir = eniric.paths["resampled"]
 
 
-def resample_allfiles(results_dir: str = None, resampled_dir: str = None) -> int:
+def resample_allfiles(results_dir: Optional[str] = None,
+                      resampled_dir: Optional[str] = None) -> int:
     """Resample all files inside results_dir folder.
 
     Parameters
@@ -29,9 +30,9 @@ def resample_allfiles(results_dir: str = None, resampled_dir: str = None) -> int
         Directory to save resampled results.
     """
     if results_dir is None:
-        results_dir = eniric.paths["results"]
+        results_dir = eniric.paths["results"]  # type: ignore
     if resampled_dir is None:
-        resampled_dir = eniric.paths["resampled"]
+        resampled_dir = eniric.paths["resampled"]  # type: ignore
     # Getting a list of all the files
     onlyfiles = [f for f in os.listdir(results_dir) if isfile(join(results_dir, f))]
 
@@ -43,7 +44,8 @@ def resample_allfiles(results_dir: str = None, resampled_dir: str = None) -> int
 
 
 def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
-              results_dir: str = results_dir, resampled_dir: str = resampled_dir,
+              results_dir: str = results_dir,
+              resampled_dir: str = resampled_dir,
               sampling: Union[int, float] = 3.0, plottest: bool = False) -> int:
     """Resamples a spectrum file by interpolation onto a grid with a
     sampling of 3 pixels per resolution element.
@@ -65,7 +67,10 @@ def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k
     read_name = os.path.join(results_dir, spectrum_name)
 
     match = re.search("_R(\d{2,3})k", spectrum_name)
-    resolution = int(match.group(1)) * 1000
+    if match:
+        resolution = int(match.group(1)) * 1000  # type: int
+    else:
+        raise Exception("Did not match Resolution")
 
     wavelength, __, spectrum = io.pdread_3col(read_name, noheader=True)
     wav_grid = log_resample(wavelength, sampling, resolution)
@@ -118,7 +123,7 @@ def log_resample(wavelength, sampling: Union[int, float],
     wavelength_end = np.nanmax(wavelength)
 
     # Create grid using logarithms with base of (1.0 + 1.0/(sampling*resolution))
-    base = 1.0 + 1.0 / (sampling * resolution)
+    base = 1.0 + 1.0 / (float(sampling) * float(resolution))  # type : float
     return my_logspace(wavelength_start, wavelength_end, base, end_point=True)
 
 
