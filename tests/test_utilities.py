@@ -182,6 +182,27 @@ def test_band_selector_with_no_selection(band):
     assert np.all(flux2 == flux)
 
 
+@pytest.mark.parametrize("band", ["H", "J", "K", "VIS", "Z"])
+def test_band_middle(band):
+    """Test band middle is middle of band.
+    Some repeated coding.
+    """
+    lower, upper = utils.band_limits(band)
+    middle = utils.band_middle(band)
+
+    assert lower < middle
+    assert middle < upper
+    assert (lower + upper) / 2 == middle
+
+
+def test_band_midpoint_j():
+    """Middle of J is 1.25 microns."""
+    assert utils.band_middle("J") == 1.25
+
+
+##################################3
+
+
 @settings(max_examples=100)
 @given(
     st.lists(
@@ -205,13 +226,6 @@ def test_rotational_kernel(delta_lambdas, vsini, epsilon):
 
     assert len(new_profile) == len(delta_lambdas)
     # other properties to test?
-
-
-def test_silent_remove():
-    """Test this doesn't raise and issue.
-    Not really a good test."""
-    utils.silent_remove("a_fake_filename_that_doesnt_exist.fake")
-    assert True
 
 
 @given(
@@ -249,6 +263,18 @@ def test_unitary_gaussian_type_errors():
     with pytest.raises(TypeError):
         utils.unitary_gaussian(1, "center", fwhm)
 
+
+################################################
+
+def test_silent_remove():
+    """Test this doesn't raise and issue.
+    Not really a good test."""
+    utils.silent_remove("a_fake_filename_that_doesnt_exist.fake")
+    assert True
+
+
+####################################################
+# Test Resolution conversions
 
 @pytest.mark.parametrize(
     "resolutions,results",
@@ -317,21 +343,9 @@ def test_resolution2str_single(resolutions, results):
     assert results == utils.resolution2str(resolutions)
 
 
-@pytest.mark.parametrize("band", ["H", "J", "K", "VIS", "Z"])
-def test_band_middle(band):
-    """Test band middle is middle of band.
-    Some repeated coding.
-    """
-    lower, upper = utils.band_limits(band)
-    middle = utils.band_middle(band)
-
-    assert lower < middle and middle < upper
-    assert (lower + upper) / 2 == middle
 
 
-def test_band_midpoint_J():
-    """Middle of J is 1.25 microns."""
-    assert utils.band_middle("J") == 1.25
+
 
 
 @pytest.mark.parametrize(
