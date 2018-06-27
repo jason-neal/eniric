@@ -46,7 +46,7 @@ def resample_allfiles(results_dir: Optional[str] = None,
 def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
               results_dir: str = results_dir,
               resampled_dir: str = resampled_dir,
-              sampling: Union[int, float] = 3.0, plottest: bool = False) -> int:
+              sampling: Union[int, float] = 3.0) -> int:
     """Resamples a spectrum file by interpolation onto a grid with a
     sampling of 3 pixels per resolution element.
 
@@ -60,8 +60,6 @@ def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k
         Directory to save the results.
     sampling: float (default=3.0)
         Sampling per pixel.
-    plottest: bool
-        Plot a test of resampling.
     """
     os.makedirs(resampled_dir, exist_ok=True)
     read_name = os.path.join(results_dir, spectrum_name)
@@ -82,19 +80,6 @@ def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k
     filetowrite = os.path.join(*output_path)
     io.write_e_2col(filetowrite, wav_grid[1:-2],
                     interpolated_flux[1:-2])  # [1:-2] for border effects
-
-    if plottest:
-        plt.figure(1)
-        plt.xlabel(r"wavelength [$\mu$m])")
-        plt.ylabel(r"flux [counts] ")
-        plt.plot(wavelength, spectrum, color='k', linestyle="-",
-                 label="Original spectrum")
-        plt.plot(wav_grid, interpolated_flux, color='b', linestyle="-",
-                 label="Interpolated spectrum")
-        plt.legend(loc='best')
-        plt.show()
-
-        plt.close()
 
     return 0
 
