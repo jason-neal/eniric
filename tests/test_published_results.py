@@ -5,7 +5,6 @@ import pandas as pd
 import pytest
 
 from eniric_scripts.nIR_precision import calculate_prec
-from eniric_scripts.prec_1 import calc_prec1
 
 
 @pytest.fixture
@@ -14,30 +13,6 @@ def published_data():
     df = pd.read_csv(name, sep="\t")
     return df
 
-
-@pytest.mark.parametrize("SpType,band,vsini,R", [
-    ("M0", "Z", 1, "60k"),
-    ("M0", "H", 1, "60k"),
-    ("M0", "Y", 10, "100k"),
-    ("M0", "K", 5, "60k"),
-    ("M0", "K", 5, "100k"),
-    ("M6", "H", 1, "80k"),
-    ("M9", "K", 5, "60k"),
-    ("M9", "H", 1, "100k"),
-    ("M6", "J", 10, "100k"),
-    ("M3", "Y", 5, "80k")
-])
-def test_precision_1(published_data, SpType, band, vsini, R):
-    """Test  calc_prec1 works. Values are not very different to published values."""
-    id_string, p1 = calc_prec1(SpType, band, vsini, R, 3)
-
-    published_precision_1 = published_data["RV_Cond_1[m/s]"][published_data.Simulation == id_string].values
-
-    # Absolute change
-    assert np.abs(np.round(p1.value, 2) - published_precision_1) < 0.4
-
-    # Fractional change
-    assert (np.abs(np.round(p1.value, 2) - published_precision_1) / published_precision_1) < 0.02
 
 
 @pytest.mark.parametrize("SpType,band,vsini,R,expected", [
