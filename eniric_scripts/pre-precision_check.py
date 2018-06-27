@@ -4,7 +4,7 @@
  e.g. that they exist before trying to calculate the precision.
 
  """
-
+import sys
 import argparse
 import itertools
 

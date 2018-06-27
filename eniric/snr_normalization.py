@@ -204,7 +204,7 @@ def snr_constant_wav(wav: ndarray, flux: ndarray, wav_ref: float, snr: Union[int
     return norm_value
 
 
-def sampling_index(index: int, sampling: int = 3, array_length: Optional[int] = None) -> ndarray:
+def sampling_index(index: int, sampling: Union[int, float] = 3, array_length: Optional[int] = None) -> ndarray:
     """Get a small number of index values around the given index value.
 
     Parameters
@@ -245,12 +245,12 @@ def sampling_index(index: int, sampling: int = 3, array_length: Optional[int] = 
     return indexes
 
 
-def decompose_id_string(id_string: str):
+def decompose_id_string(id_string: str)-> Tuple[str, str, str, str]:
     """Get the values back out of the id-string."""
-    try:
-        star, band, vel, res = re.search(r"(M\d)-(\w{1,4})-(\d{1,2}\.0)-(\d{2,3}k)", id_string).groups()
-    except Exception as e:
-        print(e)
+    match = re.search(r"(M\d)-(\w{1,4})-(\d{1,2}\.0)-(\d{2,3}k)", id_string)
+    if match:
+        star, band, vel, res = match.groups()
+    else:
         raise ValueError("Id-string {0} is not valid for normalization.".format(id_string))
 
     if band not in eniric.bands["all"]:

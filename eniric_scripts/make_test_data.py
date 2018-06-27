@@ -4,10 +4,9 @@
 Compare to published results and run other tests on it.
 Don't do to many.
 """
-import os
 # import subprocess
 from datetime import datetime
-
+from typing import List, Tuple
 import eniric
 from eniric_scripts.nIR_run import main as nir_run
 from eniric_scripts.prepare_data import main as prepare_data
@@ -21,31 +20,18 @@ if __name__ == "__main__":
     )
 
     parameters = [
-        ("M0", "Z", 1, "60k"),
-        ("M0", "H", 1, "60k"),
-        ("M0", "Y", 10, "100k"),
-        ("M0", "K", [1, 5], ["60k", "100k"]),
-        ("M6", "H", 1, "80k"),
-        ("M9", "K", 5, "60k"),
-        ("M9", "H", 1, "100k"),
-        ("M6", "J", 10, "100k"),
-        ("M3", "Y", 5, "80k"),
-        (["M0", "M3", "M6", "M9"], "J", [1, 5, 10], ["60k", "80k", "100k"]),
-    ]
+        (["M0"], ["Z", "H"], [1, 10], ["60k", "100k"]),
+        (["M3"], ["Y", "K"], [10], ["100k"]),
+        (["M0"], ["K"], [1, 5], ["60k", "100k"]),
+        (["M6", "M9"], ["H", "K"], [1], ["80k"]),
+        (["M0", "M3", "M6", "M9"], ["J"], [1, 5, 10], ["60k", "80k", "100k"]),
+    ]  # type: List[Tuple[List[str], List[str], List[int], List[str]]]
 
     counter = 0
     start_time = datetime.now()
-    for sptype, band, vel, res in parameters:
+    for (sptype, band, vel, res) in parameters:
         # subprocess.call(["python eniric_scripts/nIR_run.py
         #       -s {0} -b {1} -R {2} -v {3}".format(sptype, band, res, vel)], shell=True)
-        if not isinstance(res, list):
-            res = [res]
-        if not isinstance(vel, list):
-            vel = [vel]
-        if not isinstance(band, list):
-            band = [band]
-        if not isinstance(sptype, list):
-            sptype = [sptype]
 
         nir_run(startype=sptype, vsini=vel, resolution=res, band=band)
         counter += 1
