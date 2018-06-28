@@ -10,6 +10,7 @@ import eniric.snr_normalization as snrnorm
 import eniric.utilities as utils
 
 resampled_template = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}_res3.0.txt"
+wave_photon_template = "lte0{0}-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
 
 
 @pytest.fixture(params=[
@@ -44,7 +45,7 @@ def test_snr_normalization(desired_snr, band, temp):
     Testing on middle of J band.
     """
     test_data = os.path.join(eniric.paths["phoenix_dat"], "Z-0.0",
-                             "lte0{0}-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat".format(temp))
+                             wave_photon_template.format(temp))
 
     band_mid = utils.band_middle(band)
     wav, flux = utils.read_spectrum(test_data)
@@ -68,7 +69,7 @@ def test_snr_normalization(desired_snr, band, temp):
 def test_snr_normalization_constant(desired_snr, band, temp):
     """Test snr_constant_band and snr_constant_wav produce same result."""
     test_data = os.path.join(eniric.paths["phoenix_dat"], "Z-0.0",
-                             "lte0{0}-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat".format(temp))
+                             wave_photon_template.format(temp))
 
     band_mid = utils.band_middle(band)
     wav, flux = utils.read_spectrum(test_data)
@@ -80,8 +81,9 @@ def test_snr_normalization_constant(desired_snr, band, temp):
 def test_band_snr_norm():
     """Compared to wav snr norm."""
     # snr_constant_band
+    star, band, vel, res = "M0", "J", 1.0, "100k"
     test_data = os.path.join(
-        eniric.paths["test_data"], "resampled", "Spectrum_M0-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.0.txt")
+        eniric.paths["test_data"], "resampled", resampled_template.format(star, band, vel, res))
     wav, flux = Io.pdread_2col(test_data)
 
     assert (snrnorm.snr_constant_band(wav, flux, band="J", snr=100) ==
@@ -106,7 +108,8 @@ def test_sampling_index():
     # Check number of values correct.
     for sample in [1, 2, 3, 4, 5, 7, 10, 15]:
         assert len(snrnorm.sampling_index(20, sample)) == sample
-        assert isinstance(snrnorm.sampling_index(20, sample)[0], (int, np.integer))  # index values must be int
+        assert isinstance(snrnorm.sampling_index(20, sample)[0],
+                          (int, np.integer))  # index values must be int
 
 
 def test_sampling_index_array():
