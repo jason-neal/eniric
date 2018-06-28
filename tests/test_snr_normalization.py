@@ -9,6 +9,31 @@ import eniric.Qcalculator as Q
 import eniric.snr_normalization as snrnorm
 import eniric.utilities as utils
 
+resampled_template = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}_res3.0.txt"
+
+
+@pytest.fixture(params=[
+    ("M0", "Z", 1.0, "60k"),
+    ("M3", "Y", 10.0, "100k"),
+    ("M6", "J", 10.0, "100k"),
+    ("M9", "H", 1.0, "80k"),
+    ("M0", "K", 5.0, "60k")
+])
+def resampled_data(request):
+    """Load a resampled spectra.
+
+    Returns id-string, wavelength and flux.
+
+    Fixture so that data files only get loaded once here.
+    """
+    star, band, vel, res = request.param
+    id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
+
+    test_data = os.path.join(eniric.paths["resampled"],
+                             resampled_template.format(star, band, vel, res))
+    wav, flux = Io.pdread_2col(test_data)
+    return id_string, wav, flux
+
 
 @pytest.mark.parametrize("temp", [2800, 2600])
 @pytest.mark.parametrize("desired_snr", [100.0, 150.0])
@@ -137,55 +162,32 @@ def test_get_reference_spectrum_in_nonexistent_file():
         snrnorm.get_reference_spectrum("M1-K-1.0-100k", ref_band="J")
 
 
-@pytest.mark.parametrize("startype, band, vsini, res", [
-    ("M0", "Z", 1, "60k"),
-    # ("M0", "H", 1, "60k"),
-    # ("M0", "Y", 10, "100k"),
-    # ("M0", "K", 5, "60k"),
-    # ("M0", "K", 5, "100k"),
-    # ("M6", "H", 1, "80k"),
-    # ("M9", "K", 5, "60k"),
-    ("M9", "H", 1, "100k"),
-    ("M6", "J", 10, "100k"),
-    ("M3", "Y", 5, "80k")
-])
-def test_normalize_flux_new_verse_old(startype, band, vsini, res):
-    test_data = os.path.join(eniric.paths["test_data"], "resampled",
-                             "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k_res3.0.txt")
-    id_string = "{0:s}-{1:s}-{2:3.01f}-{3:s}".format(startype, band, float(vsini), res)
-    # wav, flux = utils.read_spectrum(test_data)
-    wav, flux = Io.pdread_2col(test_data)
+def test_normalize_flux_new_verse_old(resampled_data):
+    """Test only small differences due to new normalization."""
+    id_string, wav, flux = resampled_data
 
     print("wav in max =", wav[0], wav[-1])
     new_norm = snrnorm.normalize_flux(flux, id_string, new=True)
     old_norm = snrnorm.normalize_flux(flux, id_string, new=False)
 
-    print(new_norm)
-    print(old_norm)
-    #    index_ref = np.searchsorted(wav, [utils.band_middle(band)])[0]  # Searching for the closest index
-    #   indexes = sampling_index(index_ref, sampling=3.0, array_length=len(wav))
+    print("new norm", new_norm)
+    print("old_norm", old_norm)
 
-    # old_snr_estimate = np.sqrt(np.sum(old_norm[indexes]))
-    # new_snr_estimate = np.sqrt(np.sum(new_norm[indexes]))
-
-    #  print("\tSanity Check: The S/N for the old model was of {:4.2f}.".format(old_snr_estimate))
-    # print("\tSanity Check: The S/N for the new model was of {:4.2f}.".format(new_snr_estimate))
-    # norm_value = (snr_estimate / snr) ** 2
     rvprec_new = Q.RVprec_calc(wav, new_norm)
     rvprec_old = Q.RVprec_calc(wav, old_norm)
 
-    print(new_norm, old_norm)
-    print(rvprec_new, rvprec_old)
+    print("new rv=", rvprec_new, "old rv=", rvprec_old)
     assert np.abs(rvprec_new.value - rvprec_old.value) < 0.4
 
 
-def test_old_does_does_not_handle_changed_band():
-    test_data = os.path.join(eniric.paths["resampled"], "Spectrum_M0-PHOENIX-ACES_Kband_vsini5.0_R100k_res3.0.txt")
-    id_string = "M0-K-5.0-100k"
-    wav, flux = Io.pdread_2col(test_data)
+def test_old_normalization_does_not_handle_changed_band(resampled_data):
+    id_string, wav, flux = resampled_data
     with pytest.raises(ValueError):
         snrnorm.normalize_flux(flux, id_string, new=False, ref_band="K")
 
+
+def test_old_normalization_does_not_handle_changed_snr(resampled_data):
+    id_string, wav, flux = resampled_data
     with pytest.raises(ValueError):
         snrnorm.normalize_flux(flux, id_string, new=False, snr=101)
 
@@ -216,21 +218,24 @@ def test_snr_old_norm_constant_with_bad_id_str(bad_string):
         snrnorm.old_norm_constant(bad_string)
 
 
-@pytest.mark.parametrize("star,band,vel,res,ref_band", [
-    ("M0", "Z", 1.0, "60k", "self"),
-    ("M3", "Y", 5.0, "80k", "SELF"),
-    ("M6", "J", 10.0, "100k", "self"),
-    ("M9", "H", 1.0, "100k", "SELF"),
-    ("M0", "K", 5.0, "60k", "self")
-])
-def test_get_ref_spectrum_with_self(star, band, vel, res, ref_band):
+def test_get_ref_spectrum_with_ref_band_self(resampled_data):
     """Checks for upper or lower "self"."""
-    id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
+    id_string, wav, flux = resampled_data
 
-    test_data = os.path.join(eniric.paths["resampled"],
-                             "Spectrum_{}-PHOENIX-ACES_{}band_vsini{}_R{}_res3.0.txt".format(star, band, vel, res))
-    wav, flux = Io.pdread_2col(test_data)
+    wav_ref, flux_ref = snrnorm.get_reference_spectrum(id_string, ref_band="self")
 
+    # Reference is the same values
+    assert np.allclose(wav, wav_ref)
+    assert np.allclose(flux, flux_ref)
+
+
+@pytest.mark.parametrize("ref_band", [
+    "self", "SELF", "self", "SeLF"
+])
+def test_get_self_band_can_be_any_case(resampled_data, ref_band):
+    """Checks for upper or lower "self"."""
+
+    id_string, wav, flux = resampled_data
     wav_ref, flux_ref = snrnorm.get_reference_spectrum(id_string, ref_band=ref_band)
 
     # Reference is the same values

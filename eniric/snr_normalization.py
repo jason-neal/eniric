@@ -26,7 +26,8 @@ def normalize_spectrum(*args, **kwargs):
     raise NotImplementedError("Use normalize_flux")
 
 
-def normalize_flux(flux: ndarray, id_string: str, new: bool = True, snr: Union[int, float] = 100.0, ref_band: str = "J") -> ndarray:
+def normalize_flux(flux: ndarray, id_string: str, new: bool = True, snr: Union[int, float] = 100.0,
+                   ref_band: str = "J") -> ndarray:
     """Normalize flux to have SNR of 100 in middle of reference band.
 
     Parameters
@@ -118,12 +119,14 @@ def get_reference_spectrum(id_string: str, ref_band: str = "J") -> Tuple[ndarray
     try:
         wav_ref, flux_ref = Io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
     except FileNotFoundError as e:
-        print("The reference spectra in {0:s} band was not found for id {1:s}".format(ref_band, id_string))
+        print("The reference spectra in {0:s} band was not found for id {1:s}".format(ref_band,
+                                                                                      id_string))
         raise e
     return wav_ref, flux_ref
 
 
-def snr_constant_band(wav: ndarray, flux: ndarray, snr: Union[int, float] = 100, band: str = "J") -> float64:
+def snr_constant_band(wav: ndarray, flux: ndarray, snr: Union[int, float] = 100,
+                      band: str = "J") -> float64:
     """Determine the normalization constant to achieve a SNR in the middle of a given band.
 
     SNR estimated by the square root of the number of photons in a resolution element.
@@ -157,7 +160,8 @@ def snr_constant_band(wav: ndarray, flux: ndarray, snr: Union[int, float] = 100,
     return norm_constant
 
 
-def snr_constant_wav(wav: ndarray, flux: ndarray, wav_ref: float, snr: Union[int, float] = 100, sampling: Union[int, float] = 3.0) -> float64:
+def snr_constant_wav(wav: ndarray, flux: ndarray, wav_ref: float, snr: Union[int, float] = 100,
+                     sampling: Union[int, float] = 3.0) -> float64:
     """Determine the normalization constant to achieve a SNR at given wavelength.
 
     SNR estimated by the square root of the number of photons in a resolution element.
@@ -195,12 +199,14 @@ def snr_constant_wav(wav: ndarray, flux: ndarray, wav_ref: float, snr: Union[int
 
     snr_estimate = np.sqrt(np.sum(flux[indexes]))
 
-    print("\tSanity Check: The reference S/N at {1:3.02f} was of {0:4.2f}.".format(snr_estimate, wav_ref))
+    print("\tSanity Check: The reference S/N at {1:3.02f} was of {0:4.2f}.".format(snr_estimate,
+                                                                                   wav_ref))
     norm_value = (snr_estimate / snr) ** 2
     return norm_value
 
 
-def sampling_index(index: int, sampling: Union[int, float] = 3, array_length: Optional[int] = None) -> ndarray:
+def sampling_index(index: int, sampling: Union[int, float] = 3,
+                   array_length: Optional[int] = None) -> ndarray:
     """Get a small number of index values around the given index value.
 
     Parameters
@@ -241,7 +247,7 @@ def sampling_index(index: int, sampling: Union[int, float] = 3, array_length: Op
     return indexes
 
 
-def decompose_id_string(id_string: str)-> Tuple[str, str, str, str]:
+def decompose_id_string(id_string: str) -> Tuple[str, str, str, str]:
     """Get the values back out of the id-string."""
     match = re.search(r"(M\d)-(\w{1,4})-(\d{1,2}\.0)-(\d{2,3}k)", id_string)
     if match:
