@@ -4,7 +4,7 @@
 TEST_PATH=./
 
 help:
-	@echo "	clean"
+	@echo "	clean-pyc"
 	@echo "		Remove python artifacts."
 	@echo "	clean-build"
 	@echo "		Remove build artifacts."
