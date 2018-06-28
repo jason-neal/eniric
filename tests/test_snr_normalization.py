@@ -190,7 +190,7 @@ def test_old_does_does_not_handle_changed_band():
         snrnorm.normalize_flux(flux, id_string, new=False, snr=101)
 
 
-@pytest.mark.parametrize("func", [snrnorm.normalize_flux2, snrnorm.normalize_spectrum])
+@pytest.mark.parametrize("func", [snrnorm.normalize_spectrum])
 def test_depreciated_functions_raise_error(func):
     with pytest.raises(NotImplementedError):
         func(range(10), "M0-K-5.0-100k", new=False)
