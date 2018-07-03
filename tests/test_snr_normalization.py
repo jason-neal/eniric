@@ -180,7 +180,7 @@ def test_normalize_flux_new_verse_old(resampled_data):
     rvprec_old = Q.RVprec_calc(wav, old_norm)
 
     print("new rv=", rvprec_new, "old rv=", rvprec_old)
-    assert np.abs(rvprec_new.value - rvprec_old.value) < 0.4
+    assert np.abs(rvprec_new.value - rvprec_old.value) < 0.5
 
 
 def test_old_normalization_does_not_handle_changed_band(resampled_data):
