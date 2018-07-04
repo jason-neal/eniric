@@ -3,6 +3,7 @@ import itertools
 import os
 from typing import Tuple
 
+import multiprocess as mprocess
 import numpy as np
 from numpy import ndarray
 
@@ -15,6 +16,8 @@ from eniric.nIRanalysis import convolution
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import band_middle, load_aces_spectrum
+
+num_procs_minus_1 = mprocess.cpu_count() - 1
 
 
 def _parser():
@@ -99,6 +102,12 @@ def _parser():
         choices=["SELF", "self", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
         default="J",
         type=str,
+    )
+    parser.add_argument(
+        "--num_procs",
+        help="Number of processors to use. Default = number of cpus -1",
+        default=num_procs_minus_1,
+        type=int
     )
     parser.add_argument(
         "-o",
@@ -246,12 +255,11 @@ def get_corresponding_atm(wav, bary=True):
 
 if __name__ == "__main__":
     args = _parser()
-    # print(args.bands)
-
     try:
         num_procs = args.num_procs
     except AttributeError:
-        num_procs = 2
+        num_procs = num_procs_minus_1
+
     try:
         normalize = args.normalzie
     except AttributeError:
