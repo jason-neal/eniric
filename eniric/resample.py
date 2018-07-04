@@ -2,7 +2,6 @@
 Functions for file resampling.
 
 """
-
 import os
 import re
 from os.path import isfile, join
@@ -47,7 +46,7 @@ def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k
               results_dir: str = results_dir,
               resampled_dir: str = resampled_dir,
               sampling: Union[int, float] = 3.0) -> int:
-    """Resamples a spectrum file by interpolation onto a grid with a
+    """Resample a spectrum file by interpolation onto a grid with a
     sampling of 3 pixels per resolution element.
 
     Parameters
@@ -86,7 +85,7 @@ def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k
 
 def log_resample(wavelength, sampling: Union[int, float],
                  resolution: Union[int, float]) -> np.ndarray:
-    """Re-sample spectrum with a given sampling per resolution element.
+    """Resample spectrum with a given sampling per resolution element.
 
     Parameters
     ----------
