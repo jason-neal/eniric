@@ -253,6 +253,24 @@ def get_corresponding_atm(wav, bary=True):
     return wav_atm_selected, flux_atm_selected, mask_atm_selected
 
 
+def model_format_args(model, pars):
+    """Format the model and parameter args to save in output file.
+    Change to int, str and float.
+
+    model in [temp, logg, fe/h, alpha]
+    pars in order (R, band, vsini, sample).
+    """
+    temp = int(model[0])
+    logg = float(model[1])
+    fe_h = float(model[2])
+    alpha = float(model[3])
+    band = pars[1]
+    res = int(pars[0] / 1000)
+    vsini = float(pars[2])
+    sample = float(pars[3])
+    return (temp, logg, fe_h, alpha, band, res, vsini, sample)
+
+
 if __name__ == "__main__":
     args = _parser()
     try:
@@ -305,28 +323,18 @@ if __name__ == "__main__":
 
             for (R, band, vsini, sample) in params_list:
                 pars = (R, band, vsini, sample)
-                print("Doing", model, pars)
+
+                model_par_str_args = model_format_args(model, pars)
+                if len(model_par_str_args) != 8:
+                    raise ValueError("model_par_str_args is incorrect length")
+
+                print("Doing", model_par_str_args)
                 param_string = ("{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
-                                " {6:4.01f}, {7:3.01f},").format(
-                    int(model[0]),
-                    float(model[1]),
-                    float(model[2]),
-                    float(model[3]),
-                    band,
-                    int(R / 1000),
-                    float(vsini),
-                    float(sample))
+                                " {6:4.01f}, {7:3.01f},").format(*model_par_str_args)
                 # may change output to have less spaces in future
                 param_string1 = ("{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,"
-                                 "{6:4.01f},{7:3.01f},").format(
-                    int(model[0]),
-                    float(model[1]),
-                    float(model[2]),
-                    float(model[3]),
-                    band,
-                    int(R / 1000),
-                    float(vsini),
-                    float(sample))
+                                 "{6:4.01f},{7:3.01f},").format(*model_par_str_args)
+
                 if (param_string in computed_values) or (param_string1 in computed_values):
                     # skipping the recalculation
                     continue
@@ -358,20 +366,12 @@ if __name__ == "__main__":
                         (
                             "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
                             " {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, {11:5.01f}, {12:1d}\n"
-                        ).format(
-                            int(model[0]),
-                            float(model[1]),
-                            float(model[2]),
-                            float(model[3]),
-                            band,
-                            int(R / 1000),
-                            float(vsini),
-                            float(sample),
-                            result[0],
-                            result[1],
-                            result[2],
-                            result[3],
-                            int(args.correct),
-                        )
+                        ).format(*model_par_str_args,
+                                 result[0],
+                                 result[1],
+                                 result[2],
+                                 result[3],
+                                 int(args.correct),
+                                 )
                     )
                     print("done ")
