@@ -279,6 +279,8 @@ def calculate_prec(
                     )
                 )
                 raise
+            if len(wav_stellar) == 0 or len(flux_stellar) == 0:
+                raise Exception("The file {0} is empty".format(file_to_read))
             # Removing boundary effects
             wav_stellar = wav_stellar[2:-2]
             flux_stellar = flux_stellar[2:-2]
