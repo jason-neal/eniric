@@ -281,10 +281,13 @@ if __name__ == "__main__":
     if args.rv != 0.0:
         raise NotImplementedError("Still to add doppler option.")
 
-    with open(args.output, "w") as f:
-        f.write(
-            "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, Quality, Cond. 1, Cond. 2, Cond. 3, correct flag\n"
-        )
+    if not os.path.exists(args.output):
+        with open(args.output, "a") as f:
+            f.write(
+                "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, Quality, Cond. 1, Cond. 2, Cond. 3, correct flag\n"
+            )
+
+    with open(args.output, "a") as f:
 
         for model in models_list:
             # Create generator for params_list
