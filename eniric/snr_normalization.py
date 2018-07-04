@@ -115,7 +115,6 @@ def get_reference_spectrum(id_string: str, ref_band: str = "J") -> Tuple[ndarray
 
     file_to_read = ("Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}"
                     "_res{4:3.01f}.txt").format(star, ref_band, vel, res, float(smpl))
-    print("debug: resampled file path", os.path.join(eniric.paths["resampled"], file_to_read))
 
     try:
         wav_ref, flux_ref = Io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
