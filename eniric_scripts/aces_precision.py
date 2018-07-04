@@ -287,6 +287,14 @@ if __name__ == "__main__":
                 "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, Quality, Cond. 1, Cond. 2, Cond. 3, correct flag\n"
             )
 
+    # Find all model/parameter combinations already computed.
+    # To later skip recalculation.
+    computed_values, computed_values1 = [], []
+    with open(args.output, "r") as f:
+        for line in f:
+            computed_values.append(line[:42])
+            computed_values.append(line[:35])
+
     with open(args.output, "a") as f:
 
         for model in models_list:
@@ -297,46 +305,73 @@ if __name__ == "__main__":
 
             for (R, band, vsini, sample) in params_list:
                 pars = (R, band, vsini, sample)
-                result = do_analysis(
-                    model,
-                    vsini=vsini,
-                    R=R,
-                    band=band,
-                    conv_kwargs=conv_kwargs,
-                    snr=snr,
-                    ref_band=ref_band,
-                    sampling=sample,
-                )
-                result = [
-                    round(res.value, 1) if res is not None else None for res in result
-                ]
-
-                if args.correct:
-                    # Apply Artigau 2018 Corrections
-                    corr_value = correct_artigau_2018(band)
-                    for ii, res in enumerate(result):
-                        if ii > 0:  # Not the quality
-                            result[ii] = res * corr_value
-
-                result[0] = int(result[0]) if result[0] is not None else None
-
-                f.write(
-                    (
-                        "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
-                        " {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, {11:5.01f}, {12:1d}\n"
-                    ).format(
-                        int(model[0]),
-                        float(model[1]),
-                        float(model[2]),
-                        float(model[3]),
-                        band,
-                        int(R / 1000),
-                        float(vsini),
-                        float(sample),
-                        result[0],
-                        result[1],
-                        result[2],
-                        result[3],
-                        int(args.correct),
+                print("Doing", model, pars)
+                param_string = ("{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
+                                " {6:4.01f}, {7:3.01f},").format(
+                    int(model[0]),
+                    float(model[1]),
+                    float(model[2]),
+                    float(model[3]),
+                    band,
+                    int(R / 1000),
+                    float(vsini),
+                    float(sample))
+                # may change output to have less spaces in future
+                param_string1 = ("{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,"
+                                 "{6:4.01f},{7:3.01f},").format(
+                    int(model[0]),
+                    float(model[1]),
+                    float(model[2]),
+                    float(model[3]),
+                    band,
+                    int(R / 1000),
+                    float(vsini),
+                    float(sample))
+                if (param_string in computed_values) or (param_string1 in computed_values):
+                    # skipping the recalculation
+                    continue
+                else:
+                    result = do_analysis(
+                        model,
+                        vsini=vsini,
+                        R=R,
+                        band=band,
+                        conv_kwargs=conv_kwargs,
+                        snr=snr,
+                        ref_band=ref_band,
+                        sampling=sample,
                     )
-                )
+                    result = [
+                        round(res.value, 1) if res is not None else None for res in result
+                    ]
+
+                    if args.correct:
+                        # Apply Artigau 2018 Corrections
+                        corr_value = correct_artigau_2018(band)
+                        for ii, res in enumerate(result):
+                            if ii > 0:  # Not the quality
+                                result[ii] = res * corr_value
+
+                    result[0] = int(result[0]) if result[0] is not None else None
+
+                    f.write(
+                        (
+                            "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
+                            " {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, {11:5.01f}, {12:1d}\n"
+                        ).format(
+                            int(model[0]),
+                            float(model[1]),
+                            float(model[2]),
+                            float(model[3]),
+                            band,
+                            int(R / 1000),
+                            float(vsini),
+                            float(sample),
+                            result[0],
+                            result[1],
+                            result[2],
+                            result[3],
+                            int(args.correct),
+                        )
+                    )
+                    print("done ")
