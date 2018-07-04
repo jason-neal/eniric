@@ -310,8 +310,8 @@ if __name__ == "__main__":
     computed_values, computed_values1 = [], []
     with open(args.output, "r") as f:
         for line in f:
-            computed_values.append(line[:42])
-            computed_values.append(line[:35])
+            computed_values.append(line[:41])
+            computed_values.append(line[:34])
 
     with open(args.output, "a") as f:
 
@@ -330,10 +330,10 @@ if __name__ == "__main__":
 
                 print("Doing", model_par_str_args)
                 param_string = ("{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
-                                " {6:4.01f}, {7:3.01f},").format(*model_par_str_args)
+                                " {6:4.01f}, {7:3.01f}").format(*model_par_str_args)
                 # may change output to have less spaces in future
                 param_string1 = ("{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,"
-                                 "{6:4.01f},{7:3.01f},").format(*model_par_str_args)
+                                 "{6:4.01f},{7:3.01f}").format(*model_par_str_args)
 
                 if (param_string in computed_values) or (param_string1 in computed_values):
                     # skipping the recalculation
