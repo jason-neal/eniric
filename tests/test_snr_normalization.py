@@ -32,6 +32,7 @@ def resampled_data(request):
 
     test_data = os.path.join(eniric.paths["resampled"],
                              resampled_template.format(star, band, vel, res))
+    print("debug: resampled data filename", test_data)
     wav, flux = Io.pdread_2col(test_data)
     return id_string, wav, flux
 
@@ -224,11 +225,19 @@ def test_snr_old_norm_constant_with_bad_id_str(bad_string):
 def test_get_ref_spectrum_with_ref_band_self(resampled_data):
     """Checks for upper or lower "self"."""
     id_string, wav, flux = resampled_data
-
+    print("debug: id string", id_string)
     wav_ref, flux_ref = snrnorm.get_reference_spectrum(id_string, ref_band="self")
 
     # Reference is the same values
     assert np.allclose(wav, wav_ref)
+    print(flux, flux_ref)
+
+    print("debug: number of nans", np.sum(np.isnan(flux)))
+    print("debug: number of ref nans", np.sum(np.isnan(flux_ref)))
+    print("debug: diff ", flux - flux_ref, "sum", np.sum(flux - flux_ref))
+    print("debug: nan values", flux[np.isnan(flux)], "\ndebug: locations", np.nonzero(np.isnan(flux))[0])
+    print("debug: length of flux", len(flux))
+    assert np.allclose(flux - flux_ref, np.zeros_like(flux))
     assert np.allclose(flux, flux_ref)
 
 
@@ -237,12 +246,19 @@ def test_get_ref_spectrum_with_ref_band_self(resampled_data):
 ])
 def test_get_self_band_can_be_any_case(resampled_data, ref_band):
     """Checks for upper or lower "self"."""
-
     id_string, wav, flux = resampled_data
+
+    print("debug: id string", id_string)
     wav_ref, flux_ref = snrnorm.get_reference_spectrum(id_string, ref_band=ref_band)
 
     # Reference is the same values
     assert np.allclose(wav, wav_ref)
+    print("debug: number of nans", np.sum(np.isnan(flux)))
+    print("debug: number of ref nans", np.sum(np.isnan(flux_ref)))
+    print("debug: diff ", flux - flux_ref, "sum", np.sum(flux - flux_ref))
+    print("debug: nan values", flux[np.isnan(flux)], "\ndebug: locations", np.nonzero(np.isnan(flux))[0])
+    print("debug: length of flux", len(flux))
+    assert np.allclose(flux - flux_ref, np.zeros_like(flux))
     assert np.allclose(flux, flux_ref)
 
 
