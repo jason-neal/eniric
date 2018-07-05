@@ -13,27 +13,6 @@ resampled_template = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}_res3.0.txt
 wave_photon_template = "lte0{0}-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
 
 
-@pytest.fixture(params=[
-    ("M0", "Z", 1.0, "60k"),
-    ("M3", "Y", 10.0, "100k"),
-    ("M6", "J", 10.0, "100k"),
-    ("M9", "H", 1.0, "80k"),
-    ("M0", "K", 5.0, "60k")
-])
-def resampled_data(request):
-    """Load a resampled spectra.
-
-    Returns id-string, wavelength and flux.
-
-    Fixture so that data files only get loaded once here.
-    """
-    star, band, vel, res = request.param
-    id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
-
-    test_data = os.path.join(eniric.paths["resampled"],
-                             resampled_template.format(star, band, vel, res))
-    wav, flux = Io.pdread_2col(test_data)
-    return id_string, wav, flux
 
 
 @pytest.mark.parametrize("temp", [2800, 2600])

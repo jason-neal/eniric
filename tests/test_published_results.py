@@ -7,13 +7,6 @@ import pytest
 from eniric_scripts.nIR_precision import calculate_prec
 
 
-@pytest.fixture
-def published_data():
-    name = "data/precision/precision_data_paper2015.txt"
-    df = pd.read_csv(name, sep="\t")
-    return df
-
-
 @pytest.mark.parametrize("SpType,band,vsini,R,expected", [
     ("M3", "K", 10.0, "100k", [26.1, 29.6, 27.9]),
     ("M6", "H", 1.0, "80k", [4.1, 4.4, 4.2]),
@@ -82,27 +75,3 @@ def test_published_precision_with_new_normalization(model_parameters, published_
     result_3 = round(results[id_string][2].value, 1)
     assert (np.abs(result_3 - published_prec_3) / published_prec_3) < 0.05
 
-
-@pytest.fixture(params=[
-    ("M0", "Z", 1, "60k"),
-    ("M0", "Z", 1, "100k"),
-    ("M0", "Z", 10, "60k"),
-    ("M0", "Z", 10, "100k"),
-    ("M0", "H", 1, "60k"),
-    ("M0", "H", 1, "100k"),
-    ("M0", "H", 10, "60k"),
-    ("M0", "H", 10, "100k"),
-    ("M3", "Y", 10, "100k"),
-    ("M3", "K", 10, "100k"),
-    ("M0", "K", 1, "60k"),
-    ("M0", "K", 1, "100k"),
-    ("M0", "K", 5, "60k"),
-    ("M0", "K", 5, "100k"),
-    ("M6", "H", 1, "80k"),
-    ("M6", "K", 1, "80k"),
-    ("M9", "H", 1, "80k"),
-    ("M9", "K", 1, "80k"),
-])
-def model_parameters(request):
-    # Tuple of "SpType,band,vsini,R"
-    return request.param
