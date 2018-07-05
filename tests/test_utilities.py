@@ -9,6 +9,7 @@ from hypothesis import given, settings
 
 import eniric
 import eniric.utilities as utils
+from eniric.broaden import rotation_kernel, unitary_gaussian
 from eniric.utilities import mask_between
 
 
@@ -222,7 +223,7 @@ def test_rotational_kernel(delta_lambdas, vsini, epsilon):
     delta_lambdas = np.append(np.flipud(delta_lambdas), np.insert(delta_lambdas, 0, 0))
     delta_lambda_l = np.max(delta_lambdas) * 2
 
-    new_profile = utils.rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon)
+    new_profile = rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon)
 
     assert len(new_profile) == len(delta_lambdas)
     # other properties to test?
@@ -241,7 +242,7 @@ def test_unitary_gaussian(x, center, fwhm):
     """Just a quick simple test."""
     x = np.asarray(x)
 
-    gaussian = utils.unitary_gaussian(x, center, fwhm)
+    gaussian = unitary_gaussian(x, center, fwhm)
     print(gaussian)
     # point at center should be the max
     assert len(gaussian) == len(x)
@@ -255,13 +256,13 @@ def test_unitary_gaussian_type_errors():
     fwhm = 3
 
     with pytest.raises(TypeError):
-        utils.unitary_gaussian(x, center, "fwhm")
+        unitary_gaussian(x, center, "fwhm")
     with pytest.raises(TypeError):
-        utils.unitary_gaussian(x, "center", fwhm)
+        unitary_gaussian(x, "center", fwhm)
     with pytest.raises(TypeError):
-        utils.unitary_gaussian(range(-10, 10), "center", fwhm)
+        unitary_gaussian(range(-10, 10), "center", fwhm)
     with pytest.raises(TypeError):
-        utils.unitary_gaussian(1, "center", fwhm)
+        unitary_gaussian(1, "center", fwhm)
 
 
 ################################################

@@ -12,7 +12,7 @@ import eniric.atmosphere as atm
 from eniric.Qcalculator import (RV_prec_calc_Trans, RVprec_calc,
                                 RVprec_calc_masked, quality)
 from eniric.corrections import correct_artigau_2018
-from eniric.nIRanalysis import convolution
+from eniric.broaden import convolution
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import band_middle, load_aces_spectrum
