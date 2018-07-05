@@ -42,7 +42,7 @@ def test_published_precision_with_old_normalization(model_parameters, published_
     assert published["RV_Cond_1[m/s]"].values == round(results[id_string][0].value, 1)
 
     # precision 2 has changed
-    assert published["RV_Cond_1[m/s]"].values != round(results[id_string][2].value, 1)
+    assert published["RV_Cond_1[m/s]"].values != round(results[id_string][1].value, 1)
 
     # precision 3
     assert published["RV_Cond_3[m/s]"].values == round(results[id_string][2].value, 1)
