@@ -221,14 +221,6 @@ def test_manual_clumping():
         assert np.all(mask2_clumped[i])
 
 
-def test_rvprev_test():
-    spectrum_file = os.path.join(eniric.paths["resampled"],
-                                 "Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.0.txt")
-    precision = Q.RVprec_test(spectrum_file)
-
-    assert isinstance(precision, astropy.units.Quantity)
-
-
 @pytest.mark.parametrize("wave_unit", [1, u.centimeter, u.nanometer])
 @pytest.mark.parametrize("flux_unit", [1, per_s_cm2, 1. / u.second])
 def test_sqrt_sum_wis_with_quantities(wave_unit, flux_unit):

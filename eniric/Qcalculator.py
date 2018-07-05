@@ -13,14 +13,6 @@ from astropy.units.quantity import Quantity
 from numpy import float64, int32, ndarray
 
 
-def RVprec_test(spectrum_file: str = "resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt") -> Quantity:
-    """Test a RVprec_calc for a single spectrum."""
-    data = pd.read_table(spectrum_file, comment='#', header=None,
-                         names=["wavelength", "flux"], dtype=np.float64,
-                         delim_whitespace=True)
-    wavelength, flux = data["wavelength"].values, data["flux"].values
-
-    return RVprec_calc(wavelength, flux)
 
 
 def RVprec_calc(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]) -> Quantity:
