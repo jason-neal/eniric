@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 """Prepare_data.py
 
-Code to take all phoenix-aces fits files and create .dat files with wavelength
-and flux.
+Process the Phoenix-aces synthetic spectra and create .dat files with
+wavelength and flux.
 Adds them to the data directory of eniric for convolutions etc.
-
 This wastes a lot of memory duplicating wavelength vector.
 
 Jason Neal January 2017
