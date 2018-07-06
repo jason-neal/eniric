@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Created on Sun Dec 14 15:43:13 2014
 
@@ -5,21 +6,26 @@ Created on Sun Dec 14 15:43:13 2014
 
 Adapted December 2016 by Jason Neal
 """
-from __future__ import division, print_function
-
 import os
 import sys
+from typing import Optional
 
 import matplotlib.pyplot as plt
 import multiprocess as mprocess
 import numpy as np
+from joblib import Memory
 from matplotlib import rc
+from numpy import ndarray
 from tqdm import tqdm
 
 import eniric
 import eniric.IOmodule as io
-from eniric.utilities import (band_selector, read_spectrum, rotation_kernel,
-                              unitary_gaussian, wav_selector)
+from eniric.utilities import (band_selector, mask_between, read_spectrum,
+                              rotation_kernel, unitary_gaussian, wav_selector)
+
+# Cache convolution results.
+cachedir = os.path.join(os.path.expanduser("~"), ".joblib")
+memory = Memory(cachedir=cachedir, verbose=0)
 
 # set stuff for latex usage
 rc('text', usetex=True)
@@ -29,13 +35,13 @@ results_dir = eniric.paths["results"]
 resampled_dir = eniric.paths["resampled"]
 
 # models form PHOENIX-ACES
-M0_ACES = data_rep+"lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M3_ACES = data_rep+"lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M6_ACES = data_rep+"lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-M9_ACES = data_rep+"lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M0_ACES = data_rep + "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M3_ACES = data_rep + "lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M6_ACES = data_rep + "lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+M9_ACES = data_rep + "lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
 
 
-def run_convolutions(spectrum_string, band):
+def run_convolutions(spectrum_string: str, band: str) -> None:
     """
     Runs the convolutions for a set of spectra in batch
     """
@@ -50,8 +56,9 @@ def run_convolutions(spectrum_string, band):
             convolve_spectra(spectrum, band, vel, res, plot=False)
 
 
-def save_convolution_results(filename, wavelength, flux, convolved_flux):
-    """Saves covolution results to a file.
+def save_convolution_results(filename: str, wavelength: ndarray, flux: ndarray,
+                             convolved_flux: ndarray) -> int:
+    """Saves convolution results to a file.
 
     Parameters
     ----------
@@ -68,28 +75,30 @@ def save_convolution_results(filename, wavelength, flux, convolved_flux):
     return 0
 
 
-def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, fwhm_lim=5.0,
-                     plot=True, num_procs=None, results_dir=results_dir,
-                     normalize=True, output_name=None):
+def convolve_spectra(spectrum, band, vsini, R, epsilon: float = 0.6, fwhm_lim: float = 5.0,
+                     plot: bool = True, num_procs: Optional[int] = None,
+                     results_dir: str = results_dir,
+                     normalize: bool = True, output_name: Optional[str] = None) -> int:
     """Load Spectrum, apply convolution and then save results.
 
     """
     print("Reading the data...")
-    wav, flux = read_spectrum(spectrum)    # In microns and  photon flux.
+    wav, flux = read_spectrum(spectrum)  # In microns and  photon flux.
     print("Done.")
 
     wav_band, flux_band, convolved_flux = convolution(wav, flux, vsini, R, band,
                                                       epsilon=epsilon, fwhm_lim=fwhm_lim,
                                                       num_procs=num_procs, normalize=normalize)
+    if not normalize:
+        norm_ = "_unnormalized"
+    else:
+        norm_ = ""
 
     if output_name is None:
         name_model = name_assignment(spectrum)
-        if normalize:
-            filename = ("{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k.txt"
-                        "").format(results_dir, name_model, band, vsini, R/1000)
-        else:
-            filename = ("{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k_unnormalized.txt"
-                        "").format(results_dir, name_model, band, vsini, R/1000)
+
+        filename = "{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k{5}.txt".format(
+            results_dir, name_model, band, vsini, R / 1000, norm_)
     else:
         filename = os.path.join(results_dir, output_name)
 
@@ -99,22 +108,26 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon=0.6, fwhm_lim=5.0,
         fig = plt.figure(1)
         plt.xlabel(r"wavelength [$\mu$m])")
         plt.ylabel(r"flux [counts] ")
-        plt.plot(wav_band, flux_band/np.max(flux_band), color='k', linestyle="-", label="Original spectra")
-        plt.plot(wav_band, convolved_flux/np.max(convolved_flux), color='b', linestyle="-", label="{0:s} spectrum observed at vsini={1:.2f} and R={2:d} .".format(name_model, vsini, R))
+        plt.plot(wav_band, flux_band / np.max(flux_band), color='k', linestyle="-",
+                 label="Original spectra")
+        plt.plot(wav_band, convolved_flux / np.max(convolved_flux), color='b', linestyle="-",
+                 label="{0:s} spectrum observed at vsini={1:.2f} and R={2:d} .".format(name_model,
+                                                                                       vsini, R))
         plt.legend(loc='best')
         plt.show()
 
-        fig.savefig(filename[:-3]+"pdf", facecolor='w', format='pdf', bbox_inches='tight')
+        fig.savefig(filename[:-3] + "pdf", facecolor='w', format='pdf', bbox_inches='tight')
         plt.close()
 
     return 0
 
 
-def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, fwhm_lim=5.0,
-                num_procs=None, normalize=True, output_name=None):
+@memory.cache
+def convolution(wav, flux, vsini, R, band: str = "All", epsilon: float = 0.6, fwhm_lim: float = 5.0,
+                num_procs: Optional[int] = None, normalize: bool = True):
     """Perform convolution of spectrum.
 
-    Rotational convolution followed by a guassian a a specified resolution R.
+    Rotational convolution followed by a Gaussian of a specified resolution R.
 
     Parameters
     ----------
@@ -129,7 +142,7 @@ def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, fwhm_lim=5.0,
     band: str
         Wavelength band to choose, default="All"
     num_procs: int, None
-        Number of processes to use with multiprocess. If None it is asigned to 1 less then total number of cores.
+        Number of processes to use with multiprocess. If None it is assigned to 1 less then total number of cores.
         If num_procs = 0, then multiprocess is not used.
 
     Returns
@@ -145,7 +158,7 @@ def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, fwhm_lim=5.0,
     wav_band, flux_band = band_selector(wav, flux, band)
 
     # We need to calculate the fwhm at this value in order to set the starting point for the convolution
-    fwhm_min = wav_band[0] / R    # fwhm at the extremes of vector
+    fwhm_min = wav_band[0] / R  # fwhm at the extremes of vector
     fwhm_max = wav_band[-1] / R
 
     # performing convolution with rotation kernel
@@ -180,8 +193,9 @@ def convolution(wav, flux, vsini, R, band="All", epsilon=0.6, fwhm_lim=5.0,
     return wav_band, flux_band, flux_conv_res
 
 
+@memory.cache
 def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
-                           vsini, epsilon, num_procs=None, normalize=True):
+                           vsini, epsilon, num_procs=None, normalize: bool = True):
     """Perform Rotational convolution part of convolution.
     """
 
@@ -193,16 +207,17 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
         return element_rot_convolution(*args)
 
     def element_rot_convolution(wav, wav_extended, wav_ext_rotation,
-                                flux_ext_rotation, vsini, epsilon,
-                                normalize):
-        """Embarisingly parallel part of rotational convolution"""
+                                flux_ext_rotation, vsini: float, epsilon: float,
+                                normalize: bool):
+        """Embarrassingly parallel part of rotational convolution"""
         # select all values such that they are within the fwhm limits
         delta_lambda_l = wav * vsini / 3.0e5
 
-        index_mask = ((wav_ext_rotation > (wav - delta_lambda_l)) &
-                      (wav_ext_rotation < (wav + delta_lambda_l)))
+        index_mask = mask_between(wav_ext_rotation, wav - delta_lambda_l, wav + delta_lambda_l)
+
         flux_2convolve = flux_ext_rotation[index_mask]
-        rotation_profile = rotation_kernel(wav_ext_rotation[index_mask] - wav, delta_lambda_l, vsini, epsilon)
+        rotation_profile = rotation_kernel(wav_ext_rotation[index_mask] - wav, delta_lambda_l,
+                                           vsini, epsilon)
 
         sum_val = np.sum(rotation_profile * flux_2convolve)
 
@@ -221,10 +236,10 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
 
         args_generator = tqdm([[wav, wav_extended, wav_ext_rotation,
                                 flux_ext_rotation, vsini, epsilon, normalize]
-                              for wav in wav_extended])
+                               for wav in wav_extended])
 
         flux_conv_rot = np.array(mproc_pool.map(wrapper_rot_parallel_convolution,
-                                 args_generator))
+                                                args_generator))
 
         mproc_pool.close()
 
@@ -235,32 +250,32 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
                                                         wav_ext_rotation,
                                                         flux_ext_rotation,
                                                         vsini, epsilon,
-                                                        normalize)
+                                                        normalize=normalize)
         print("Done.\n")
     return flux_conv_rot
 
 
+@memory.cache
 def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
-                           num_procs=1, normalize=True):
-    """Perform Resolution convolution part of convolution.
-    """
+                           num_procs: int = 1, normalize: bool = True):
+    """Perform Resolution convolution part of convolution."""
 
     # Define inner convolution functions
     def element_res_convolution(wav, R, wav_extended, flux_conv_rot, fwhm_lim,
-                                normalize):
-        """Embarisingly parallel component of resolution convolution"""
+                                normalize: bool = True):
+        """Embarrassingly parallel component of resolution convolution"""
         fwhm = wav / R
-        # Mask of wavelength range within 5 fwhm of wav
-        index_mask = ((wav_extended > (wav - fwhm_lim*fwhm)) &
-                      (wav_extended < (wav + fwhm_lim*fwhm)))
+        # Mask of wavelength range within fwhm_lim* fwhm of wav
+        fwhm_space = fwhm_lim * fwhm
+        index_mask = mask_between(wav_extended, wav - fwhm_space, wav + fwhm_space)
 
         flux_2convolve = flux_conv_rot[index_mask]
-        # Gausian Instrument Profile for given resolution and wavelength
+        # Gaussian Instrument Profile for given resolution and wavelength
         IP = unitary_gaussian(wav_extended[index_mask], wav, fwhm)
 
         sum_val = np.sum(IP * flux_2convolve)
         if normalize:
-            # Correct for the effect of convolution with non-equidistant postions
+            # Correct for the effect of convolution with non-equidistant positions
             unitary_val = np.sum(IP)  # Affects precision
             return sum_val / unitary_val
         else:
@@ -282,20 +297,21 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
         args_generator = tqdm([[wav, R, wav_extended, flux_conv_rot, fwhm_lim,
                                 normalize] for wav in wav_band])
         flux_conv_res = np.array(mproc_pool.map(wrapper_res_parallel_convolution,
-            args_generator))
+                                                args_generator))
         mproc_pool.close()
 
     else:  # num_procs == 0
-        flux_conv_res = np.empty_like(wav_band)   # Memory assignment
+        flux_conv_res = np.empty_like(wav_band)  # Memory assignment
         for jj, wav in enumerate(tqdm(wav_band)):
             flux_conv_res[jj] = element_res_convolution(wav, R, wav_extended,
-                                                        flux_conv_rot, fwhm_lim)
+                                                        flux_conv_rot, fwhm_lim,
+                                                        normalize=normalize)
         print("Done.\n")
     return flux_conv_res
 
 
 ###############################################################################
-def name_assignment(spectrum):
+def name_assignment(spectrum: str):
     """
     assigns a name to the filename in which the spectrum is going to be saved
     """
@@ -307,11 +323,11 @@ def name_assignment(spectrum):
     base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
     if (m0_aces in spectrum) and (base in spectrum):
         name = "M0-PHOENIX-ACES"
-    elif(m3_aces in spectrum) and (base in spectrum):
+    elif (m3_aces in spectrum) and (base in spectrum):
         name = "M3-PHOENIX-ACES"
-    elif(m6_aces in spectrum) and (base in spectrum):
+    elif (m6_aces in spectrum) and (base in spectrum):
         name = "M6-PHOENIX-ACES"
-    elif(m9_aces in spectrum) and (base in spectrum):
+    elif (m9_aces in spectrum) and (base in spectrum):
         name = "M9-PHOENIX-ACES"
     else:
         raise ValueError("Name {0} not found!".format(spectrum))
