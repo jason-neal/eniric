@@ -1,6 +1,10 @@
 # Ignore sync file
 .sync/
 
+.mypy_cache
+.pytest_cache/
+.idea/
+
 # eniric files
 images/*
 docs/*.py
@@ -11,6 +15,7 @@ data/results/*
 data/PHOENIX-ACES_spectra/Z*
 data/atmmodel/Average_TAPAS_2014_visible.txt
 data/atmmodel/Average_TAPAS_2014.txt
+data/test_data/*
 
 # updated_files data
 eniric/updated_code/resampled_cont/*

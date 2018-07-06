@@ -2,15 +2,18 @@
 
 Using the Quality factor of the spectra.
 """
+import warnings
+from typing import Any, List, Optional, Tuple, Union
 
 import astropy.units as u
 import numpy as np
 import pandas as pd
 from astropy.constants import c
-from astropy.units import Quantity
+from astropy.units.quantity import Quantity
+from numpy import float64, int32, ndarray
 
 
-def RVprec_test(spectrum_file="resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt"):
+def RVprec_test(spectrum_file: str = "resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt") -> Quantity:
     """Test a RVprec_calc for a single spectrum."""
     data = pd.read_table(spectrum_file, comment='#', header=None,
                          names=["wavelength", "flux"], dtype=np.float64,
@@ -20,7 +23,7 @@ def RVprec_test(spectrum_file="resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0
     return RVprec_calc(wavelength, flux)
 
 
-def RVprec_calc(wavelength, flux):
+def RVprec_calc(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]) -> Quantity:
     """Calculate the RV precision achievable on a spectrum.
 
     Parameters
@@ -67,8 +70,9 @@ def RVprec_calc(wavelength, flux):
     return c / sqrt_sum_wis(wavelength, flux)
 
 
-def sqrt_sum_wis(wavelength, flux):
-    """Calculation of the SquareRoot of the sum of the weigths(Wis) for a spectrum.
+def quality(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]) -> Union[
+    float64, Quantity]:
+    """Calculation of the spectral Quality, Q, for a spectrum.
 
     Parameters
     ----------
@@ -80,7 +84,56 @@ def sqrt_sum_wis(wavelength, flux):
     Returns
     -------
     sqrt{sum{W(i)}}: float or Quantity scalar
-       Squareroot of the sum of the pixel weigths(Wis)
+       Spectral quality
+
+    Notes
+    -----
+    Extract from https://arxiv.org/pdf/1511.07468v1.pdf
+
+        Q = sqrt{sum{W(i)}} / sqrt{sum{A_0{i}}
+
+    where, W(i), is the optimal pixel weights
+
+        W(i) = lambda(i)**2 (d'A_0(i) / d'lambda(i))**2 / (A_0(i) + sigma_D**2)
+
+    in which lambda(i) and A_0(i) are the values of each pixel wave-length and
+    flux, respectively. The weight will be proportional to the information
+    content of the spectrum, given by the derivative of the amplitude, and
+    calculated following Connes (1985).
+
+    The spectral quality, Q, is independent of the flux level and is only
+    a function of the spectral profile.
+
+    """
+    if not isinstance(wavelength, np.ndarray):
+        print("Your wavelength and flux should really be numpy arrays! Converting them here.")
+        wavelength = np.asarray(wavelength)
+    if not isinstance(flux, np.ndarray):
+        flux = np.asarray(flux)
+
+    flux = flux * u.dimensionless_unscaled # Turn into Quantity if not already
+    flux = flux / flux.unit  # Remove units from flux (sqrt(N_e) is unitless)
+
+    wis = sqrt_sum_wis(wavelength, flux)
+
+    return wis / np.sqrt(np.nansum(flux))
+
+
+def sqrt_sum_wis(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]) -> Union[
+    float64, Quantity]:
+    """Calculation of the Square root of the sum of the weights(Wis) for a spectrum.
+
+    Parameters
+    ----------
+    wavelength: array-like or Quantity array
+        Wavelength of spectrum.
+    flux: array-like or Quantity array
+        Flux of spectrum.
+
+    Returns
+    -------
+    sqrt{sum{W(i)}}: float or Quantity scalar
+       Square root of the sum of the pixel weights(Wis)
 
     Notes
     -----
@@ -109,16 +162,20 @@ def sqrt_sum_wis(wavelength, flux):
     derivf_over_lambda = delta_flux / delta_lambda
 
     if isinstance(flux, u.Quantity):
-        """Units of variance are squared """
-        flux_variance = flux.value * (flux.unit)**2
+        """Units of variance are squared"""
+        flux_variance = flux.value * flux.unit * flux.unit
     else:
         flux_variance = flux
 
-    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivf_over_lambda**2.0 /
-                          flux_variance[:-1]))
+    wis = np.sqrt(np.nansum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 /
+                         flux_variance[:-1]))
+    if not np.isfinite(wis):
+        warnings.warn("Weight sum is not finite = {}".format(wis))
+    return wis
 
 
-def RVprec_calc_masked(wavelength, flux, mask=None):
+def RVprec_calc_masked(wavelength: Union[List[List[Any]], ndarray],
+                       flux: Union[ndarray, List[List[Any]]], mask: Optional[ndarray] = None) -> Quantity:
     """RV precision for split apart spectra.
 
     The same as RVprec_calc, but now wavelength and flux are organized into
@@ -152,16 +209,12 @@ def RVprec_calc_masked(wavelength, flux, mask=None):
     Solution for clumping comes from
     https://stackoverflow.com/questions/14605734/numpy-split-1d-array-of-chunks-separated-by-nans-into-a-list-of-the-chunks
 
-    There was a bug in the original clumping code which ment that chose the
+    There was a bug in the original clumping code which meant that chose the
     clump depending on the first element of mask.
     A test for the failing condition is added so that if ever encountered we
-    can investigate the effect on he previously published results.
+    can investigate the effect on the previously published results.
     """
     if mask is not None:
-        if mask[0] is False:  # First value of mask is False was a bug in original code
-            print(("{0:s}\nWarning\nA condition that would have given bad "
-                   "precision the by broken clumping function was found.\nNeed "
-                   "to find the model parameters for this!\n{0:s}\n").format("#" * 40))
         # Turn wavelength and flux into masked arrays
         wavelength_clumps, flux_clumps = mask_clumping(wavelength, flux, mask)
 
@@ -172,7 +225,7 @@ def RVprec_calc_masked(wavelength, flux, mask=None):
         wavelength_clumps = wavelength
         flux_clumps = flux
 
-    # Turn ndarray into quantity array.
+    # Turn an ndarray into quantity array.
     # Need to use np.zeros instead of np.empty. Unassigned zeros are removed after with nonzero.
     # The "empty" values (1e-300) do not get removed and effect precision
     slice_rvs = Quantity(np.zeros(len(wavelength), dtype=float),
@@ -180,7 +233,7 @@ def RVprec_calc_masked(wavelength, flux, mask=None):
 
     for i, (wav_slice, flux_slice) in enumerate(zip(wavelength_clumps, flux_clumps)):
         if len(wav_slice) == 1:
-            """Results in infinate rv, can not determine the slope of single point."""
+            """Results in infinite rv, can not determine the slope of single point."""
             continue
 
         else:
@@ -188,27 +241,26 @@ def RVprec_calc_masked(wavelength, flux, mask=None):
             flux_slice = np.asarray(flux_slice)
             slice_rvs[i] = RVprec_calc(wav_slice, flux_slice)
 
-    # Zeros created from the inital empty array, when skipping single element chunks)
+    # Zeros created from the initial empty array, when skipping single element chunks)
     slice_rvs = slice_rvs[np.nonzero(slice_rvs)]  # Only use nonzero values.
-
-    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / slice_rvs)**2.0)))
+    rv_value = 1.0 / (np.sqrt(np.nansum((1.0 / slice_rvs) ** 2.0)))
 
     return rv_value
 
 
-def mask_clumping(wave, flux, mask):
+def mask_clumping(wave: ndarray, flux: ndarray, mask: ndarray) -> Tuple[List[ndarray], List[ndarray]]:
     """Clump contiguous wavelength and flux sections into list.
 
     Note: Our value of mask (0 = bad points) is opposite to usage in
     np.ma.masked_array (1 = bad)
-    Separate function to enable through testing.
+    Separate function to enable thorough testing.
 
     Parameters
     ----------
     wave: array-like of floats
         The wavelength array to clump.
     flux: array-like of floats
-        The glux array to clump.
+        The flux array to clump.
     mask: array-like of bool
         Boolean array with True indicating the values to use/keep.
 
@@ -223,8 +275,8 @@ def mask_clumping(wave, flux, mask):
     # Turn into masked array to use clump_unmasked method.
     mask = np.asarray(mask, dtype=bool)  # Make it bool so ~ works correctly
 
-    masked_wave = np.ma.masked_array(wave, mask=~mask)   # ma mask is inverted
-    masked_flux = np.ma.masked_array(flux, mask=~mask)   # ma mask is inverted
+    masked_wave = np.ma.masked_array(wave, mask=~mask)  # ma mask is inverted
+    masked_flux = np.ma.masked_array(flux, mask=~mask)  # ma mask is inverted
 
     wave_clumps = [wave[s] for s in np.ma.clump_unmasked(masked_wave)]
     flux_clumps = [flux[s] for s in np.ma.clump_unmasked(masked_flux)]
@@ -232,46 +284,27 @@ def mask_clumping(wave, flux, mask):
     return wave_clumps, flux_clumps
 
 
-def bug_fixed_clumping_method(wav, flux, mask):
+def bug_fixed_clumping_method(wav: ndarray, flux: ndarray, mask: ndarray) -> Tuple[List[Any], List[Any]]:
     """Old clumping method that is difficult to understand ...[0] + 1)[::2].
 
-    There was a signifcant bug which was fixed.
+    There was a significant bug which was fixed.
     The returned values were dependant on the first value in the mask.
     """
-    if mask[0] is False:  # First value of mask is False was a bug in original code
-        print(("{0:s}\nWarning\nA condition that would have given bad "
-               "precision the by broken clumping function was found.\nNeed "
-               "to find the model parameters for this!\n{0:s}\n").format("#" * 40))
-
     if mask[0] == 1:
-        wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[::2]
-        flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[::2]
+        wav_chunks_unformatted = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[::2]
+        flux_chunks_unformatted = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[::2]
     else:
-        wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[1::2]
-        flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[1::2]
+        wav_chunks_unformatted = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[1::2]
+        flux_chunks_unformatted = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[1::2]
 
-    wav_chunks = [list(chunk) for chunk in wav_chunks_unformated]
-    flux_chunks = [list(chunk) for chunk in flux_chunks_unformated]
-
-    return wav_chunks, flux_chunks
-
-
-def bugged_clumping_method(wav, flux, mask):
-    """Old clumping method that is difficult to understand ...[0] + 1)[::2].
-
-    There was a signifcant bug in which the returned values depend on the first value in mask.
-    """
-    wav_chunks_unformated = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[::2]
-    wav_chunks = [list(chunk) for chunk in wav_chunks_unformated]
-
-    flux_chunks_unformated = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[::2]
-    flux_chunks = [list(chunk) for chunk in flux_chunks_unformated]
+    wav_chunks = [list(chunk) for chunk in wav_chunks_unformatted]
+    flux_chunks = [list(chunk) for chunk in flux_chunks_unformatted]
 
     return wav_chunks, flux_chunks
 
 
 ###############################################################################
-def RV_prec_calc_Trans(wavelength, flux, transmission):
+def RV_prec_calc_Trans(wavelength: ndarray, flux: ndarray, transmission: ndarray) -> Quantity:
     """The same as RV_prec_calc, but considering a transmission different than zero.
 
     Parameters
@@ -292,8 +325,9 @@ def RV_prec_calc_Trans(wavelength, flux, transmission):
     return c / sqrt_sum_wis_trans(wavelength, flux, transmission)
 
 
-def sqrt_sum_wis_trans(wavelength, flux, transmission):
-    """Calculation of the SquareRoot of the sum of the Weights for a spectrum, considering transmission.
+def sqrt_sum_wis_trans(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray],
+                       transmission: Union[Quantity, ndarray]) -> Union[float64, Quantity]:
+    """Calculation of the Square root of the sum of the Weights for a spectrum, considering transmission.
 
     The transmission reduces the flux so has an affect on the variance.
 
@@ -309,7 +343,7 @@ def sqrt_sum_wis_trans(wavelength, flux, transmission):
     Returns
     -------
     sqrt_sum_wis_trans: array-like or Quantity
-        Squarerooted sum of pixel weigths including effects of transmission.
+        Square root sum of pixel weights including effects of transmission.
 
     """
     if not isinstance(wavelength, np.ndarray):
@@ -340,9 +374,9 @@ def sqrt_sum_wis_trans(wavelength, flux, transmission):
 
     if isinstance(flux, u.Quantity):
         """Units of variance are squared"""
-        flux_variance = flux.value * (flux.unit)**2
+        flux_variance = flux.value * flux.unit * flux.unit
     else:
         flux_variance = flux
 
-    return np.sqrt(np.sum(wavelength[:-1]**2.0 * derivf_over_lambda**2.0 /
-                          (flux_variance[:-1] / transmission[:-1]**2.0)))
+    return np.sqrt(np.nansum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 /
+                          (flux_variance[:-1] / transmission[:-1] ** 2.0)))
