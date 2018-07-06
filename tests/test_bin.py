@@ -6,7 +6,7 @@ import argparse
 
 import pytest
 
-from bin.split_atmmodel import check_positive
+from eneric_scripts.split_atmmodel import check_positive
 
 
 def test_check_positive():
@@ -14,9 +14,11 @@ def test_check_positive():
     assert check_positive("1") == 1.0
     assert isinstance(check_positive("20"), float)
 
-    with pytest.raises(ValueError):
-        check_positive(10) == 10.0   # input must be float
-    with pytest.raises(argparse.ArgumentTypeError):
-        check_positive("-1")
-    with pytest.raises(ValueError):
-        check_positive(-1.0)
+
+@pytest.mark.parametrize("val,error", [
+    ("-1", argparse.ArgumentTypeError),
+    (-1.0, ValueError),
+    (10, ValueError)])    # Not a float
+def test_check_positive_errors(val, error):
+    with pytest.raises(error):
+        check_positive(val)

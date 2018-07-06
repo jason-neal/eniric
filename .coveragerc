@@ -1,3 +1,6 @@
 [run]
 source=pystart
 branch=True
+omit =
+     # Omit large plotting function.
+     eniric/plotting_functions.py

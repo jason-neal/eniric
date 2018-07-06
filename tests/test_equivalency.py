@@ -1,19 +1,11 @@
-"""To test the equivalence of old and newcode to check if it does the same thing."""
-
-from __future__ import division, print_function
-
+"""To test the equivalence of old and new code to check if it does the same thing."""
 import os
 
-import hypothesis.strategies as st
 import numpy as np
 import pytest
-from hypothesis import given
 
 import eniric.IOmodule as io
 import eniric.utilities as utils
-
-# For python2.X compatibility
-file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
 def test_pdread_2col():
@@ -75,10 +67,10 @@ def test_pdwriter():
     assert np.allclose(c[2], d[2])
 
     # clean-up
-    utils.silentremove(pd2col_name)
-    utils.silentremove(pd3col_name)
-    utils.silentremove(twocol_name)
-    utils.silentremove(threecol_name)
+    utils.silent_remove(pd2col_name)
+    utils.silent_remove(pd3col_name)
+    utils.silent_remove(twocol_name)
+    utils.silent_remove(threecol_name)
 
 
 def test_prepared_dat_files():
@@ -96,7 +88,7 @@ def test_pdwrire_cols():
 
     data1 = range(5)
     data2 = range(5, 10)
-    bad_data = range(6)   # Different length
+    bad_data = range(6)  # Different length
 
     # 0 means successful write
     assert 0 == io.pdwrite_cols(pd_multicol_name, data1, data2, data1)
@@ -105,7 +97,7 @@ def test_pdwrire_cols():
                                 header=["headers", "for", "column", "labels"])
     assert 0 == io.pdwrite_cols(pd_multicol_name, data1, data2, sep=",", index=True)
 
-    # test uneven dats lengths
+    # test uneven data lengths
     with pytest.raises(ValueError):
         io.pdwrite_cols(pd_multicol_name, data1, data2, bad_data)
 
@@ -117,4 +109,4 @@ def test_pdwrire_cols():
         io.pdwrite_cols(pd_multicol_name, data1, bad="keyword")
 
     # clean-up
-    utils.silentremove(pd_multicol_name)
+    utils.silent_remove(pd_multicol_name)

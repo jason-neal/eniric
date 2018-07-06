@@ -2,20 +2,16 @@ language: python
 python:
     - "3.5"
     - "3.6"
-# sudo: false  # Use container-based infrastructure
 
 before_install:
   # http://conda.pydata.org/docs/travis.html
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-      travis_retry wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
-    else
-      travis_retry wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-    fi
+  - travis_retry wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
-  - travis_retry conda update -q conda
+  - conda config --add channels conda-forge
+  - conda update -q conda
   - conda info -a
 
 cache:
@@ -25,15 +21,29 @@ cache:
 install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
+
+  # Install Starfish
+  - cd $HOME
+  - travis_retry git clone https://github.com/iancze/Starfish.git
+  - cd Starfish
+  - travis_retry conda install --yes astropy cython emcee h5py matplotlib pytest pyyaml scikit-learn scipy
   - travis_retry pip install -r requirements.txt
-  - travis_retry pip install -r test_requirements.txt
+  - python setup.py build_ext --inplace
+  - python setup.py develop
+
+  # Now install eniric
+  # Requirements
+  - cd $TRAVIS_BUILD_DIR
+  - travis_retry pip install -r requirements.txt
+  - travis_retry pip install -r requirements_dev.txt
+
   - python setup.py install
 
 before_script:
-  - mv .test_config.yaml config.yaml
+  - mv tests/config.yaml config.yaml
 
   # Generate data
-  - python bin/mk_travis_data.py
+  - make_test_data.py
 script:
     - pytest --cov=eniric --cov-report term-missing --durations 5
     - coverage xml -i
