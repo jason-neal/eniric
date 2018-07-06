@@ -5,15 +5,13 @@ Just taking the main components out of the code.
 
 import numpy as np
 
-import eniric
-
 
 # This has the main bug.
 def org_clump_tester(clump):
     """Return False when group of consecutive values in clump has a length >=3."""
     tester = True
     for block in clump:
-        if len(clump) >= 3:     # clump should be block!
+        if len(clump) >= 3:  # clump should be block!
             tester = False
             break
     return tester
@@ -26,7 +24,7 @@ def corrected_clump_tester(clump):
     """
     tester = True
     for block in clump:
-        if len(block) >= 3:     # Fixed block!
+        if len(block) >= 3:  # Fixed block!
             tester = False
             break
     return tester
@@ -37,7 +35,7 @@ def test_clump_tester():
 
     This confirms the suspicions of the bugs.
 
-    Note the sampling of the atmopsheric spectra is 10 so 1-2 zeros is
+    Note the sampling of the atmospheric spectra is 10 so 1-2 zeros is
     unlikely to be picked up in a resolution element of spectra.
     Hence we choose a minimum of 3 consecutive zeros.
     """
@@ -48,10 +46,10 @@ def test_clump_tester():
     assert org_clump_tester(clump1) is not True  # This is wrong
     assert corrected_clump_tester(clump1) is True
 
-    # Clump 2 does have a group of consutive Falses>3 but not #blocks>3.
+    # Clump 2 does have a group of consecutive Falses>3 but not #blocks>3.
     clump2 = [np.array([0, 0, 0, 0, 0], dtype=bool), np.array([0, 0], dtype=bool)]
     # Clump2 should return False!
-    assert org_clump_tester(clump2) is not False   # This is wrong
+    assert org_clump_tester(clump2) is not False  # This is wrong
     assert corrected_clump_tester(clump2) is False
 
     # Test an array of zeros
@@ -115,7 +113,7 @@ def test_zero_clumper():
     clumps1_corr = correct_zeros_clumper(mask1)
 
     for i, __ in enumerate(clumps1):
-        assert not (np.all(clumps1[i] == expected_clump1[i]))  # Failed orginal case
+        assert not (np.all(clumps1[i] == expected_clump1[i]))  # Failed original case
         assert (np.all(clumps1_corr[i] == expected_clump1[i]))
 
     # Testing corner cases

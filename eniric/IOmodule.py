@@ -1,9 +1,13 @@
 """Functions to read column-separated files."""
+from typing import List, Optional, Tuple
+
 import numpy as np
 import pandas as pd
+from numpy import ndarray
 
 
-def pdread_2col(filename, noheader=False):
+# noinspection SpellCheckingInspection,SpellCheckingInspection
+def pdread_2col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray]:
     """Read in a 2 column file with pandas.
 
     Faster then read_2col.
@@ -31,14 +35,14 @@ def pdread_2col(filename, noheader=False):
         else:
             data = pd.read_table(filename, comment='#', names=["col1", "col2"],
                                  dtype=np.float64, delim_whitespace=True)
-    except:
+    except Exception as e:
         print("There was an error trying to read in the file \n{}".format(filename))
-        raise
+        raise e
 
     return data["col1"].values, data["col2"].values
 
 
-def pdread_3col(filename, noheader=False):
+def pdread_3col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray, ndarray]:
     """Read in a 3 column file with pandas.
 
     Faster then read_3col
@@ -66,14 +70,14 @@ def pdread_3col(filename, noheader=False):
         else:
             data = pd.read_table(filename, comment='#', names=["col1", "col2", "col3"],
                                  dtype=np.float64, delim_whitespace=True)
-    except:
+    except Exception as e:
         print("There was an error trying to read in the file \n{}".format(filename))
-        raise
+        raise e
 
     return data["col1"].values, data["col2"].values, data["col3"].values
 
 
-def pdread_4col(filename, noheader=False):
+def pdread_4col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray, ndarray, ndarray]:
     """Read in a 4 column file with pandas.
 
     Faster then read_3col
@@ -103,14 +107,14 @@ def pdread_4col(filename, noheader=False):
         else:
             data = pd.read_table(filename, comment='#', names=["col1", "col2", "col3", "col4"],
                                  dtype=np.float64, delim_whitespace=True)
-    except:
+    except Exception as e:
         print("There was an error trying to read in the file \n{}".format(filename))
-        raise
+        raise e
 
     return data["col1"].values, data["col2"].values, data["col3"].values, data["col4"].values
 
 
-def read_col(filename):
+def read_col(filename: str) -> List[List[str]]:
     """This program reads column formatted data from a file and
     returns a list in which each sublist correspond to the line's elements.
     THE RESULT IS A LIST OF STRINGS!"""
@@ -123,9 +127,9 @@ def read_col(filename):
         line = f.readline()
 
         if line == "":
-                    break
+            break
         if line[0] == '#':
-                    continue
+            continue
 
         list_data.append(line.strip().split())
 
@@ -134,7 +138,7 @@ def read_col(filename):
     return list_data
 
 
-def read_2col(filename):
+def read_2col(filename: str) -> List[List[float]]:
     """The same as the previous, but returns 2 vectors, corresponding each
     one to a column.THE RESULTS ARE FLOAT PYTHON VECTORS.
     Note that in python all "float" are in fact "double-precision"."""
@@ -146,14 +150,14 @@ def read_2col(filename):
 
     for i, __ in enumerate(list_data):
         # checking if the line is valid
-        if(list_data[i][0][0] != '#'):
+        if (list_data[i][0][0] != '#'):
             col1.append(float(list_data[i][0]))
             col2.append(float(list_data[i][1]))
 
     return [col1, col2]
 
 
-def read_3col(filename):
+def read_3col(filename: str) -> List[List[float]]:
     """The same as the previous, but returns 3 columns."""
 
     list_data = read_col(filename)
@@ -164,7 +168,7 @@ def read_3col(filename):
 
     for i, __ in enumerate(list_data):
         # checking if the line is valid
-        if(list_data[i][0][0] != '#'):
+        if (list_data[i][0][0] != '#'):
             col1.append(float(list_data[i][0]))
             col2.append(float(list_data[i][1]))
             col3.append(float(list_data[i][2]))
@@ -172,7 +176,7 @@ def read_3col(filename):
     return [col1, col2, col3]
 
 
-def read_4col(filename):
+def read_4col(filename: str) -> List[List[float]]:
     """The same as the previous, but returns 4 columns."""
 
     list_data = read_col(filename)
@@ -184,7 +188,7 @@ def read_4col(filename):
 
     for i, __ in enumerate(list_data):
         # checking if the line is valid
-        if(list_data[i][0][0] != '#'):
+        if (list_data[i][0][0] != '#'):
             col1.append(float(list_data[i][0]))
             col2.append(float(list_data[i][1]))
             col3.append(float(list_data[i][2]))
@@ -200,7 +204,8 @@ def read_4col(filename):
 ################################################################################
 
 
-def pdwrite_2col(filename, data1, data2, sep="\t", header=False, float_format=None):
+def pdwrite_2col(filename: str, data1: ndarray, data2: ndarray, sep: str = "\t", header: Optional[List[str]] = None,
+                 float_format: Optional[str] = None) -> int:
     """Write out a 2 column file with pandas.
 
     Faster then write_2col, uses pandas.DataFrame.to_csv()
@@ -215,7 +220,7 @@ def pdwrite_2col(filename, data1, data2, sep="\t", header=False, float_format=No
         The data for the second column
     sep: str
         Character separation between values.
-    header: list of strings or bool, default False
+    header: Optional list of strings
         Header strings to apply to columns.
     float_format: str default None
         Specify floating point string format.
@@ -225,18 +230,20 @@ def pdwrite_2col(filename, data1, data2, sep="\t", header=False, float_format=No
     flag: bool
         Returns 0 if successful.
     """
-    if header:
+    if header is not None:
         df = pd.DataFrame({"# {}".format(header[0]): data1, header[1]: data2})
     else:
         df = pd.DataFrame({"# x": data1, "y": data2})
 
-    # Write dataframe to file
+    # Write DataFrame to file
     df.to_csv(filename, sep=sep, header=header, index=False, float_format=float_format)  # header=False
 
     return 0
 
 
-def pdwrite_3col(filename, data1, data2, data3, sep="\t", header=False, float_format=None):
+def pdwrite_3col(filename: str, data1: ndarray, data2: ndarray, data3: ndarray, sep: str = "\t",
+                 header: Optional[List[str]] = None,
+                 float_format: Optional[str] = None) -> int:
     """Write out a 3 column file with pandas.
 
     Faster then write_3col, uses pandas.DataFrame.to_csv()
@@ -253,7 +260,7 @@ def pdwrite_3col(filename, data1, data2, data3, sep="\t", header=False, float_fo
         The data for the third column
     sep: str
         Character separation between values.
-    header: list of strings or bool, default False
+    header: optional list of strings
         Header strings to apply to columns.
     float_format: str default None
         Specify floating point string format.
@@ -263,12 +270,12 @@ def pdwrite_3col(filename, data1, data2, data3, sep="\t", header=False, float_fo
     flag: bool
         Returns 0 if successful.
     """
-    if header:
+    if header is not None:
         df = pd.DataFrame({"# {}".format(header[0]): data1, header[1]: data2, header[2]: data3})
     else:
         df = pd.DataFrame({"# x": data1, "y": data2, "z": data3})
 
-    # Write dataframe to file
+    # Write DataFrame to file
     df.to_csv(filename, sep=sep, header=header, index=False, float_format=float_format)  # header=False
 
     return 0
@@ -280,7 +287,7 @@ def write_2col(filename, data1, data2):
     f = open(filename, "w")
 
     for i, __ in enumerate(data1):
-        f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\n")
+        f.write("\t" + str(data1[i]) + "\t\t" + str(data2[i]) + "\n")
 
     f.close()
 
@@ -291,12 +298,12 @@ def write_3col(filename, data1, data2, data3):
     f = open(filename, "w")
 
     for i, __ in enumerate(data1):
-        f.write("\t"+str(data1[i])+"\t\t"+str(data2[i])+"\t\t"+str(data3[i])+"\n")
+        f.write("\t" + str(data1[i]) + "\t\t" + str(data2[i]) + "\t\t" + str(data3[i]) + "\n")
 
     f.close()
 
 
-def write_e_2col(filename, data1, data2):
+def write_e_2col(filename: str, data1: ndarray, data2: ndarray) -> None:
     """Writes data in 2 columns separated by tabs in a "filename" file."""
 
     f = open(filename, "w")
@@ -308,7 +315,7 @@ def write_e_2col(filename, data1, data2):
     f.close()
 
 
-def write_e_3col(filename, data1, data2, data3):
+def write_e_3col(filename: str, data1: ndarray, data2: ndarray, data3: ndarray) -> None:
     """Writes data in 3 columns separated by tabs in a "filename" file."""
 
     f = open(filename, "w")
@@ -320,7 +327,7 @@ def write_e_3col(filename, data1, data2, data3):
     f.close()
 
 
-def pdwrite_cols(filename, *data, **kwargs):
+def pdwrite_cols(filename: str, *data, **kwargs) -> int:
     """Write out a csv file with pandas, variable columns possible.
 
     Uses pandas.DataFrame.to_csv()
@@ -335,7 +342,7 @@ def pdwrite_cols(filename, *data, **kwargs):
         Keyword args for pandas
     sep: str, default="\t"
         Character separation between values.
-    header: list of strings or bool, default False
+    header: optional list of strings or bool
         Header strings to apply to columns. Must be equal to number
         of data columns provided.
 
@@ -345,22 +352,22 @@ def pdwrite_cols(filename, *data, **kwargs):
         Returns 0 if successful.
     """
 
-    # unpack keyword args, second argument is the defualt if not found.
-    header = kwargs.pop('header', False)
+    # unpack keyword args, second argument is the default if not found.
+    header = kwargs.pop('header', None)
     sep = kwargs.pop('sep', "\t")
     index = kwargs.pop('index', False)
     float_format = kwargs.pop('float_format', '%.6f')
     # TODO: See about passing any extra keywords into pandas call
-    if kwargs:   # check for unwanted kewords
+    if kwargs:  # check for unwanted key words
         raise TypeError('Unexpected **kwargs: {!r}'.format(kwargs))
 
-    if header:
+    if header is not None:
         if len(header) != len(data):
             raise ValueError("Size of data and header does not match.")
 
     data_dict = {}
     for i, data_i in enumerate(data):
-        data_dict[i] = data[i]    # keys are assigned the index value from enumerate
+        data_dict[i] = data[i]  # keys are assigned the index value from enumerate
 
         if len(data[i]) != len(data[0]):
             raise ValueError("The length of the data columns are not equal")
@@ -369,7 +376,7 @@ def pdwrite_cols(filename, *data, **kwargs):
 
     write_sequence = range(len(data))  # key values to write data in order
 
-    # Write dataframe to file
+    # Write DataFrame to file
     df.to_csv(filename, columns=write_sequence, sep=sep, header=header, index=index, float_format=float_format)
 
     return 0
