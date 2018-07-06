@@ -1,6 +1,7 @@
 """Near-Infrared radial velocity precision."""
 import argparse
 import itertools
+import os
 import re
 import sys
 
@@ -8,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import rc
 
+import eniric
 import eniric.atmosphere as atm
 import eniric.IOmodule as io
 import eniric.plotting_functions as plt_functions
@@ -32,14 +34,15 @@ def _parser():
                         help="Start with the un-doppler-shifted atmmodel.")
     parser.add_argument("-s", "--save", default=False, action="store_true",
                         help="Save results to file.")
-    args = parser.parse_args()
-    return args
+    parser.add_argument("--snr", help="Mid-band SNR scaling. (Default=100)", default=100, type=float)
+    parser.add_argument("--ref_band", help="SNR reference band. Default=J. (Default=100). 'self' scales each band relative to the SNR itself.", choices=["self", "VIS", "GAP", "Z", "Y", "J", "H", "K"], default="J", type=str)
+    return parser.parse_args()
 
 
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
-def main(bands="J", use_unshifted=False, save=False):
+def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
     """Main function that calls calc_precision.
 
     Parameters
@@ -52,7 +55,7 @@ def main(bands="J", use_unshifted=False, save=False):
         Save results to file.
 
     """
-    resampled_dir = "../data/resampled/"
+    os.makedirs(eniric.paths["precision"], exist_ok=True)
 
     spectral_types = ["M0", "M3", "M6", "M9"]
     if ("ALL" in bands) or ("None" in bands):
@@ -65,9 +68,8 @@ def main(bands="J", use_unshifted=False, save=False):
     sampling = ["3"]
 
     results = calculate_prec(spectral_types, bands, vsini, resolution, sampling,
-                             resampled_dir=resampled_dir,
                              plot_atm=False, plot_ste=False, plot_flux=False,
-                             paper_plots=False, offset_RV=0.0, use_unshifted=use_unshifted)
+                             paper_plots=False, rv_offset=0.0, use_unshifted=use_unshifted, snr=snr, ref_band=ref_band)
 
     print("{Combination\t\tPrec_1\t\tPrec_2\t\tPrec_3")
     print("-" * 20)
@@ -75,7 +77,8 @@ def main(bands="J", use_unshifted=False, save=False):
         print("{0:s}\t\t{1:0.4f}\t{2:0.4f}\t{3:0.4f}".format(key, results[key][0], results[key][1], results[key][2]))
     # Save precision results
     if save:
-        output_filename = "../data/precision_results_2017.txt"
+        output_filename = os.path.join(eniric.paths["precision"],
+            "precision_results_2017_ref_band-{0}_snr-{1}.txt".format(ref_band, snr))
         ids = []
         prec_1s = []
         prec_2s = []
@@ -91,7 +94,8 @@ def main(bands="J", use_unshifted=False, save=False):
                         prec_3s.append(results[id_string][2].value)
 
         io.pdwrite_cols(output_filename, ids, prec_1s, prec_2s, prec_3s,
-                        header=["# id", r"prec_1", r"prec_2", r"prec_3"], float_format="%.7f")
+                        header=["# id", r"prec_1 [m/s]", r"prec_2 [m/s]", r"prec_3 [m/s]"], float_format="%.2f")
+        print("saved results to {}".format(output_filename))
     # return results
 
 
@@ -103,13 +107,14 @@ def strip_result_quantities(results):
 
 
 def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
-                   resampled_dir, plot_atm=False, plot_ste=False,
-                   plot_flux=True, paper_plots=True, offset_RV=0.0,
-                   use_unshifted=False):
+                   plot_atm=False, plot_ste=False,
+                   plot_flux=True, paper_plots=True, rv_offset=0.0,
+                   use_unshifted=False, snr=100, ref_band="J", new=True):
     """Calculate precisions for given combinations."""
     # TODO: iterate over band last so that the J band normalization value can be
     # obtained first and applied to each band.
 
+    print("using new config.yaml file here!!!!!!!!!!!!!!")
     results = {}    # creating empty dictionary for the results
     wav_plot_m0 = []   # creating empty lists for the plots
     flux_plot_m0 = []
@@ -123,7 +128,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
     for band in bands:
 
         if use_unshifted:
-            atmmodel = "../data/atmmodel/Average_TAPAS_2014_{}.txt".format(band)
+            atmmodel = os.path.join(eniric.paths["atmmodel"], "Average_TAPAS_2014_{}.txt".format(band))
             print("Reading atmospheric model...")
             wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmopshere(atmmodel)
             print(("There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}."
@@ -132,10 +137,10 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             print("The model ranges from {0:4.2f} to {1:4.2f} micron.".format(wav_atm[0], wav_atm[-1]))
             print("Done.")
             print("Calculating impact of Barycentric movement on mask...")
-            # mask_atm = atm.old_barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
-            mask_atm = atm.barycenter_shift(wav_atm, mask_atm, offset_RV=offset_RV)
+            # mask_atm = atm.old_barycenter_shift(wav_atm, mask_atm, rv_offset=rv_offset)
+            mask_atm = atm.barycenter_shift(wav_atm, mask_atm, rv_offset=rv_offset)
         else:
-            shifted_atmmodel = "../data/atmmodel/Average_TAPAS_2014_{}_bary.txt".format(band)
+            shifted_atmmodel = os.path.join(eniric.paths["atmmodel"], "Average_TAPAS_2014_{}_bary.txt".format(band))
             print("Reading pre-doppler-shifted atmospheric model...")
             wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmopshere(shifted_atmmodel)
         print("Done.")
@@ -145,7 +150,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                           len(mask_atm)))
 
         if plot_atm:
-            # moved ploting code to separate code, eniric.plotting_functions.py
+            # moved plotting code to separate code, eniric.plotting_functions.py
             plt_functions.plot_atmopshere_model(wav_atm, flux_atm, mask_atm)
 
         # theoretical ratios calculation
@@ -161,9 +166,9 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
                             "_res{4}.txt").format(star, band, vel, res, smpl)
             # print("Working on "+file_to_read+".")
             try:
-                wav_stellar, flux_stellar = io.pdread_2col(resampled_dir + file_to_read)
+                wav_stellar, flux_stellar = io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
             except file_error_to_catch:
-                # Trun list of strings into strings without symbols  ["J", "K"] -> J K
+                # Turn list of strings into strings without symbols  ["J", "K"] -> J K
                 spectral_str = re.sub(r"[\[\]\"\'\,]", "", str(spectral_types))
                 band_str = re.sub(r"[\[\]\"\'\,]", "", str(bands))
                 vsini_str = re.sub(r"[\[\]\"\'\,]", "", str(vsini))
@@ -203,7 +208,8 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
 
             # Normaize to SNR 100 in middle of J band 1.25 micron!
             # flux_stellar = normalize_flux(flux_stellar, id_string)
-            flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=True)  # snr=100, ref_band="J"
+            # flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=True)  # snr=100, ref_band="J"
+            flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=new, snr=snr, ref_band=ref_band)  # snr=100, ref_band="J"
 
             if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k",
                              "M6-J-1.0-100k", "M9-J-1.0-100k"]):
@@ -241,7 +247,7 @@ def calculate_prec(spectral_types, bands, vsini, resolution, sampling,
             # Adding Precision results to the dictionary
             results[id_string] = [prec_1, prec_2, prec_3]
 
-            # Prepare/Do for the ploting.
+            # Prepare/Do for the plotting.
             if(plot_ste or plot_ste == id_string):
                 plt_functions.plot_stellar_spectum(wav_stellar, flux_stellar,
                                                    wav_atm_selected, mask_atm_selected)

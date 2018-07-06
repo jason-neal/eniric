@@ -5,28 +5,28 @@ precision is working.
 """
 
 
-# from matplotlib import rc
 # set stuff for latex usage
 # rc('text', usetex=True)
 import argparse
+import os
+# from matplotlib import rc
 import sys
 
 import numpy as np
 
+import eniric
 import eniric.IOmodule as io
 import eniric.Qcalculator as Qcalculator
 # from eniric.plotting_functions import plot_atmopshere_model, plot_stellar_spectum
 from eniric.snr_normalization import normalize_flux
+
 
 # import matplotlib.pyplot as plt
 
 # to remove labels in one tick
 # from matplotlib.ticker import MaxNLocator
 
-
 # from eniric.utilities import band_selector
-
-
 
 
 def _parser():
@@ -57,16 +57,15 @@ def _parser():
                         action="store_false")
     parser.add_argument('--org', help='Only use original .dat files, (temporary option)',
                         default=False, action="store_true")
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
 # atmmodel = "../data/atmmodel/Average_TAPAS_2014.txt"
-resampled_dir = "../data/resampled/"
+resampled_dir = eniric.paths["resampled"]
 file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 
 
-def calc_prec1(star, band, vel, resolution, smpl, normalize=True, resampled_dir=resampled_dir):
+def calc_prec1(star, band, vel, resolution, smpl, normalize=True):
     """Just caluclate precision for 1st case.
 
     resolution in short form e.g 100k
@@ -79,7 +78,7 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True, resampled_dir=
                         "{2:.1f}_R{3}_unnormalized_res{4}.txt"
                         "").format(star, band, vel, resolution, smpl)
     # print("Working on " + file_to_read)
-    wav_stellar, flux_stellar = io.pdread_2col(resampled_dir + file_to_read)
+    wav_stellar, flux_stellar = io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
 
     # removing boundary effects
     wav_stellar = wav_stellar[2:-2]
@@ -93,12 +92,13 @@ def calc_prec1(star, band, vel, resolution, smpl, normalize=True, resampled_dir=
     # Normaize to SNR 100 in middle of J band 1.25 micron!
     flux_stellar = normalize_flux(flux_stellar, id_string)
 
-    if(id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k", "M6-J-1.0-100k", "M9-J-1.0-100k"]):
-        index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
+    if id_string in ["M0-J-1.0-100k", "M3-J-1.0-100k", "M6-J-1.0-100k", "M9-J-1.0-100k"]:
+        index_reference = np.searchsorted(wav_stellar, [1.25])[0]    # searching for the index closer to 1.25 micron
         sn_estimate = np.sqrt(np.sum(flux_stellar[index_reference - 1:index_reference + 2]))
         print("\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(id_string, sn_estimate))
-    elif("J" in id_string):
-        index_reference = np.searchsorted(wav_stellar, 1.25)    # searching for the index closer to 1.25 micron
+
+    elif "J" in id_string:
+        index_reference = np.searchsorted(wav_stellar, [1.25])[0]    # searching for the index closer to 1.25 micron
         sn_estimate = np.sqrt(np.sum(flux_stellar[index_reference - 1:index_reference + 2]))
         print("\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(id_string, sn_estimate))
 
