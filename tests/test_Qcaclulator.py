@@ -1,14 +1,10 @@
 """Test Qcaclulator."""
 
-import os
-
-import astropy
 import astropy.constants as const
 import astropy.units as u
 import numpy as np
 import pytest
 
-import eniric
 import eniric.Qcalculator as Q
 
 # test RVprec_calc returns a single values
