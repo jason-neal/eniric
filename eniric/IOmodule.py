@@ -1,10 +1,5 @@
-
+"""Functions to read column-separated files."""
 import numpy as np
-################################################################################
-#
-#    Functions to read column-separated files
-#
-################################################################################
 import pandas as pd
 
 
@@ -231,7 +226,7 @@ def pdwrite_2col(filename, data1, data2, sep="\t", header=False, float_format=No
         Returns 0 if successful.
     """
     if header:
-        df = pd.DataFrame({"# " + header[0]: data1, header[1]: data2})
+        df = pd.DataFrame({"# {}".format(header[0]): data1, header[1]: data2})
     else:
         df = pd.DataFrame({"# x": data1, "y": data2})
 
@@ -269,7 +264,7 @@ def pdwrite_3col(filename, data1, data2, data3, sep="\t", header=False, float_fo
         Returns 0 if successful.
     """
     if header:
-        df = pd.DataFrame({"# " + header[0]: data1, header[1]: data2, header[2]: data3})
+        df = pd.DataFrame({"# {}".format(header[0]): data1, header[1]: data2, header[2]: data3})
     else:
         df = pd.DataFrame({"# x": data1, "y": data2, "z": data3})
 

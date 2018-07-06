@@ -11,6 +11,7 @@ import sys
 import numpy as np
 from astropy.constants import c
 
+import eniric
 import eniric.IOmodule as io
 import eniric.utilities as utils
 
@@ -27,15 +28,14 @@ def _parser():
     parser.add_argument("-b", "--bands", type=str, default=None,  nargs="+",
                         choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
                         help="Wavelength band to select, Default='All'")
-    parser.add_argument('-d', '--data_dir', help='Model data directory', type=str,
-                        default="../data/atmmodel/")
+    parser.add_argument('-d', '--data_dir', help='Telluric model data directory', type=str,
+                        default=eniric.paths["atmmodel"])
     parser.add_argument('--new_name', default=None, type=str,
                         help='Base name for new files. Default is the original model name.')
     parser.add_argument('--rv_extend', default=100, type=check_positive,
                         help='Doopler RV (km/s) to extend the wavelength limits of the band. Default=100 km/s')
 
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
 def check_positive(value):
@@ -68,7 +68,7 @@ def check_positive(value):
     return ivalue
 
 
-def main(model="Average_TAPAS_2014.txt", bands=None, new_name=None, data_dir="../data/atmmodel/", rv_extend=100):
+def main(model="Average_TAPAS_2014.txt", bands=None, new_name=None, data_dir=None, rv_extend=100):
     """Split the large atmopsheric model transmission spectra into the separate bands.
 
     Keeps wavelength of atmopshere model as nanometers.
@@ -77,6 +77,9 @@ def main(model="Average_TAPAS_2014.txt", bands=None, new_name=None, data_dir="..
         bands = ["All"]
     if new_name is None:
         new_name = model.split(".")[0]
+    if data_dir is None:
+        data_dir = eniric.paths["atmmodel"]
+
     model_name = os.path.join(data_dir, model)
 
     atm_wav, atm_flux, atm_std_flux, atm_mask = io.pdread_4col(model_name)

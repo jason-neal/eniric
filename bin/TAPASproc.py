@@ -10,6 +10,7 @@ import string
 import numpy as np
 
 import eniric.IOmodule as io
+import enric
 
 # dirmodels = "/home/pfigueira/data/tapas/nIRanalysispaper/"
 dirmodels = "/home/pfigueira/data/tapas/nIRanalysis_visible/"
@@ -47,9 +48,9 @@ def read_tapas(filename):
 
 def read_allfiles(mask_limit=0.02):
     """Read all the files in list_files."""
-    files = io.read_fullcol(dirmodels+list_files)
+    files = io.read_fullcol(os.path.join(dirmodels, list_files))
     print("Reading the files...")
-    atm_models = [read_tapas(dirmodels+file_act[:-1]) for file_act in files]
+    atm_models = [read_tapas(os.path.join(dirmodels, dirmodels+file_act[:-1])) for file_act in files]
     print("done.")
 
     wav = atm_models[0][1]
@@ -66,7 +67,7 @@ def read_allfiles(mask_limit=0.02):
         else:
             mask.append(0.0)
 
-    write_4col_eeed(outdir+"Average_TAPAS_2014_visible.txt", wav, mean_flux, std_flux, mask)
+    write_4col_eeed(os.path.join(outdir, "Average_TAPAS_2014_visible.txt"), wav, mean_flux, std_flux, mask)
 
 
 def write_4col_eeed(filename, data1, data2, data3, data4):
