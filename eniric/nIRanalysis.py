@@ -70,7 +70,7 @@ def save_convolution_results(filename: str, wavelength: ndarray, flux: ndarray,
 
 
 def convolve_spectra(spectrum, band, vsini, R, epsilon: float = 0.6, fwhm_lim: float = 5.0,
-                     plot: bool = True, num_procs: Optional[int] = None,
+                     num_procs: Optional[int] = None,
                      results_dir: str = results_dir,
                      normalize: bool = True, output_name: Optional[str] = None) -> int:
     """Load Spectrum, apply convolution and then save results."""
@@ -95,21 +95,6 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon: float = 0.6, fwhm_lim: f
         filename = os.path.join(results_dir, output_name)
 
     save_convolution_results(filename, wav_band, flux_band, convolved_flux)
-
-    if plot:
-        fig = plt.figure(1)
-        plt.xlabel(r"wavelength [$\mu$m])")
-        plt.ylabel(r"flux [counts] ")
-        plt.plot(wav_band, flux_band / np.max(flux_band), color='k', linestyle="-",
-                 label="Original spectra")
-        plt.plot(wav_band, convolved_flux / np.max(convolved_flux), color='b', linestyle="-",
-                 label="{0:s} spectrum observed at vsini={1:.2f} and R={2:d} .".format(name_model,
-                                                                                       vsini, R))
-        plt.legend(loc='best')
-        plt.show()
-
-        fig.savefig(filename[:-3] + "pdf", facecolor='w', format='pdf', bbox_inches='tight')
-        plt.close()
 
     return 0
 
