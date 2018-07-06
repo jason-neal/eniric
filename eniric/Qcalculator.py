@@ -7,12 +7,9 @@ from typing import Any, List, Optional, Tuple, Union
 
 import astropy.units as u
 import numpy as np
-import pandas as pd
 from astropy.constants import c
 from astropy.units.quantity import Quantity
-from numpy import float64, int32, ndarray
-
-
+from numpy import float64, ndarray
 
 
 def RVprec_calc(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]) -> Quantity:
@@ -103,7 +100,7 @@ def quality(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]
     if not isinstance(flux, np.ndarray):
         flux = np.asarray(flux)
 
-    flux = flux * u.dimensionless_unscaled # Turn into Quantity if not already
+    flux = flux * u.dimensionless_unscaled  # Turn into Quantity if not already
     flux = flux / flux.unit  # Remove units from flux (sqrt(N_e) is unitless)
 
     wis = sqrt_sum_wis(wavelength, flux)
@@ -160,7 +157,7 @@ def sqrt_sum_wis(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, nda
         flux_variance = flux
 
     wis = np.sqrt(np.nansum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 /
-                         flux_variance[:-1]))
+                            flux_variance[:-1]))
     if not np.isfinite(wis):
         warnings.warn("Weight sum is not finite = {}".format(wis))
     return wis
@@ -371,4 +368,4 @@ def sqrt_sum_wis_trans(wavelength: Union[Quantity, ndarray], flux: Union[Quantit
         flux_variance = flux
 
     return np.sqrt(np.nansum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 /
-                          (flux_variance[:-1] / transmission[:-1] ** 2.0)))
+                             (flux_variance[:-1] / transmission[:-1] ** 2.0)))

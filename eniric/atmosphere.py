@@ -239,6 +239,7 @@ def dopplershift(wav, flux):
     pass
     # return newflux
 
+
 def atm_mask(flux, cutoff=0.98):
     """Mask flux below the cutoff value."""
     if not isinstance(flux, np.ndarray):
