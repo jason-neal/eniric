@@ -9,7 +9,7 @@ config = {
     'url': 'https://github.com/jason-neal/eniric.git',
     'download_url': 'https://github.com/jason-neal/eniric.git',
     'author_email': 'jason.neal@astro.up.pt',
-    'version': '0.3',
+    'version': '0.5',
     'license': 'MIT',
     'setup_requires': ['pytest-runner'],
     'install_requires': ['pytest'],
