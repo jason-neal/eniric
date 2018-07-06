@@ -12,8 +12,19 @@ They undergo two convolutions, one for rotational broadening and one for instrum
 The slope of the spectra are used as a proxy for the radial velocity precision attainable.
 
 The purpose of this work is to:
-- Extend the previous analysis to a range of different metallicity values.
+- Extend the previous analysis to a range of different parameter values.
 
+# Usage
+You can now calculate the theoretical rv precision for any Phoenix-ACES model.
+You will need to configure the path to the phoenix models in ´config.yaml´
+
+e.g.
+
+    any_spectral_quality.py -t 3900 -l 4.5, -m 0.5 -r 100000 -v 1.0 -b J K --sampling=3
+
+For more details type
+
+    any_spectral_quality.py -h 
 
 ## Background
 The origin of this code was used in [this paper](https://arxiv.org/abs/1511.07468).
@@ -67,7 +78,7 @@ Ridiculous!
 
 
 ## Bugs:
-A number of bugs were found when improving this code. Mainly affecting the condition involving telluric line masking. This alters the RV in this column, sometimes significantly. This, however, does **NOT** alter the conclusions in the published paper.
+A number of bugs were found when improving this code. Manily affecting the condition invovling telluric line masking. This alters the RV in this column, sometimes significantly. This, however, does **NOT** alter the conclusions in the published paper. A corrected table will be included in an upcomming publication Neal et. al. 2018 (in prep.).
 
 
 ## Band SNR Scaling.
@@ -96,3 +107,4 @@ eniric_scripts/nIR_run.py  - Perform the resolution and rotational convolution o
 This also does the resampling.
 
 e.g. python ../Codes/eniric/eniric_scripts/nIR_run.py -s M0 M3 M6 M9 -b Y J H K -v 1.0 5.0 10.0 -R 60000 80000 100000 --sample_rate 3
+

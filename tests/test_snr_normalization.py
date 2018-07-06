@@ -84,6 +84,9 @@ def test_sampling_index():
     assert np.all(snrnorm.sampling_index(10, 2) == [9, 10])
     # number that is at end of array.
 
+    
+@pytest.mark.parametrize("sample", [1, 2, 3, 4, 5, 7, 10, 15])
+def test_sampling_size_and_type(sample):
     # Check number of values correct.
     for sample in [1, 2, 3, 4, 5, 7, 10, 15]:
         assert len(snrnorm.sampling_index(20, sample)) == sample
