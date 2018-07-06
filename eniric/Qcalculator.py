@@ -6,13 +6,12 @@ Using the Quality factor of the spectra.
 import astropy.units as u
 import numpy as np
 import pandas as pd
-# c = 299792458  # m/s
 from astropy.constants import c
 from astropy.units import Quantity
 
 
 def RVprec_test(spectrum_file="resampled/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.txt"):
-    """Test a RVprec_calc for a singal specturm."""
+    """Test a RVprec_calc for a single spectrum."""
     data = pd.read_table(spectrum_file, comment='#', header=None,
                          names=["wavelength", "flux"], dtype=np.float64,
                          delim_whitespace=True)

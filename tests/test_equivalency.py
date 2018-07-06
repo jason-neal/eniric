@@ -4,10 +4,8 @@ from __future__ import division, print_function
 
 import os
 
-import hypothesis.strategies as st
 import numpy as np
 import pytest
-from hypothesis import given
 
 import eniric.IOmodule as io
 import eniric.utilities as utils

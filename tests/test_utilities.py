@@ -2,12 +2,14 @@
 
 from __future__ import division, print_function
 
-# Test using hypothesis
+import os
+
 import hypothesis.strategies as st
 import numpy as np
 import pytest
 from hypothesis import given, settings
 
+import eniric
 import eniric.utilities as utils
 
 # For python2.X compatibility
@@ -17,8 +19,10 @@ file_error_to_catch = getattr(__builtins__, 'FileNotFoundError', IOError)
 @pytest.mark.xfail(raises=file_error_to_catch)
 def test_read_spectrum():
     """Test reading in a _wave_photon.dat is the same as a _wave.dat."""
-    photon = "data/test_data/sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
-    wave = "data/test_data/sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+    photon = os.path.join(eniric.paths["test_data"],
+        "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
+    wave = os.path.join(eniric.paths["test_data"],
+        "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
     wave_wav, wave_flux = utils.read_spectrum(wave)
     photon_wav, photon_flux = utils.read_spectrum(photon)
 
@@ -29,49 +33,68 @@ def test_read_spectrum():
 @pytest.mark.xfail(raises=file_error_to_catch)
 def test_get_spectrum_name():
     """Test specifing file names with stellar parameters."""
-    test = ("PHOENIX-ACES_spectra/Z-0.0/lte02800-4.50"
-            "-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
+    test = ("Z-0.0/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
 
     assert utils.get_spectrum_name("M6", flux_type="wave") == test
 
-    test_alpha = ("PHOENIX-ACES_spectra/Z-0.0.Alpha=+0.20/"
+    test_alpha = ("Z-0.0.Alpha=+0.20/"
                   "lte02600-6.00-0.0.Alpha=+0.20.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
     assert utils.get_spectrum_name("M9", logg=6, alpha=0.2) == test_alpha
 
-    test_pos_feh = ("PHOENIX-ACES_spectra/Z+0.5/"
+    test_pos_feh = ("Z+0.5/"
                     "lte03500-0.00+0.5.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
     assert utils.get_spectrum_name("M3", logg=0, feh=0.5, alpha=0.0) == test_pos_feh
 
-    test_photon = ("PHOENIX-ACES_spectra/Z-0.0/lte02800-4.50"
+    test_photon = ("Z-0.0/lte02800-4.50"
                    "-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat")
     assert utils.get_spectrum_name("M6") == test_photon
 
-    # Catch Errors
-    with pytest.raises(NotImplementedError):
-        utils.get_spectrum_name("K1")       # Stellar type not added
-    with pytest.raises(NotImplementedError):
-        utils.get_spectrum_name("A8")       # Stellar type not added
+
+@pytest.mark.parametrize("spec_type", ["MO", "ME", "M11", "X10", "Z3"])
+def test_spectrum_name_value_error(spec_type):
+    """Not valid spectral type in [OBAFGKML] or misspelled"""
     with pytest.raises(ValueError):
-        utils.get_spectrum_name("MO")       # Miss spelled M0
-    with pytest.raises(ValueError):
-        utils.get_spectrum_name("X10")      # Not valid spectral type in [OBAFGKML]
+        utils.get_spectrum_name(spec_type)
 
 
-@pytest.mark.xfail(raises=file_error_to_catch)
+@pytest.mark.parametrize("spec_type", ["O1", "B2", "A3", "F4", "G5", "K6", "M7", "L8"])
+def test_notimplemented_spectrum_name(spec_type):
+    with pytest.raises(NotImplementedError):
+        utils.get_spectrum_name(spec_type)       # Stellar type not added (only M atm)
+
+
+@pytest.mark.parametrize("bad_alpha", [-0.3, 0.3, 1])
+def test_spectrum_name_with_bad_alpha(bad_alpha):
+    """Bad_alpha is outside range -0.2-0.2 for Mdwarf science case."""
+    with pytest.raises(ValueError):
+        utils.get_spectrum_name("M0", alpha=bad_alpha)
+
+
+@pytest.mark.parametrize("alpha", [-0.2, 0.1, 0.2])
+def test_spectrum_name_with_ok_alpha(alpha):
+    name = utils.get_spectrum_name("M0", alpha=alpha)
+
+    assert isinstance(name, str)
+    assert str(alpha) in name
+    assert "Alpha=" in name
+
+
+#@pytest.mark.xfail(raises=file_error_to_catch)
 def test_org_name():
     """Test org flag of utils.get_spectrum_name, suposed to be temporary."""
-    test_org = "PHOENIX-ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+    test_org = "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
     assert utils.get_spectrum_name("M0", org=True) == test_org
 
 
-@given(st.lists(st.floats()), st.floats(), st.floats(), st.floats())
+@given(st.lists(st.floats(allow_nan=False, allow_infinity=False)),
+       st.floats(allow_nan=False, allow_infinity=False),
+       st.floats(allow_nan=False, allow_infinity=False),
+       st.floats(allow_nan=False, allow_infinity=False))
 def test_wav_selector(x, y, wav_min, wav_max):
     """Test some properties of wavelength selector."""
     y = [xi + y for xi in x]   # just to make y different
     x1, y1 = utils.wav_selector(x, y, wav_min, wav_max)
 
-    # All values in selected should be less than the max and greater
-    # than the min value.
     assert all(x1 >= wav_min)
     assert all(x1 <= wav_max)
     assert len(x1) == len(y1)
@@ -79,49 +102,72 @@ def test_wav_selector(x, y, wav_min, wav_max):
     assert isinstance(y1, np.ndarray)
 
 
-def test_band_limits():
-    """Test geting limits out of band."""
-    # Test all bands, lower case allowed
-    for band in ["VIS", "GAP", "z", "Y", "h", "J", "K", "CONT", "NIR"]:
-        band_min, band_max = utils.band_limits(band)
-        assert band_min < band_max
-        assert band_min != band_max
+@pytest.mark.parametrize("band", [
+    "VIS", "GAP", "z", "Y", "h", "J", "K", "CONT", "NIR"])
+def test_band_limits(band):
+    """Test getting limits out of band."""
+    band_min, band_max = utils.band_limits(band)
 
-    # Test non-bands
-    with pytest.raises(ValueError):
-        utils.band_limits("X")
-
-    with pytest.raises(ValueError):
-        utils.band_limits("M0")
-    with pytest.raises(AttributeError):
-        utils.band_limits(np.array(1))
-    with pytest.raises(AttributeError):
-        utils.band_limits(["list", "of", "strings"])
+    assert band_min < band_max
+    assert band_min != band_max
+    assert 0 < band_min < 3
+    assert 0 < band_max < 3
 
 
-def test_band_selector():
+@pytest.mark.parametrize("band", ["Z", "H", "J", "K"])
+def test_band_selector(band):
     """Test band selector selects the wav and flux in the given band."""
     wav = np.linspace(0.5, 3, 100)
     flux = wav**2
 
-    for band in ["Z", "H", "J", "k"]:
-        band_min, band_max = utils.band_limits(band)
-        assert np.any(wav < band_min)      # Assert wav goes outside band
-        assert np.any(wav > band_max)
+    band_min, band_max = utils.band_limits(band)
+    assert not np.all(wav > band_min)      # Assert wav goes outside band
+    assert not np.all(wav < band_max)
 
-        wav2, flux2 = utils.band_selector(wav, flux, band)
-        assert np.all(wav2 > band_min)
-        assert np.all(wav2 < band_max)
+    wav, flux = utils.band_selector(wav, flux, band)
+    assert np.all(wav > band_min)
+    assert np.all(wav < band_max)
 
-    # Test it also raises the Value and Attribute Errors
-    with pytest.raises(ValueError):
-        utils.band_selector(wav, flux, "M0")
-    with pytest.raises(AttributeError):
-        utils.band_selector(wav, flux, 1)
-    with pytest.raises(AttributeError):
-        utils.band_selector(wav, flux, ["list", "of", "strings"])
-    with pytest.raises(AttributeError):
-        utils.band_selector(wav, flux, flux)
+
+@pytest.mark.parametrize("band,error", [
+    ("X", ValueError),
+    ("M0", ValueError),
+    (1, AttributeError),
+    (np.array(1), AttributeError),
+    (["list", "of", "strings"], AttributeError),
+])
+def test_band_limits_raises_errors(band, error):
+    """Test it raises the Value and Attribute Errors."""
+    with pytest.raises(error):
+        utils.band_limits(band)
+
+
+@pytest.mark.parametrize("band,error",[
+    ("X", ValueError),
+    ("M0", ValueError),
+    (1, AttributeError),
+    (["list", "of", "strings"], AttributeError),
+    (np.linspace(1,2,10), AttributeError)
+])
+def test_band_selector_raises_errors(band, error):
+    """Test it raises the Value and Attribute Errors"""
+    wav = np.linspace(0.5, 3, 100)
+    flux = wav ** 2
+
+    with pytest.raises(error):
+        utils.band_selector(wav, flux, band)
+
+
+@pytest.mark.parametrize("band", ["ALL", ""])
+def test_band_selector_with_no_selection(band):
+    """If band = "ALL" or ""."""
+    wav = np.linspace(0.5, 3, 100)
+    flux = wav ** 2
+    wav2, flux2 = utils.band_selector(wav, flux, band)
+
+    # No changes
+    assert np.all(wav == wav2)
+    assert np.all(flux2 == flux)
 
 
 @settings(max_examples=100)
@@ -138,3 +184,79 @@ def test_rotational_kernal(delta_lambdas, vsini, epsilon):
 
     assert len(new_profile) == len(delta_lambdas)
     # other properties to test?
+
+
+def test_silent_remove():
+    """Test this doesn't raise and issue.
+    Not really a good test."""
+    utils.silentremove("a_fake_filename_that_doesnt_exist.fake")
+    assert True
+
+@given(st.lists(st.floats(min_value=-100, max_value=100, allow_nan=False), min_size=1, unique=True),
+       st.floats(min_value=-100, max_value=100, allow_nan=False),
+       st.floats(min_value=0.001, max_value=100, allow_nan=False))
+def test_unitary_gaussian(x, center, fwhm):
+    """Just a quick simple test."""
+    x = np.asarray(x)
+
+    gaussian = utils.unitary_gaussian(x, center, fwhm)
+    print(gaussian)
+    # point at center should be the max
+    assert len(gaussian) == len(x)
+    assert np.allclose(np.max(gaussian), gaussian[np.argmin(abs(x - center))])
+
+
+
+def test_unitary_gaussian_type_errors():
+    """Just a quick simple test."""
+    x = np.arange(-10, 10)
+    center = 0
+    fwhm = 3
+
+    gaussian = utils.unitary_gaussian(x, center, fwhm)
+
+    with pytest.raises(TypeError):
+        utils.unitary_gaussian(x, center, "fwhm")
+    with pytest.raises(TypeError):
+        utils.unitary_gaussian(x, "center", fwhm)
+    with pytest.raises(TypeError):
+        utils.unitary_gaussian(range(-10, 10), "center", fwhm)
+    with pytest.raises(TypeError):
+        utils.unitary_gaussian(1, "center", fwhm)
+
+
+@pytest.mark.parametrize("resolutions,results", [
+    (["60k", "80k", "100k"], ["60k", "80k", "100k"]),
+    ([60000, 80000, 100000], ["60k", "80k", "100k"]),
+    (["60000", "80K", "100k"], ["60k", "80k", "100k"]),
+    ([np.float("60000"), np.int("2000")], ["60k", "2k"]),
+    ("60k", "60k"),
+    (80000, "80k")
+])
+def test_resolution2str(resolutions, results):
+
+    assert results == utils.resolution2str(resolutions)
+
+
+@pytest.mark.parametrize("resolutions,results", [
+    ([60000, 80000, 100000], [60000, 80000, 100000]),
+    (["60k", "80k", "100k"], [60000, 80000, 100000]),
+    (["6000", "8000", "100000"], [6000, 8000, 100000]),
+    (["10000", "20k", "300K"], [10000, 20000, 300000]),
+    ("60k", 60000),
+    (80000, 80000)
+])
+def test_resolution2int(resolutions, results):
+
+    assert results == utils.resolution2int(resolutions)
+
+
+def test_compatibility_res2int_res2str():
+    resolution = [60000, "80000", "100k"]
+    res2str = utils.resolution2str
+    res2int = utils.resolution2int
+    assert res2str(resolution) == res2str(res2int(resolution))
+    assert res2int(resolution) == res2int(res2str(resolution))
+
+    assert res2int(res2int(resolution)) == res2int(resolution)
+    assert res2str(res2str(resolution)) == res2str(resolution)
