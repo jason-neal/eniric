@@ -16,8 +16,8 @@ import numpy as np
 from numpy import float64, ndarray
 
 import eniric
-import eniric.IOmodule as Io
 import eniric.utilities as utils
+from eniric.IOmodule import pdread_2col
 
 resampled_dir = eniric.paths["resampled"]
 
@@ -117,7 +117,7 @@ def get_reference_spectrum(id_string: str, ref_band: str = "J") -> Tuple[ndarray
                     "_res{4:3.01f}.txt").format(star, ref_band, vel, res, float(smpl))
 
     try:
-        wav_ref, flux_ref = Io.pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
+        wav_ref, flux_ref = pdread_2col(os.path.join(eniric.paths["resampled"], file_to_read))
     except FileNotFoundError as e:
         print("The reference spectra in {0:s} band was not found for id {1:s}".format(ref_band,
                                                                                       id_string))
