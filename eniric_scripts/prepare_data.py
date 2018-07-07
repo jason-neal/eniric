@@ -43,8 +43,7 @@ def _parser():
         type=float,
         nargs="+",
         default=[3900.0],
-        choices=list(np.arange(2300, 7000, 100.0))
-        + list(np.arange(7000, 12001, 200.0)),
+        choices=list(np.arange(2300, 7000, 100.0)) + list(np.arange(7000, 12001, 200.0)),
     )
     parser.add_argument(
         "-l",
@@ -82,11 +81,7 @@ def _parser():
         help="Type of flux to use. Default converts it to photons.",
     )
     parser.add_argument(
-        "-d",
-        "--data_dir",
-        help="Data directory to save results.",
-        type=str,
-        default=None,
+        "-d", "--data_dir", help="Data directory to save results.", type=str, default=None
     )
     parser.add_argument(
         "-p",
@@ -191,9 +186,7 @@ def main(
 
         for phoenix_file in phoenix_files:
             z_folder = path.split(os.sep)[-1]
-            os.makedirs(
-                os.path.join(data_dir, z_folder), exist_ok=True
-            )
+            os.makedirs(os.path.join(data_dir, z_folder), exist_ok=True)
             output_filename = os.path.join(
                 data_dir, z_folder, phoenix_file[:-5] + file_suffix
             )  # Name of .dat file
@@ -223,9 +216,7 @@ def main(
             spectra_micron = spectra * 10 ** -4  # Convert   /cm    to  /micron
 
             if flux_type == "photon":
-                wavelength_micron = (
-                    wavelength * 10 ** -4
-                )  # Convert Angstrom to   micron
+                wavelength_micron = wavelength * 10 ** -4  # Convert Angstrom to   micron
 
                 spectra_photon = (
                     spectra_micron * wavelength_micron

@@ -98,9 +98,7 @@ def main(bands=None, plot=False):
         )
 
         if plot:
-            atm.plot_atm_masks(
-                wav_atm, flux_atm, org_mask, new_mask=mask_atm, block=True
-            )
+            atm.plot_atm_masks(wav_atm, flux_atm, org_mask, new_mask=mask_atm, block=True)
 
 
 if __name__ == "__main__":

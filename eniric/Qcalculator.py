@@ -12,7 +12,9 @@ from astropy.units.quantity import Quantity
 from numpy import float64, ndarray
 
 
-def RVprec_calc(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]) -> Quantity:
+def RVprec_calc(
+    wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]
+) -> Quantity:
     """Calculate the RV precision achievable on a spectrum.
 
     Parameters
@@ -59,8 +61,9 @@ def RVprec_calc(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndar
     return c / sqrt_sum_wis(wavelength, flux)
 
 
-def quality(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]) -> Union[
-    float64, Quantity]:
+def quality(
+    wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]
+) -> Union[float64, Quantity]:
     """Calculation of the spectral Quality, Q, for a spectrum.
 
     Parameters
@@ -95,7 +98,9 @@ def quality(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]
 
     """
     if not isinstance(wavelength, np.ndarray):
-        print("Your wavelength and flux should really be numpy arrays! Converting them here.")
+        print(
+            "Your wavelength and flux should really be numpy arrays! Converting them here."
+        )
         wavelength = np.asarray(wavelength)
     if not isinstance(flux, np.ndarray):
         flux = np.asarray(flux)
@@ -108,8 +113,9 @@ def quality(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]
     return wis / np.sqrt(np.nansum(flux))
 
 
-def sqrt_sum_wis(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]) -> Union[
-    float64, Quantity]:
+def sqrt_sum_wis(
+    wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]
+) -> Union[float64, Quantity]:
     """Calculation of the Square root of the sum of the weights(Wis) for a spectrum.
 
     Parameters
@@ -140,7 +146,9 @@ def sqrt_sum_wis(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, nda
 
     """
     if not isinstance(wavelength, np.ndarray):
-        print("Your wavelength and flux should really be numpy arrays! Converting them here.")
+        print(
+            "Your wavelength and flux should really be numpy arrays! Converting them here."
+        )
         wavelength = np.asarray(wavelength)
     if not isinstance(flux, np.ndarray):
         flux = np.asarray(flux)
@@ -156,15 +164,19 @@ def sqrt_sum_wis(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, nda
     else:
         flux_variance = flux
 
-    wis = np.sqrt(np.nansum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 /
-                            flux_variance[:-1]))
+    wis = np.sqrt(
+        np.nansum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 / flux_variance[:-1])
+    )
     if not np.isfinite(wis):
         warnings.warn("Weight sum is not finite = {}".format(wis))
     return wis
 
 
-def RVprec_calc_masked(wavelength: Union[List[List[Any]], ndarray],
-                       flux: Union[ndarray, List[List[Any]]], mask: Optional[ndarray] = None) -> Quantity:
+def RVprec_calc_masked(
+    wavelength: Union[List[List[Any]], ndarray],
+    flux: Union[ndarray, List[List[Any]]],
+    mask: Optional[ndarray] = None,
+) -> Quantity:
     """RV precision for split apart spectra.
 
     The same as RVprec_calc, but now wavelength and flux are organized into
@@ -217,8 +229,9 @@ def RVprec_calc_masked(wavelength: Union[List[List[Any]], ndarray],
     # Turn an ndarray into quantity array.
     # Need to use np.zeros instead of np.empty. Unassigned zeros are removed after with nonzero.
     # The "empty" values (1e-300) do not get removed and effect precision
-    slice_rvs = Quantity(np.zeros(len(wavelength), dtype=float),
-                         unit=u.meter / u.second)  # Radial velocity of each slice
+    slice_rvs = Quantity(
+        np.zeros(len(wavelength), dtype=float), unit=u.meter / u.second
+    )  # Radial velocity of each slice
 
     for i, (wav_slice, flux_slice) in enumerate(zip(wavelength_clumps, flux_clumps)):
         if len(wav_slice) == 1:
@@ -237,7 +250,9 @@ def RVprec_calc_masked(wavelength: Union[List[List[Any]], ndarray],
     return rv_value
 
 
-def mask_clumping(wave: ndarray, flux: ndarray, mask: ndarray) -> Tuple[List[ndarray], List[ndarray]]:
+def mask_clumping(
+    wave: ndarray, flux: ndarray, mask: ndarray
+) -> Tuple[List[ndarray], List[ndarray]]:
     """Clump contiguous wavelength and flux sections into list.
 
     Note: Our value of mask (0 = bad points) is opposite to usage in
@@ -273,7 +288,9 @@ def mask_clumping(wave: ndarray, flux: ndarray, mask: ndarray) -> Tuple[List[nda
     return wave_clumps, flux_clumps
 
 
-def bug_fixed_clumping_method(wav: ndarray, flux: ndarray, mask: ndarray) -> Tuple[List[Any], List[Any]]:
+def bug_fixed_clumping_method(
+    wav: ndarray, flux: ndarray, mask: ndarray
+) -> Tuple[List[Any], List[Any]]:
     """Old clumping method that is difficult to understand ...[0] + 1)[::2].
 
     There was a significant bug which was fixed.
@@ -281,10 +298,14 @@ def bug_fixed_clumping_method(wav: ndarray, flux: ndarray, mask: ndarray) -> Tup
     """
     if mask[0] == 1:
         wav_chunks_unformatted = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[::2]
-        flux_chunks_unformatted = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[::2]
+        flux_chunks_unformatted = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[
+            ::2
+        ]
     else:
         wav_chunks_unformatted = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[1::2]
-        flux_chunks_unformatted = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[1::2]
+        flux_chunks_unformatted = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[
+            1::2
+        ]
 
     wav_chunks = [list(chunk) for chunk in wav_chunks_unformatted]
     flux_chunks = [list(chunk) for chunk in flux_chunks_unformatted]
@@ -293,7 +314,9 @@ def bug_fixed_clumping_method(wav: ndarray, flux: ndarray, mask: ndarray) -> Tup
 
 
 ###############################################################################
-def RV_prec_calc_Trans(wavelength: ndarray, flux: ndarray, transmission: ndarray) -> Quantity:
+def RV_prec_calc_Trans(
+    wavelength: ndarray, flux: ndarray, transmission: ndarray
+) -> Quantity:
     """The same as RV_prec_calc, but considering a transmission different than zero.
 
     Parameters
@@ -314,8 +337,11 @@ def RV_prec_calc_Trans(wavelength: ndarray, flux: ndarray, transmission: ndarray
     return c / sqrt_sum_wis_trans(wavelength, flux, transmission)
 
 
-def sqrt_sum_wis_trans(wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray],
-                       transmission: Union[Quantity, ndarray]) -> Union[float64, Quantity]:
+def sqrt_sum_wis_trans(
+    wavelength: Union[Quantity, ndarray],
+    flux: Union[Quantity, ndarray],
+    transmission: Union[Quantity, ndarray],
+) -> Union[float64, Quantity]:
     """Calculation of the Square root of the sum of the Weights for a spectrum, considering transmission.
 
     The transmission reduces the flux so has an affect on the variance.
@@ -336,7 +362,9 @@ def sqrt_sum_wis_trans(wavelength: Union[Quantity, ndarray], flux: Union[Quantit
 
     """
     if not isinstance(wavelength, np.ndarray):
-        print("Your wavelength and flux should really be numpy arrays! Converting them here.")
+        print(
+            "Your wavelength and flux should really be numpy arrays! Converting them here."
+        )
         wavelength = np.asarray(wavelength)
     if not isinstance(flux, np.ndarray):
         flux = np.asarray(flux)
@@ -346,7 +374,9 @@ def sqrt_sum_wis_trans(wavelength: Union[Quantity, ndarray], flux: Union[Quantit
     # Check for units of transmission
     if isinstance(transmission, u.Quantity):
         if not transmission.unit == u.dimensionless_unscaled:
-            raise TypeError("transmission has a unit that is not dimensionless and unscaled!")
+            raise TypeError(
+                "transmission has a unit that is not dimensionless and unscaled!"
+            )
 
         # Check for values of quantity transmission
         if np.any(transmission.value > 1) or np.any(transmission.value < 0):
@@ -367,5 +397,10 @@ def sqrt_sum_wis_trans(wavelength: Union[Quantity, ndarray], flux: Union[Quantit
     else:
         flux_variance = flux
 
-    return np.sqrt(np.nansum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 /
-                             (flux_variance[:-1] / transmission[:-1] ** 2.0)))
+    return np.sqrt(
+        np.nansum(
+            wavelength[:-1] ** 2.0
+            * derivf_over_lambda ** 2.0
+            / (flux_variance[:-1] / transmission[:-1] ** 2.0)
+        )
+    )

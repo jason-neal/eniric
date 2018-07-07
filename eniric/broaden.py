@@ -22,8 +22,15 @@ memory = Memory(cachedir=cachedir, verbose=0)
 
 
 @memory.cache
-def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
-                           vsini, epsilon, num_procs=None, normalize: bool = True):
+def rotational_convolution(
+    wav_extended,
+    wav_ext_rotation,
+    flux_ext_rotation,
+    vsini,
+    epsilon,
+    num_procs=None,
+    normalize: bool = True,
+):
     """Perform Rotational convolution part of convolution.
     """
 
@@ -34,18 +41,27 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
         """
         return element_rot_convolution(*args)
 
-    def element_rot_convolution(wav, wav_extended, wav_ext_rotation,
-                                flux_ext_rotation, vsini: float, epsilon: float,
-                                normalize: bool):
+    def element_rot_convolution(
+        wav,
+        wav_extended,
+        wav_ext_rotation,
+        flux_ext_rotation,
+        vsini: float,
+        epsilon: float,
+        normalize: bool,
+    ):
         """Embarrassingly parallel part of rotational convolution"""
         # select all values such that they are within the fwhm limits
         delta_lambda_l = wav * vsini / 3.0e5
 
-        index_mask = mask_between(wav_ext_rotation, wav - delta_lambda_l, wav + delta_lambda_l)
+        index_mask = mask_between(
+            wav_ext_rotation, wav - delta_lambda_l, wav + delta_lambda_l
+        )
 
         flux_2convolve = flux_ext_rotation[index_mask]
-        rotation_profile = rotation_kernel(wav_ext_rotation[index_mask] - wav, delta_lambda_l,
-                                           vsini, epsilon)
+        rotation_profile = rotation_kernel(
+            wav_ext_rotation[index_mask] - wav, delta_lambda_l, vsini, epsilon
+        )
 
         sum_val = np.sum(rotation_profile * flux_2convolve)
 
@@ -62,35 +78,59 @@ def rotational_convolution(wav_extended, wav_ext_rotation, flux_ext_rotation,
 
         mproc_pool = mprocess.Pool(processes=num_procs)
 
-        args_generator = tqdm([[wav, wav_extended, wav_ext_rotation,
-                                flux_ext_rotation, vsini, epsilon, normalize]
-                               for wav in wav_extended])
+        args_generator = tqdm(
+            [
+                [
+                    wav,
+                    wav_extended,
+                    wav_ext_rotation,
+                    flux_ext_rotation,
+                    vsini,
+                    epsilon,
+                    normalize,
+                ]
+                for wav in wav_extended
+            ]
+        )
 
-        flux_conv_rot = np.array(mproc_pool.map(wrapper_rot_parallel_convolution,
-                                                args_generator))
+        flux_conv_rot = np.array(
+            mproc_pool.map(wrapper_rot_parallel_convolution, args_generator)
+        )
 
         mproc_pool.close()
 
     else:  # num_procs == 0
         flux_conv_rot = np.empty_like(wav_extended)  # Memory assignment
         for ii, wav in enumerate(tqdm(wav_extended)):
-            flux_conv_rot[ii] = element_rot_convolution(wav, wav_extended,
-                                                        wav_ext_rotation,
-                                                        flux_ext_rotation,
-                                                        vsini, epsilon,
-                                                        normalize=normalize)
+            flux_conv_rot[ii] = element_rot_convolution(
+                wav,
+                wav_extended,
+                wav_ext_rotation,
+                flux_ext_rotation,
+                vsini,
+                epsilon,
+                normalize=normalize,
+            )
         print("Done.\n")
     return flux_conv_rot
 
 
 @memory.cache
-def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
-                           num_procs: int = 1, normalize: bool = True):
+def resolution_convolution(
+    wav_band,
+    wav_extended,
+    flux_conv_rot,
+    R,
+    fwhm_lim,
+    num_procs: int = 1,
+    normalize: bool = True,
+):
     """Perform Resolution convolution part of convolution."""
 
     # Define inner convolution functions
-    def element_res_convolution(wav, R, wav_extended, flux_conv_rot, fwhm_lim,
-                                normalize: bool = True):
+    def element_res_convolution(
+        wav, R, wav_extended, flux_conv_rot, fwhm_lim, normalize: bool = True
+    ):
         """Embarrassingly parallel component of resolution convolution"""
         fwhm = wav / R
         # Mask of wavelength range within fwhm_lim* fwhm of wav
@@ -122,25 +162,39 @@ def resolution_convolution(wav_band, wav_extended, flux_conv_rot, R, fwhm_lim,
 
         mproc_pool = mprocess.Pool(processes=num_procs)
         # Need to update the values here
-        args_generator = tqdm([[wav, R, wav_extended, flux_conv_rot, fwhm_lim,
-                                normalize] for wav in wav_band])
-        flux_conv_res = np.array(mproc_pool.map(wrapper_res_parallel_convolution,
-                                                args_generator))
+        args_generator = tqdm(
+            [
+                [wav, R, wav_extended, flux_conv_rot, fwhm_lim, normalize]
+                for wav in wav_band
+            ]
+        )
+        flux_conv_res = np.array(
+            mproc_pool.map(wrapper_res_parallel_convolution, args_generator)
+        )
         mproc_pool.close()
 
     else:  # num_procs == 0
         flux_conv_res = np.empty_like(wav_band)  # Memory assignment
         for jj, wav in enumerate(tqdm(wav_band)):
-            flux_conv_res[jj] = element_res_convolution(wav, R, wav_extended,
-                                                        flux_conv_rot, fwhm_lim,
-                                                        normalize=normalize)
+            flux_conv_res[jj] = element_res_convolution(
+                wav, R, wav_extended, flux_conv_rot, fwhm_lim, normalize=normalize
+            )
         print("Done.\n")
     return flux_conv_res
 
 
 @memory.cache
-def convolution(wav, flux, vsini, R, band: str = "All", epsilon: float = 0.6, fwhm_lim: float = 5.0,
-                num_procs: Optional[int] = None, normalize: bool = True):
+def convolution(
+    wav,
+    flux,
+    vsini,
+    R,
+    band: str = "All",
+    epsilon: float = 0.6,
+    fwhm_lim: float = 5.0,
+    num_procs: Optional[int] = None,
+    normalize: bool = True,
+):
     """Perform convolution of spectrum.
 
     Rotational convolution followed by a Gaussian of a specified resolution R.
@@ -194,25 +248,35 @@ def convolution(wav, flux, vsini, R, band: str = "All", epsilon: float = 0.6, fw
     wav_extended, flux_extended = wav_selector(wav, flux, lower_lim, upper_lim)
 
     # rotational convolution
-    flux_conv_rot = rotational_convolution(wav_extended, wav_ext_rotation,
-                                           flux_ext_rotation, vsini, epsilon,
-                                           num_procs=num_procs,
-                                           normalize=normalize)
+    flux_conv_rot = rotational_convolution(
+        wav_extended,
+        wav_ext_rotation,
+        flux_ext_rotation,
+        vsini,
+        epsilon,
+        num_procs=num_procs,
+        normalize=normalize,
+    )
 
     print("Starting the Resolution convolution...")
 
-    flux_conv_res = resolution_convolution(wav_band, wav_extended,
-                                           flux_conv_rot, R, fwhm_lim,
-                                           num_procs=num_procs,
-                                           normalize=normalize)
+    flux_conv_res = resolution_convolution(
+        wav_band,
+        wav_extended,
+        flux_conv_rot,
+        R,
+        fwhm_lim,
+        num_procs=num_procs,
+        normalize=normalize,
+    )
 
     return wav_band, flux_band, flux_conv_res
 
 
 def unitary_gaussian(
-        x: Union[range, int, ndarray],
-        center: Union[float, int, str],
-        fwhm: Union[float, int, str],
+    x: Union[range, int, ndarray],
+    center: Union[float, int, str],
+    fwhm: Union[float, int, str],
 ) -> ndarray:
     """Gaussian function of area = 1.
 
@@ -246,7 +310,7 @@ def unitary_gaussian(
 
 
 def rotation_kernel(
-        delta_lambdas: ndarray, delta_lambda_l: float, vsini: float, epsilon: float
+    delta_lambdas: ndarray, delta_lambda_l: float, vsini: float, epsilon: float
 ) -> ndarray:
     """Calculate the rotation kernel for a given wavelength
 
