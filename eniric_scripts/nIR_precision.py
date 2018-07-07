@@ -18,7 +18,7 @@ import eniric.Qcalculator as Qcalculator
 import eniric.snr_normalization as snrnorm
 import eniric.utilities as utils
 
-rc("text", usetex=True)  # set stuff for latex usage
+rc('text', usetex=True)  # set stuff for latex usage
 
 
 def _parser():
@@ -27,43 +27,43 @@ def _parser():
     :returns: the args
     """
     parser = argparse.ArgumentParser(
-        description="Calculate radial velocity precision of model spectra."
+        description='Calculate radial velocity precision of model spectra.'
     )
 
     parser.add_argument(
-        "-b",
-        "--bands",
+        '-b',
+        '--bands',
         type=str,
-        default="J",
-        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", "None"],
-        help="Wavelength bands to select. Default=J.",
-        nargs="+",
+        default='J',
+        choices=['ALL', 'VIS', 'GAP', 'Z', 'Y', 'J', 'H', 'K', 'None'],
+        help='Wavelength bands to select. Default=J.',
+        nargs='+',
     )
     parser.add_argument(
-        "-u",
-        "--use_unshifted",
+        '-u',
+        '--use_unshifted',
         default=False,
-        action="store_true",
-        help="Start with the un-doppler-shifted atmmodel.",
+        action='store_true',
+        help='Start with the un-doppler-shifted atmmodel.',
     )
     parser.add_argument(
-        "-s", "--save", default=False, action="store_true", help="Save results to file."
+        '-s', '--save', default=False, action='store_true', help='Save results to file.'
     )
     parser.add_argument(
-        "--snr", help="Mid-band SNR scaling. (Default=100)", default=100, type=float
+        '--snr', help='Mid-band SNR scaling. (Default=100)', default=100, type=float
     )
     parser.add_argument(
-        "--ref_band",
-        help="SNR reference band. Default=J. (Default=100). "
+        '--ref_band',
+        help='SNR reference band. Default=J. (Default=100). '
         "'self' scales each band relative to the SNR itself.",
-        choices=["self", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
-        default="J",
+        choices=['self', 'VIS', 'GAP', 'Z', 'Y', 'J', 'H', 'K'],
+        default='J',
         type=str,
     )
     return parser.parse_args()
 
 
-def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
+def main(bands='J', use_unshifted=False, save=False, snr=100, ref_band='J'):
     """Main function that calls calc_precision.
 
     Parameters
@@ -76,17 +76,17 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
         Save results to file.
 
     """
-    os.makedirs(eniric.paths["precision"], exist_ok=True)
+    os.makedirs(eniric.paths['precision'], exist_ok=True)
 
-    spectral_types = ["M0", "M3", "M6", "M9"]
-    if ("ALL" in bands) or ("None" in bands):
-        bands = ["Z", "Y", "J", "H", "K"]
-    elif isinstance(bands, str) and (bands != "None"):
+    spectral_types = ['M0', 'M3', 'M6', 'M9']
+    if ('ALL' in bands) or ('None' in bands):
+        bands = ['Z', 'Y', 'J', 'H', 'K']
+    elif isinstance(bands, str) and (bands != 'None'):
         bands = [bands]
 
-    vsini = ["1.0", "5.0", "10.0"]
-    resolution = ["60k", "80k", "100k"]
-    sampling = ["3"]
+    vsini = ['1.0', '5.0', '10.0']
+    resolution = ['60k', '80k', '100k']
+    sampling = ['3']
 
     results = calculate_prec(
         spectral_types,
@@ -104,19 +104,19 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
         ref_band=ref_band,
     )
 
-    print("{Combination\t\tPrec_1\t\tPrec_2\t\tPrec_3")
-    print("-" * 20)
+    print('{Combination\t\tPrec_1\t\tPrec_2\t\tPrec_3')
+    print('-' * 20)
     for key in results:
         print(
-            "{0:s}\t\t{1:0.4f}\t{2:0.4f}\t{3:0.4f}".format(
+            '{0:s}\t\t{1:0.4f}\t{2:0.4f}\t{3:0.4f}'.format(
                 key, results[key][0], results[key][1], results[key][2]
             )
         )
     # Save precision results
     if save:
         output_filename = os.path.join(
-            eniric.paths["precision"],
-            "precision_results_2017_ref_band-{0}_snr-{1}.txt".format(ref_band, snr),
+            eniric.paths['precision'],
+            'precision_results_2017_ref_band-{0}_snr-{1}.txt'.format(ref_band, snr),
         )
         ids = []
         prec_1s = []
@@ -126,7 +126,7 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
             for band in bands:
                 for vel in vsini:
                     for res in resolution:
-                        id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(
+                        id_string = '{0:s}-{1:s}-{2:.1f}-{3:s}'.format(
                             star, band, float(vel), res
                         )
                         ids.append(id_string)
@@ -140,10 +140,10 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
             prec_1s,
             prec_2s,
             prec_3s,
-            header=["# id", r"prec_1 [m/s]", r"prec_2 [m/s]", r"prec_3 [m/s]"],
-            float_format="%5.01f",
+            header=['# id', r'prec_1 [m/s]', r'prec_2 [m/s]', r'prec_3 [m/s]'],
+            float_format='%5.01f',
         )
-        print("saved results to {}".format(output_filename))
+        print('saved results to {}'.format(output_filename))
     # return results
 
 
@@ -171,14 +171,14 @@ def calculate_prec(
     rv_offset=0.0,
     use_unshifted=False,
     snr=100,
-    ref_band="J",
+    ref_band='J',
     new=True,
 ):
     """Calculate precisions for given combinations."""
     # TODO: iterate over band last so that the J band normalization value can be
     # obtained first and applied to each band.
 
-    print("using new config.yaml file here!!!!!!!!!!!!!!")
+    print('using new config.yaml file here!!!!!!!!!!!!!!')
     results = {}  # creating empty dictionary for the results
     wav_plot_m0 = []  # creating empty lists for the plots
     flux_plot_m0 = []
@@ -193,37 +193,39 @@ def calculate_prec(
 
         if use_unshifted:
             atmmodel = os.path.join(
-                eniric.paths["atmmodel"], "Average_TAPAS_2014_{}.txt".format(band)
+                eniric.paths['atmmodel'], 'Average_TAPAS_2014_{}.txt'.format(band)
             )
-            print("Reading atmospheric model...")
+            print('Reading atmospheric model...')
             wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(atmmodel)
             print(
-                ("There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}." "").format(
+                (
+                    'There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}.' ''
+                ).format(
                     np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)
                 )
             )
 
             print(
-                "The model ranges from {0:4.2f} to {1:4.2f} micron.".format(
+                'The model ranges from {0:4.2f} to {1:4.2f} micron.'.format(
                     wav_atm[0], wav_atm[-1]
                 )
             )
-            print("Done.")
-            print("Calculating impact of Barycentric movement on mask...")
+            print('Done.')
+            print('Calculating impact of Barycentric movement on mask...')
             # mask_atm = atm.old_barycenter_shift(wav_atm, mask_atm, rv_offset=rv_offset)
             mask_atm = atm.barycenter_shift(wav_atm, mask_atm, rv_offset=rv_offset)
         else:
             shifted_atmmodel = os.path.join(
-                eniric.paths["atmmodel"], "Average_TAPAS_2014_{}_bary.txt".format(band)
+                eniric.paths['atmmodel'], 'Average_TAPAS_2014_{}_bary.txt'.format(band)
             )
-            print("Reading pre-doppler-shifted atmospheric model...")
+            print('Reading pre-doppler-shifted atmospheric model...')
             wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(
                 shifted_atmmodel
             )
-        print("Done.")
+        print('Done.')
 
         print(
-            ("There were {0:d} unmasked pixels out of {1:d}, or {2:.1%}." "").format(
+            ('There were {0:d} unmasked pixels out of {1:d}, or {2:.1%}.' '').format(
                 np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)
             )
         )
@@ -242,27 +244,27 @@ def calculate_prec(
         #             for smpl in sampling:
         for (star, vel, res, smpl) in iterations:
             file_to_read = (
-                "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}" "_res{4:2.01f}.txt"
+                'Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}' '_res{4:2.01f}.txt'
             ).format(star, band, vel, res, float(smpl))
             # print("Working on "+file_to_read+".")
             try:
                 wav_stellar, flux_stellar = io.pdread_2col(
-                    os.path.join(eniric.paths["resampled"], file_to_read)
+                    os.path.join(eniric.paths['resampled'], file_to_read)
                 )
             except FileNotFoundError:
                 # Turn list of strings into strings without symbols  ["J", "K"] -> J K
-                spectral_str = re.sub(r"[\[\]\"\',]", "", str(spectral_types))
-                band_str = re.sub(r"[\[\]\"\',]", "", str(bands))
-                vsini_str = re.sub(r"[\[\]\"\',]", "", str(vsini))
-                res_str = re.sub(r"[\[\]\"\',]", "", str(resolution))
-                sampling_str = re.sub(r"[\[\]\"\',]", "", str(sampling))
+                spectral_str = re.sub(r"[\[\]\"\',]", '', str(spectral_types))
+                band_str = re.sub(r"[\[\]\"\',]", '', str(bands))
+                vsini_str = re.sub(r"[\[\]\"\',]", '', str(vsini))
+                res_str = re.sub(r"[\[\]\"\',]", '', str(resolution))
+                sampling_str = re.sub(r"[\[\]\"\',]", '', str(sampling))
 
                 print(
                     (
-                        "\nFor just this file I suggest you run\n\tpython nIR_run.py -s {0} -b {1} -v {2} -R {3} "
-                        "--sample_rate {4}\nOr for all the combinations you ran here\n\tpython nIR_run.py -s {5}"
-                        " -b {6} -v {7} -R {8} --sample_rate {9}"
-                        ""
+                        '\nFor just this file I suggest you run\n\tpython nIR_run.py -s {0} -b {1} -v {2} -R {3} '
+                        '--sample_rate {4}\nOr for all the combinations you ran here\n\tpython nIR_run.py -s {5}'
+                        ' -b {6} -v {7} -R {8} --sample_rate {9}'
+                        ''
                     ).format(
                         star,
                         band,
@@ -278,14 +280,14 @@ def calculate_prec(
                 )
                 raise
             if len(wav_stellar) == 0 or len(flux_stellar) == 0:
-                raise Exception("The file {0} is empty".format(file_to_read))
+                raise Exception('The file {0} is empty'.format(file_to_read))
             # Removing boundary effects
             wav_stellar = wav_stellar[2:-2]
             flux_stellar = flux_stellar[2:-2]
 
             # sample was left aside because only one value existed
             # TODO: Add metallicity and logg into id string
-            id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
+            id_string = '{0:s}-{1:s}-{2:.1f}-{3:s}'.format(star, band, float(vel), res)
 
             # Getting the wav, flux and mask values from the atm model
             # that are the closest to the stellar wav values, see
@@ -303,10 +305,10 @@ def calculate_prec(
             # Check mask masks out deep atmosphere absorption
             if np.any(flux_atm_selected[mask_atm_selected] < 0.98):
                 print(
-                    "####WARNGING####\nThis absorption mask does not mask out deep atmosphere transmission!"
+                    '####WARNGING####\nThis absorption mask does not mask out deep atmosphere transmission!'
                 )
                 print(
-                    "Min flux_atm_selected[mask_atm_selected] = {} < 0.98\n####".format(
+                    'Min flux_atm_selected[mask_atm_selected] = {} < 0.98\n####'.format(
                         np.min(flux_atm_selected[mask_atm_selected])
                     )
                 )
@@ -319,10 +321,10 @@ def calculate_prec(
             )  # snr=100, ref_band="J"
 
             if id_string in [
-                "M0-J-1.0-100k",
-                "M3-J-1.0-100k",
-                "M6-J-1.0-100k",
-                "M9-J-1.0-100k",
+                'M0-J-1.0-100k',
+                'M3-J-1.0-100k',
+                'M6-J-1.0-100k',
+                'M9-J-1.0-100k',
             ]:
                 index_ref = np.searchsorted(
                     wav_stellar, 1.25
@@ -331,11 +333,11 @@ def calculate_prec(
                     np.sum(flux_stellar[index_ref - 1 : index_ref + 2])
                 )
                 print(
-                    "\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.".format(
+                    '\tSanity Check: The S/N for the {0:s} reference model was of {1:4.2f}.'.format(
                         id_string, snr_estimate
                     )
                 )
-            elif "J" in id_string:
+            elif 'J' in id_string:
                 index_ref = np.searchsorted(
                     wav_stellar, 1.25
                 )  # searching for the index closer to 1.25 micron
@@ -343,13 +345,13 @@ def calculate_prec(
                     np.sum(flux_stellar[index_ref - 1 : index_ref + 2])
                 )
                 print(
-                    "\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.".format(
+                    '\tSanity Check: The S/N for the {0:s} non-reference model was of {1:4.2f}.'.format(
                         id_string, snr_estimate
                     )
                 )
 
             # Precision given by the first method:
-            print("Performing analysis for: ", id_string)
+            print('Performing analysis for: ', id_string)
             prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar)
 
             # Precision as given by the second_method
@@ -389,11 +391,11 @@ def calculate_prec(
                 )
 
             plot_ids = [
-                "M3-Z-1.0-100k",
-                "M3-Y-1.0-100k",
-                "M3-J-1.0-100k",
-                "M3-H-1.0-100k",
-                "M3-K-1.0-100k",
+                'M3-Z-1.0-100k',
+                'M3-Y-1.0-100k',
+                'M3-J-1.0-100k',
+                'M3-H-1.0-100k',
+                'M3-K-1.0-100k',
             ]
 
             if plot_flux and id_string in plot_ids:
@@ -422,13 +424,13 @@ def calculate_prec(
 ###############################################################################
 def compare_output():
     """Function that compares a spectrum prior to convolution, after, and after resampling."""
-    pre_convolution = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
+    pre_convolution = 'PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat'
     pre_wav, pre_flux = io.pdread_2col(pre_convolution)
-    pre_wav = np.array(pre_wav, dtype="float64") * 1.0e-4  # conversion to microns
-    pre_flux = np.array(pre_flux, dtype="float64") * pre_wav
+    pre_wav = np.array(pre_wav, dtype='float64') * 1.0e-4  # conversion to microns
+    pre_flux = np.array(pre_flux, dtype='float64') * pre_wav
 
-    convolved = "results_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k.txt"
-    sampled = "resampled_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt"
+    convolved = 'results_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k.txt'
+    sampled = 'resampled_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt'
 
     conv_wav, theory_flux, conv_flux = io.pdread_3col(convolved)
     sampled_wav, sampled_flux = io.pdread_2col(sampled)
@@ -440,21 +442,23 @@ def compare_output():
     ratio_flux = ratio_flux / ratio_flux[0]
 
     plt.figure(1)
-    plt.xlabel(r"wavelength [$\mu$m])")
-    plt.ylabel(r"Flux[ ] ")
-    plt.plot(conv_wav, np.array(theory_flux) / theory_flux[0], color="k")
-    plt.plot(conv_wav, np.array(conv_flux) / conv_flux[0], color="b")
-    plt.plot(conv_wav, ratio_flux, color="g", linestyle="--")
+    plt.xlabel(r'wavelength [$\mu$m])')
+    plt.ylabel(r'Flux[ ] ')
+    plt.plot(conv_wav, np.array(theory_flux) / theory_flux[0], color='k')
+    plt.plot(conv_wav, np.array(conv_flux) / conv_flux[0], color='b')
+    plt.plot(conv_wav, ratio_flux, color='g', linestyle='--')
     plt.show()
     plt.close()
 
     conv_flux_corrected = conv_flux / ratio_flux
 
     plt.figure(1)
-    plt.xlabel(r"wavelength [$\mu$m])")
-    plt.ylabel(r"Flux corrected[ ] ")
-    plt.plot(conv_wav, np.array(theory_flux) / theory_flux[0], color="k")
-    plt.plot(conv_wav, np.array(conv_flux_corrected) / conv_flux_corrected[0], color="b")
+    plt.xlabel(r'wavelength [$\mu$m])')
+    plt.ylabel(r'Flux corrected[ ] ')
+    plt.plot(conv_wav, np.array(theory_flux) / theory_flux[0], color='k')
+    plt.plot(
+        conv_wav, np.array(conv_flux_corrected) / conv_flux_corrected[0], color='b'
+    )
     plt.show()
     plt.close()
 
@@ -469,18 +473,18 @@ def calculate_all_masked(wav_atm, mask_atm):
     concatenate result.
     """
     # calculating the number of pixels inside the mask
-    wav_Z, mask_Z = utils.band_selector(wav_atm, mask_atm, "Z")
-    wav_Y, mask_Y = utils.band_selector(wav_atm, mask_atm, "Y")
-    wav_J, mask_J = utils.band_selector(wav_atm, mask_atm, "J")
-    wav_H, mask_H = utils.band_selector(wav_atm, mask_atm, "H")
-    wav_K, mask_K = utils.band_selector(wav_atm, mask_atm, "K")
+    wav_Z, mask_Z = utils.band_selector(wav_atm, mask_atm, 'Z')
+    wav_Y, mask_Y = utils.band_selector(wav_atm, mask_atm, 'Y')
+    wav_J, mask_J = utils.band_selector(wav_atm, mask_atm, 'J')
+    wav_H, mask_H = utils.band_selector(wav_atm, mask_atm, 'H')
+    wav_K, mask_K = utils.band_selector(wav_atm, mask_atm, 'K')
 
     bands_masked = np.concatenate((mask_Z, mask_Y, mask_J, mask_H, mask_K))
 
     print(
         (
-            "Inside the bands, there were {0:.0f} unmasked pixels out of {1:d}"
-            ", or {2:.1%}."
+            'Inside the bands, there were {0:.0f} unmasked pixels out of {1:d}'
+            ', or {2:.1%}.'
         ).format(
             np.sum(bands_masked),
             len(bands_masked),
@@ -510,12 +514,12 @@ def weighted_error(rv_vector):
 def moving_average(x, window_size):
     """Moving average."""
     window = np.ones(int(window_size)) / float(window_size)
-    return np.convolve(x, window, "same")
+    return np.convolve(x, window, 'same')
 
 
 ###############################################################################
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     args = vars(_parser())
     opts = {k: args[k] for k in args}
     sys.exit(main(**opts))

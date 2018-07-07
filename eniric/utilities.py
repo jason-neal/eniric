@@ -6,12 +6,12 @@ import collections
 import errno
 import os
 import re
-from typing import Any, List, Optional, Tuple, Union, Sequence
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
+from numpy import ndarray
 from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
 from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
-from numpy import ndarray
 
 import eniric
 import eniric.IOmodule as io
@@ -35,10 +35,10 @@ def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
         Photon flux.
 
     """
-    if "_res" in spec_name or "_vsini" in spec_name:
-        raise ValueError("Using wrong function to load resampled spectrum.")
+    if '_res' in spec_name or '_vsini' in spec_name:
+        raise ValueError('Using wrong function to load resampled spectrum.')
 
-    if "photon" in spec_name:
+    if 'photon' in spec_name:
         wav_micron, flux_photons = io.pdread_2col(spec_name)
     else:
         wav, flux = io.pdread_2col(spec_name)
@@ -55,7 +55,7 @@ def get_spectrum_name(
     feh: Union[float, int] = 0.0,
     alpha: Optional[Union[int, float]] = None,
     org: bool = False,
-    flux_type: str = "photon",
+    flux_type: str = 'photon',
 ) -> str:
     """Return correct phoenix spectrum filename for a given spectral type.
 
@@ -78,40 +78,40 @@ def get_spectrum_name(
     if feh == 0:
         feh = -0.0  # make zero negative to signed integer.
 
-    temps = {"M0": 3900, "M3": 3500, "M6": 2800, "M9": 2600}
-    if (flux_type == "photon") and (not org):
-        base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
+    temps = {'M0': 3900, 'M3': 3500, 'M6': 2800, 'M9': 2600}
+    if (flux_type == 'photon') and (not org):
+        base = 'PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat'
     else:
-        base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+        base = 'PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat'
 
     # noinspection SpellCheckingInspection
     if startype in temps.keys():
         if org:
-            phoenix_name = "lte{0:05d}-{1}-{2}.{3}".format(
-                temps[startype], "4.50", "0.0", base
+            phoenix_name = 'lte{0:05d}-{1}-{2}.{3}'.format(
+                temps[startype], '4.50', '0.0', base
             )
         elif (alpha is not None) and (alpha != 0.0):
             if abs(alpha) > 0.2:
                 raise ValueError(
-                    "Warning! Alpha is outside acceptable range -0.2->0.2. (for current science case)"
+                    'Warning! Alpha is outside acceptable range -0.2->0.2. (for current science case)'
                 )
 
             phoenix_name = os.path.join(
-                "Z{0:+4.1f}.Alpha={1:+5.2f}".format(feh, alpha),
-                "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}.{4:s}".format(
+                'Z{0:+4.1f}.Alpha={1:+5.2f}'.format(feh, alpha),
+                'lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}.{4:s}'.format(
                     temps[startype], logg, feh, alpha, base
                 ),
             )
         else:
             phoenix_name = os.path.join(
-                "Z{0:+4.1f}".format(feh),
-                "lte{0:05d}-{1:4.2f}{2:+4.1f}.{3:s}".format(
+                'Z{0:+4.1f}'.format(feh),
+                'lte{0:05d}-{1:4.2f}{2:+4.1f}.{3:s}'.format(
                     temps[startype], logg, feh, base
                 ),
             )
 
         spectrum_name = phoenix_name
-    elif re.match(r"^[OBAFGKML][0-9]$", startype):  # Valid spectral types
+    elif re.match(r'^[OBAFGKML][0-9]$', startype):  # Valid spectral types
         raise NotImplementedError(
             "The spectral type '{0:s}' is not implemented yet.".format(startype)
         )
@@ -139,7 +139,7 @@ def band_selector(wav: ndarray, flux: ndarray, band: str) -> Tuple[ndarray, ndar
     # bands = {"VIS": (0.38, 0.78), "GAP": (0.78, 0.83), "Z": (0.83, 0.93),
     #         "Y": (1.0, 1.1), "J": (1.17, 1.33), "H": (1.5, 1.75),
     #         "K": (2.07, 2.35), "CONT": (0.45, 1.05), "NIR": (0.83, 2.35)}
-    if band in ["ALL", ""]:
+    if band in ['ALL', '']:
         return wav, flux
     else:
         band_min, band_max = band_limits(band)
@@ -162,28 +162,28 @@ def band_limits(band: str) -> Tuple[float, float]:
         Upper wavelength bound of band in microns
     """
     if not isinstance(band, str):
-        raise AttributeError("Band name must be a string")
+        raise AttributeError('Band name must be a string')
     else:
         band = band.upper()
 
     bands = {
-        "VIS": (0.38, 0.78),
-        "GAP": (0.78, 0.83),
-        "Z": (0.83, 0.93),
-        "Y": (1.0, 1.1),
-        "J": (1.17, 1.33),
-        "H": (1.5, 1.75),
-        "K": (2.07, 2.35),
-        "CONT": (0.45, 1.05),
-        "NIR": (0.83, 2.35),
-        "CARMENES_NIR": (0.96, 1.71),
-        "CARMENES_VIS": (0.52, 0.96),
+        'VIS': (0.38, 0.78),
+        'GAP': (0.78, 0.83),
+        'Z': (0.83, 0.93),
+        'Y': (1.0, 1.1),
+        'J': (1.17, 1.33),
+        'H': (1.5, 1.75),
+        'K': (2.07, 2.35),
+        'CONT': (0.45, 1.05),
+        'NIR': (0.83, 2.35),
+        'CARMENES_NIR': (0.96, 1.71),
+        'CARMENES_VIS': (0.52, 0.96),
     }
 
     if band in bands:
         return bands[band]
     else:
-        raise ValueError("The band {0} requested is not a valid option".format(band))
+        raise ValueError('The band {0} requested is not a valid option'.format(band))
 
 
 def band_middle(band):
@@ -231,8 +231,8 @@ def wav_selector(
     flux_sel: array
         New wavelength array within bounds wav_min, wav_max
         """
-    wav = np.asarray(wav, dtype="float64")
-    flux = np.asarray(flux, dtype="float64")
+    wav = np.asarray(wav, dtype='float64')
+    flux = np.asarray(flux, dtype='float64')
 
     mask = mask_between(wav, wav_min, wav_max)
     flux_sel = flux[mask]
@@ -269,7 +269,7 @@ def resolutions2ints(resolution: Sequence[Any]) -> List[int]:
     """
     if not issequenceforme(resolution):
         raise TypeError(
-            "resolution was a {} but needs to be a Sequence".format(type(resolution))
+            'resolution was a {} but needs to be a Sequence'.format(type(resolution))
         )
 
     res_list = []
@@ -281,17 +281,17 @@ def resolutions2ints(resolution: Sequence[Any]) -> List[int]:
 def res2int(res: Any) -> int:
     """Convert from "100k" or "100000" to 100000."""
     if issequenceforme(res):
-        raise TypeError("res was a {} but needs to be a non-Sequence".format(type(res)))
+        raise TypeError('res was a {} but needs to be a non-Sequence'.format(type(res)))
 
     if isinstance(res, (np.int, np.float, int, float)):
         value = res
     elif isinstance(res, str):
-        if res.lower().endswith("k"):
+        if res.lower().endswith('k'):
             value = float(res[:-1]) * 1000
         else:
             value = float(res)
     else:
-        raise TypeError("Resolution name Type error of type {}".format(type(res)))
+        raise TypeError('Resolution name Type error of type {}'.format(type(res)))
 
     return int(value)
 
@@ -303,7 +303,7 @@ def resolutions2strs(resolution: Sequence[Any]) -> List[str]:
     """
     if not issequenceforme(resolution):
         raise TypeError(
-            "resolution was a {} but needs to be a Sequence".format(type(resolution))
+            'resolution was a {} but needs to be a Sequence'.format(type(resolution))
         )
 
     res_list = []
@@ -316,20 +316,20 @@ def res2str(res: Any) -> str:
     """Convert from "100000" or 100000 to "100k"."""
     if issequenceforme(res):
         raise TypeError(
-            "resolution was a {} but needs to be a non-Sequence".format(type(res))
+            'resolution was a {} but needs to be a non-Sequence'.format(type(res))
         )
 
     if isinstance(res, (np.int, np.float)):
         value = res / 1000
     elif isinstance(res, str):
-        if res.lower().endswith("k"):
+        if res.lower().endswith('k'):
             value = res[:-1]
         else:
             value = float(res) / 1000
     else:
-        raise TypeError("Resolution name TypeError of type {}".format(type(res)))
+        raise TypeError('Resolution name TypeError of type {}'.format(type(res)))
 
-    return "{0}k".format(int(value))
+    return '{0}k'.format(int(value))
 
 
 #################################
@@ -352,19 +352,19 @@ def load_aces_spectrum(params, photons=True):
     flux_micron: ndarray
         Photon counts or SED/micron
     """
-    base = eniric.paths["phoenix_raw"] + os.sep
+    base = eniric.paths['phoenix_raw'] + os.sep
 
     if params[3] == 0:  # Alpha value
         params = params[:-1]
         assert len(params) == 3
         phoenix_grid = PHOENIXNoAlpha(base=base)
     elif len(params) == 4:
-        print("USING ALPHA in PHOENIX LOADING")
+        print('USING ALPHA in PHOENIX LOADING')
         phoenix_grid = PHOENIX(
             base=base
         )  # , param_names = ["temp", "logg", "Z", "alpha"])
     else:
-        raise ValueError("Number of parameters is incorrect")
+        raise ValueError('Number of parameters is incorrect')
 
     wav = phoenix_grid.wl
     flux, hdr = phoenix_grid.load_flux(params)
@@ -396,4 +396,4 @@ def load_aces_spectrum(params, photons=True):
 
 # TODO: Use BT-Settl also
 def load_btsettl_spectrum(params, photons=True):
-    raise NotImplementedError("Need to include BT-SETTL")
+    raise NotImplementedError('Need to include BT-SETTL')

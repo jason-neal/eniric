@@ -24,7 +24,7 @@ e.g.
 
 For more details type
 
-    any_spectral_quality.py -h 
+    any_spectral_quality.py -h
 
 ## Background
 The origin of this code was used in [this paper](https://arxiv.org/abs/1511.07468).
@@ -107,4 +107,3 @@ eniric_scripts/nIR_run.py  - Perform the resolution and rotational convolution o
 This also does the resampling.
 
 e.g. python ../Codes/eniric/eniric_scripts/nIR_run.py -s M0 M3 M6 M9 -b Y J H K -v 1.0 5.0 10.0 -R 60000 80000 100000 --sample_rate 3
-

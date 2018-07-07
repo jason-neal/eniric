@@ -5,16 +5,17 @@ Compare to published results and run other tests on it.
 Don't do to many.
 """
 from typing import List, Tuple
+
 import eniric
 from eniric_scripts.nIR_run import main as nir_run
 from eniric_scripts.prepare_data import main as prepare_data
 
-if __name__ == "__main__":
-    print("Eniric paths: {}".format(eniric.paths))
+if __name__ == '__main__':
+    print('Eniric paths: {}'.format(eniric.paths))
 
     # subprocess.call("python eniric_scripts/prepare_data.py -s M0 M3 M6 M9 -l 4.50 -m 0.0", shell=True)
     prepare_data(
-        startype=["M0", "M3", "M6", "M9"],
+        startype=['M0', 'M3', 'M6', 'M9'],
         temp=[],
         logg=[4.50],
         metallicity=[0],
@@ -22,11 +23,11 @@ if __name__ == "__main__":
     )
 
     parameters = [
-        (["M0"], ["Z", "H"], [1, 10], ["60k", "100k"]),
-        (["M3"], ["Y", "K"], [10], ["100k"]),
-        (["M0"], ["K"], [1, 5], ["60k", "100k"]),
-        (["M6", "M9"], ["H", "K"], [1], ["80k"]),
-        (["M0", "M3", "M6", "M9"], ["J"], [1, 5, 10], ["60k", "80k", "100k"]),
+        (['M0'], ['Z', 'H'], [1, 10], ['60k', '100k']),
+        (['M3'], ['Y', 'K'], [10], ['100k']),
+        (['M0'], ['K'], [1, 5], ['60k', '100k']),
+        (['M6', 'M9'], ['H', 'K'], [1], ['80k']),
+        (['M0', 'M3', 'M6', 'M9'], ['J'], [1, 5, 10], ['60k', '80k', '100k']),
     ]  # type: List[Tuple[List[str], List[str], List[int], List[str]]]
 
     for (sptype, band, vel, res) in parameters:

@@ -99,7 +99,7 @@ def quality(
     """
     if not isinstance(wavelength, np.ndarray):
         print(
-            "Your wavelength and flux should really be numpy arrays! Converting them here."
+            'Your wavelength and flux should really be numpy arrays! Converting them here.'
         )
         wavelength = np.asarray(wavelength)
     if not isinstance(flux, np.ndarray):
@@ -147,7 +147,7 @@ def sqrt_sum_wis(
     """
     if not isinstance(wavelength, np.ndarray):
         print(
-            "Your wavelength and flux should really be numpy arrays! Converting them here."
+            'Your wavelength and flux should really be numpy arrays! Converting them here.'
         )
         wavelength = np.asarray(wavelength)
     if not isinstance(flux, np.ndarray):
@@ -165,10 +165,12 @@ def sqrt_sum_wis(
         flux_variance = flux
 
     wis = np.sqrt(
-        np.nansum(wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 / flux_variance[:-1])
+        np.nansum(
+            wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 / flux_variance[:-1]
+        )
     )
     if not np.isfinite(wis):
-        warnings.warn("Weight sum is not finite = {}".format(wis))
+        warnings.warn('Weight sum is not finite = {}'.format(wis))
     return wis
 
 
@@ -297,12 +299,16 @@ def bug_fixed_clumping_method(
     The returned values were dependant on the first value in the mask.
     """
     if mask[0] == 1:
-        wav_chunks_unformatted = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[::2]
+        wav_chunks_unformatted = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[
+            ::2
+        ]
         flux_chunks_unformatted = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[
             ::2
         ]
     else:
-        wav_chunks_unformatted = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[1::2]
+        wav_chunks_unformatted = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[
+            1::2
+        ]
         flux_chunks_unformatted = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[
             1::2
         ]
@@ -363,7 +369,7 @@ def sqrt_sum_wis_trans(
     """
     if not isinstance(wavelength, np.ndarray):
         print(
-            "Your wavelength and flux should really be numpy arrays! Converting them here."
+            'Your wavelength and flux should really be numpy arrays! Converting them here.'
         )
         wavelength = np.asarray(wavelength)
     if not isinstance(flux, np.ndarray):
@@ -375,16 +381,16 @@ def sqrt_sum_wis_trans(
     if isinstance(transmission, u.Quantity):
         if not transmission.unit == u.dimensionless_unscaled:
             raise TypeError(
-                "transmission has a unit that is not dimensionless and unscaled!"
+                'transmission has a unit that is not dimensionless and unscaled!'
             )
 
         # Check for values of quantity transmission
         if np.any(transmission.value > 1) or np.any(transmission.value < 0):
-            raise ValueError("Transmission should range from 0 to 1 only.")
+            raise ValueError('Transmission should range from 0 to 1 only.')
     else:
         # Check for values of transmission
         if np.any(transmission > 1) or np.any(transmission < 0):
-            raise ValueError("Transmission should range from 0 to 1 only.")
+            raise ValueError('Transmission should range from 0 to 1 only.')
 
     delta_flux = np.diff(flux)
     delta_lambda = np.diff(wavelength)
