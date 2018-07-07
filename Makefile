@@ -37,7 +37,7 @@ clean-data:
 	rm --force --recursive data/test_data/results
 	rm --force --recursive data/test_data/resampled
 
-data: 
+data:
 	python eniric_scripts/make_test_data.py
 
 clean-build:
@@ -62,10 +62,9 @@ init-dev:
 	pip install -r requirements_dev.txt
 
 cov: $(module)/*
-	py.test --cov=$(module) 
+	py.test --cov=$(module)
 	coverage html
 
 mypy:
 	# py.test --mypy
 	mypy --ignore-missing-imports .
-
