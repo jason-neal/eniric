@@ -47,7 +47,7 @@ def run_convolutions(spectrum_string: str, band: str) -> None:
     print("Running the convolutions for spectra of {0:s} in band {1:s}\n.".format(spectrum, band))
     for vel in vsini:
         for res in R:
-            convolve_spectra(spectrum, band, vel, res, plot=False)
+            convolve_spectra(spectrum, band, vel, res)
 
 
 def save_convolution_results(filename: str, wavelength: ndarray, flux: ndarray,
