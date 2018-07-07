@@ -40,8 +40,12 @@ def test_clump_tester():
     Hence we choose a minimum of 3 consecutive zeros.
     """
     # Clump 1 does not have a group of consecutive Falses with len>=3 but the number of blocks in clump is >=3.
-    clump1 = [np.array([0, 0], dtype=bool), np.array([0, 0], dtype=bool),
-              np.array([0, 0], dtype=bool), np.array([0], dtype=bool)]
+    clump1 = [
+        np.array([0, 0], dtype=bool),
+        np.array([0, 0], dtype=bool),
+        np.array([0, 0], dtype=bool),
+        np.array([0], dtype=bool),
+    ]
     # Clump1 should return True!
     assert org_clump_tester(clump1) is not True  # This is wrong
     assert corrected_clump_tester(clump1) is True
@@ -83,38 +87,42 @@ def correct_zeros_clumper(mask):
 def test_zero_clumper():
     """Test clumping code. To confirm suspicions of the bugs."""
     mask0 = np.array([0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0], dtype=bool)
-    expected_clump0 = [np.array([0], dtype=bool),
-                       np.array([0, 0, 0], dtype=bool),
-                       np.array([0, 0], dtype=bool),
-                       np.array([0, 0, 0], dtype=bool),
-                       np.array([0], dtype=bool)]
+    expected_clump0 = [
+        np.array([0], dtype=bool),
+        np.array([0, 0, 0], dtype=bool),
+        np.array([0, 0], dtype=bool),
+        np.array([0, 0, 0], dtype=bool),
+        np.array([0], dtype=bool),
+    ]
 
     clumps0 = org_zeros_clumper(mask0)
     clumps0_corr = correct_zeros_clumper(mask0)
     # For mask0 both methods work.
     for i, __ in enumerate(clumps0):
-        assert (np.all(clumps0[i] == expected_clump0[i]))
-        assert (np.all(clumps0_corr[i] == expected_clump0[i]))
+        assert np.all(clumps0[i] == expected_clump0[i])
+        assert np.all(clumps0_corr[i] == expected_clump0[i])
 
     clumps0_inverted = org_zeros_clumper(~mask0)
     clumps0_corr_inverted = correct_zeros_clumper(~mask0)
     # Check number of clumps if inverted
     # Should change since mask0 has uneven group numbers. 5 False, 4 True.
     assert not (len(clumps0_inverted) != len(clumps0))  # This should not be the case
-    assert (len(clumps0_corr_inverted) != len(clumps0_corr))
+    assert len(clumps0_corr_inverted) != len(clumps0_corr)
 
     # This mask starts with group of 1s so fails for original code.
     mask1 = np.array([1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0], dtype=bool)
-    expected_clump1 = [np.array([0, 0, 0], dtype=bool),
-                       np.array([0, 0], dtype=bool),
-                       np.array([0, 0, 0], dtype=bool),
-                       np.array([0], dtype=bool)]
+    expected_clump1 = [
+        np.array([0, 0, 0], dtype=bool),
+        np.array([0, 0], dtype=bool),
+        np.array([0, 0, 0], dtype=bool),
+        np.array([0], dtype=bool),
+    ]
     clumps1 = org_zeros_clumper(mask1)
     clumps1_corr = correct_zeros_clumper(mask1)
 
     for i, __ in enumerate(clumps1):
         assert not (np.all(clumps1[i] == expected_clump1[i]))  # Failed original case
-        assert (np.all(clumps1_corr[i] == expected_clump1[i]))
+        assert np.all(clumps1_corr[i] == expected_clump1[i])
 
     # Testing corner cases
     masked_zeros = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=bool)

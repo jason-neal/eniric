@@ -32,8 +32,17 @@ def correct_artigau_2018(band: str) -> float:
       Multiply by model precisions to get to real corrections.
     """
 
-    corrections = {"g": 0.66, "r": 0.82, "i": 0.94, "Z": 1.27,
-                   "z": 1.27, "Y": 0.29, "J": 0.38, "H": 1.37, "K": 1.47}  # type: Dict[str, float]
+    corrections = {
+        "g": 0.66,
+        "r": 0.82,
+        "i": 0.94,
+        "Z": 1.27,
+        "z": 1.27,
+        "Y": 0.29,
+        "J": 0.38,
+        "H": 1.37,
+        "K": 1.47,
+    }  # type: Dict[str, float]
     try:
         return corrections[band]
     except KeyError as e:

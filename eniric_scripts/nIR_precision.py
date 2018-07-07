@@ -198,9 +198,7 @@ def calculate_prec(
             print("Reading atmospheric model...")
             wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(atmmodel)
             print(
-                (
-                    "There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}." ""
-                ).format(
+                ("There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}." "").format(
                     np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)
                 )
             )
@@ -424,9 +422,7 @@ def calculate_prec(
 ###############################################################################
 def compare_output():
     """Function that compares a spectrum prior to convolution, after, and after resampling."""
-    pre_convolution = (
-        "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
-    )
+    pre_convolution = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
     pre_wav, pre_flux = io.pdread_2col(pre_convolution)
     pre_wav = np.array(pre_wav, dtype="float64") * 1.0e-4  # conversion to microns
     pre_flux = np.array(pre_flux, dtype="float64") * pre_wav
@@ -458,9 +454,7 @@ def compare_output():
     plt.xlabel(r"wavelength [$\mu$m])")
     plt.ylabel(r"Flux corrected[ ] ")
     plt.plot(conv_wav, np.array(theory_flux) / theory_flux[0], color="k")
-    plt.plot(
-        conv_wav, np.array(conv_flux_corrected) / conv_flux_corrected[0], color="b"
-    )
+    plt.plot(conv_wav, np.array(conv_flux_corrected) / conv_flux_corrected[0], color="b")
     plt.show()
     plt.close()
 
