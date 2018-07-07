@@ -93,8 +93,14 @@ def test_pdwrire_cols():
     # 0 means successful write
     assert 0 == io.pdwrite_cols(pd_multicol_name, data1, data2, data1)
     assert 0 == io.pdwrite_cols(pd_multicol_name, data1)
-    assert 0 == io.pdwrite_cols(pd_multicol_name, data1, data2, data1, data2,
-                                header=["headers", "for", "column", "labels"])
+    assert 0 == io.pdwrite_cols(
+        pd_multicol_name,
+        data1,
+        data2,
+        data1,
+        data2,
+        header=["headers", "for", "column", "labels"],
+    )
     assert 0 == io.pdwrite_cols(pd_multicol_name, data1, data2, sep=",", index=True)
 
     # test uneven data lengths
@@ -103,7 +109,9 @@ def test_pdwrire_cols():
 
     # test bad header
     with pytest.raises(ValueError):
-        io.pdwrite_cols(pd_multicol_name, data1, data2, bad_data, header=["too", "many", "values"])
+        io.pdwrite_cols(
+            pd_multicol_name, data1, data2, bad_data, header=["too", "many", "values"]
+        )
 
     with pytest.raises(TypeError):
         io.pdwrite_cols(pd_multicol_name, data1, bad="keyword")

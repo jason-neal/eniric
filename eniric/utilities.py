@@ -50,12 +50,12 @@ def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
 
 
 def get_spectrum_name(
-        startype: str,
-        logg: Union[float, int] = 4.50,
-        feh: Union[float, int] = 0.0,
-        alpha: Optional[Union[int, float]] = None,
-        org: bool = False,
-        flux_type: str = "photon",
+    startype: str,
+    logg: Union[float, int] = 4.50,
+    feh: Union[float, int] = 0.0,
+    alpha: Optional[Union[int, float]] = None,
+    org: bool = False,
+    flux_type: str = "photon",
 ) -> str:
     """Return correct phoenix spectrum filename for a given spectral type.
 
@@ -205,10 +205,10 @@ def band_middle(band):
 
 
 def wav_selector(
-        wav: Union[ndarray, List[float]],
-        flux: Union[ndarray, List[float]],
-        wav_min: float,
-        wav_max: float,
+    wav: Union[ndarray, List[float]],
+    flux: Union[ndarray, List[float]],
+    wav_min: float,
+    wav_max: float,
 ) -> Tuple[ndarray, ndarray]:
     """
     function that returns wavelength and flux within a giving range
@@ -268,7 +268,9 @@ def resolutions2ints(resolution: Sequence[Any]) -> List[int]:
     Convert from ["100k", "30000"] to [100000, 30000].
     """
     if not issequenceforme(resolution):
-        raise TypeError("resolution was a {} but needs to be a Sequence".format(type(resolution)))
+        raise TypeError(
+            "resolution was a {} but needs to be a Sequence".format(type(resolution))
+        )
 
     res_list = []
     for res in resolution:
@@ -300,7 +302,9 @@ def resolutions2strs(resolution: Sequence[Any]) -> List[str]:
     Convert from ["100000", 10000] to ["100k", "10k"].
     """
     if not issequenceforme(resolution):
-        raise TypeError("resolution was a {} but needs to be a Sequence".format(type(resolution)))
+        raise TypeError(
+            "resolution was a {} but needs to be a Sequence".format(type(resolution))
+        )
 
     res_list = []
     for res in resolution:
@@ -311,7 +315,9 @@ def resolutions2strs(resolution: Sequence[Any]) -> List[str]:
 def res2str(res: Any) -> str:
     """Convert from "100000" or 100000 to "100k"."""
     if issequenceforme(res):
-        raise TypeError("resolution was a {} but needs to be a non-Sequence".format(type(res)))
+        raise TypeError(
+            "resolution was a {} but needs to be a non-Sequence".format(type(res))
+        )
 
     if isinstance(res, (np.int, np.float)):
         value = res / 1000
@@ -327,6 +333,7 @@ def res2str(res: Any) -> str:
 
 
 #################################
+
 
 def load_aces_spectrum(params, photons=True):
     """Load a Phoenix spectrum from the phoenix library using STARFISH.

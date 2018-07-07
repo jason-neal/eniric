@@ -128,9 +128,7 @@ def main(
         band_min, band_max = band_min * 1e3, band_max * 1e3
 
         band_wav, band_flux = utils.wav_selector(atm_wav, atm_flux, band_min, band_max)
-        __, band_std_flux = utils.wav_selector(
-            atm_wav, atm_std_flux, band_min, band_max
-        )
+        __, band_std_flux = utils.wav_selector(atm_wav, atm_std_flux, band_min, band_max)
         __, band_mask = utils.wav_selector(atm_wav, atm_mask, band_min, band_max)
         assert (
             (len(band_wav) == len(band_flux))

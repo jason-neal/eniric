@@ -14,7 +14,11 @@ if __name__ == "__main__":
 
     # subprocess.call("python eniric_scripts/prepare_data.py -s M0 M3 M6 M9 -l 4.50 -m 0.0", shell=True)
     prepare_data(
-        startype=["M0", "M3", "M6", "M9"], temp=[], logg=[4.50], metallicity=[0], alpha=[0]
+        startype=["M0", "M3", "M6", "M9"],
+        temp=[],
+        logg=[4.50],
+        metallicity=[0],
+        alpha=[0],
     )
 
     parameters = [

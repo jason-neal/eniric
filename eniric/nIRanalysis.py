@@ -22,7 +22,7 @@ from eniric.utilities import read_spectrum
 
 
 # set stuff for latex usage
-rc('text', usetex=True)
+rc("text", usetex=True)
 
 data_rep = eniric.paths["phoenix_dat"]
 results_dir = eniric.paths["results"]
@@ -44,14 +44,19 @@ def run_convolutions(spectrum_string: str, band: str) -> None:
 
     spectrum = spectrum_string  # removed exec usage
     print(spectrum)
-    print("Running the convolutions for spectra of {0:s} in band {1:s}\n.".format(spectrum, band))
+    print(
+        "Running the convolutions for spectra of {0:s} in band {1:s}\n.".format(
+            spectrum, band
+        )
+    )
     for vel in vsini:
         for res in R:
             convolve_spectra(spectrum, band, vel, res)
 
 
-def save_convolution_results(filename: str, wavelength: ndarray, flux: ndarray,
-                             convolved_flux: ndarray) -> int:
+def save_convolution_results(
+    filename: str, wavelength: ndarray, flux: ndarray, convolved_flux: ndarray
+) -> int:
     """Saves convolution results to a file.
 
     Parameters
@@ -69,18 +74,34 @@ def save_convolution_results(filename: str, wavelength: ndarray, flux: ndarray,
     return 0
 
 
-def convolve_spectra(spectrum, band, vsini, R, epsilon: float = 0.6, fwhm_lim: float = 5.0,
-                     num_procs: Optional[int] = None,
-                     results_dir: str = results_dir,
-                     normalize: bool = True, output_name: Optional[str] = None) -> int:
+def convolve_spectra(
+    spectrum,
+    band,
+    vsini,
+    R,
+    epsilon: float = 0.6,
+    fwhm_lim: float = 5.0,
+    num_procs: Optional[int] = None,
+    results_dir: str = results_dir,
+    normalize: bool = True,
+    output_name: Optional[str] = None,
+) -> int:
     """Load Spectrum, apply convolution and then save results."""
     print("Reading the data...")
     wav, flux = read_spectrum(spectrum)  # In microns and  photon flux.
     print("Done.")
 
-    wav_band, flux_band, convolved_flux = convolution(wav, flux, vsini, R, band,
-                                                      epsilon=epsilon, fwhm_lim=fwhm_lim,
-                                                      num_procs=num_procs, normalize=normalize)
+    wav_band, flux_band, convolved_flux = convolution(
+        wav,
+        flux,
+        vsini,
+        R,
+        band,
+        epsilon=epsilon,
+        fwhm_lim=fwhm_lim,
+        num_procs=num_procs,
+        normalize=normalize,
+    )
     if not normalize:
         norm_ = "_unnormalized"
     else:
@@ -90,7 +111,8 @@ def convolve_spectra(spectrum, band, vsini, R, epsilon: float = 0.6, fwhm_lim: f
         name_model = name_assignment(spectrum)
 
         filename = "{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k{5}.txt".format(
-            results_dir, name_model, band, vsini, R / 1000, norm_)
+            results_dir, name_model, band, vsini, R / 1000, norm_
+        )
     else:
         filename = os.path.join(results_dir, output_name)
 

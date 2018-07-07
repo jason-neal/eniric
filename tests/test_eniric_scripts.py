@@ -14,10 +14,10 @@ def test_check_positive():
     assert isinstance(check_positive("20"), float)
 
 
-@pytest.mark.parametrize("val,error", [
-    ("-1", argparse.ArgumentTypeError),
-    (-1.0, ValueError),
-    (10, ValueError)])  # Not a float
+@pytest.mark.parametrize(
+    "val,error",
+    [("-1", argparse.ArgumentTypeError), (-1.0, ValueError), (10, ValueError)],
+)  # Not a float
 def test_check_positive_errors(val, error):
     with pytest.raises(error):
         check_positive(val)
@@ -40,21 +40,61 @@ def test_nir_run_raises_type_errors_on_non_lists(noresample, unnormalized, org):
 
     # Check for TypeError on each parameter
     with pytest.raises(TypeError):
-        nir_run(startype="M0", vsini=vsini, resolution=res, band=band, sample_rate=sample_rate,
-                noresample=noresample, unnormalized=unnormalized, org=org)
+        nir_run(
+            startype="M0",
+            vsini=vsini,
+            resolution=res,
+            band=band,
+            sample_rate=sample_rate,
+            noresample=noresample,
+            unnormalized=unnormalized,
+            org=org,
+        )
 
     with pytest.raises(TypeError):
-        nir_run(startype=startype, vsini=1.5, resolution=res, band=band, sample_rate=sample_rate,
-                noresample=noresample, unnormalized=unnormalized, org=org)
+        nir_run(
+            startype=startype,
+            vsini=1.5,
+            resolution=res,
+            band=band,
+            sample_rate=sample_rate,
+            noresample=noresample,
+            unnormalized=unnormalized,
+            org=org,
+        )
 
     with pytest.raises(TypeError):
-        nir_run(startype=startype, vsini=vsini, resolution="100k", band=band, sample_rate=sample_rate,
-                noresample=noresample, unnormalized=unnormalized, org=org)
+        nir_run(
+            startype=startype,
+            vsini=vsini,
+            resolution="100k",
+            band=band,
+            sample_rate=sample_rate,
+            noresample=noresample,
+            unnormalized=unnormalized,
+            org=org,
+        )
 
     with pytest.raises(TypeError):
-        nir_run(startype=startype, vsini=vsini, resolution=res, band="K", sample_rate=sample_rate,
-                noresample=noresample, unnormalized=unnormalized, org=org)
+        nir_run(
+            startype=startype,
+            vsini=vsini,
+            resolution=res,
+            band="K",
+            sample_rate=sample_rate,
+            noresample=noresample,
+            unnormalized=unnormalized,
+            org=org,
+        )
 
     with pytest.raises(TypeError):
-        nir_run(startype=startype, vsini=vsini, resolution=res, band=band, sample_rate=5,
-                noresample=noresample, unnormalized=unnormalized, org=org)
+        nir_run(
+            startype=startype,
+            vsini=vsini,
+            resolution=res,
+            band=band,
+            sample_rate=5,
+            noresample=noresample,
+            unnormalized=unnormalized,
+            org=org,
+        )

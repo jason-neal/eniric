@@ -9,8 +9,12 @@ from numpy import ndarray
 
 import eniric
 import eniric.atmosphere as atm
-from eniric.Qcalculator import (RV_prec_calc_Trans, RVprec_calc,
-                                RVprec_calc_masked, quality)
+from eniric.Qcalculator import (
+    RV_prec_calc_Trans,
+    RVprec_calc,
+    RVprec_calc_masked,
+    quality,
+)
 from eniric.broaden import convolution
 from eniric.corrections import correct_artigau_2018
 from eniric.resample import log_resample
@@ -31,12 +35,7 @@ def _parser():
     )
     parser.add_argument("-t", "--temp", type=int, help="Temperature", nargs="+")
     parser.add_argument(
-        "-l",
-        "--logg",
-        type=float,
-        default=[4.5],
-        help="Logg, default = [4.5]",
-        nargs="+",
+        "-l", "--logg", type=float, default=[4.5], help="Logg, default = [4.5]", nargs="+"
     )
     parser.add_argument(
         "-m",
@@ -47,12 +46,7 @@ def _parser():
         nargs="+",
     )
     parser.add_argument(
-        "-a",
-        "--alpha",
-        type=float,
-        default=[0.0],
-        help="Alpha, default=[0.0]",
-        nargs="+",
+        "-a", "--alpha", type=float, default=[0.0], help="Alpha, default=[0.0]", nargs="+"
     )
     parser.add_argument(
         "-s", "--sampling", type=float, default=[3.0], help="Sampling", nargs="+"
@@ -66,12 +60,7 @@ def _parser():
         nargs="+",
     )
     parser.add_argument(
-        "-v",
-        "--vsini",
-        type=float,
-        default=[1.0],
-        help="Rotational Velocity",
-        nargs="+",
+        "-v", "--vsini", type=float, default=[1.0], help="Rotational Velocity", nargs="+"
     )
     parser.add_argument(
         "-b",
@@ -98,7 +87,7 @@ def _parser():
     parser.add_argument(
         "--ref_band",
         help="SNR reference band. Default=J. (Default=100). "
-             "'self' scales each band relative to the SNR itself.",
+        "'self' scales each band relative to the SNR itself.",
         choices=["SELF", "self", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
         default="J",
         type=str,
@@ -107,7 +96,7 @@ def _parser():
         "--num_procs",
         help="Number of processors to use. Default = number of cpus -1",
         default=num_procs_minus_1,
-        type=int
+        type=int,
     )
     parser.add_argument(
         "-o",
@@ -124,23 +113,18 @@ def _parser():
 
 
 def do_analysis(
-        star_params,
-        vsini: float,
-        R: float,
-        band: str,
-        sampling: float = 3.0,
-        conv_kwargs=None,
-        snr: float = 100.0,
-        ref_band: str = "J",
+    star_params,
+    vsini: float,
+    R: float,
+    band: str,
+    sampling: float = 3.0,
+    conv_kwargs=None,
+    snr: float = 100.0,
+    ref_band: str = "J",
 ):
     """Precision and Quality for specific parameter set."""
     if conv_kwargs is None:
-        conv_kwargs = {
-            "epsilon": 0.6,
-            "fwhm_lim": 5.0,
-            "num_procs": 1,
-            "normalize": True,
-        }
+        conv_kwargs = {"epsilon": 0.6, "fwhm_lim": 5.0, "num_procs": 1, "normalize": True}
 
     if ref_band.upper() == "SELF":
         ref_band = band
@@ -167,7 +151,7 @@ def do_analysis(
         index_ref = np.searchsorted(
             wav_grid, mid_point
         )  # searching for the index closer to 1.25 micron
-        snr_estimate = np.sqrt(np.sum(sampled_flux[index_ref - 1: index_ref + 2]))
+        snr_estimate = np.sqrt(np.sum(sampled_flux[index_ref - 1 : index_ref + 2]))
         print(
             "\tSanity Check: The S/N at {0:4.02} micron = {1:4.2f}, (should be {2:g}).".format(
                 mid_point, snr_estimate, snr
@@ -191,13 +175,13 @@ def do_analysis(
 
 
 def convolve_and_resample(
-        wav: ndarray,
-        flux: ndarray,
-        vsini: float,
-        R: float,
-        band: str,
-        sampling: float,
-        conv_kwargs,
+    wav: ndarray,
+    flux: ndarray,
+    vsini: float,
+    R: float,
+    band: str,
+    sampling: float,
+    conv_kwargs,
 ) -> Tuple[ndarray, ndarray]:
     """Convolve and resample functions together.
 
@@ -329,13 +313,19 @@ if __name__ == "__main__":
                     raise ValueError("model_par_str_args is incorrect length")
 
                 print("Doing", model_par_str_args)
-                param_string = ("{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
-                                " {6:4.01f}, {7:3.01f}").format(*model_par_str_args)
+                param_string = (
+                    "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
+                    " {6:4.01f}, {7:3.01f}"
+                ).format(*model_par_str_args)
                 # may change output to have less spaces in future
-                param_string1 = ("{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,"
-                                 "{6:4.01f},{7:3.01f}").format(*model_par_str_args)
+                param_string1 = (
+                    "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,"
+                    "{6:4.01f},{7:3.01f}"
+                ).format(*model_par_str_args)
 
-                if (param_string in computed_values) or (param_string1 in computed_values):
+                if (param_string in computed_values) or (
+                    param_string1 in computed_values
+                ):
                     # skipping the recalculation
                     continue
                 else:
@@ -366,12 +356,13 @@ if __name__ == "__main__":
                         (
                             "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
                             " {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, {11:5.01f}, {12:1d}\n"
-                        ).format(*model_par_str_args,
-                                 result[0],
-                                 result[1],
-                                 result[2],
-                                 result[3],
-                                 int(args.correct),
-                                 )
+                        ).format(
+                            *model_par_str_args,
+                            result[0],
+                            result[1],
+                            result[2],
+                            result[3],
+                            int(args.correct),
+                        )
                     )
                     print("done ")

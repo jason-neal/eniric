@@ -34,7 +34,9 @@ def test_read_spectrum():
 # @pytest.mark.xfail(raises=FileNotFoundError)
 def test_get_spectrum_name():
     """Test specifying file names with stellar parameters."""
-    test = os.path.join("Z-0.0", "lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
+    test = os.path.join(
+        "Z-0.0", "lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
+    )
 
     assert utils.get_spectrum_name("M6", flux_type="wave") == test
 
@@ -207,9 +209,7 @@ def test_band_midpoint_j():
 @settings(max_examples=100)
 @given(
     st.lists(
-        st.floats(
-            min_value=1e-7, max_value=1e-5, allow_infinity=False, allow_nan=False
-        ),
+        st.floats(min_value=1e-7, max_value=1e-5, allow_infinity=False, allow_nan=False),
         unique=True,
         min_size=3,
         max_size=25,
@@ -231,9 +231,7 @@ def test_rotational_kernel(delta_lambdas, vsini, epsilon):
 
 @given(
     st.lists(
-        st.floats(min_value=-100, max_value=100, allow_nan=False),
-        min_size=1,
-        unique=True,
+        st.floats(min_value=-100, max_value=100, allow_nan=False), min_size=1, unique=True
     ),
     st.floats(min_value=-100, max_value=100, allow_nan=False),
     st.floats(min_value=0.001, max_value=100, allow_nan=False),
@@ -267,6 +265,7 @@ def test_unitary_gaussian_type_errors():
 
 ################################################
 
+
 def test_silent_remove():
     """Test this doesn't raise and issue.
     Not really a good test."""
@@ -277,25 +276,24 @@ def test_silent_remove():
 ####################################################
 # Test Resolution conversions
 
+
 @pytest.mark.parametrize(
-    "resolution,result",
-    [
-        ("60k", 60000),
-        (80000, 80000),
-        ("2000", 2000),
-    ],
+    "resolution,result", [("60k", 60000), (80000, 80000), ("2000", 2000)]
 )
 def test_res2int(resolution, result):
     assert result == utils.res2int(resolution)
 
 
 @pytest.mark.parametrize(
-    "resolution,result", [(60000, "60k"),
-                          ("20000", "20k"),
-                          (np.float("20000"), "20k"),
-                          ("60k", "60k"),
-                          (80000, "80k"),
-                          (3000, "3k")]
+    "resolution,result",
+    [
+        (60000, "60k"),
+        ("20000", "20k"),
+        (np.float("20000"), "20k"),
+        ("60k", "60k"),
+        (80000, "80k"),
+        (3000, "3k"),
+    ],
 )
 def test_res2str(resolution, result):
     """Test single values in res2str"""
@@ -356,7 +354,7 @@ def test_compatibility_res2int_res2str(resolution):
 
 @pytest.mark.parametrize(
     "resolution",
-    [[1000, 10000, 50000], [100000, 2000000], ["1k"], ["10k", "20k"], ["100k", "2000k"]]
+    [[1000, 10000, 50000], [100000, 2000000], ["1k"], ["10k", "20k"], ["100k", "2000k"]],
 )
 def test_compatibility_resolutions2ints_resolutions2strs(resolution):
     """Test resolutions2ints and resolutions2strs reversible and do not change when operated twice.
@@ -374,43 +372,31 @@ def test_compatibility_resolutions2ints_resolutions2strs(resolution):
     assert res2int(resolution) == res2int(res2int(resolution))
 
 
-@pytest.mark.parametrize("resolutions", [
-    [60000, "20000"],
-    ["50k", "10k"],
-    ["100000", "10000"],
-    ["100000", "10000"],
-])
+@pytest.mark.parametrize(
+    "resolutions",
+    [[60000, "20000"], ["50k", "10k"], ["100000", "10000"], ["100000", "10000"]],
+)
 def test_res2int_fails_on_list(resolutions):
     with pytest.raises(TypeError):
         utils.res2int(resolutions)
 
 
-@pytest.mark.parametrize("resolutions", [
-    60000,
-    "10k"
-    "100000",
-])
+@pytest.mark.parametrize("resolutions", [60000, "10k" "100000"])
 def test_resolutions2ints_fails_on_single(resolutions):
     with pytest.raises(TypeError):
         utils.resolutions2ints(resolutions)
 
 
-@pytest.mark.parametrize("resolutions", [
-    [60000, "20000"],
-    ["50k", "10k"],
-    ["100000", "10000"],
-    ["100000", "10000"],
-])
+@pytest.mark.parametrize(
+    "resolutions",
+    [[60000, "20000"], ["50k", "10k"], ["100000", "10000"], ["100000", "10000"]],
+)
 def test_res2str_fails_on_list(resolutions):
     with pytest.raises(TypeError):
         utils.res2str(resolutions)
 
 
-@pytest.mark.parametrize("resolutions", [
-    60000,
-    "10k"
-    "100000",
-])
+@pytest.mark.parametrize("resolutions", [60000, "10k" "100000"])
 def test_resolutions2strs_fails_on_single(resolutions):
     with pytest.raises(TypeError):
         utils.resolutions2strs(resolutions)
@@ -438,8 +424,11 @@ def test_resampled_spectra_isnot_read_by_read_spectrum(filename):
         utils.read_spectrum(filename)
 
 
-@given(st.lists(st.floats(allow_infinity=False, allow_nan=False), max_size=50), st.floats(1, 100),
-       st.floats(1, 100))
+@given(
+    st.lists(st.floats(allow_infinity=False, allow_nan=False), max_size=50),
+    st.floats(1, 100),
+    st.floats(1, 100),
+)
 def test_mask_between(x, x1, x2):
     """Correctly masks out values."""
     x = np.array(x)
