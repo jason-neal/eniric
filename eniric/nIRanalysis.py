@@ -1,11 +1,4 @@
 #!/usr/bin/env python
-"""
-Created on Sun Dec 14 15:43:13 2014
-
-@author: pfigueira
-
-Adapted December 2016 by Jason Neal
-"""
 import os
 import sys
 from typing import Optional

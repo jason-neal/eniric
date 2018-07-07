@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 """Script to process weekly TAPAS spectra to form an average atmospheric spectrum.
 
-Created on Fri Feb  6 00:36:14 2015
-
-@author: pfigueira
 """
 import os
 import string
@@ -12,7 +9,6 @@ import numpy as np
 
 import eniric.IOmodule as io
 
-# dirmodels = "/home/pfigueira/data/tapas/nIRanalysispaper/"
 dirmodels = "/home/pfigueira/data/tapas/nIRanalysis_visible/"
 list_files = "list_tapas_models.txt"
 
