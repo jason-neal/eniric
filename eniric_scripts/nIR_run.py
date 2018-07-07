@@ -166,7 +166,6 @@ def main(
                             vel,
                             R,
                             epsilon=0.6,
-                            plot=False,
                             fwhm_lim=5.0,
                             num_procs=None,
                             results_dir=results_dir,
