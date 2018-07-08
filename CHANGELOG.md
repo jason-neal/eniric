@@ -2,6 +2,11 @@
 To get a list of commit messages since last version to help write change log try
     `git log YOUR_LAST_VERSION_TAG..HEAD --no-merges --format=%B`
 
+### Upcomming
+-------
+- Blacken source code
+- Add pre-commit hooks
+
 
 ### v0.5
 --------
