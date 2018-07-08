@@ -373,12 +373,12 @@ if __name__ == '__main__':
 
                     result[0] = int(result[0]) if result[0] is not None else None
 
-                    f.write(
-                        (
-                            '{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,'
+                    output_template = ('{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,'
                             ' {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, {11:5.01f}, {12:1d}\n'
+                                       )
                         ).format(
                             *model_par_str_args,
+                    f.write(output_template.format(
                             result[0],
                             result[1],
                             result[2],
