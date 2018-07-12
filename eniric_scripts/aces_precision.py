@@ -1,7 +1,7 @@
 import argparse
 import itertools
 import os
-from typing import Tuple
+from typing import List, Tuple
 
 import multiprocess as mprocess
 import numpy as np
@@ -9,14 +9,14 @@ from numpy import ndarray
 
 import eniric
 import eniric.atmosphere as atm
-from eniric.broaden import convolution
-from eniric.corrections import correct_artigau_2018
 from eniric.Qcalculator import (
     RV_prec_calc_Trans,
     RVprec_calc,
     RVprec_calc_masked,
     quality,
 )
+from eniric.broaden import convolution
+from eniric.corrections import correct_artigau_2018
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import band_middle, load_aces_spectrum
@@ -31,93 +31,93 @@ def _parser():
 
     """
     parser = argparse.ArgumentParser(
-        description='Calculate quality for any library spectra.'
+        description="Calculate quality for any library spectra."
     )
-    parser.add_argument('-t', '--temp', type=int, help='Temperature', nargs='+')
+    parser.add_argument("-t", "--temp", type=int, help="Temperature", nargs="+")
     parser.add_argument(
-        '-l',
-        '--logg',
+        "-l",
+        "--logg",
         type=float,
         default=[4.5],
-        help='Logg, default = [4.5]',
-        nargs='+',
+        help="Logg, default = [4.5]",
+        nargs="+",
     )
     parser.add_argument(
-        '-m',
-        '--metal',
+        "-m",
+        "--metal",
         type=float,
         default=[0.0],
-        help='Metallicity, default=[0.0]',
-        nargs='+',
+        help="Metallicity, default=[0.0]",
+        nargs="+",
     )
     parser.add_argument(
-        '-a',
-        '--alpha',
+        "-a",
+        "--alpha",
         type=float,
         default=[0.0],
-        help='Alpha, default=[0.0]',
-        nargs='+',
+        help="Alpha, default=[0.0]",
+        nargs="+",
     )
     parser.add_argument(
-        '-s', '--sampling', type=float, default=[3.0], help='Sampling', nargs='+'
+        "-s", "--sampling", type=float, default=[3.0], help="Sampling", nargs="+"
     )
     parser.add_argument(
-        '-r',
-        '--resolution',
+        "-r",
+        "--resolution",
         type=float,
         default=[50000],
-        help='Instrumental resolution',
-        nargs='+',
+        help="Instrumental resolution",
+        nargs="+",
     )
     parser.add_argument(
-        '-v',
-        '--vsini',
+        "-v",
+        "--vsini",
         type=float,
         default=[1.0],
-        help='Rotational Velocity',
-        nargs='+',
+        help="Rotational Velocity",
+        nargs="+",
     )
     parser.add_argument(
-        '-b',
-        '--bands',
+        "-b",
+        "--bands",
         type=str,
-        default='J',
-        choices=['ALL', 'VIS', 'GAP', 'Z', 'Y', 'J', 'H', 'K', 'None'],
-        help='Wavelength bands to select. Default=J.',
-        nargs='+',
+        default="J",
+        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", "None"],
+        help="Wavelength bands to select. Default=J.",
+        nargs="+",
     )
     parser.add_argument(
-        '--model',
+        "--model",
         type=str,
-        default='phoenix',
-        choices=['phoenix', 'btsettl'],
-        help='Spectral models to use. Default=phoenix.',
+        default="phoenix",
+        choices=["phoenix", "btsettl"],
+        help="Spectral models to use. Default=phoenix.",
     )
     parser.add_argument(
-        '--save', default=False, action='store_true', help='Save results to file.'
+        "--save", default=False, action="store_true", help="Save results to file."
     )
     parser.add_argument(
-        '--snr', help='Mid-band SNR scaling. (Default=100)', default=100, type=float
+        "--snr", help="Mid-band SNR scaling. (Default=100)", default=100, type=float
     )
     parser.add_argument(
-        '--ref_band',
-        help='SNR reference band. Default=J. (Default=100). '
+        "--ref_band",
+        help="SNR reference band. Default=J. (Default=100). "
         "'self' scales each band relative to the SNR itself.",
-        choices=['SELF', 'self', 'VIS', 'GAP', 'Z', 'Y', 'J', 'H', 'K'],
-        default='J',
+        choices=["SELF", "self", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
+        default="J",
         type=str,
     )
     parser.add_argument(
-        '--num_procs',
-        help='Number of processors to use. Default = number of cpus -1',
+        "--num_procs",
+        help="Number of processors to use. Default = number of cpus -1",
         default=num_procs_minus_1,
         type=int,
     )
     parser.add_argument(
-        '-o',
-        '--output',
-        help='Filename for results',
-        default='quality_results.csv',
+        "-o",
+        "--output",
+        help="Filename for results",
+        default="quality_results.csv",
         type=str,
     )
     parser.add_argument(
@@ -135,18 +135,21 @@ def do_analysis(
     sampling: float = 3.0,
     conv_kwargs=None,
     snr: float = 100.0,
-    ref_band: str = 'J',
+    ref_band: str = "J",
+    rv: float = 0.0,
 ):
-    """Precision and Quality for specific parameter set."""
+    """Precision and Quality for specific parameter set.
+
+        """
     if conv_kwargs is None:
         conv_kwargs = {
-            'epsilon': 0.6,
-            'fwhm_lim': 5.0,
-            'num_procs': 1,
-            'normalize': True,
+            "epsilon": 0.6,
+            "fwhm_lim": 5.0,
+            "num_procs": 1,
+            "normalize": True,
         }
 
-    if ref_band.upper() == 'SELF':
+    if ref_band.upper() == "SELF":
         ref_band = band
 
     # Full photon count spectrum
@@ -173,7 +176,7 @@ def do_analysis(
         )  # searching for the index closer to 1.25 micron
         snr_estimate = np.sqrt(np.sum(sampled_flux[index_ref - 1 : index_ref + 2]))
         print(
-            '\tSanity Check: The S/N at {0:4.02} micron = {1:4.2f}, (should be {2:g}).'.format(
+            "\tSanity Check: The S/N at {0:4.02} micron = {1:4.2f}, (should be {2:g}).".format(
                 mid_point, snr_estimate, snr
             )
         )
@@ -227,11 +230,11 @@ def get_corresponding_atm(wav, bary=True):
     # Load atmosphere
     if bary:
         atmmodel = os.path.join(
-            eniric.paths['atmmodel'], 'Average_TAPAS_2014_{}_bary.txt'.format(band)
+            eniric.paths["atmmodel"], "Average_TAPAS_2014_{}_bary.txt".format(band)
         )
     else:
         atmmodel = os.path.join(
-            eniric.paths['atmmodel'], 'Average_TAPAS_2014_{}.txt'.format(band)
+            eniric.paths["atmmodel"], "Average_TAPAS_2014_{}.txt".format(band)
         )
     wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(atmmodel)
 
@@ -275,7 +278,8 @@ def model_format_args(model, pars):
     return (temp, logg, fe_h, alpha, band, res, vsini, sample)
 
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     args = _parser()
     try:
         num_procs = args.num_procs
@@ -386,4 +390,4 @@ if __name__ == '__main__':
                             int(args.correct),
                         )
                     )
-                    print('done ')
+                    print("done ")

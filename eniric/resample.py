@@ -13,8 +13,8 @@ import numpy as np
 import eniric
 import eniric.IOmodule as io
 
-results_dir = eniric.paths['results']
-resampled_dir = eniric.paths['resampled']
+results_dir = eniric.paths["results"]
+resampled_dir = eniric.paths["resampled"]
 
 
 def resample_allfiles(
@@ -30,23 +30,23 @@ def resample_allfiles(
         Directory to save resampled results.
     """
     if results_dir is None:
-        results_dir = eniric.paths['results']  # type: ignore
+        results_dir = eniric.paths["results"]  # type: ignore
     if resampled_dir is None:
-        resampled_dir = eniric.paths['resampled']  # type: ignore
+        resampled_dir = eniric.paths["resampled"]  # type: ignore
     # Getting a list of all the files
     onlyfiles = [f for f in os.listdir(results_dir) if isfile(join(results_dir, f))]
 
     [
         resampler(spectrum_file, results_dir=results_dir, resampled_dir=resampled_dir)
         for spectrum_file in onlyfiles
-        if spectrum_file.endswith('.txt')
+        if spectrum_file.endswith(".txt")
     ]
 
     return 0
 
 
 def resampler(
-    spectrum_name: str = 'Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt',
+    spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
     results_dir: str = results_dir,
     resampled_dir: str = resampled_dir,
     sampling: Union[int, float] = 3.0,
@@ -68,11 +68,11 @@ def resampler(
     os.makedirs(resampled_dir, exist_ok=True)
     read_name = os.path.join(results_dir, spectrum_name)
 
-    match = re.search('_R(\d{2,3})k', spectrum_name)
+    match = re.search("_R(\d{2,3})k", spectrum_name)
     if match:
         resolution = int(match.group(1)) * 1000  # type: int
     else:
-        raise Exception('Did not match Resolution')
+        raise Exception("Did not match Resolution")
 
     wavelength, __, spectrum = io.pdread_3col(read_name, noheader=True)
     wav_grid = log_resample(wavelength, sampling, resolution)
@@ -81,7 +81,7 @@ def resampler(
 
     output_path = [
         resampled_dir,
-        '{0}_res{1:3.01f}.txt'.format(spectrum_name[:-4], float(sampling)),
+        "{0}_res{1:3.01f}.txt".format(spectrum_name[:-4], float(sampling)),
     ]
     filetowrite = os.path.join(*output_path)
     io.write_e_2col(

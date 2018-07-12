@@ -99,7 +99,7 @@ def quality(
     """
     if not isinstance(wavelength, np.ndarray):
         print(
-            'Your wavelength and flux should really be numpy arrays! Converting them here.'
+            "Your wavelength and flux should really be numpy arrays! Converting them here."
         )
         wavelength = np.asarray(wavelength)
     if not isinstance(flux, np.ndarray):
@@ -147,7 +147,7 @@ def sqrt_sum_wis(
     """
     if not isinstance(wavelength, np.ndarray):
         print(
-            'Your wavelength and flux should really be numpy arrays! Converting them here.'
+            "Your wavelength and flux should really be numpy arrays! Converting them here."
         )
         wavelength = np.asarray(wavelength)
     if not isinstance(flux, np.ndarray):
@@ -170,7 +170,7 @@ def sqrt_sum_wis(
         )
     )
     if not np.isfinite(wis):
-        warnings.warn('Weight sum is not finite = {}'.format(wis))
+        warnings.warn("Weight sum is not finite = {}".format(wis))
     return wis
 
 
@@ -369,7 +369,7 @@ def sqrt_sum_wis_trans(
     """
     if not isinstance(wavelength, np.ndarray):
         print(
-            'Your wavelength and flux should really be numpy arrays! Converting them here.'
+            "Your wavelength and flux should really be numpy arrays! Converting them here."
         )
         wavelength = np.asarray(wavelength)
     if not isinstance(flux, np.ndarray):
@@ -381,16 +381,16 @@ def sqrt_sum_wis_trans(
     if isinstance(transmission, u.Quantity):
         if not transmission.unit == u.dimensionless_unscaled:
             raise TypeError(
-                'transmission has a unit that is not dimensionless and unscaled!'
+                "transmission has a unit that is not dimensionless and unscaled!"
             )
 
         # Check for values of quantity transmission
         if np.any(transmission.value > 1) or np.any(transmission.value < 0):
-            raise ValueError('Transmission should range from 0 to 1 only.')
+            raise ValueError("Transmission should range from 0 to 1 only.")
     else:
         # Check for values of transmission
         if np.any(transmission > 1) or np.any(transmission < 0):
-            raise ValueError('Transmission should range from 0 to 1 only.')
+            raise ValueError("Transmission should range from 0 to 1 only.")
 
     delta_flux = np.diff(flux)
     delta_lambda = np.diff(wavelength)

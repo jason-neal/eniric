@@ -23,38 +23,38 @@ def _parser():
     :returns: the args
     """
 
-    parser = argparse.ArgumentParser(description='Band separate out atmospheric model.')
+    parser = argparse.ArgumentParser(description="Band separate out atmospheric model.")
 
     parser.add_argument(
-        '-m', '--model', help='Model name', type=str, default='Average_TAPAS_2014.txt'
+        "-m", "--model", help="Model name", type=str, default="Average_TAPAS_2014.txt"
     )
     parser.add_argument(
-        '-b',
-        '--bands',
+        "-b",
+        "--bands",
         type=str,
         default=None,
-        nargs='+',
-        choices=['ALL', 'VIS', 'GAP', 'Z', 'Y', 'J', 'H', 'K'],
+        nargs="+",
+        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
         help="Wavelength band to select, Default='All'",
     )
     parser.add_argument(
-        '-d',
-        '--data_dir',
-        help='Telluric model data directory',
+        "-d",
+        "--data_dir",
+        help="Telluric model data directory",
         type=str,
-        default=eniric.paths['atmmodel'],
+        default=eniric.paths["atmmodel"],
     )
     parser.add_argument(
-        '--new_name',
+        "--new_name",
         default=None,
         type=str,
-        help='Base name for new files. Default is the original model name.',
+        help="Base name for new files. Default is the original model name.",
     )
     parser.add_argument(
-        '--rv_extend',
+        "--rv_extend",
         default=100,
         type=check_positive,
-        help='Doppler RV (km/s) to extend the wavelength limits of the band. Default=100 km/s',
+        help="Doppler RV (km/s) to extend the wavelength limits of the band. Default=100 km/s",
     )
 
     return parser.parse_args()
@@ -81,18 +81,18 @@ def check_positive(value: str) -> float:
         If value is not a positive number.
     """
     if not isinstance(value, str):
-        raise ValueError('Input value is not a string.')
+        raise ValueError("Input value is not a string.")
 
     float_value = float(value)
     if float_value <= 0:
         raise argparse.ArgumentTypeError(
-            '{0:s} is an invalid positive value'.format(value)
+            "{0:s} is an invalid positive value".format(value)
         )
     return float_value
 
 
 def main(
-    model: str = 'Average_TAPAS_2014.txt',
+    model: str = "Average_TAPAS_2014.txt",
     bands: Optional[List[str]] = None,
     new_name=None,
     data_dir=None,
@@ -103,11 +103,11 @@ def main(
     Keeps wavelength of atmosphere model as nanometers.
     """
     if bands is None:
-        bands = ['All']
+        bands = ["All"]
     if new_name is None:
-        new_name = model.split('.')[0]
+        new_name = model.split(".")[0]
     if data_dir is None:
-        data_dir = eniric.paths['atmmodel']
+        data_dir = eniric.paths["atmmodel"]
 
     model_name = os.path.join(data_dir, model)
 
@@ -117,7 +117,7 @@ def main(
     write_status = np.empty_like(bands, dtype=int)
 
     for i, band in enumerate(bands):
-        band_name = '{0}_{1}.txt'.format(new_name, band)
+        band_name = "{0}_{1}.txt".format(new_name, band)
         band_min, band_max = utils.band_limits(band)
 
         # Doppler shift values to extend saved wavelengths
@@ -142,7 +142,7 @@ def main(
 
         # Save the result to file
         filename = os.path.join(data_dir, band_name)
-        header = ['# atm_wav(nm)', 'atm_flux', 'atm_std_flux', 'atm_mask']
+        header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
 
         write_status[i] = io.pdwrite_cols(
             filename,
@@ -150,15 +150,15 @@ def main(
             band_flux,
             band_std_flux,
             band_mask,
-            sep='\t',
+            sep="\t",
             header=header,
-            float_format='%10.8f',
+            float_format="%10.8f",
         )
 
         return np.sum(write_status)  # If any extracts fail they will turn up here.
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     args = vars(_parser())
     opts = {k: args[k] for k in args}
     sys.exit(main(**opts))

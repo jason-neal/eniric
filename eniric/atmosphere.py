@@ -99,7 +99,7 @@ def barycenter_shift(
                     mask_atm_30kms[i] = True
                     if np.sum(~mask_atm_slice) > 3:
                         print(
-                            'There were {0}/{1} zeros in this barycentric shift but None were 3 consecutive!'.format(
+                            "There were {0}/{1} zeros in this barycentric shift but None were 3 consecutive!".format(
                                 np.sum(~mask_atm_slice), len(mask_atm_slice)
                             )
                         )
@@ -108,12 +108,12 @@ def barycenter_shift(
     masked_end = pixels_total - np.sum(mask_atm_30kms)
     print(
         (
-            'New Barycentric impact affects the number of masked pixels by {0:04.1%} due to the atmospheric'
-            ' spectrum'
+            "New Barycentric impact affects the number of masked pixels by {0:04.1%} due to the atmospheric"
+            " spectrum"
         ).format((masked_end - masked_start) / pixels_total)
     )
     print(
-        ('Masked Pixels start = {1}, masked_pixel_end = {0}, Total = {2}').format(
+        ("Masked Pixels start = {1}, masked_pixel_end = {0}, Total = {2}").format(
             masked_end, masked_start, pixels_total
         )
     )
@@ -154,14 +154,14 @@ def consecutive_truths(condition: ndarray) -> ndarray:
 def plot_atm_masks(wav, flux, mask, old_mask=None, new_mask=None, block=True):
     """Plot spectrum with absorption masks."""
     plt.figure()
-    plt.plot(wav, flux, label='Spectrum')
-    plt.plot(wav, mask, label='Absorption Mask')
+    plt.plot(wav, flux, label="Spectrum")
+    plt.plot(wav, mask, label="Absorption Mask")
 
     if old_mask is not None:
-        plt.plot(wav, old_mask + 0.01, '.-', label='Old code Mask')
+        plt.plot(wav, old_mask + 0.01, ".-", label="Old code Mask")
 
     if new_mask is not None:
-        plt.plot(wav, new_mask + 0.02, '+-', label='New code Mask')
+        plt.plot(wav, new_mask + 0.02, "+-", label="New code Mask")
 
     plt.legend(loc=0)
     plt.show(block=block)
@@ -227,12 +227,12 @@ def bugged_old_barycenter_shift(
     masked_end = pixels_total - np.sum(mask_atm)
     print(
         (
-            'Old Barycentric impact affects number of masked pixels by {0:04.1%} due to the atmospheric'
-            ' spectrum'
+            "Old Barycentric impact affects number of masked pixels by {0:04.1%} due to the atmospheric"
+            " spectrum"
         ).format((masked_end - masked_start) / pixels_total)
     )
     print(
-        ('Pedros Pixels start = {1}, Pixel_end = {0}, Total = {2}').format(
+        ("Pedros Pixels start = {1}, Pixel_end = {0}, Total = {2}").format(
             masked_end, masked_start, pixels_total
         )
     )
@@ -294,7 +294,7 @@ def old_barycenter_shift(
             tester = True
             for block in clump:
                 if True in block:
-                    raise ValueError('There is a true value in False blocks!')
+                    raise ValueError("There is a true value in False blocks!")
 
                 if len(block) >= 3:  # This is the bug! should read len(block)
                     tester = False
@@ -306,12 +306,12 @@ def old_barycenter_shift(
     masked_end = pixels_total - np.sum(mask_atm)
     print(
         (
-            'Old Barycentric impact affects number of masked pixels by {0:04.1%} due to the atmospheric'
-            ' spectrum'
+            "Old Barycentric impact affects number of masked pixels by {0:04.1%} due to the atmospheric"
+            " spectrum"
         ).format((masked_end - masked_start) / pixels_total)
     )
     print(
-        ('Pedros Pixels start = {1}, Pixel_end = {0}, Total = {2}').format(
+        ("Pedros Pixels start = {1}, Pixel_end = {0}, Total = {2}").format(
             masked_end, masked_start, pixels_total
         )
     )
