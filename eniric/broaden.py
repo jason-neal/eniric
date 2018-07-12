@@ -17,7 +17,7 @@ from tqdm import tqdm
 from eniric.utilities import band_selector, mask_between, wav_selector
 
 # Cache convolution results.
-cachedir = os.path.join(os.path.expanduser('~'), '.joblib')
+cachedir = os.path.join(os.path.expanduser("~"), ".joblib")
 memory = Memory(cachedir=cachedir, verbose=0)
 
 
@@ -111,7 +111,7 @@ def rotational_convolution(
                 epsilon,
                 normalize=normalize,
             )
-        print('Done.\n')
+        print("Done.\n")
     return flux_conv_rot
 
 
@@ -179,7 +179,7 @@ def resolution_convolution(
             flux_conv_res[jj] = element_res_convolution(
                 wav, R, wav_extended, flux_conv_rot, fwhm_lim, normalize=normalize
             )
-        print('Done.\n')
+        print("Done.\n")
     return flux_conv_res
 
 
@@ -189,7 +189,7 @@ def convolution(
     flux,
     vsini,
     R,
-    band: str = 'All',
+    band: str = "All",
     epsilon: float = 0.6,
     fwhm_lim: float = 5.0,
     num_procs: Optional[int] = None,
@@ -232,7 +232,7 @@ def convolution(
     fwhm_max = wav_band[-1] / R
 
     # performing convolution with rotation kernel
-    print('Starting the Rotation convolution for vsini={0:.2f}...'.format(vsini))
+    print("Starting the Rotation convolution for vsini={0:.2f}...".format(vsini))
 
     delta_lambda_min = wav_band[0] * vsini / 3.0e5
     delta_lambda_max = wav_band[-1] * vsini / 3.0e5
@@ -258,7 +258,7 @@ def convolution(
         normalize=normalize,
     )
 
-    print('Starting the Resolution convolution...')
+    print("Starting the Resolution convolution...")
 
     flux_conv_res = resolution_convolution(
         wav_band,
@@ -295,9 +295,9 @@ def unitary_gaussian(
         Result of gaussian function sampled at x values.
     """
     if not isinstance(fwhm, (np.float, np.int)):
-        raise TypeError('The fwhm value is not a number, {0}'.format(type(fwhm)))
+        raise TypeError("The fwhm value is not a number, {0}".format(type(fwhm)))
     if not isinstance(center, (np.float, np.int)):
-        raise TypeError('The center value is not a number, {0}'.format(type(center)))
+        raise TypeError("The center value is not a number, {0}".format(type(center)))
     if not isinstance(x, np.ndarray):
         raise TypeError
 

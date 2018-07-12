@@ -19,54 +19,54 @@ def _parser():
     :returns: the args
     """
     parser = argparse.ArgumentParser(
-        description='Perform Convolution in preparation for nIR_precision.'
+        description="Perform Convolution in preparation for nIR_precision."
     )
     parser.add_argument(
-        '-s', '--startype', help='Spectral Type e.g "MO"', type=str, nargs='+'
+        "-s", "--startype", help='Spectral Type e.g "MO"', type=str, nargs="+"
     )
     parser.add_argument(
-        '-v', '--vsini', help='Rotational velocity of source', type=float, nargs='+'
+        "-v", "--vsini", help="Rotational velocity of source", type=float, nargs="+"
     )
     parser.add_argument(
-        '-R',
-        '--resolution',
-        help='Observational resolution e.g. 100000 or 100k',
+        "-R",
+        "--resolution",
+        help="Observational resolution e.g. 100000 or 100k",
         type=str,
-        nargs='+',
+        nargs="+",
     )
     parser.add_argument(
-        '-b',
-        '--band',
+        "-b",
+        "--band",
         type=str,
-        default='ALL',
-        choices=['ALL', 'VIS', 'GAP', 'Z', 'Y', 'J', 'H', 'K'],
-        help='Wavelength band to select',
-        nargs='+',
+        default="ALL",
+        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
+        help="Wavelength band to select",
+        nargs="+",
     )
     parser.add_argument(
-        '--sample_rate',
+        "--sample_rate",
         default=[3.0],
         type=float,
-        nargs='+',
-        help='Resample rate, pixels per FWHM. Default=3.0',
+        nargs="+",
+        help="Resample rate, pixels per FWHM. Default=3.0",
     )
     parser.add_argument(
-        '--noresample', help="Don't Resample output", default=False, action='store_true'
+        "--noresample", help="Don't Resample output", default=False, action="store_true"
     )
     parser.add_argument(
-        '--unnormalized', help='Normalize for wavelength step', action='store_true'
+        "--unnormalized", help="Normalize for wavelength step", action="store_true"
     )
     parser.add_argument(
-        '--org',
-        help='Only use original .dat files, (temporary option)',
+        "--org",
+        help="Only use original .dat files, (temporary option)",
         default=False,
-        action='store_true',
+        action="store_true",
     )
     parser.add_argument(
-        '-r',
-        '--replace',
-        action='store_true',
-        help='Replace data files if already created.',
+        "-r",
+        "--replace",
+        action="store_true",
+        help="Replace data files if already created.",
     )
     return parser.parse_args()
 
@@ -108,11 +108,11 @@ def main(
     # Check the inputs are correct format. (lists)
     for f_input, f_name in zip(
         [startype, band, vsini, resolution, sample_rate],
-        ['startype', 'band', 'vsini', 'resolution', 'sample_rate'],
+        ["startype", "band", "vsini", "resolution", "sample_rate"],
     ):
         if not isinstance(f_input, list):
             print(f_name, type(f_input), type(f_name))
-            raise TypeError('Input {0} is not list'.format(f_name))
+            raise TypeError("Input {0} is not list".format(f_name))
 
     # vsini, resolution, band and sample_rate can all be a series of values
     vsini = [float(v) for v in vsini]  # turn to floats
@@ -122,18 +122,18 @@ def main(
 
     start_time = dt.now()
 
-    phoenix_path = eniric.paths['phoenix_dat']
+    phoenix_path = eniric.paths["phoenix_dat"]
 
-    results_dir = eniric.paths['results']
+    results_dir = eniric.paths["results"]
     os.makedirs(results_dir, exist_ok=True)
 
-    resampled_dir = eniric.paths['resampled']
+    resampled_dir = eniric.paths["resampled"]
     os.makedirs(resampled_dir, exist_ok=True)
 
     if not normalize:
-        norm_ = '_unnormalized'
+        norm_ = "_unnormalized"
     else:
-        norm_ = ''
+        norm_ = ""
 
     counter = 0
     for star in startype:
@@ -144,7 +144,7 @@ def main(
                 for R in res:
                     for sample in sample_rate:
                         r = int(float(R) / 1000)
-                        result_name = 'Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2:.01f}_R{3}k{4}.txt'.format(
+                        result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2:.01f}_R{3}k{4}.txt".format(
                             star, b, vel, r, norm_
                         )
 
@@ -153,13 +153,13 @@ def main(
                             and not replace
                         ):
                             print(
-                                'Skipping convolution as {} already exists'.format(
+                                "Skipping convolution as {} already exists".format(
                                     result_name
                                 )
                             )
                             continue
 
-                        print('Name to be the result file', result_name)
+                        print("Name to be the result file", result_name)
                         convolve_spectra(
                             spectrum_name,
                             b,
@@ -184,14 +184,14 @@ def main(
                         counter += 1
 
     print(
-        'Time to convolve {0:d} combinations = {1}'.format(
+        "Time to convolve {0:d} combinations = {1}".format(
             counter, dt.now() - start_time
         )
     )
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     args = vars(_parser())
     opts = {k: args[k] for k in args}
 
