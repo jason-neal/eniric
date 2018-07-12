@@ -1,0 +1,27 @@
+# This explicitly chooses to use setuptools and wheel to build project
+[build-system]
+requires = ["setuptools", "wheel"]
+
+# Configuration for black
+[tool.black]
+line-length = 88
+py36 = true
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.pytest_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | docs
+  | data
+  | plots
+
+)/
+'''
