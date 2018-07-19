@@ -18,8 +18,7 @@
 
 
 #### Did you write a patch that fixes a bug?
-* Did you run the tests locally/do they pass?
-     `make test`
+* Did you run the tests locally/do they pass? You can use `make test` from the root directory.
 * Did you enable pre-commit hooks?
 * Open a new GitHub pull request.
 * Ensure the pull request clearly describes the problem and solution. Include the relevant issue number if applicable.
@@ -30,10 +29,13 @@ The style guide for eniric is governed by [black](https://github.com/ambv/black)
 You can run this yourself but it is also included in the pre-commit hooks. 
 
 Before commiting changes you can activate the [pre-commit hooks](https://github.com/pre-commit/pre-commit) using    
-    `pip install pre-commit`
-    `pre-commit install`
-this will then preform the pre-commit hooks before commiting.
+
+    pip install pre-commit
+    pre-commit install
+    
+This will then preform the pre-commit checks before commiting.
 
 
-Thanks! :heart: :thumbsup:
+Thank you!
+
 (Adapted from [kima](https://github.com/j-faria/kima/blob/master/CONTRIBUTING.md))
