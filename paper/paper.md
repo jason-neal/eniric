@@ -1,9 +1,10 @@
-title: 'Eniric: Information content of NIR spectra'
 ---
+title: 'Eniric: Extended NIR Information Content'
 tags:
-  - example
-  - tags
-  - for the paper
+  - Python
+  - astronomy
+  - radial velocity precision
+  - near-infrared
 authors:
  - name: J.J. Neal
    orcid: 0000-0003-0390-9896
