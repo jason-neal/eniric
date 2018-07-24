@@ -21,22 +21,24 @@ cache:
 install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
-
+  
+  # Install heavy science packages
+  - travis_retry conda install --yes astropy cython emcee h5py matplotlib scikit-learn scipy
+  
+  # Install eniric requirements
+  - travis_retry pip install -r requirements.txt
+  - travis_retry pip install -r requirements_dev.txt
+  
   # Install Starfish
   - cd $HOME
   - travis_retry git clone https://github.com/iancze/Starfish.git
   - cd Starfish
-  - travis_retry conda install --yes astropy cython emcee h5py matplotlib pytest pyyaml scikit-learn scipy
   - travis_retry pip install -r requirements.txt
   - python setup.py build_ext --inplace
   - python setup.py develop
 
   # Now install eniric
-  # Requirements
   - cd $TRAVIS_BUILD_DIR
-  - travis_retry pip install -r requirements.txt
-  - travis_retry pip install -r requirements_dev.txt
-
   - python setup.py install
 
 before_script:
