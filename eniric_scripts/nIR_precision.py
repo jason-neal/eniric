@@ -279,6 +279,8 @@ def calculate_prec(
                     )
                 )
                 raise
+            if len(wav_stellar) == 0 or len(flux_stellar) == 0:
+                raise Exception("The file {0} is empty".format(file_to_read))
             # Removing boundary effects
             wav_stellar = wav_stellar[2:-2]
             flux_stellar = flux_stellar[2:-2]
@@ -422,9 +424,7 @@ def calculate_prec(
 ###############################################################################
 def compare_output():
     """Function that compares a spectrum prior to convolution, after, and after resampling."""
-    pre_convolution = (
-        "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
-    )
+    pre_convolution = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
     pre_wav, pre_flux = io.pdread_2col(pre_convolution)
     pre_wav = np.array(pre_wav, dtype="float64") * 1.0e-4  # conversion to microns
     pre_flux = np.array(pre_flux, dtype="float64") * pre_wav

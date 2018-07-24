@@ -2,11 +2,10 @@
 Functions for file resampling.
 
 """
-
 import os
 import re
 from os.path import isfile, join
-from typing import Union, Optional
+from typing import Optional, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,8 +17,9 @@ results_dir = eniric.paths["results"]
 resampled_dir = eniric.paths["resampled"]
 
 
-def resample_allfiles(results_dir: Optional[str] = None,
-                      resampled_dir: Optional[str] = None) -> int:
+def resample_allfiles(
+    results_dir: Optional[str] = None, resampled_dir: Optional[str] = None
+) -> int:
     """Resample all files inside results_dir folder.
 
     Parameters
@@ -36,18 +36,22 @@ def resample_allfiles(results_dir: Optional[str] = None,
     # Getting a list of all the files
     onlyfiles = [f for f in os.listdir(results_dir) if isfile(join(results_dir, f))]
 
-    [resampler(spectrum_file, results_dir=results_dir,
-               resampled_dir=resampled_dir) for spectrum_file in onlyfiles
-     if spectrum_file.endswith(".txt")]
+    [
+        resampler(spectrum_file, results_dir=results_dir, resampled_dir=resampled_dir)
+        for spectrum_file in onlyfiles
+        if spectrum_file.endswith(".txt")
+    ]
 
     return 0
 
 
-def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
-              results_dir: str = results_dir,
-              resampled_dir: str = resampled_dir,
-              sampling: Union[int, float] = 3.0, plottest: bool = False) -> int:
-    """Resamples a spectrum file by interpolation onto a grid with a
+def resampler(
+    spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
+    results_dir: str = results_dir,
+    resampled_dir: str = resampled_dir,
+    sampling: Union[int, float] = 3.0,
+) -> int:
+    """Resample a spectrum file by interpolation onto a grid with a
     sampling of 3 pixels per resolution element.
 
     Parameters
@@ -60,8 +64,6 @@ def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k
         Directory to save the results.
     sampling: float (default=3.0)
         Sampling per pixel.
-    plottest: bool
-        Plot a test of resampling.
     """
     os.makedirs(resampled_dir, exist_ok=True)
     read_name = os.path.join(results_dir, spectrum_name)
@@ -77,31 +79,22 @@ def resampler(spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k
 
     interpolated_flux = np.interp(wav_grid, wavelength, spectrum)
 
-    output_path = [resampled_dir,
-                   "{0}_res{1:3.01f}.txt".format(spectrum_name[:-4], float(sampling))]
+    output_path = [
+        resampled_dir,
+        "{0}_res{1:3.01f}.txt".format(spectrum_name[:-4], float(sampling)),
+    ]
     filetowrite = os.path.join(*output_path)
-    io.write_e_2col(filetowrite, wav_grid[1:-2],
-                    interpolated_flux[1:-2])  # [1:-2] for border effects
-
-    if plottest:
-        plt.figure(1)
-        plt.xlabel(r"wavelength [$\mu$m])")
-        plt.ylabel(r"flux [counts] ")
-        plt.plot(wavelength, spectrum, color='k', linestyle="-",
-                 label="Original spectrum")
-        plt.plot(wav_grid, interpolated_flux, color='b', linestyle="-",
-                 label="Interpolated spectrum")
-        plt.legend(loc='best')
-        plt.show()
-
-        plt.close()
+    io.write_e_2col(
+        filetowrite, wav_grid[1:-2], interpolated_flux[1:-2]
+    )  # [1:-2] for border effects
 
     return 0
 
 
-def log_resample(wavelength, sampling: Union[int, float],
-                 resolution: Union[int, float]) -> np.ndarray:
-    """Re-sample spectrum with a given sampling per resolution element.
+def log_resample(
+    wavelength, sampling: Union[int, float], resolution: Union[int, float]
+) -> np.ndarray:
+    """Resample spectrum with a given sampling per resolution element.
 
     Parameters
     ----------

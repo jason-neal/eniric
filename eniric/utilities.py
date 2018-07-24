@@ -1,13 +1,12 @@
 """
-Auxiliary functions for nIRanalysis
-
+Auxiliary functions for eniric
 """
-import collections
 import errno
 import os
 import re
-from typing import Any, List, Optional, Tuple, Union, Sequence
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
+import collections
 import numpy as np
 from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
 from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
@@ -50,12 +49,12 @@ def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
 
 
 def get_spectrum_name(
-        startype: str,
-        logg: Union[float, int] = 4.50,
-        feh: Union[float, int] = 0.0,
-        alpha: Optional[Union[int, float]] = None,
-        org: bool = False,
-        flux_type: str = "photon",
+    startype: str,
+    logg: Union[float, int] = 4.50,
+    feh: Union[float, int] = 0.0,
+    alpha: Optional[Union[int, float]] = None,
+    org: bool = False,
+    flux_type: str = "photon",
 ) -> str:
     """Return correct phoenix spectrum filename for a given spectral type.
 
@@ -143,6 +142,7 @@ def band_selector(wav: ndarray, flux: ndarray, band: str) -> Tuple[ndarray, ndar
         return wav, flux
     else:
         band_min, band_max = band_limits(band)
+        band_min, band_max = band_limits(band)
         return wav_selector(wav, flux, band_min, band_max)
 
 
@@ -205,10 +205,10 @@ def band_middle(band):
 
 
 def wav_selector(
-        wav: Union[ndarray, List[float]],
-        flux: Union[ndarray, List[float]],
-        wav_min: float,
-        wav_max: float,
+    wav: Union[ndarray, List[float]],
+    flux: Union[ndarray, List[float]],
+    wav_min: float,
+    wav_max: float,
 ) -> Tuple[ndarray, ndarray]:
     """
     function that returns wavelength and flux within a giving range
@@ -246,112 +246,6 @@ def mask_between(x, xmin, xmax):
     return (x >= xmin) & (x < xmax)
 
 
-def unitary_gaussian(
-        x: Union[range, int, ndarray],
-        center: Union[float, int, str],
-        fwhm: Union[float, int, str],
-) -> ndarray:
-    """Gaussian function of area = 1.
-
-    Parameters
-    ----------
-    x: array-like
-        Position array
-    center: float
-        Central position of Gaussian
-    fwhm: float
-        Full Width at Half Maximum
-
-    Returns
-    -------
-    result: array-like
-        Result of gaussian function sampled at x values.
-    """
-    if not isinstance(fwhm, (np.float, np.int)):
-        raise TypeError("The fwhm value is not a number, {0}".format(type(fwhm)))
-    if not isinstance(center, (np.float, np.int)):
-        raise TypeError("The center value is not a number, {0}".format(type(center)))
-    if not isinstance(x, np.ndarray):
-        raise TypeError
-
-    sigma = np.abs(fwhm) / (2 * np.sqrt(2 * np.log(2)))
-    amp = 1.0 / (sigma * np.sqrt(2 * np.pi))
-    tau = -((x - center) ** 2) / (2 * (sigma ** 2))
-    result = amp * np.exp(tau)
-
-    return result
-
-
-def rotation_kernel(
-        delta_lambdas: ndarray, delta_lambda_l: float, vsini: float, epsilon: float
-) -> ndarray:
-    """Calculate the rotation kernel for a given wavelength
-
-    Parameters
-    ----------
-    delta_lambdas: array
-        Wavelength values selected within delta_lambda_l around central value. (check)
-    delta_lambda_l: float
-        FWHM of rotational broadening. (check)
-    vsini: float
-        Projected rotational velocity [km/s]
-    epsilon: float
-        Linear limb-darkening coefficient (0-1).
-
-    Returns
-    -------
-        Rotational kernel
-
-    Notes:
-    Equations * from .... book.
-
-    """
-    denominator = np.pi * vsini * (1.0 - epsilon / 3.0)
-    lambda_ratio_sqr = (delta_lambdas / delta_lambda_l) ** 2.0
-
-    c1 = 2.0 * (1.0 - epsilon) / denominator
-    c2 = 0.5 * np.pi * epsilon / denominator
-
-    return c1 * np.sqrt(1.0 - lambda_ratio_sqr) + c2 * (1.0 - lambda_ratio_sqr)
-
-
-def oned_circle_kernel(x, center, fwhm):
-    """Calculate the convolution kernel for a circular fiber.
-
-    Parameters
-    ----------
-    x: array
-        Value to evaluate kernel at.
-    center: float
-        Center of kernel.
-    fwhm: float
-        FWHM of desired kernel.
-
-    Returns
-    -------
-        Collapsed circle kernel
-
-    Notes:
-    Tries to represent the broadening by the fiber of a fiber feed spectrograph.
-
-    Artigau 2018 - stated mathematically equivalent to a cosine between -pi/2 and pi/2. This is what has tried to be created.
-    """
-    fwhm_scale = 2.0943951  # Numerically derived
-
-    A = 1  # Amplitude
-    B = fwhm_scale / fwhm  # Scale to give specific fwhm
-
-    result = A * np.cos(B * (x - center))
-
-    # Limit to main cos lobe only
-    upper_xi = center + np.pi / 2 / B
-    lower_xi = center - np.pi / 2 / B
-    mask = mask_between(x, lower_xi, upper_xi)
-    result[~mask] = 0
-
-    return result
-
-
 def silent_remove(filename: str) -> None:
     """Remove file without failing when it doesn't exist."""
     try:
@@ -374,7 +268,9 @@ def resolutions2ints(resolution: Sequence[Any]) -> List[int]:
     Convert from ["100k", "30000"] to [100000, 30000].
     """
     if not issequenceforme(resolution):
-        raise TypeError("resolution was a {} but needs to be a Sequence".format(type(resolution)))
+        raise TypeError(
+            "resolution was a {} but needs to be a Sequence".format(type(resolution))
+        )
 
     res_list = []
     for res in resolution:
@@ -406,7 +302,9 @@ def resolutions2strs(resolution: Sequence[Any]) -> List[str]:
     Convert from ["100000", 10000] to ["100k", "10k"].
     """
     if not issequenceforme(resolution):
-        raise TypeError("resolution was a {} but needs to be a Sequence".format(type(resolution)))
+        raise TypeError(
+            "resolution was a {} but needs to be a Sequence".format(type(resolution))
+        )
 
     res_list = []
     for res in resolution:
@@ -417,7 +315,9 @@ def resolutions2strs(resolution: Sequence[Any]) -> List[str]:
 def res2str(res: Any) -> str:
     """Convert from "100000" or 100000 to "100k"."""
     if issequenceforme(res):
-        raise TypeError("resolution was a {} but needs to be a non-Sequence".format(type(res)))
+        raise TypeError(
+            "resolution was a {} but needs to be a non-Sequence".format(type(res))
+        )
 
     if isinstance(res, (np.int, np.float)):
         value = res / 1000
@@ -433,6 +333,7 @@ def res2str(res: Any) -> str:
 
 
 #################################
+
 
 def load_aces_spectrum(params, photons=True):
     """Load a Phoenix spectrum from the phoenix library using STARFISH.

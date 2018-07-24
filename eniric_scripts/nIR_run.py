@@ -5,7 +5,7 @@ import argparse
 import os
 import sys
 from datetime import datetime as dt
-from typing import List, Optional, Union, Sequence
+from typing import List, Optional, Sequence, Union
 
 import eniric
 from eniric.nIRanalysis import convolve_spectra
@@ -72,15 +72,15 @@ def _parser():
 
 
 def main(
-        startype: Sequence[str],
-        vsini: Sequence[float],
-        resolution: Sequence[str],
-        band: Sequence[str],
-        sample_rate: Optional[List[Union[int, float]]] = None,
-        noresample: bool = False,
-        unnormalized: bool = False,
-        org: bool = False,
-        replace: bool = False,
+    startype: Sequence[str],
+    vsini: Sequence[float],
+    resolution: Sequence[str],
+    band: Sequence[str],
+    sample_rate: Optional[List[Union[int, float]]] = None,
+    noresample: bool = False,
+    unnormalized: bool = False,
+    org: bool = False,
+    replace: bool = False,
 ):
     """Run convolutions of NIR spectra for the range of given parameters.
 
@@ -107,8 +107,8 @@ def main(
 
     # Check the inputs are correct format. (lists)
     for f_input, f_name in zip(
-            [startype, band, vsini, resolution, sample_rate],
-            ["startype", "band", "vsini", "resolution", "sample_rate"],
+        [startype, band, vsini, resolution, sample_rate],
+        ["startype", "band", "vsini", "resolution", "sample_rate"],
     ):
         if not isinstance(f_input, list):
             print(f_name, type(f_input), type(f_name))
@@ -149,8 +149,8 @@ def main(
                         )
 
                         if (
-                                os.path.exists(os.path.join(results_dir, result_name))
-                                and not replace
+                            os.path.exists(os.path.join(results_dir, result_name))
+                            and not replace
                         ):
                             print(
                                 "Skipping convolution as {} already exists".format(
@@ -166,7 +166,6 @@ def main(
                             vel,
                             R,
                             epsilon=0.6,
-                            plot=False,
                             fwhm_lim=5.0,
                             num_procs=None,
                             results_dir=results_dir,

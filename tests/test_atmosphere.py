@@ -23,7 +23,9 @@ def test_consecutive_truths():
     # Check sum of trues equal sum of returned list
     assert np.sum(array1) == np.sum(atm.consecutive_truths(array1))
 
-    rand_array = np.asarray(np.floor(np.random.random(50) * 2), dtype=bool)  # random values
+    rand_array = np.asarray(
+        np.floor(np.random.random(50) * 2), dtype=bool
+    )  # random values
     assert np.sum(rand_array) == np.sum(atm.consecutive_truths(rand_array))
 
 
@@ -46,6 +48,7 @@ def test_prepare_atmosphere():
     Test band is close to the band limits (accounting for the given offset. +- 100km/s).
     """
     raise False
+
 
 # If I multiply the flux by the mask then the smallest flux should be 0.98
 # If not then there would be an issue.

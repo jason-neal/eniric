@@ -29,12 +29,22 @@ def pdread_2col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray
     """
     try:
         if noheader:
-            data = pd.read_table(filename, comment='#', names=["col1", "col2"],
-                                 header=None, dtype=np.float64,
-                                 delim_whitespace=True)
+            data = pd.read_table(
+                filename,
+                comment="#",
+                names=["col1", "col2"],
+                header=None,
+                dtype=np.float64,
+                delim_whitespace=True,
+            )
         else:
-            data = pd.read_table(filename, comment='#', names=["col1", "col2"],
-                                 dtype=np.float64, delim_whitespace=True)
+            data = pd.read_table(
+                filename,
+                comment="#",
+                names=["col1", "col2"],
+                dtype=np.float64,
+                delim_whitespace=True,
+            )
     except Exception as e:
         print("There was an error trying to read in the file \n{}".format(filename))
         raise e
@@ -42,7 +52,9 @@ def pdread_2col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray
     return data["col1"].values, data["col2"].values
 
 
-def pdread_3col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray, ndarray]:
+def pdread_3col(
+    filename: str, noheader: bool = False
+) -> Tuple[ndarray, ndarray, ndarray]:
     """Read in a 3 column file with pandas.
 
     Faster then read_3col
@@ -65,11 +77,22 @@ def pdread_3col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray
     """
     try:
         if noheader:
-            data = pd.read_table(filename, comment='#', names=["col1", "col2", "col3"],
-                                 header=None, dtype=np.float64, delim_whitespace=True)
+            data = pd.read_table(
+                filename,
+                comment="#",
+                names=["col1", "col2", "col3"],
+                header=None,
+                dtype=np.float64,
+                delim_whitespace=True,
+            )
         else:
-            data = pd.read_table(filename, comment='#', names=["col1", "col2", "col3"],
-                                 dtype=np.float64, delim_whitespace=True)
+            data = pd.read_table(
+                filename,
+                comment="#",
+                names=["col1", "col2", "col3"],
+                dtype=np.float64,
+                delim_whitespace=True,
+            )
     except Exception as e:
         print("There was an error trying to read in the file \n{}".format(filename))
         raise e
@@ -77,7 +100,9 @@ def pdread_3col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray
     return data["col1"].values, data["col2"].values, data["col3"].values
 
 
-def pdread_4col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray, ndarray, ndarray]:
+def pdread_4col(
+    filename: str, noheader: bool = False
+) -> Tuple[ndarray, ndarray, ndarray, ndarray]:
     """Read in a 4 column file with pandas.
 
     Faster then read_3col
@@ -102,16 +127,32 @@ def pdread_4col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray
     """
     try:
         if noheader:
-            data = pd.read_table(filename, comment='#', names=["col1", "col2", "col3", "col4"],
-                                 header=None, dtype=np.float64, delim_whitespace=True)
+            data = pd.read_table(
+                filename,
+                comment="#",
+                names=["col1", "col2", "col3", "col4"],
+                header=None,
+                dtype=np.float64,
+                delim_whitespace=True,
+            )
         else:
-            data = pd.read_table(filename, comment='#', names=["col1", "col2", "col3", "col4"],
-                                 dtype=np.float64, delim_whitespace=True)
+            data = pd.read_table(
+                filename,
+                comment="#",
+                names=["col1", "col2", "col3", "col4"],
+                dtype=np.float64,
+                delim_whitespace=True,
+            )
     except Exception as e:
         print("There was an error trying to read in the file \n{}".format(filename))
         raise e
 
-    return data["col1"].values, data["col2"].values, data["col3"].values, data["col4"].values
+    return (
+        data["col1"].values,
+        data["col2"].values,
+        data["col3"].values,
+        data["col4"].values,
+    )
 
 
 def read_col(filename: str) -> List[List[str]]:
@@ -128,7 +169,7 @@ def read_col(filename: str) -> List[List[str]]:
 
         if line == "":
             break
-        if line[0] == '#':
+        if line[0] == "#":
             continue
 
         list_data.append(line.strip().split())
@@ -150,7 +191,7 @@ def read_2col(filename: str) -> List[List[float]]:
 
     for i, __ in enumerate(list_data):
         # checking if the line is valid
-        if (list_data[i][0][0] != '#'):
+        if list_data[i][0][0] != "#":
             col1.append(float(list_data[i][0]))
             col2.append(float(list_data[i][1]))
 
@@ -168,7 +209,7 @@ def read_3col(filename: str) -> List[List[float]]:
 
     for i, __ in enumerate(list_data):
         # checking if the line is valid
-        if (list_data[i][0][0] != '#'):
+        if list_data[i][0][0] != "#":
             col1.append(float(list_data[i][0]))
             col2.append(float(list_data[i][1]))
             col3.append(float(list_data[i][2]))
@@ -188,7 +229,7 @@ def read_4col(filename: str) -> List[List[float]]:
 
     for i, __ in enumerate(list_data):
         # checking if the line is valid
-        if (list_data[i][0][0] != '#'):
+        if list_data[i][0][0] != "#":
             col1.append(float(list_data[i][0]))
             col2.append(float(list_data[i][1]))
             col3.append(float(list_data[i][2]))
@@ -204,8 +245,14 @@ def read_4col(filename: str) -> List[List[float]]:
 ################################################################################
 
 
-def pdwrite_2col(filename: str, data1: ndarray, data2: ndarray, sep: str = "\t", header: Optional[List[str]] = None,
-                 float_format: Optional[str] = None) -> int:
+def pdwrite_2col(
+    filename: str,
+    data1: ndarray,
+    data2: ndarray,
+    sep: str = "\t",
+    header: Optional[List[str]] = None,
+    float_format: Optional[str] = None,
+) -> int:
     """Write out a 2 column file with pandas.
 
     Faster then write_2col, uses pandas.DataFrame.to_csv()
@@ -236,14 +283,22 @@ def pdwrite_2col(filename: str, data1: ndarray, data2: ndarray, sep: str = "\t",
         df = pd.DataFrame({"# x": data1, "y": data2})
 
     # Write DataFrame to file
-    df.to_csv(filename, sep=sep, header=header, index=False, float_format=float_format)  # header=False
+    df.to_csv(
+        filename, sep=sep, header=header, index=False, float_format=float_format
+    )  # header=False
 
     return 0
 
 
-def pdwrite_3col(filename: str, data1: ndarray, data2: ndarray, data3: ndarray, sep: str = "\t",
-                 header: Optional[List[str]] = None,
-                 float_format: Optional[str] = None) -> int:
+def pdwrite_3col(
+    filename: str,
+    data1: ndarray,
+    data2: ndarray,
+    data3: ndarray,
+    sep: str = "\t",
+    header: Optional[List[str]] = None,
+    float_format: Optional[str] = None,
+) -> int:
     """Write out a 3 column file with pandas.
 
     Faster then write_3col, uses pandas.DataFrame.to_csv()
@@ -271,12 +326,16 @@ def pdwrite_3col(filename: str, data1: ndarray, data2: ndarray, data3: ndarray, 
         Returns 0 if successful.
     """
     if header is not None:
-        df = pd.DataFrame({"# {}".format(header[0]): data1, header[1]: data2, header[2]: data3})
+        df = pd.DataFrame(
+            {"# {}".format(header[0]): data1, header[1]: data2, header[2]: data3}
+        )
     else:
         df = pd.DataFrame({"# x": data1, "y": data2, "z": data3})
 
     # Write DataFrame to file
-    df.to_csv(filename, sep=sep, header=header, index=False, float_format=float_format)  # header=False
+    df.to_csv(
+        filename, sep=sep, header=header, index=False, float_format=float_format
+    )  # header=False
 
     return 0
 
@@ -298,7 +357,15 @@ def write_3col(filename, data1, data2, data3):
     f = open(filename, "w")
 
     for i, __ in enumerate(data1):
-        f.write("\t" + str(data1[i]) + "\t\t" + str(data2[i]) + "\t\t" + str(data3[i]) + "\n")
+        f.write(
+            "\t"
+            + str(data1[i])
+            + "\t\t"
+            + str(data2[i])
+            + "\t\t"
+            + str(data3[i])
+            + "\n"
+        )
 
     f.close()
 
@@ -353,13 +420,13 @@ def pdwrite_cols(filename: str, *data, **kwargs) -> int:
     """
 
     # unpack keyword args, second argument is the default if not found.
-    header = kwargs.pop('header', None)
-    sep = kwargs.pop('sep', "\t")
-    index = kwargs.pop('index', False)
-    float_format = kwargs.pop('float_format', '%.6f')
+    header = kwargs.pop("header", None)
+    sep = kwargs.pop("sep", "\t")
+    index = kwargs.pop("index", False)
+    float_format = kwargs.pop("float_format", "%.6f")
     # TODO: See about passing any extra keywords into pandas call
     if kwargs:  # check for unwanted key words
-        raise TypeError('Unexpected **kwargs: {!r}'.format(kwargs))
+        raise TypeError("Unexpected **kwargs: {!r}".format(kwargs))
 
     if header is not None:
         if len(header) != len(data):
@@ -377,6 +444,13 @@ def pdwrite_cols(filename: str, *data, **kwargs) -> int:
     write_sequence = range(len(data))  # key values to write data in order
 
     # Write DataFrame to file
-    df.to_csv(filename, columns=write_sequence, sep=sep, header=header, index=index, float_format=float_format)
+    df.to_csv(
+        filename,
+        columns=write_sequence,
+        sep=sep,
+        header=header,
+        index=index,
+        float_format=float_format,
+    )
 
     return 0

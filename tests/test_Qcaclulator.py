@@ -1,14 +1,10 @@
 """Test Qcaclulator."""
 
-import os
-
-import astropy
 import astropy.constants as const
 import astropy.units as u
 import numpy as np
 import pytest
 
-import eniric
 import eniric.Qcalculator as Q
 
 # test RVprec_calc returns a single values
@@ -26,17 +22,17 @@ def test_rvprev_calc():
 
     rv = Q.RVprec_calc(wav, flux)
     assert rv.unit == m_per_s
-    assert not hasattr(rv.value, '__len__')  # assert value is a scalar
+    assert not hasattr(rv.value, "__len__")  # assert value is a scalar
     assert isinstance(rv, u.Quantity)
 
     # Test it can handle quantities inputs
     rv1 = Q.RVprec_calc(wav * u.micron, flux)
-    assert not hasattr(rv1.value, '__len__')  # assert value is a scalar
+    assert not hasattr(rv1.value, "__len__")  # assert value is a scalar
     assert rv1 == rv
     assert rv1.unit == m_per_s
 
     rv2 = Q.RVprec_calc(wav * u.micron, flux * per_s_cm2)
-    assert not hasattr(rv2.value, '__len__')  # assert value is a scalar
+    assert not hasattr(rv2.value, "__len__")  # assert value is a scalar
     assert rv1 == rv2
     assert rv == rv2
     assert rv2.unit == m_per_s
@@ -48,7 +44,7 @@ def test_rvprev_calc_with_lists():
     flux = list(np.random.random(100))
 
     rv = Q.RVprec_calc(wav, flux)
-    assert not hasattr(rv.value, '__len__')  # assert value is a scalar
+    assert not hasattr(rv.value, "__len__")  # assert value is a scalar
     assert isinstance(rv, u.Quantity)
     assert rv.unit == m_per_s
 
@@ -62,14 +58,19 @@ def test_sqrt_sum_wis():
     flux = np.random.random(100)
 
     sqrtsumwis = Q.sqrt_sum_wis(wav, flux)
-    assert not isinstance(sqrtsumwis, u.Quantity)  # Doesn't turn into quantity if does not have to.
-    assert not hasattr(sqrtsumwis, '__len__')  # assert value is a scalar
+    assert not isinstance(
+        sqrtsumwis, u.Quantity
+    )  # Doesn't turn into quantity if does not have to.
+    assert not hasattr(sqrtsumwis, "__len__")  # assert value is a scalar
 
-    sqrtsumwis2 = Q.sqrt_sum_wis(wav * u.micron,
-                                 (flux / u.second) / (u.centimeter ** 2))  # with some units
-    assert not hasattr(sqrtsumwis2.value, '__len__')  # assert value is a scalar
+    sqrtsumwis2 = Q.sqrt_sum_wis(
+        wav * u.micron, (flux / u.second) / (u.centimeter ** 2)
+    )  # with some units
+    assert not hasattr(sqrtsumwis2.value, "__len__")  # assert value is a scalar
     assert isinstance(sqrtsumwis2, u.Quantity)
-    assert sqrtsumwis2.unit == u.dimensionless_unscaled  # unscaled and dimensionless quantity
+    assert (
+        sqrtsumwis2.unit == u.dimensionless_unscaled
+    )  # unscaled and dimensionless quantity
 
     assert sqrtsumwis == sqrtsumwis2.value
 
@@ -84,12 +85,12 @@ def test_RV_prec_calc_Trans():
     trans = np.random.random(100)
 
     rv_trans = Q.RV_prec_calc_Trans(wav, flux, trans)
-    assert not hasattr(rv_trans.value, '__len__')  # assert scalar
+    assert not hasattr(rv_trans.value, "__len__")  # assert scalar
     assert rv_trans.unit == m_per_s
 
     # dimensionless_unscaled unit is ok
     rv_trans2 = Q.RV_prec_calc_Trans(wav, flux, trans * u.dimensionless_unscaled)
-    assert not hasattr(rv_trans2.value, '__len__')  # assert  scalar
+    assert not hasattr(rv_trans2.value, "__len__")  # assert  scalar
     assert rv_trans2.unit == m_per_s
 
     assert rv_trans == rv_trans2
@@ -112,20 +113,25 @@ def test_SQRTSumWisTrans():
     trans = np.random.random(100)
 
     swrtsum_trans = Q.sqrt_sum_wis_trans(wav, flux, trans)
-    assert not isinstance(swrtsum_trans,
-                          u.Quantity)  # Doesn't turn into quantity if does not have to.
-    assert not hasattr(swrtsum_trans, '__len__')  # assert scalar
+    assert not isinstance(
+        swrtsum_trans, u.Quantity
+    )  # Doesn't turn into quantity if does not have to.
+    assert not hasattr(swrtsum_trans, "__len__")  # assert scalar
 
     # dimensionless_unscaled unit is ok for transmission
     sqrtsum_trans2 = Q.sqrt_sum_wis_trans(wav, flux, trans * u.dimensionless_unscaled)
-    assert not hasattr(sqrtsum_trans2.value, '__len__')  # assert scalar
+    assert not hasattr(sqrtsum_trans2.value, "__len__")  # assert scalar
     assert isinstance(sqrtsum_trans2, u.Quantity)
-    assert sqrtsum_trans2.unit == u.dimensionless_unscaled  # unscaled and dimensionless quantity
+    assert (
+        sqrtsum_trans2.unit == u.dimensionless_unscaled
+    )  # unscaled and dimensionless quantity
 
     sqrtsum_trans3 = Q.sqrt_sum_wis_trans(wav * u.micron, flux, trans)
-    assert not hasattr(sqrtsum_trans3.value, '__len__')  # assert value is a scalar
+    assert not hasattr(sqrtsum_trans3.value, "__len__")  # assert value is a scalar
     assert isinstance(sqrtsum_trans3, u.Quantity)
-    assert sqrtsum_trans3.unit == u.dimensionless_unscaled  # unscaled and dimensionless quantity
+    assert (
+        sqrtsum_trans3.unit == u.dimensionless_unscaled
+    )  # unscaled and dimensionless quantity
 
     with pytest.raises(TypeError):
         # transmission mistakenly given as a flux unit
@@ -147,7 +153,9 @@ def test_transmission_reduces_precision():
     # Value should be less then normal if trans <=1
     assert Q.RVprec_calc(wav, flux) < Q.RV_prec_calc_Trans(wav, flux, transmission)
     # Unitary transmission should give equivalent result.
-    assert Q.RVprec_calc(wav, flux) == Q.RV_prec_calc_Trans(wav, flux, np.ones_like(wav))
+    assert Q.RVprec_calc(wav, flux) == Q.RV_prec_calc_Trans(
+        wav, flux, np.ones_like(wav)
+    )
 
 
 def test_RV_prec_masked():
@@ -219,14 +227,6 @@ def test_manual_clumping():
     for i, __ in enumerate(mask_clumped):
         assert np.all(mask_clumped[i])
         assert np.all(mask2_clumped[i])
-
-
-def test_rvprev_test():
-    spectrum_file = os.path.join(eniric.paths["resampled"],
-                                 "Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R60k_res3.0.txt")
-    precision = Q.RVprec_test(spectrum_file)
-
-    assert isinstance(precision, astropy.units.Quantity)
 
 
 @pytest.mark.parametrize("wave_unit", [1, u.centimeter, u.nanometer])
