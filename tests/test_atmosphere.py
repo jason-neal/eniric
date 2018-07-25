@@ -52,3 +52,30 @@ def test_prepare_atmosphere():
 
 # If I multiply the flux by the mask then the smallest flux should be 0.98
 # If not then there would be an issue.
+
+from eniric.atmosphere import Atmosphere
+from hypothesis import given
+from hypothesis import strategies as st
+@given(size=st.integers(min_value=10, max_value=100))
+@given(st.lists(st.floats(min_value=0, max_value=1), size=size))
+def test_Amosphere_class(wave, transmission, mask):
+    atm = Atmosphere(wave, flux, mask)
+    assert np.all(atm.wavelength == wave)
+    assert np.all(atm.transmission == transmission)
+    assert np.all(atm.wavelength == mask)
+    assert atm.mask.dtype == np.bool
+
+def test_Amosphere_class_nomask(wave, flux):
+    atm = Atmosphere(wave, flux)
+    assert np.all(atm.wavelength == wave)
+    assert np.all(atm.transmission == transmission)
+    assert np.all(atm.mask == 1)
+    assert len(atm.mask) == len(atm.transmssion)
+    assert atm.mask.dtype == np.bool
+
+@pytest.mark.parametrize(atmmodel, [modelname])
+def test_atmosphere_from_file(atmmodel):
+    atm = Atmosphere._from_file(atmmodel)
+    assert len(atm.self) == len(atm.transmssion)
+    assert len(atm.transmssion[atm.mask]) != len(atm.transmssion) # mask is not all ones
+

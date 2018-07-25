@@ -13,6 +13,53 @@ from numpy import ndarray
 import eniric.IOmodule as io
 
 
+class Atmosphere(Object):
+    """Atmospheric transmission object.
+
+    Stores wavelength and atmospheric transmission arrays.
+    """
+
+    def __init__(self, wavelength, transmission, mask=None):
+        assert len(wavelength) == len(transmission), "Wavelength and transmission do not match lenght."
+        self.wl = wavelength
+        self.transmission = transmission
+        if mask is None:
+            self.mask = np.ones_like(wavelength)
+        else:
+            self.mask = mask
+        self.shifted = False
+
+    def _from_file(self, atmmodel: str):
+        """Read in atmospheric model and prepare.
+
+        Alternate constructor for Atmosphere.
+
+        Parameters
+        ----------
+        atmmodel: str
+            Name of atmosphere file.
+        """
+        wav_atm, flux_atm, std_flux_atm, mask_atm = io.pdread_4col(atmmodel)
+        wav_atm = wav_atm / 1e3  # conversion from nanometers to micrometers
+        mask_atm = np.array(atm_mask, dtype=bool)
+        # We do not use the std from the year atmosphere.
+        return Atmosphere(wavelength=wav_atm, transmission=flux_atm, mask=mask_atm)
+
+    def mask_transmission(self, depth: float) -> None:
+        """Mask the transmission below given depth. e.g. 3%
+
+        Parameters
+        ----------
+        depth : float
+            Telluric line depth percentage to mask out. E.g. depth=2 will mask transmission deeper than 2%.
+
+        Returns
+        -------
+
+        """
+        self.mask = self.transmission < (1 - depth / 100.0)
+
+    def rv_shift_mask(self, rv: float=30.0):
 def prepare_atmosphere(atmmodel: str) -> Tuple[ndarray, ndarray, ndarray, ndarray]:
     """Read in atmospheric model and prepare."""
     wav_atm, flux_atm, std_flux_atm, mask_atm = io.pdread_4col(atmmodel)
