@@ -21,10 +21,6 @@ from eniric.IOmodule import pdread_2col
 resampled_dir = eniric.paths["resampled"]
 
 
-def normalize_spectrum(*args, **kwargs):
-    raise NotImplementedError("Use normalize_flux")
-
-
 def normalize_flux(
     flux: ndarray,
     id_string: str,
