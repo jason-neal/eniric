@@ -22,16 +22,17 @@ class Atmosphere(object):
     def __init__(self, wavelength, transmission, mask=None):
         assert len(wavelength) == len(
             transmission
-        ), "Wavelength and transmission do not match lenght."
-        self.wl = wavelength
-        self.transmission = transmission
+        ), "Wavelength and transmission do not match length."
+        self.wl = np.asarray(wavelength)
+        self.transmission = np.asarray(transmission)
         if mask is None:
-            self.mask = np.ones_like(wavelength)
+            self.mask = np.ones_like(wavelength, dtype=bool)
         else:
-            self.mask = mask
+            self.mask = np.asarray(mask, dtype=bool)
         self.shifted = False
 
-    def _from_file(self, atmmodel: str):
+    @classmethod
+    def _from_file(cls, atmmodel: str):
         """Read in atmospheric model and prepare.
 
         Alternate constructor for Atmosphere.
@@ -45,7 +46,7 @@ class Atmosphere(object):
         wav_atm = wav_atm / 1e3  # conversion from nanometers to micrometers
         mask_atm = np.array(atm_mask, dtype=bool)
         # We do not use the std from the year atmosphere.
-        return Atmosphere(wavelength=wav_atm, transmission=flux_atm, mask=mask_atm)
+        return cls(wavelength=wav_atm, transmission=flux_atm, mask=mask_atm)
 
     def mask_transmission(self, depth: float) -> None:
         """Mask the transmission below given depth. e.g. 3%
@@ -78,7 +79,7 @@ class Atmosphere(object):
 
         # wl_negative =
         # wl_positive =
-        for wl, trans, mask in (self.wavelength, self.transmission, self.mask):
+        for wl, trans, mask in (self.wl, self.transmission, self.mask):
             pass
         assert False
 
@@ -92,9 +93,7 @@ class Atmosphere(object):
         """
         from eniric.broaden import resolution_convolution
 
-        self.transmission = resolution_convolution(
-            self.wavelength, self.transmission, R=R
-        )
+        self.transmission = resolution_convolution(self.wl, self.transmission, R=R)
 
 
 def prepare_atmosphere(atmmodel: str) -> Tuple[ndarray, ndarray, ndarray, ndarray]:
@@ -406,6 +405,7 @@ def dopplershift(wav, flux):
     """Doppler shift the flux of spectrum."""
     pass
     # return newflux
+    assert False
 
 
 def atm_mask(flux, cutoff=0.98):

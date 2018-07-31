@@ -57,29 +57,45 @@ def test_prepare_atmosphere():
 # If not then there would be an issue.
 
 
-size = 100
+size = 10
 
 
-@given(size=st.integers(min_value=10, max_value=50))
 @given(
     st.lists(st.floats(min_value=1, max_value=3000), min_size=size, max_size=size),
     st.lists(st.floats(min_value=0, max_value=1), min_size=size, max_size=size),
     st.lists(st.booleans(), min_size=size, max_size=size),
 )
-def test_Amosphere_class(wave, transmission, mask):
-    atmos = Atmosphere(wave, transmission, mask)
-    assert np.all(atmos.wavelength == wave)
+def test_atmosphere_class(wave, transmission, mask):
+    atmos = Atmosphere(np.array(wave), np.array(transmission), np.array(mask))
+    assert np.all(atmos.wl == wave)
     assert np.all(atmos.transmission == transmission)
-    assert np.all(atmos.wavelength == mask)
+    assert np.all(atmos.mask == mask)
     assert atmos.mask.dtype == np.bool
 
 
+@given(
+    st.lists(st.floats(min_value=1, max_value=3000), min_size=size, max_size=size),
+    st.lists(st.floats(min_value=0, max_value=1), min_size=size, max_size=size),
+    st.lists(st.booleans(), min_size=size, max_size=size),
+)
+def test_atmosphere_class_turns_lists_to_arrays(wave, transmission, mask):
+    atmos = Atmosphere(wave, transmission, mask)
+    assert isinstance(atmos.wl, np.ndarray)
+    assert isinstance(atmos.transmission, np.ndarray)
+    assert isinstance(atmos.mask, np.ndarray)
+    assert atmos.mask.dtype == np.bool
+
+
+@given(
+    st.lists(st.floats(min_value=1, max_value=3000), min_size=size, max_size=size),
+    st.lists(st.floats(min_value=0, max_value=1), min_size=size, max_size=size),
+)
 def test_Amosphere_class_nomask(wave, transmission):
     atmos = Atmosphere(wave, transmission)
-    assert np.all(atmos.wavelength == wave)
+    assert np.all(atmos.wl == wave)
     assert np.all(atmos.transmission == transmission)
     assert np.all(atmos.mask == 1)
-    assert len(atmos.mask) == len(atmos.transmssion)
+    assert len(atmos.mask) == len(atmos.transmission)
     assert atmos.mask.dtype == np.bool
 
 
@@ -96,36 +112,30 @@ def atm_model(request):
 
 
 def test_atmosphere_from_file(atm_model):
-    atmos = Atmosphere._from_file(atm_model)
-    assert len(atmos.self) == len(atmos.transmssion)
-    assert len(atmos.transmssion[atmos.mask]) != len(
-        atmos.transmssion
+    atmos = Atmosphere._from_file(atmmodel=atm_model)
+    print(atmos)
+    print(atmos.transmission)
+    print(atmos.wl)
+    assert len(atmos.wl) == len(atmos.transmission)
+    assert len(atmos.transmission[atmos.mask]) != len(
+        atmos.transmission
     )  # mask is not all ones
 
 
-# @given(size=st.integers(min_value=10, max_value=100))
-@given(st.lists(st.floats(min_value=0, max_value=1), min_size=size, max_size=size))
-def test_atmosphere_from_file(atmmodel):
-    atmos = Atmosphere._from_file(atmmodel)
-    assert len(atmos.self) == len(atmos.transmssion)
-    assert len(atmos.transmssion[atmos.mask]) != len(
-        atmos.transmssion
-    )  # mask is not all ones
-
-
-# @given(size=st.integers(min_value=10, max_value=100))
 @given(
-    st.lists(st.floats(min_value=1, max_value=3000), min_size=size, max_size=size),
-    st.lists(st.floats(min_value=0, max_value=1), min_size=size, max_size=size),
+    trans=st.lists(st.floats(min_value=0, max_value=1), min_size=size, max_size=size),
+    percent=st.floats(min_value=0.5, max_value=99),
 )
-@given(percent=st.floats(min_value=0.5, max_value=99.9))
-def test_atmosphere_masking(wav, trans, percent):
+def test_atmosphere_masking(trans, percent):
     cutoff = 1 - (percent / 100.0)
-    assume(np.any(trans < cutoff))
-    assume(np.any(trans > cutoff))
-    atmos = Atmosphere(wavelength=wav, transmission=trans)
+
+    assume(np.any(np.array(trans) < cutoff))
+    assume(np.any(np.array(trans) > cutoff))
+
+    atmos = Atmosphere(wavelength=np.arange(len(trans)), transmission=trans)
     org_mask = atmos.mask
     atmos.mask_transmission(percent)
+
     assert np.any(atmos.mask != org_mask)  # mask has changed
     assert np.all(atmos.transmission[atmos.mask] < cutoff)
 
@@ -140,7 +150,7 @@ def test_values_within_rv_of_tell_line_are_masked():
     # RV shift mask
     # ...
 
-    for pixel, mask_value in zip(atmos.wavelength, atmos.mask):
+    for pixel, mask_value in zip(atmos.wl, atmos.mask):
         if mask_value != 0:
             # Already masked out
             pass
@@ -148,10 +158,11 @@ def test_values_within_rv_of_tell_line_are_masked():
             # Find rv limits to this pixel.
             wl_lower, wl_upper = pixel * (1 - 30 / 3e5), pixel * (1 + 30 / 3e5)
         # Check mask is wider
-        wl_mask = (atmos.wavlength >= wl_lower) * (atmos.wavelength < wl_upper)
+        wl_mask = (atmos.wl >= wl_lower) * (atmos.wl < wl_upper)
         assert np.all(atmos.mask[wl_mask] == 1)
 
     assert False
+
 
 # todo
 # test atm masking
