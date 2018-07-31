@@ -332,6 +332,72 @@ def bug_fixed_clumping_method(
     return wav_chunks, flux_chunks
 
 
+def RVprec_calc_weigths_masked(
+    wavelength: ndarray,
+    flux: ndarray,
+    mask: Optional[ndarray] = None,
+) -> Quantity:
+    """RV precision setting weights of telluric lines to zero.
+
+    Instead of splitting the spectra after every telluric line and
+    individually calculating precision and taking hte weighted average
+    this just sets the pixel weights to zero.
+
+    Parameters
+    ----------
+    wavelength: ndarray
+        Wavelength array
+    flux: ndarray
+        Flux array
+    mask: array or None
+        Mask of transmission cuts. Zero values are excluded and used to cut up
+        the spectrum.
+
+    Returns
+    -------
+    RV_value: Quantity scalar
+        RV precision.
+
+
+    Notes
+    -----
+    """
+    if mask is None:
+        # Turn wavelength and flux into masked arrays
+        mask = np.ones_like(wavelength)
+
+    if (len(mask) != len(wavelength)) or (len(wavelength) != len(flux)):
+        raise ValueError("Input values are not correct length")
+
+    else:
+        # When given a already clumped solution and no mask given.
+        assert isinstance(wavelength, list)
+        assert isinstance(flux, list)
+        wavelength_clumps = wavelength
+        flux_clumps = flux
+
+    # Turn an ndarray into quantity array.
+    # Need to use np.zeros instead of np.empty. Unassigned zeros are removed after with nonzero.
+    # The "empty" values (1e-300) do not get removed and effect precision
+    slice_rvs = Quantity(
+        np.zeros(len(wavelength), dtype=float), unit=u.meter / u.second
+    )  # Radial velocity of each slice
+
+    for i, (wav_slice, flux_slice) in enumerate(zip(wavelength_clumps, flux_clumps)):
+        if len(wav_slice) == 1:
+            """Results in infinite rv, can not determine the slope of single point."""
+            continue
+
+        else:
+            wav_slice = np.asarray(wav_slice)
+            flux_slice = np.asarray(flux_slice)
+            slice_rvs[i] = RVprec_calc(wav_slice, flux_slice)
+
+    # Zeros created from the initial empty array, when skipping single element chunks)
+    slice_rvs = slice_rvs[np.nonzero(slice_rvs)]  # Only use nonzero values.
+    rv_value = 1.0 / (np.sqrt(np.nansum((1.0 / slice_rvs) ** 2.0)))
+
+    return rv_value
 ###############################################################################
 def RV_prec_calc_Trans(
     wavelength: ndarray, flux: ndarray, transmission: ndarray
