@@ -9,14 +9,14 @@ from numpy import ndarray
 
 import eniric
 import eniric.atmosphere as atm
+from eniric.broaden import convolution
+from eniric.corrections import correct_artigau_2018
 from eniric.Qcalculator import (
     RV_prec_calc_Trans,
     RVprec_calc,
     RVprec_calc_masked,
     quality,
 )
-from eniric.broaden import convolution
-from eniric.corrections import correct_artigau_2018
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import band_middle, load_aces_spectrum
@@ -121,9 +121,9 @@ def _parser():
         type=str,
     )
     parser.add_argument(
-        '--rv', help='Radial velocity shift. (Not Implemented)', default=0.0, type=float
+        "--rv", help="Radial velocity shift. (Not Implemented)", default=0.0, type=float
     )
-    parser.add_argument('--correct', help='Apply RV corrections', action='store_true')
+    parser.add_argument("--correct", help="Apply RV corrections", action="store_true")
     return parser.parse_args()
 
 
@@ -278,7 +278,6 @@ def model_format_args(model, pars):
     return (temp, logg, fe_h, alpha, band, res, vsini, sample)
 
 
-
 if __name__ == "__main__":
     args = _parser()
     try:
@@ -295,33 +294,33 @@ if __name__ == "__main__":
     ref_band = args.ref_band
 
     conv_kwargs = {
-        'epsilon': 0.6,
-        'fwhm_lim': 5.0,
-        'num_procs': num_procs,
-        'normalize': normalize,
+        "epsilon": 0.6,
+        "fwhm_lim": 5.0,
+        "num_procs": num_procs,
+        "normalize": normalize,
     }
 
     # Load the relevant spectra
     models_list = itertools.product(args.temp, args.logg, args.metal, args.alpha)
 
     if args.rv != 0.0:
-        raise NotImplementedError('Still to add doppler option.')
+        raise NotImplementedError("Still to add doppler option.")
 
     if not os.path.exists(args.output):
-        with open(args.output, 'a') as f:
+        with open(args.output, "a") as f:
             f.write(
-                'Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, Quality, Cond. 1, Cond. 2, Cond. 3, correct flag\n'
+                "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, Quality, Cond. 1, Cond. 2, Cond. 3, correct flag\n"
             )
 
     # Find all model/parameter combinations already computed.
     # To later skip recalculation.
     computed_values, computed_values1 = [], []
-    with open(args.output, 'r') as f:
+    with open(args.output, "r") as f:
         for line in f:
             computed_values.append(line[:41])
             computed_values.append(line[:34])
 
-    with open(args.output, 'a') as f:
+    with open(args.output, "a") as f:
 
         for model in models_list:
             # Create generator for params_list
@@ -334,17 +333,17 @@ if __name__ == "__main__":
 
                 model_par_str_args = model_format_args(model, pars)
                 if len(model_par_str_args) != 8:
-                    raise ValueError('model_par_str_args is incorrect length')
+                    raise ValueError("model_par_str_args is incorrect length")
 
-                print('Doing', model_par_str_args)
+                print("Doing", model_par_str_args)
                 param_string = (
-                    '{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,'
-                    ' {6:4.01f}, {7:3.01f}'
+                    "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
+                    " {6:4.01f}, {7:3.01f}"
                 ).format(*model_par_str_args)
                 # may change output to have less spaces in future
                 param_string1 = (
-                    '{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,'
-                    '{6:4.01f},{7:3.01f}'
+                    "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,"
+                    "{6:4.01f},{7:3.01f}"
                 ).format(*model_par_str_args)
 
                 if (param_string in computed_values) or (
@@ -377,12 +376,14 @@ if __name__ == "__main__":
 
                     result[0] = int(result[0]) if result[0] is not None else None
 
-                    output_template = ('{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,'
-                            ' {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, {11:5.01f}, {12:1d}\n'
-                                       )
-                        ).format(
+                    output_template = (
+                        "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
+                        " {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, {11:5.01f}, {12:1d}\n"
+                    )
+
+                    f.write(
+                        output_template.format(
                             *model_par_str_args,
-                    f.write(output_template.format(
                             result[0],
                             result[1],
                             result[2],
