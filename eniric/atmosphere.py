@@ -64,13 +64,15 @@ class Atmosphere(object):
         cutoff = 1 - depth / 100.0
         self.mask = self.transmission < cutoff
 
-    def bary_shift_mask(self, rv: float = 30.0):
+    def bary_shift_mask(self, rv: float = 30.0, consecutive_test=False):
         """RV shift mask symmetrically.
 
         Parameters
         ----------
         rv: float (default=30 km/s)
             Barycentric RV to extend masks in km/s. (Default=30 km/s)
+        consecutive_test: bool (default False)
+            Checks for 3 consecutive zeros to mask out transmission.
 
         """
         rv_mps = rv * 1e3  # Convert from km/s into m/s
@@ -97,8 +99,25 @@ class Atmosphere(object):
 
                 mask_slice = self.mask[slice_limits[0] : slice_limits[1]]
 
-                # This does not check for consecutives
-                this_mask_value = np.product(mask_slice)  # Any 0s will make it 0
+                if consecutive_test:
+                    # Make mask value False if there are 3 or more consecutive zeros in slice.
+                    len_consec_zeros = consecutive_truths(~mask_slice)
+                    if np.all(
+                        ~mask_slice
+                    ):  # All pixels of slice is zeros (shouldn't get here)
+                        this_mask_value = False
+                    elif np.max(len_consec_zeros) >= 3:
+                        this_mask_value = False
+                    else:
+                        this_mask_value = True
+                        if np.sum(~mask_slice) > 3:
+                            print(
+                                "There were {0}/{1} zeros in this barycentric shift but None were 3 consecutive!".format(
+                                    np.sum(~mask_slice), len(mask_slice)
+                                )
+                            )
+                else:
+                    this_mask_value = np.product(mask_slice)  # Any 0s will make it 0
 
                 # Checks
                 if this_mask_value == 0:
