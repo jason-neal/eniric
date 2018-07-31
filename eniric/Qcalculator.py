@@ -114,7 +114,9 @@ def quality(
 
 
 def sqrt_sum_wis(
-    wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]
+    wavelength: Union[Quantity, ndarray],
+    flux: Union[Quantity, ndarray],
+    mask: Optional[ndarray] = None,
 ) -> Union[float64, Quantity]:
     """Calculation of the Square root of the sum of the weights(Wis) for a spectrum.
 
@@ -124,6 +126,8 @@ def sqrt_sum_wis(
         Wavelength of spectrum.
     flux: array-like or Quantity array
         Flux of spectrum.
+    mask: Optional ndarray
+        Weighting mask function. Default is ones.
 
     Returns
     -------
@@ -144,7 +148,17 @@ def sqrt_sum_wis(
     content of the spectrum, given by the derivative of the amplitude, and
     calculated following Connes (1985).
 
+    Mask is used to apply a masking function to the weights (to mask out teluric lines for example)
+
+        W(i) = W(i) * m(i)
+
     """
+    if mask is None:
+        mask = np.ones_like(wavelength)
+
+    if (len(mask) != len(wavelength)) or (len(wavelength) != len(flux)):
+        raise ValueError("Input values are not correct length")
+
     if not isinstance(wavelength, np.ndarray):
         print(
             "Your wavelength and flux should really be numpy arrays! Converting them here."
@@ -164,14 +178,13 @@ def sqrt_sum_wis(
     else:
         flux_variance = flux
 
-    wis = np.sqrt(
-        np.nansum(
-            wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 / flux_variance[:-1]
-        )
-    )
-    if not np.isfinite(wis):
-        warnings.warn("Weight sum is not finite = {}".format(wis))
-    return wis
+    pixel_wis = wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 / flux_variance[:-1]
+    masked_wis = pixel_wis * mask[:-1]  # Apply masking function
+
+    sqrt_sum = np.sqrt(np.nansum(masked_wis))
+    if not np.isfinite(sqrt_sum):
+        warnings.warn("Weight sum is not finite = {}".format(sqrt_sum))
+    return sqrt_sum
 
 
 def RVprec_calc_masked(
@@ -232,7 +245,7 @@ def RVprec_calc_masked(
     # Need to use np.zeros instead of np.empty. Unassigned zeros are removed after with nonzero.
     # The "empty" values (1e-300) do not get removed and effect precision
     slice_rvs = Quantity(
-        np.zeros(len(wavelength), dtype=float), unit=u.meter / u.second
+        np.zeros(len(wavelength_clumps), dtype=float), unit=u.meter / u.second
     )  # Radial velocity of each slice
 
     for i, (wav_slice, flux_slice) in enumerate(zip(wavelength_clumps, flux_clumps)):
@@ -383,14 +396,12 @@ def sqrt_sum_wis_trans(
             raise TypeError(
                 "transmission has a unit that is not dimensionless and unscaled!"
             )
+        # Only need value
+        transmission = transmission.value
 
-        # Check for values of quantity transmission
-        if np.any(transmission.value > 1) or np.any(transmission.value < 0):
-            raise ValueError("Transmission should range from 0 to 1 only.")
-    else:
-        # Check for values of transmission
-        if np.any(transmission > 1) or np.any(transmission < 0):
-            raise ValueError("Transmission should range from 0 to 1 only.")
+    # Check for values of transmission
+    if np.any(transmission > 1) or np.any(transmission < 0):
+        raise ValueError("Transmission should range from 0 to 1 only.")
 
     delta_flux = np.diff(flux)
     delta_lambda = np.diff(wavelength)
