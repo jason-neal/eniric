@@ -44,7 +44,7 @@ class Atmosphere(object):
         """
         wav_atm, flux_atm, std_flux_atm, mask_atm = io.pdread_4col(atmmodel)
         wav_atm = wav_atm / 1e3  # conversion from nanometers to micrometers
-        mask_atm = np.array(atm_mask, dtype=bool)
+        mask_atm = np.array(mask_atm, dtype=bool)
         # We do not use the std from the year atmosphere.
         return cls(wavelength=wav_atm, transmission=flux_atm, mask=mask_atm)
 
@@ -54,46 +54,75 @@ class Atmosphere(object):
         Parameters
         ----------
         depth : float
-            Telluric line depth percentage to mask out. E.g. depth=2 will mask transmission deeper than 2%.
+            Telluric line depth percentage to mask out.
+            E.g. depth=2 will mask transmission deeper than 2%.
 
         Returns
         -------
 
         """
-        self.mask = self.transmission < (1 - depth / 100.0)
+        cutoff = 1 - depth / 100.0
+        self.mask = self.transmission < cutoff
 
     def bary_shift_mask(self, rv: float = 30.0):
         """RV shift mask symmetrically.
 
         Parameters
         ----------
-        self
         rv: float (default=30 km/s)
             Barycentric RV to extend masks in km/s. (Default=30 km/s)
 
         """
+        rv_mps = rv * 1e3  # Convert from km/s into m/s
 
+        shift_amplitudes = self.wl * rv_mps / c.value
         # Operate element wise
-        wav_lower_barys = wav_atm + offset_lambdas - delta_lambdas
-        wav_upper_barys = wav_atm + offset_lambdas + delta_lambdas
+        blue_shifts = self.wl - shift_amplitudes
+        red_shifts = self.wl + shift_amplitudes
 
-        # wl_negative =
-        # wl_positive =
-        for wl, trans, mask in (self.wl, self.transmission, self.mask):
-            pass
-        assert False
+        bary_mask = []
+        for (blue_wl, wl, red_wl, mask) in zip(
+            blue_shifts, self.wl, red_shifts, self.mask
+        ):
+            if mask == 0:
+                this_mask_value = False
+            else:
+                # np.searchsorted is faster then the boolean masking wavelength range
+                # It returns index locations to place the min/max doppler-shifted values
+                slice_limits = np.searchsorted(self.wl, [blue_wl, red_wl])
+                slice_limits = [
+                    index if (index < len(self.wl)) else len(self.wl) - 1
+                    for index in slice_limits
+                ]  # Fix searchsorted end index
 
-    def broaden(self, R):
+                mask_slice = self.mask[slice_limits[0] : slice_limits[1]]
+
+                # This does not check for consecutives
+                this_mask_value = np.product(mask_slice)  # Any 0s will make it 0
+
+                # Checks
+                if this_mask_value == 0:
+                    assert np.any(mask_slice) == 0
+                else:
+                    assert np.all(mask_slice)
+            bary_mask.append(this_mask_value)
+        self.mask = np.asarray(bary_mask, dtype=np.bool)
+
+    def broaden(self, resolution):
         """Broaden atmospheric transmission profile.
+
+        This does not change any created masks.
 
         Parameters
         ----------
-        R: float
-            Instrumental resolving power
+        resolution: float
+            Instrumental resolution/resolving power
         """
         from eniric.broaden import resolution_convolution
 
-        self.transmission = resolution_convolution(self.wl, self.transmission, R=R)
+        self.transmission = resolution_convolution(
+            self.wl, self.transmission, R=resolution
+        )
 
 
 def prepare_atmosphere(atmmodel: str) -> Tuple[ndarray, ndarray, ndarray, ndarray]:
@@ -250,10 +279,3 @@ def plot_atm_masks(wav, flux, mask, old_mask=None, new_mask=None, block=True):
     plt.show(block=block)
 
     return 0
-
-
-def atm_mask(flux, cutoff=0.98):
-    """Mask flux below the cutoff value."""
-    if not isinstance(flux, np.ndarray):
-        flux = np.asarary(flux)
-    return flux < cutoff

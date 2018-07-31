@@ -6,7 +6,7 @@ import pytest
 from hypothesis import assume, given, strategies as st
 
 import eniric
-from eniric.atmosphere import Atmosphere, consecutive_truths
+from eniric.atmosphere import Atmosphere, barycenter_shift, consecutive_truths
 
 
 def test_consecutive_truths():
@@ -99,6 +99,14 @@ def atm_model(request):
     return os.path.join(eniric.paths["atmmodel"], request.param)
 
 
+@pytest.fixture(params=[1, 2, 20])
+def atmosphere_fixture(request, atm_model):
+    percent_cutoff = request.param
+    atm = Atmosphere._from_file(atm_model)
+    atm.mask_transmission(percent_cutoff)
+    return atm
+
+
 def test_atmosphere_from_file(atm_model):
     atmos = Atmosphere._from_file(atmmodel=atm_model)
     print(atmos)
@@ -129,16 +137,17 @@ def test_atmosphere_masking(trans, percent):
 
 
 @pytest.mark.xfail()
-def test_values_within_rv_of_tell_line_are_masked():
-    x, y, z = 0, 0, 0
+@given(rv=st.floats(min_value=-2000, max_value=2000))
+def test_values_within_rv_of_tell_line_are_masked(atmosphere_fixture):
     # Enable object
-    atmos = Atmosphere(x, y, z)
-    # mask pixels
-    atmos.mask_transmission()
+    atmos = atmosphere_fixture
+    org_mask = atmos.mask.copy()
     # RV shift mask
-    # ...
+    atmos.bary_shift_mask()
+    # wav_lower = self.wl - delta_lambdas
+    # wav_upper = self.wl + delta_lambdas
 
-    for pixel, mask_value in zip(atmos.wl, atmos.mask):
+    for pixel, mask_value, org_val in zip(atmos.wl, atmos.mask, org_mask):
         if mask_value != 0:
             # Already masked out
             pass
@@ -156,6 +165,20 @@ def test_values_within_rv_of_tell_line_are_masked():
 def test_atmos_barycenter_shift_mask():
     """Test barycentric shift code."""
     raise False
+
+
+def test_barycenter_shift_verse_class(atmosphere_fixture):
+    """Test barycentric shift code."""
+    atmos = atmosphere_fixture
+
+    mask30kms = barycenter_shift(
+        atmos.wl, atmos.transmission, atmos.mask, consecutive_test=False
+    )
+
+    assert not np.allclose(mask30kms, atmos.mask)
+    atmos.bary_shift_mask()
+
+    assert np.all_close(atmos.mask)
 
 
 # todo
