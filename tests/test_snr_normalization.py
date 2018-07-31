@@ -193,16 +193,6 @@ def test_old_normalization_does_not_handle_changed_snr(resampled_data):
         snrnorm.normalize_flux(flux, id_string, new=False, snr=101)
 
 
-@pytest.mark.parametrize("func", [snrnorm.normalize_spectrum])
-def test_depreciated_functions_raise_error(func):
-    with pytest.raises(NotImplementedError):
-        func(range(10), "M0-K-5.0-100k", new=False)
-    with pytest.raises(NotImplementedError):
-        func()
-    with pytest.raises(NotImplementedError):
-        func(snr=100, ref_band="K")
-
-
 @pytest.mark.parametrize(
     "id_string",
     [
