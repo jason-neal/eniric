@@ -10,6 +10,7 @@ import collections
 import numpy as np
 from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
 from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
+from astropy.constants import c
 from numpy import ndarray
 
 import eniric
@@ -397,3 +398,33 @@ def load_aces_spectrum(params, photons=True):
 # TODO: Use BT-Settl also
 def load_btsettl_spectrum(params, photons=True):
     raise NotImplementedError("Need to include BT-SETTL")
+
+
+def doppler_shift(wavelength, vel):
+    r"""Doppler shift wavelength by a given velocity (non-relativistic).
+
+    Apply Doppler shift to the wavelength values of the spectrum
+    using the velocity value provided and the relation
+    \(\Delta\lambda / \lambda = v / c\)
+
+    Parameters
+    ----------
+    wavelenght: ndarray
+        Wavelength vector
+    vel : float
+        Velocity to Doppler shift by in km/s.
+
+    Notes
+    -----
+    The Doppler shift is calculated using the relation
+       \Delta\lambda / \lambda\] = \[v / c
+    Where RV is the radial velocity (in km/s), \(\lambda_0\)`
+    is the rest wavelength and \(\Delta\lambda\) is the wavelength
+    shift, \(\lambda_{shift} - \lambda_0\)
+    """
+
+    if not np.isfinite(vel):
+        ValueError("The velocity is not finite.")
+
+    shifted_wavelength = wavelength + wavelength * (vel / c.value)
+    return shifted_wavelength

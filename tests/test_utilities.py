@@ -9,6 +9,7 @@ from hypothesis import given, settings
 
 import eniric
 import eniric.utilities as utils
+from eniric.Qcalculator import quality
 from eniric.broaden import rotation_kernel, unitary_gaussian
 from eniric.utilities import mask_between
 
@@ -450,3 +451,63 @@ def test_mask_between(x, x1, x2):
     assert np.all(x[mask] < xmax)
     # Dropped values are all outside range.
     assert np.all((x[~mask] >= xmax) | (x[~mask] < xmin))
+
+
+from eniric.utilities import doppler_shift
+from astropy import constants
+
+c = constants.c
+
+
+@pytest.fixture(
+    params=[
+        np.array([1.1, 1.2, 1.3, 1.4, 1.5]),
+        np.linspace(2.1, 2.2, 1000),
+        np.linspace(0.3, 0.8, 512),
+        np.linspace(300, 800, 100),
+    ]
+)
+def wavelength(request):
+    wave = request.param
+    return wave
+
+
+@pytest.mark.parametrize("direction,multiplier", [(-1, 0), (1, 2)])
+def test_doppler_shift_at_speed_of_light(wavelength, direction, multiplier):
+    """It is test is only valid for the non-relativistic doppler shift.
+     It is a test of the math but not physical (not valid at this speed)
+     but we are checking the math of the equation works
+     should result in a shift of \delta \lambda = +/- \lambda"""
+    assert np.all(
+        doppler_shift(wavelength, direction * c.value) == (wavelength * multiplier)
+    )
+
+
+def doppler_shift_zero(wavelength):
+    """Doppler shift of zero will give no change."""
+    assert np.all(doppler_shift(wavelength, vel=0.0) == wavelength)
+
+
+def test_band_normalization_is_the_same_under_rv_shift():
+    """Shift target and ref are shifted by same rv.
+    The normalization ratio is the same..."""
+
+    assert False
+
+
+@pytest.mark.parametrize("rv", [1000, 100000, -3e8])
+def test_if_doppler_shift_changes_quality(wavelength, rv):
+    flux = np.random.randn(len(wavelength))
+    q1 = quality(wavelength, flux)
+
+    wav2 = doppler_shift(wavelength, rv)
+    assert np.all(wavelength != wav2)
+    q2 = quality(wav2, flux)
+    print(wav2, wavelength)
+    print("nans in wav2, ", np.sum(np.isnan(wav2)))
+    print("nans in wavelength, ", np.sum(np.isnan(wavelength)))
+    print("nans in flux, ", np.sum(np.isnan(flux)))
+    print("diff in flux", np.diff(flux))
+    print(q1, q2)
+    assert q1 != q2
+    assert False
