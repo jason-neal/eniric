@@ -167,16 +167,17 @@ def test_atmos_barycenter_shift_mask():
     raise False
 
 
-def test_barycenter_shift_verse_class(atmosphere_fixture):
-    """Test barycentric shift code."""
+@pytest.mark.parametrize("consec_test", [True, False])
+def test_barycenter_shift_verse_class(atmosphere_fixture, consec_test):
+    """Test barycentric shift code is equivalent inside class."""
     atmos = atmosphere_fixture
 
     mask30kms = barycenter_shift(
-        atmos.wl, atmos.transmission, atmos.mask, consecutive_test=False
+        atmos.wl, atmos.transmission, atmos.mask, consecutive_test=consec_test
     )
 
     assert not np.allclose(mask30kms, atmos.mask)
-    atmos.bary_shift_mask()
+    atmos.bary_shift_mask(consecutive_test=consec_test)
 
     assert np.all_close(atmos.mask)
 
