@@ -9,14 +9,14 @@ from numpy import ndarray
 
 import eniric
 import eniric.atmosphere as atm
+from eniric.broaden import convolution
+from eniric.corrections import correct_artigau_2018
 from eniric.Qcalculator import (
     RV_prec_calc_Trans,
     RVprec_calc,
     RVprec_calc_masked,
     quality,
 )
-from eniric.broaden import convolution
-from eniric.corrections import correct_artigau_2018
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import band_middle, load_aces_spectrum
@@ -185,7 +185,7 @@ def do_analysis(
         # wav_grid = wav_grid_a
         # interpolate shift flux to old wav
         sampled_flux = np.interp(wav_grid, shifted_wav_grid, sampled_flux)
-        #assert False  # Issues with doppler shift
+        # assert False  # Issues with doppler shift
     except Exception as e:
         print("Doppler shift was unsuccessful")
         raise e
