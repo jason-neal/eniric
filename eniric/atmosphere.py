@@ -13,14 +13,16 @@ from numpy import ndarray
 import eniric.IOmodule as io
 
 
-class Atmosphere(Object):
+class Atmosphere(object):
     """Atmospheric transmission object.
 
     Stores wavelength and atmospheric transmission arrays.
     """
 
     def __init__(self, wavelength, transmission, mask=None):
-        assert len(wavelength) == len(transmission), "Wavelength and transmission do not match lenght."
+        assert len(wavelength) == len(
+            transmission
+        ), "Wavelength and transmission do not match lenght."
         self.wl = wavelength
         self.transmission = transmission
         if mask is None:
@@ -59,7 +61,42 @@ class Atmosphere(Object):
         """
         self.mask = self.transmission < (1 - depth / 100.0)
 
-    def rv_shift_mask(self, rv: float=30.0):
+    def bary_shift_mask(self, rv: float = 30.0):
+        """RV shift mask symmetrically.
+
+        Parameters
+        ----------
+        self
+        rv: float (default=30 km/s)
+            Barycentric RV to extend masks in km/s. (Default=30 km/s)
+
+        """
+
+        # Operate element wise
+        wav_lower_barys = wav_atm + offset_lambdas - delta_lambdas
+        wav_upper_barys = wav_atm + offset_lambdas + delta_lambdas
+
+        # wl_negative =
+        # wl_positive =
+        for wl, trans, mask in (self.wavelength, self.transmission, self.mask):
+            pass
+        assert False
+
+    def broaden(self, R):
+        """Broaden atmospheric transmission profile.
+
+        Parameters
+        ----------
+        R: float
+            Instrumental resolving power
+        """
+        from eniric.broaden import resolution_convolution
+
+        self.transmission = resolution_convolution(
+            self.wavelength, self.transmission, R=R
+        )
+
+
 def prepare_atmosphere(atmmodel: str) -> Tuple[ndarray, ndarray, ndarray, ndarray]:
     """Read in atmospheric model and prepare."""
     wav_atm, flux_atm, std_flux_atm, mask_atm = io.pdread_4col(atmmodel)
