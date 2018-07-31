@@ -32,18 +32,6 @@ def test_consecutive_truths():
     assert np.sum(rand_array) == np.sum(consecutive_truths(rand_array))
 
 
-@pytest.mark.xfail()
-def test_barycenter_shift():
-    """Test barycentric shift code."""
-    raise False
-
-
-@pytest.mark.xfail()
-def test_old_barycenter_shift():
-    """Test old barycentric shift code."""
-    raise False
-
-
 @pytest.mark.xfail()  # If missing the datafiles
 def test_prepare_atmosphere():
     """Test that an atmosphere file is loaded.
@@ -162,6 +150,12 @@ def test_values_within_rv_of_tell_line_are_masked():
         assert np.all(atmos.mask[wl_mask] == 1)
 
     assert False
+
+
+@pytest.mark.xfail()
+def test_atmos_barycenter_shift_mask():
+    """Test barycentric shift code."""
+    raise False
 
 
 # todo
