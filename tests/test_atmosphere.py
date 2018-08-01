@@ -179,7 +179,7 @@ def test_barycenter_shift_verse_class(atmosphere_fixture, consec_test):
     assert not np.allclose(mask30kms, atmos.mask)
     atmos.bary_shift_mask(consecutive_test=consec_test)
 
-    assert np.all_close(atmos.mask)
+    assert np.allclose(atmos.mask)
 
 
 # todo
