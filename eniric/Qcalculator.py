@@ -127,7 +127,7 @@ def sqrt_sum_wis(
     flux: array-like or Quantity array
         Flux of spectrum.
     mask: Optional ndarray
-        Weighting mask function. Default is ones.
+        Weighting mask function. Default is all ones.
 
     Returns
     -------

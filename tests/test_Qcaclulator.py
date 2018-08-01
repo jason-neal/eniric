@@ -120,11 +120,11 @@ def test_SQRTSumWisTrans():
 
     # dimensionless_unscaled unit is ok for transmission
     sqrtsum_trans2 = Q.sqrt_sum_wis_trans(wav, flux, trans * u.dimensionless_unscaled)
-    assert not hasattr(sqrtsum_trans2.value, "__len__")  # assert scalar
-    assert isinstance(sqrtsum_trans2, u.Quantity)
-    assert (
-        sqrtsum_trans2.unit == u.dimensionless_unscaled
-    )  # unscaled and dimensionless quantity
+    assert not hasattr(sqrtsum_trans2, "__len__")  # assert scalar
+    assert not isinstance(sqrtsum_trans2, u.Quantity)
+    #assert (
+    #    sqrtsum_trans2.unit == u.dimensionless_unscaled
+    #)  # unscaled and dimensionless quantity
 
     sqrtsum_trans3 = Q.sqrt_sum_wis_trans(wav * u.micron, flux, trans)
     assert not hasattr(sqrtsum_trans3.value, "__len__")  # assert value is a scalar
