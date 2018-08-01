@@ -121,7 +121,7 @@ class Atmosphere(object):
 
                 # Checks
                 if this_mask_value == 0:
-                    assert np.any(mask_slice) == 0
+                    assert np.any(mask_slice == 0)
                 else:
                     assert np.all(mask_slice)
             bary_mask.append(this_mask_value)
