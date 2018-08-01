@@ -1,20 +1,20 @@
 #!/usr/bin/env python
-"""Split the large atmospheric model transmission spectra into the separate bands.
-To be able to include the separate files and to speed up performances for
-calculations on individual bands only.
+"""Script to split the large atmospheric model transmission spectra into the separate bands.
+This create smaller files to load for each band for individual bands only.
 """
-
 import argparse
 import os
 import sys
 from typing import List, Optional
 
 import numpy as np
-from astropy.constants import c
+from astropy import constants
 
 import eniric
 import eniric.IOmodule as io
 import eniric.utilities as utils
+
+c = constants.c
 
 
 def _parser():
@@ -101,6 +101,19 @@ def main(
     """Split the large atmospheric model transmission spectra into the separate bands.
 
     Keeps wavelength of atmosphere model as nanometers.
+
+    Parameters
+    ----------
+    model: str
+        Telluric model file to load. It has columns wavelength, flux, std_flux, mask.
+    bands: list[str]
+        List bands to split model into separate files.
+    new_name: str
+        New file name base.
+    data_dir: str
+        Directory for results. Can also be given in config.yaml "paths:atmmodel:"...
+    rv_extend: float (positive) (default 100)
+        Rv amount to extend wavelength range of telluric band. To later apply barycenter shifting.
     """
     if bands is None:
         bands = ["All"]
@@ -117,12 +130,12 @@ def main(
     write_status = np.empty_like(bands, dtype=int)
 
     for i, band in enumerate(bands):
-        band_name = "{0}_{1}.txt".format(new_name, band)
+        filename_band = "{0}_{1}.txt".format(new_name, band)
         band_min, band_max = utils.band_limits(band)
 
-        # Doppler shift values to extend saved wavelengths
-        band_min = band_min * (1 - rv_extend / c.value)
-        band_max = band_max * (1 + rv_extend / c.value)
+        # * 1000 to convert into km/s
+        band_min = band_min * (1 - rv_extend * 1000 / c.value)
+        band_max = band_max * (1 + rv_extend * 1000 / c.value)
 
         # Convert band limits (micron) into nanometers (Keeps datafiles cleaner)
         band_min, band_max = band_min * 1e3, band_max * 1e3
@@ -138,10 +151,10 @@ def main(
             & (len(band_flux) == len(band_mask))
         )  # Check lengths are the same
 
-        band_mask = np.asarrya(band_mask, dtype=bool)
+        band_mask = np.asarray(band_mask, dtype=bool)
 
         # Save the result to file
-        filename = os.path.join(data_dir, band_name)
+        filename = os.path.join(data_dir, filename_band)
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
 
         write_status[i] = io.pdwrite_cols(
