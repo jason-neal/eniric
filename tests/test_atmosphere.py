@@ -99,7 +99,7 @@ def atm_model(request):
     return os.path.join(eniric.paths["atmmodel"], request.param)
 
 
-@pytest.fixture(params=[1, 2, 20])
+@pytest.fixture(params=[1, 4, 10])
 def atmosphere_fixture(request, atm_model):
     percent_cutoff = request.param
     atm = Atmosphere._from_file(atm_model)
@@ -161,19 +161,28 @@ def test_values_within_rv_of_tell_line_are_masked(atmosphere_fixture):
     assert False
 
 
-@pytest.mark.xfail()
-def test_atmos_barycenter_shift_mask():
+@pytest.mark.parametrize("consec_test", [True, False])
+def test_atmos_barycenter_shift_mask(atmosphere_fixture, consec_test):
     """Test barycentric shift code."""
-    raise False
+    # Bayrmask should hvae more pixels mask (at 0) so coundt will be lower
+    atmos = atmosphere_fixture
+    org_mask = atmos.mask.copy()
+    org_number_masked = np.sum(org_mask)
+    org_len = len(org_mask)
+    atmos.bary_shift_mask(consecutive_test=consec_test)
+    new_number_masked = np.sum(atmos.mask)
+
+    assert new_number_masked < org_number_masked
+    assert len(atmos.mask) == org_len
+    assert np.all((atmos.mask * org_mask) == atmos.mask) # zeros should not turn into ones
 
 
 @pytest.mark.parametrize("consec_test", [True, False])
 def test_barycenter_shift_verse_class(atmosphere_fixture, consec_test):
     """Test barycentric shift code is equivalent inside class."""
     atmos = atmosphere_fixture
-
     mask30kms = barycenter_shift(
-        atmos.wl, atmos.transmission, atmos.mask, consecutive_test=consec_test
+        atmos.wl, atmos.mask, consecutive_test=consec_test
     )
 
     assert not np.allclose(mask30kms, atmos.mask)
@@ -183,6 +192,6 @@ def test_barycenter_shift_verse_class(atmosphere_fixture, consec_test):
 
 
 # todo
-# test atm masking
 # test rv usage
 # test input into rv work
+
