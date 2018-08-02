@@ -174,16 +174,16 @@ def test_atmos_barycenter_shift_mask(atmosphere_fixture, consec_test):
 
     assert new_number_masked < org_number_masked
     assert len(atmos.mask) == org_len
-    assert np.all((atmos.mask * org_mask) == atmos.mask) # zeros should not turn into ones
+    assert np.all(
+        (atmos.mask * org_mask) == atmos.mask
+    )  # zeros should not turn into ones
 
 
 @pytest.mark.parametrize("consec_test", [True, False])
 def test_barycenter_shift_verse_class(atmosphere_fixture, consec_test):
     """Test barycentric shift code is equivalent inside class."""
     atmos = atmosphere_fixture
-    mask30kms = barycenter_shift(
-        atmos.wl, atmos.mask, consecutive_test=consec_test
-    )
+    mask30kms = barycenter_shift(atmos.wl, atmos.mask, consecutive_test=consec_test)
 
     assert not np.allclose(mask30kms, atmos.mask)
     atmos.bary_shift_mask(consecutive_test=consec_test)
@@ -197,4 +197,3 @@ def test_barycenter_shift_verse_class(atmosphere_fixture, consec_test):
 @pytest.mark.xfail()
 def test_atmos_broadenning():
     assert False
-
