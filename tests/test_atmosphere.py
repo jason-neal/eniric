@@ -194,4 +194,7 @@ def test_barycenter_shift_verse_class(atmosphere_fixture, consec_test):
 # todo
 # test rv usage
 # test input into rv work
+@pytest.mark.xfail()
+def test_atmos_broadenning():
+    assert False
 
