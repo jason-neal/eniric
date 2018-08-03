@@ -19,7 +19,7 @@ class Atmosphere(object):
     Stores wavelength and atmospheric transmission arrays.
     """
 
-    def __init__(self, wavelength, transmission, std=None, mask=None):
+    def __init__(self, wavelength, transmission, mask=None, std=None):
         assert len(wavelength) == len(
             transmission
         ), "Wavelength and transmission do not match length."
@@ -49,9 +49,9 @@ class Atmosphere(object):
         wav_atm, flux_atm, std_flux_atm, mask_atm = io.pdread_4col(atmmodel)
         wav_atm = wav_atm / 1e3  # conversion from nanometers to micrometers
         mask_atm = np.array(mask_atm, dtype=bool)
-        # We do not use the std from the year atmosphere.
+        # We do not use the std from the year atmosphere but need it for compatibility.
         return cls(
-            wavelength=wav_atm, transmission=flux_atm, std=std_flux_atm, mask=mask_atm
+            wavelength=wav_atm, transmission=flux_atm, mask=mask_atm, std=std_flux_atm
         )
 
     def to_file(
