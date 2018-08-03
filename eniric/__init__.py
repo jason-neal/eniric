@@ -36,6 +36,7 @@ except FileNotFoundError as e:
 name = config["name"]
 paths = config["paths"]
 bands = config["bands"]
+atmmodel = config["atmmodel"]
 
 # Turn list into path
 for key, value in paths.items():

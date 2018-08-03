@@ -58,7 +58,9 @@ def main(bands=None, plot=False):
         bands = ["Z", "Y", "J", "H", "K"]
 
     for band in bands:
-        unshifted_atmmodel = "../data/atmmodel/Average_TAPAS_2014_{}.txt".format(band)
+        unshifted_atmmodel = "../data/atmmodel/{0}_{1}.txt".format(
+            eniric.atmmodel["base"], band
+        )
         shifted_atmmodel = unshifted_atmmodel.replace(".txt", "_bary.txt")
 
         print("Reading atmospheric model...", unshifted_atmmodel)

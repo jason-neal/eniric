@@ -230,11 +230,13 @@ def get_corresponding_atm(wav, bary=True):
     # Load atmosphere
     if bary:
         atmmodel = os.path.join(
-            eniric.paths["atmmodel"], "Average_TAPAS_2014_{}_bary.txt".format(band)
+            eniric.paths["atmmodel"],
+            "{0}_{1}_bary.txt".format(eniric.atmmodel["base"], band),
         )
     else:
         atmmodel = os.path.join(
-            eniric.paths["atmmodel"], "Average_TAPAS_2014_{}.txt".format(band)
+            eniric.paths["atmmodel"],
+            "{0}_{1}.txt".format(eniric.atmmodel["base"], band),
         )
     wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(atmmodel)
 

@@ -12,6 +12,10 @@ paths:
   atmmodel: ["data", "atmmodel"]
   precision: ["precision"]
 
+atmmodel:
+  # Base name of telluric model
+  base: "Average_TAPAS_2014"
+
 bands:
   all: ["VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP"]
 

@@ -193,7 +193,8 @@ def calculate_prec(
 
         if use_unshifted:
             atmmodel = os.path.join(
-                eniric.paths["atmmodel"], "Average_TAPAS_2014_{}.txt".format(band)
+                eniric.paths["atmmodel"],
+                "{0}_{1}.txt".format(eniric.atmmodel["base"], band),
             )
             print("Reading atmospheric model...")
             wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(atmmodel)
@@ -216,7 +217,8 @@ def calculate_prec(
             mask_atm = atm.barycenter_shift(wav_atm, mask_atm, rv_offset=rv_offset)
         else:
             shifted_atmmodel = os.path.join(
-                eniric.paths["atmmodel"], "Average_TAPAS_2014_{}_bary.txt".format(band)
+                eniric.paths["atmmodel"],
+                "{0}_{1}_bary.txt".format(eniric.atmmodel["base"], band),
             )
             print("Reading pre-doppler-shifted atmospheric model...")
             wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(

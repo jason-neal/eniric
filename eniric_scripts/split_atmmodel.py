@@ -16,6 +16,8 @@ import eniric.utilities as utils
 
 c = constants.c
 
+atmmodel = "{0}.txt".format(eniric.atmmodel["base"])
+
 
 def _parser():
     """Take care of all the argparse stuff.
@@ -25,9 +27,7 @@ def _parser():
 
     parser = argparse.ArgumentParser(description="Band separate out atmospheric model.")
 
-    parser.add_argument(
-        "-m", "--model", help="Model name", type=str, default="Average_TAPAS_2014.txt"
-    )
+    parser.add_argument("-m", "--model", help="Model name", type=str, default=atmmodel)
     parser.add_argument(
         "-b",
         "--bands",
@@ -92,7 +92,7 @@ def check_positive(value: str) -> float:
 
 
 def main(
-    model: str = "Average_TAPAS_2014.txt",
+    model: str = atmmodel,
     bands: Optional[List[str]] = None,
     new_name=None,
     data_dir=None,
