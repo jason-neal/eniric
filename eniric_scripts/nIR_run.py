@@ -39,7 +39,7 @@ def _parser():
         "--band",
         type=str,
         default="ALL",
-        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
+        choices=eniric.bands["all"],
         help="Wavelength band to select",
         nargs="+",
     )

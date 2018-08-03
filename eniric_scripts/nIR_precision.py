@@ -35,7 +35,7 @@ def _parser():
         "--bands",
         type=str,
         default="J",
-        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", "None"],
+        choices=eniric.bands["all"],
         help="Wavelength bands to select. Default=J.",
         nargs="+",
     )
@@ -56,7 +56,7 @@ def _parser():
         "--ref_band",
         help="SNR reference band. Default=J. (Default=100). "
         "'self' scales each band relative to the SNR itself.",
-        choices=["self", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
+        choices=["SELF","self"].extend(eniric.bands["all"]),
         default="J",
         type=str,
     )
