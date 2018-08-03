@@ -5,6 +5,7 @@ This create smaller files to load for each band for individual bands only.
 import argparse
 import os
 import sys
+from os.path import join
 from typing import List, Optional
 
 import numpy as np
@@ -94,8 +95,8 @@ def check_positive(value: str) -> float:
 def main(
     model: str = atmmodel,
     bands: Optional[List[str]] = None,
-    new_name=None,
-    data_dir=None,
+    new_name: Optional[str] = None,
+    data_dir: Optional[str] = None,
     rv_extend: float = 100,
 ):
     """Split the large atmospheric model transmission spectra into the separate bands.
@@ -110,7 +111,7 @@ def main(
         List bands to split model into separate files.
     new_name: str
         New file name base.
-    data_dir: str
+    data_dir: Optinal[str]
         Directory for results. Can also be given in config.yaml "paths:atmmodel:"...
     rv_extend: float (positive) (default 100)
         Rv amount to extend wavelength range of telluric band. To later apply barycenter shifting.
@@ -120,9 +121,11 @@ def main(
     if new_name is None:
         new_name = model.split(".")[0]
     if data_dir is None:
-        data_dir = eniric.paths["atmmodel"]
+        data_dir_ = eniric.paths["atmmodel"]
+    else:
+        data_dir_ = str(data_dir)
 
-    model_name = os.path.join(data_dir, model)
+    model_name = join(data_dir_, model)
 
     # If trying to obtain the provided model extract from and it doesn't yet exist
     # extract from tar.gz file. (Extracted it is 230 MB which is to large for Git)
@@ -131,8 +134,8 @@ def main(
             print("Unpacking Average_TAPAS_2014.txt.tar.gz...")
             import tarfile
 
-            with tarfile.open(model_name + ".tar.gz", "r") as tar:
-                tar.extractall(data_dir)
+            with tarfile.open(str(model_name) + ".tar.gz", "r") as tar:
+                tar.extractall(data_dir_)
 
     atm_wav, atm_flux, atm_std_flux, atm_mask = io.pdread_4col(model_name)
 
@@ -169,7 +172,7 @@ def main(
             band_mask = np.asarray(band_mask, dtype=bool)
 
             # Save the result to file
-            filename = os.path.join(data_dir, filename_band)
+            filename = join(data_dir_, filename_band)
             header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
 
             write_status[i] = io.pdwrite_cols(
@@ -189,4 +192,4 @@ def main(
 if __name__ == "__main__":
     args = vars(_parser())
     opts = {k: args[k] for k in args}
-    sys.exit(main(**opts))
+    sys.exit(int(main(**opts)))

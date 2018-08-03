@@ -7,6 +7,7 @@ To make RV precision calculations faster.
 import argparse
 import sys
 from os.path import join
+from typing import List, Optional
 
 import numpy as np
 
@@ -44,7 +45,7 @@ def _parser():
     return _args
 
 
-def main(bands=None, plot=False):
+def main(bands: Optional[List[str]] = None, plot: bool = False):
     """Preform the barycentric shifting of atmosphere masks and saves result.
 
     This saves time in the precision determination code.

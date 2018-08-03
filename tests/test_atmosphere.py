@@ -164,7 +164,7 @@ def test_values_within_rv_of_tell_line_are_masked(atmosphere_fixture):
 @pytest.mark.parametrize("consec_test", [True, False])
 def test_atmos_barycenter_shift_mask(atmosphere_fixture, consec_test):
     """Test barycentric shift code."""
-    # Bayrmask should hvae more pixels mask (at 0) so coundt will be lower
+    # Barymask should have more pixels mask (at 0) so count will be lower
     atmos = atmosphere_fixture
     org_mask = atmos.mask.copy()
     org_number_masked = np.sum(org_mask)
