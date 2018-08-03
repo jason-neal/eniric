@@ -50,7 +50,7 @@ class Atmosphere(object):
         wav_atm = wav_atm / 1e3  # conversion from nanometers to micrometers
         mask_atm = np.array(mask_atm, dtype=bool)
         # We do not use the std from the year atmosphere.
-        return cls(wavelength=wav_atm, transmission=flux_atm, mask=mask_atm)
+        return cls(wavelength=wav_atm, transmission=flux_atm, std=std_flux_atm, mask=mask_atm)
 
     def mask_transmission(self, depth: float) -> None:
         """Mask the transmission below given depth. e.g. 3%
