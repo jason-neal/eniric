@@ -19,12 +19,16 @@ class Atmosphere(object):
     Stores wavelength and atmospheric transmission arrays.
     """
 
-    def __init__(self, wavelength, transmission, mask=None):
+    def __init__(self, wavelength, transmission, std=None, mask=None):
         assert len(wavelength) == len(
             transmission
         ), "Wavelength and transmission do not match length."
         self.wl = np.asarray(wavelength)
         self.transmission = np.asarray(transmission)
+        if std is None:
+            self.std = np.zeros_like(wavelength)
+        else:
+            self.std = np.asarray(std)
         if mask is None:
             self.mask = np.ones_like(wavelength, dtype=bool)
         else:
