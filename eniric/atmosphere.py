@@ -55,7 +55,7 @@ class Atmosphere(object):
         )
 
     def to_file(
-        cls, new_atmmodel: str, header: Optional[List[str]] = None, fmt: str = "%11.8f"
+        self, new_atmmodel: str, header: Optional[List[str]] = None, fmt: str = "%11.8f"
     ):
         """Save the atmospheric model to new_atmmodel file.
 
