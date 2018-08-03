@@ -111,7 +111,7 @@ def main(
         List bands to split model into separate files.
     new_name: str
         New file name base.
-    data_dir: Optinal[str]
+    data_dir: Optional[str]
         Directory for results. Can also be given in config.yaml "paths:atmmodel:"...
     rv_extend: float (positive) (default 100)
         Rv amount to extend wavelength range of telluric band. To later apply barycenter shifting.
