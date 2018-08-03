@@ -1,22 +1,23 @@
 import argparse
 import itertools
 import os
-from typing import List, Tuple
+from os.path import join
+from typing import Tuple
 
 import multiprocess as mprocess
 import numpy as np
 from numpy import ndarray
 
 import eniric
-import eniric.atmosphere as atm
-from eniric.broaden import convolution
-from eniric.corrections import correct_artigau_2018
 from eniric.Qcalculator import (
     RV_prec_calc_Trans,
     RVprec_calc,
     RVprec_calc_masked,
     quality,
 )
+from eniric.atmosphere import Atmosphere
+from eniric.broaden import convolution
+from eniric.corrections import correct_artigau_2018
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import band_middle, load_aces_spectrum
@@ -229,16 +230,23 @@ def get_corresponding_atm(wav, bary=True):
         Use the +/- 30km/s shifted atmospheric masks."""
     # Load atmosphere
     if bary:
-        atmmodel = os.path.join(
+        atmmodel = join(
             eniric.paths["atmmodel"],
             "{0}_{1}_bary.txt".format(eniric.atmmodel["base"], band),
         )
     else:
-        atmmodel = os.path.join(
+        atmmodel = join(
             eniric.paths["atmmodel"],
             "{0}_{1}.txt".format(eniric.atmmodel["base"], band),
         )
-    wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(atmmodel)
+    atm = Atmosphere.from_file(atmmodel)
+
+    wav_atm, flux_atm, std_flux_atm, mask_atm = (
+        atm.wl,
+        atm.transmission,
+        atm.std,
+        atm.mask,
+    )
 
     # Getting the wav, flux and mask values from the atm model
     # that are the closest to the stellar wav values, see

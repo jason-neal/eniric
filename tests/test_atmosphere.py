@@ -31,16 +31,6 @@ def test_consecutive_truths():
     )  # random values
     assert np.sum(rand_array) == np.sum(consecutive_truths(rand_array))
 
-
-@pytest.mark.xfail()  # If missing the datafiles
-def test_prepare_atmosphere():
-    """Test that an atmosphere file is loaded.
-
-    Test band is close to the band limits (accounting for the given offset. +- 100km/s).
-    """
-    raise False
-
-
 # If I multiply the flux by the mask then the smallest flux should be 0.98
 # If not then there would be an issue.
 

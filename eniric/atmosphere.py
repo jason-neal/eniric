@@ -183,15 +183,6 @@ class Atmosphere(object):
         )
 
 
-def prepare_atmosphere(atmmodel: str) -> Tuple[ndarray, ndarray, ndarray, ndarray]:
-    """Read in atmospheric model and prepare."""
-    wav_atm, flux_atm, std_flux_atm, mask_atm = io.pdread_4col(atmmodel)
-    # pandas already returns numpy arrays
-    wav_atm = wav_atm / 1000.0  # conversion from nanometers to micrometers
-    mask_atm = np.array(mask_atm, dtype=bool)
-    return wav_atm, flux_atm, std_flux_atm, mask_atm
-
-
 def barycenter_shift(
     wav_atm: ndarray,
     mask_atm: ndarray,

@@ -11,12 +11,12 @@ import numpy as np
 from matplotlib import rc
 
 import eniric
-import eniric.atmosphere as atm
 import eniric.IOmodule as io
 import eniric.plotting_functions as plt_functions
 import eniric.Qcalculator as Qcalculator
 import eniric.snr_normalization as snrnorm
 import eniric.utilities as utils
+from eniric.atmosphere import barycenter_shift, Atmosphere
 
 rc("text", usetex=True)  # set stuff for latex usage
 
@@ -197,7 +197,14 @@ def calculate_prec(
                 "{0}_{1}.txt".format(eniric.atmmodel["base"], band),
             )
             print("Reading atmospheric model...")
-            wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(atmmodel)
+            atm = Atmosphere.from_file(atmmodel)
+            wav_atm, flux_atm, std_flux_atm, mask_atm = (
+                atm.wl,
+                atm.transmission,
+                atm.std,
+                atm.mask,
+            )
+
             print(
                 (
                     "There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}." ""
@@ -214,16 +221,21 @@ def calculate_prec(
             print("Done.")
             print("Calculating impact of Barycentric movement on mask...")
             # mask_atm = atm.old_barycenter_shift(wav_atm, mask_atm, rv_offset=rv_offset)
-            mask_atm = atm.barycenter_shift(wav_atm, mask_atm, rv_offset=rv_offset)
+            mask_atm = barycenter_shift(wav_atm, mask_atm, rv_offset=rv_offset)
         else:
             shifted_atmmodel = os.path.join(
                 eniric.paths["atmmodel"],
                 "{0}_{1}_bary.txt".format(eniric.atmmodel["base"], band),
             )
             print("Reading pre-doppler-shifted atmospheric model...")
-            wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(
-                shifted_atmmodel
+            atm = Atmosphere.from_file(shifted_atmmodel)
+            wav_atm, flux_atm, std_flux_atm, mask_atm = (
+                atm.wl,
+                atm.transmission,
+                atm.std,
+                atm.mask,
             )
+
         print("Done.")
 
         print(
@@ -426,7 +438,9 @@ def calculate_prec(
 ###############################################################################
 def compare_output():
     """Function that compares a spectrum prior to convolution, after, and after resampling."""
-    pre_convolution = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
+    pre_convolution = (
+        "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
+    )
     pre_wav, pre_flux = io.pdread_2col(pre_convolution)
     pre_wav = np.array(pre_wav, dtype="float64") * 1.0e-4  # conversion to microns
     pre_flux = np.array(pre_flux, dtype="float64") * pre_wav
