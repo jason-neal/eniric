@@ -9,15 +9,15 @@ import numpy as np
 from numpy import ndarray
 
 import eniric
+from eniric.atmosphere import Atmosphere
+from eniric.broaden import convolution
+from eniric.corrections import correct_artigau_2018
 from eniric.Qcalculator import (
     RV_prec_calc_Trans,
     RVprec_calc,
     RVprec_calc_masked,
     quality,
 )
-from eniric.atmosphere import Atmosphere
-from eniric.broaden import convolution
-from eniric.corrections import correct_artigau_2018
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import band_middle, load_aces_spectrum
@@ -239,7 +239,15 @@ def get_corresponding_atm(wav, bary=True):
             eniric.paths["atmmodel"],
             "{0}_{1}.txt".format(eniric.atmmodel["base"], band),
         )
-    atm = Atmosphere.from_file(atmmodel)
+    if not os.path.exists(atmmodel):
+        # Fall back to full file (will be slower)
+        atmmodel = join(
+            eniric.paths["atmmodel"], "{0}.txt".format(eniric.atmmodel["base"])
+        )
+        atm = Atmosphere.from_file(atmmodel)
+        atm.bary_shift(con)
+    else:
+        atm = Atmosphere.from_file(atmmodel)
 
     wav_atm, flux_atm, std_flux_atm, mask_atm = (
         atm.wl,
