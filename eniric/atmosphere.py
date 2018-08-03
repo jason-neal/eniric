@@ -32,7 +32,7 @@ class Atmosphere(object):
         self.shifted = False
 
     @classmethod
-    def _from_file(cls, atmmodel: str):
+    def from_file(cls, atmmodel: str):
         """Read in atmospheric model and prepare.
 
         Alternate constructor for Atmosphere.
@@ -117,7 +117,9 @@ class Atmosphere(object):
                                 )
                             )
                 else:
-                    this_mask_value = np.bool(np.product(mask_slice))  # Any 0s will make it 0
+                    this_mask_value = np.bool(
+                        np.product(mask_slice)
+                    )  # Any 0s will make it 0
 
                 # Checks
 
@@ -127,7 +129,7 @@ class Atmosphere(object):
                     if not consecutive_test:
                         assert np.all(mask_slice)
             bary_mask.append(this_mask_value)
-        #print("bary mask", bary_mask)
+        # print("bary mask", bary_mask)
         self.mask = np.asarray(bary_mask, dtype=np.bool)
 
     def broaden(self, resolution):

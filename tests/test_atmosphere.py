@@ -102,13 +102,13 @@ def atm_model(request):
 @pytest.fixture(params=[1, 4, 10])
 def atmosphere_fixture(request, atm_model):
     percent_cutoff = request.param
-    atm = Atmosphere._from_file(atm_model)
+    atm = Atmosphere.from_file(atm_model)
     atm.mask_transmission(percent_cutoff)
     return atm
 
 
 def test_atmosphere_from_file(atm_model):
-    atmos = Atmosphere._from_file(atmmodel=atm_model)
+    atmos = Atmosphere.from_file(atmmodel=atm_model)
     print(atmos)
     print(atmos.transmission)
     print(atmos.wl)
