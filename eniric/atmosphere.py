@@ -3,7 +3,7 @@
 Mainly the barycentric shifting of the absorption mask.
 """
 
-from typing import Tuple
+from typing import List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -50,7 +50,37 @@ class Atmosphere(object):
         wav_atm = wav_atm / 1e3  # conversion from nanometers to micrometers
         mask_atm = np.array(mask_atm, dtype=bool)
         # We do not use the std from the year atmosphere.
-        return cls(wavelength=wav_atm, transmission=flux_atm, std=std_flux_atm, mask=mask_atm)
+        return cls(
+            wavelength=wav_atm, transmission=flux_atm, std=std_flux_atm, mask=mask_atm
+        )
+
+    def to_file(
+        cls, new_atmmodel: str, header: Optional[List[str]] = None, fmt: str = "%11.8f"
+    ):
+        """Save the atmospheric model to new_atmmodel file.
+
+        Converts micron back into nanometers to be consistent with from_file().
+
+        Parameters
+        ----------
+        new_atmmodel: str
+            Name of atmosphere file to save to.
+        header:
+            Header lines to add.
+        fmt: str
+             String formatting
+        """
+        if header is None:
+            header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
+        io.pdwrite_cols(
+            new_atmmodel,
+            self.wl * 1000,
+            self.transmission,
+            self.std,
+            self.mask,
+            header=header,
+            float_format=fmt,
+        )
 
     def mask_transmission(self, depth: float) -> None:
         """Mask the transmission below given depth. e.g. 3%
@@ -68,7 +98,7 @@ class Atmosphere(object):
         cutoff = 1 - depth / 100.0
         self.mask = self.transmission < cutoff
 
-    def bary_shift_mask(self, rv: float = 30.0, consecutive_test=False):
+    def bary_shift_mask(self, rv: float = 30.0, consecutive_test: bool = False):
         """RV shift mask symmetrically.
 
         Parameters
@@ -136,7 +166,7 @@ class Atmosphere(object):
         # print("bary mask", bary_mask)
         self.mask = np.asarray(bary_mask, dtype=np.bool)
 
-    def broaden(self, resolution):
+    def broaden(self, resolution: float):
         """Broaden atmospheric transmission profile.
 
         This does not change any created masks.
