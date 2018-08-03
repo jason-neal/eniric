@@ -6,11 +6,13 @@ To make RV precision calculations faster.
 
 import argparse
 import sys
+from os.path import join
 
 import numpy as np
 
-import eniric.atmosphere as atm
+import eniric
 import eniric.IOmodule as io
+from eniric.atmosphere import barycenter_shift, plot_atm_masks, prepare_atmosphere
 
 
 def _parser():
@@ -19,16 +21,16 @@ def _parser():
     :returns: the args
     """
     parser = argparse.ArgumentParser(
-        description=("Calculate radial velocity" "precision of model spectra.")
+        description=("Pre-doppler shift atmosphere masks.")
     )
 
     parser.add_argument(
         "-b",
         "--bands",
         type=str,
-        default="J",
+        default=None,
         choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", None, "visible"],
-        help="Wavelength bands to select. Default=J.",
+        help="Wavelength bands to select. Default=None.",
         nargs="+",
     )
     parser.add_argument(
@@ -54,22 +56,23 @@ def main(bands=None, plot=False):
     plot: bool
         Flag to plot test plots of masks.
     """
-    if bands is None:
+    if (bands is None) or ("ALL" in bands):
         bands = ["Z", "Y", "J", "H", "K"]
 
     for band in bands:
-        unshifted_atmmodel = "../data/atmmodel/{0}_{1}.txt".format(
-            eniric.atmmodel["base"], band
+        unshifted_atmmodel = join(
+            eniric.paths["atmmodel"],
+            "{0}_{1}.txt".format(eniric.atmmodel["base"], band),
         )
         shifted_atmmodel = unshifted_atmmodel.replace(".txt", "_bary.txt")
 
         print("Reading atmospheric model...", unshifted_atmmodel)
 
-        wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(
+        wav_atm, flux_atm, std_flux_atm, mask_atm = prepare_atmosphere(
             unshifted_atmmodel
         )
         print(
-            ("There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}." "").format(
+            "There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}.".format(
                 np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)
             )
         )
@@ -82,9 +85,9 @@ def main(bands=None, plot=False):
 
         print("Calculating impact of Barycentric movement on mask...")
         org_mask = mask_atm
-        mask_atm = atm.barycenter_shift(wav_atm, mask_atm)
+        mask_atm = barycenter_shift(wav_atm, mask_atm)
 
-        print("Saving doppler-shifted atmosphere model...", shifted_atmmodel)
+        print("Saving doppler-shifted atmosphere model to {}".format(shifted_atmmodel))
 
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
 
@@ -100,9 +103,7 @@ def main(bands=None, plot=False):
         )
 
         if plot:
-            atm.plot_atm_masks(
-                wav_atm, flux_atm, org_mask, new_mask=mask_atm, block=True
-            )
+            plot_atm_masks(wav_atm, flux_atm, org_mask, new_mask=mask_atm, block=True)
 
 
 if __name__ == "__main__":
