@@ -182,6 +182,15 @@ class Atmosphere(object):
             self.wl, self.transmission, R=resolution
         )
 
+    def __getitem__(self, item):
+        """Index Atmosphere by returning a Atmosphere with indexed components."""
+        return Atmosphere(wavelength=self.wl[item], transmission=self.transmission[item],
+                           mask=self.mask[item], std=self.std[item])
+
+    def copy(self):
+        """Index Atmosphere by returning a Atmosphere with indexed components."""
+        return Atmosphere(wavelength=self.wl.copy(), transmission=self.transmission.copy(),
+                           mask=self.mask.copy(), std=self.std.copy())
 
 def barycenter_shift(
     wav_atm: ndarray,

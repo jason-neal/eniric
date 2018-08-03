@@ -187,3 +187,38 @@ def test_barycenter_shift_verse_class(atmosphere_fixture, consec_test):
 @pytest.mark.xfail()
 def test_atmos_broadenning():
     assert False
+
+def test_Atmosphere_has_getitem():
+    assert hasattr(Atmosphere, "__getitem__")
+
+
+def test_Atmosphere_sliceable(atmosphere_fixture):
+    atm = atmosphere_fixture
+    assert len(atm.wl) != 500
+    # Indexing on object.
+    atm2 = atm[:500]
+
+    assert len(atm2.wl) == 500
+    assert len(atm2.transmission) == 500
+    assert len(atm2.std) == 500
+    assert len(atm2.mask) == 500
+
+
+def test_Atmosphere_copyable(atmosphere_fixture):
+    atm = atmosphere_fixture[10:50]
+
+    atm2 = atm.copy()
+
+    assert np.all(atm.wl == atm2.wl)
+    assert not (atm.wl is atm2.wl)
+
+    assert np.all(atm.transmission == atm2.transmission)
+    assert not (atm.transmission is atm2.transmission)
+    assert np.all(atm.std == atm2.std)
+    assert not (atm.std is atm2.std)
+    assert np.all(atm.mask == atm2.mask)
+    assert not (atm.mask is atm2.mask)
+
+
+def test_Atmosphere_copyable():
+    assert hasattr(Atmosphere, "copy")
