@@ -12,8 +12,7 @@ from typing import List, Optional
 import numpy as np
 
 import eniric
-import eniric.IOmodule as io
-from eniric.atmosphere import barycenter_shift, plot_atm_masks, prepare_atmosphere
+from eniric.atmosphere import Atmosphere, plot_atm_masks
 
 
 def _parser():
@@ -53,7 +52,7 @@ def main(bands: Optional[List[str]] = None, plot: bool = False):
     Parameters
     ----------
     bands: list of str
-        Wavelength bands to perform shifts on
+        Wavelength bands to perform barycenter shifts on. Default is all bands.
     plot: bool
         Flag to plot test plots of masks.
     """
@@ -65,46 +64,38 @@ def main(bands: Optional[List[str]] = None, plot: bool = False):
             eniric.paths["atmmodel"],
             "{0}_{1}.txt".format(eniric.atmmodel["base"], band),
         )
-        shifted_atmmodel = unshifted_atmmodel.replace(".txt", "_bary.txt")
 
         print("Reading atmospheric model...", unshifted_atmmodel)
 
-        wav_atm, flux_atm, std_flux_atm, mask_atm = prepare_atmosphere(
-            unshifted_atmmodel
-        )
-        print(
-            "There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}.".format(
-                np.sum(mask_atm), len(mask_atm), np.sum(mask_atm) / len(mask_atm)
-            )
-        )
-        print(
-            "The model ranges from {0:4.2f} to {1:4.2f} micron.".format(
-                wav_atm[0], wav_atm[-1]
-            )
-        )
-        print("Done.")
+        atm = Atmosphere.from_file(unshifted_atmmodel)
 
         print("Calculating impact of Barycentric movement on mask...")
-        org_mask = mask_atm
-        mask_atm = barycenter_shift(wav_atm, mask_atm)
+        org_mask = atm.mask
+        masked_before = np.sum(org_mask)
+        atm.bary_shift_mask(consecutive_test=True)
+
+        masked_after = np.sum(atm.mask)
+        print(
+            "Masked fraction before = {0:0.03f}".format(
+                (len(org_mask) - masked_before) / len(org_mask)
+            )
+        )
+        print(
+            "Masked fraction after = {0:0.03f}".format(
+                (len(atm.mask) - masked_after) / len(atm.mask)
+            )
+        )
 
         print("Saving doppler-shifted atmosphere model to {}".format(shifted_atmmodel))
 
+        shifted_atmmodel = unshifted_atmmodel.replace(".txt", "_bary.txt")
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
-
-        # Turn wav_atm back to nanometers for saving.
-        io.pdwrite_cols(
-            shifted_atmmodel,
-            wav_atm * 1000,
-            flux_atm,
-            std_flux_atm,
-            mask_atm,
-            header=header,
-            float_format="%11.8f",
-        )
+        atm.to_file(new_atmmodel=shifted_atmmodel, header=header, fmt="%11.8f")
 
         if plot:
-            plot_atm_masks(wav_atm, flux_atm, org_mask, new_mask=mask_atm, block=True)
+            plot_atm_masks(
+                atm.wl, atm.transmission, org_mask, new_mask=atm.mask, block=True
+            )
 
 
 if __name__ == "__main__":
