@@ -15,6 +15,21 @@ from numpy import ndarray
 import eniric
 import eniric.IOmodule as io
 
+# Band limits.
+bands_ = {
+    "VIS": (0.38, 0.78),
+    "GAP": (0.78, 0.83),
+    "Z": (0.83, 0.93),
+    "Y": (1.0, 1.1),
+    "J": (1.17, 1.33),
+    "H": (1.5, 1.75),
+    "K": (2.07, 2.35),
+    "CONT": (0.45, 1.05),
+    "NIR": (0.83, 2.35),
+}
+
+bands_.update(eniric.custom_bands)
+
 
 def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
     """Function that reads a flux spectra from the database!.
@@ -135,13 +150,9 @@ def band_selector(wav: ndarray, flux: ndarray, band: str) -> Tuple[ndarray, ndar
     """
     band = band.upper()
 
-    # bands = {"VIS": (0.38, 0.78), "GAP": (0.78, 0.83), "Z": (0.83, 0.93),
-    #         "Y": (1.0, 1.1), "J": (1.17, 1.33), "H": (1.5, 1.75),
-    #         "K": (2.07, 2.35), "CONT": (0.45, 1.05), "NIR": (0.83, 2.35)}
     if band in ["ALL", ""]:
         return wav, flux
     else:
-        band_min, band_max = band_limits(band)
         band_min, band_max = band_limits(band)
         return wav_selector(wav, flux, band_min, band_max)
 
@@ -166,22 +177,8 @@ def band_limits(band: str) -> Tuple[float, float]:
     else:
         band = band.upper()
 
-    bands = {
-        "VIS": (0.38, 0.78),
-        "GAP": (0.78, 0.83),
-        "Z": (0.83, 0.93),
-        "Y": (1.0, 1.1),
-        "J": (1.17, 1.33),
-        "H": (1.5, 1.75),
-        "K": (2.07, 2.35),
-        "CONT": (0.45, 1.05),
-        "NIR": (0.83, 2.35),
-        "CARMENES_NIR": (0.96, 1.71),
-        "CARMENES_VIS": (0.52, 0.96),
-    }
-
-    if band in bands:
-        return bands[band]
+    if band in bands_:
+        return bands_[band]
     else:
         raise ValueError("The band {0} requested is not a valid option".format(band))
 

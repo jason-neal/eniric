@@ -13,7 +13,15 @@ paths:
   precision: "precision/"
 
 bands:
-  all: ["VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP"]
+  all: [None, "VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP", "CARMENES_NIR", "CARMENES_VIS"]
+
+# Add your custom band limits here
+custom_bands:
+    CARMENES_NIR: (0.96, 1.71),
+    CARMENES_VIS: (0.52, 0.96),
+#  g: ()
+#  r: ()
+#  z: ()
 
 
 # Keywords needed for Starfish to be used
