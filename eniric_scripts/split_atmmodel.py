@@ -124,6 +124,16 @@ def main(
 
     model_name = os.path.join(data_dir, model)
 
+    # If trying to obtain the provided model extract from and it doesn't yet exist
+    # extract from tar.gz file. (Extracted it is 230 MB which is to large for Git)
+    if "Average_TAPAS_2014.txt" == atmmodel:
+        if not os.path.exists(model_name):
+            print("Unpacking Average_TAPAS_2014.txt.tar.gz...")
+            import tarfile
+
+            with tarfile.open(model_name + ".tar.gz", "r") as tar:
+                tar.extractall(data_dir)
+
     atm_wav, atm_flux, atm_std_flux, atm_mask = io.pdread_4col(model_name)
 
     # Return value from saving each band
