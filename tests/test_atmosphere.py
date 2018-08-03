@@ -43,25 +43,31 @@ size = 10
 @given(
     st.lists(st.floats(min_value=1, max_value=3000), min_size=size, max_size=size),
     st.lists(st.floats(min_value=0, max_value=1), min_size=size, max_size=size),
+    st.lists(st.floats(min_value=0, max_value=1), min_size=size, max_size=size),
     st.lists(st.booleans(), min_size=size, max_size=size),
 )
-def test_atmosphere_class(wave, transmission, mask):
-    atmos = Atmosphere(np.array(wave), np.array(transmission), np.array(mask))
+def test_atmosphere_class(wave, transmission, std, mask):
+    atmos = Atmosphere(
+        np.array(wave), np.array(transmission), np.array(mask), std=np.array(std)
+    )
     assert np.all(atmos.wl == wave)
     assert np.all(atmos.transmission == transmission)
     assert np.all(atmos.mask == mask)
+    assert np.all(atmos.std == std)
     assert atmos.mask.dtype == np.bool
 
 
 @given(
     st.lists(st.floats(min_value=1, max_value=3000), min_size=size, max_size=size),
     st.lists(st.floats(min_value=0, max_value=1), min_size=size, max_size=size),
+    st.lists(st.floats(min_value=0, max_value=1), min_size=size, max_size=size),
     st.lists(st.booleans(), min_size=size, max_size=size),
 )
-def test_atmosphere_class_turns_lists_to_arrays(wave, transmission, mask):
-    atmos = Atmosphere(wave, transmission, mask)
+def test_atmosphere_class_turns_lists_to_arrays(wave, transmission, std, mask):
+    atmos = Atmosphere(wave, transmission, mask, std)
     assert isinstance(atmos.wl, np.ndarray)
     assert isinstance(atmos.transmission, np.ndarray)
+    assert isinstance(atmos.std, np.ndarray)
     assert isinstance(atmos.mask, np.ndarray)
     assert atmos.mask.dtype == np.bool
 
@@ -99,6 +105,23 @@ def atmosphere_fixture(request, atm_model):
     return atm
 
 
+@pytest.fixture(params=[1, 4, 10])
+def short_atmosphere(request, atm_model):
+    # First 500 data points only to speed up tests
+    percent_cutoff = request.param
+    atm = Atmosphere.from_file(atm_model)
+    atm.mask_transmission(percent_cutoff)
+    return atm[:2000]
+
+
+@pytest.fixture(params=[(0, 2000), (3500, 5000), (8000, 9000)])
+def sliced_atmmodel_default_mask(request, atm_model):
+    """To do own masking. Sliced in different places."""
+    lower, upper = request.param  # slice limits
+    atm = Atmosphere.from_file(atm_model)
+    return atm[int(lower) : int(upper)]
+
+
 def test_atmosphere_from_file(atm_model):
     atmos = Atmosphere.from_file(atmmodel=atm_model)
     print(atmos)
@@ -124,47 +147,50 @@ def test_atmosphere_masking(trans, percent):
     org_mask = atmos.mask
     atmos.mask_transmission(percent)
 
-    assert np.any(atmos.mask != org_mask)  # mask has changed
+    assert np.any(atmos.mask != org_mask)
     assert np.all(atmos.transmission[atmos.mask] < cutoff)
 
 
-@pytest.mark.xfail()
-@given(rv=st.floats(min_value=-2000, max_value=2000))
-def test_values_within_rv_of_tell_line_are_masked(atmosphere_fixture):
+@pytest.mark.parametrize("rv", [-2001.4, -471, 65, 1589])  # some fixed RV values
+def test_values_within_the_rv_of_telluric_lines_are_masked(
+    sliced_atmmodel_default_mask, rv
+):
     # Enable object
-    atmos = atmosphere_fixture
+    atmos = sliced_atmmodel_default_mask
     org_mask = atmos.mask.copy()
     # RV shift mask
-    atmos.bary_shift_mask()
-    # wav_lower = self.wl - delta_lambdas
-    # wav_upper = self.wl + delta_lambdas
+    atmos.bary_shift_mask(rv=rv, consecutive_test=False)
 
     for pixel, mask_value, org_val in zip(atmos.wl, atmos.mask, org_mask):
-        if mask_value != 0:
+        if mask_value == 0:
             # Already masked out
             pass
         else:
             # Find rv limits to this pixel.
-            wl_lower, wl_upper = pixel * (1 - 30 / 3e5), pixel * (1 + 30 / 3e5)
-        # Check mask is wider
-        wl_mask = (atmos.wl >= wl_lower) * (atmos.wl < wl_upper)
-        assert np.all(atmos.mask[wl_mask] == 1)
+            wl_lower, wl_upper = pixel * (1 - rv / 3e5), pixel * (1 + rv / 3e5)
 
-    assert False
+            wl_mask = (atmos.wl >= wl_lower) * (atmos.wl < wl_upper)
+            print(pixel, mask_value, wl_lower, wl_upper, atmos.wl[0], atmos.wl[-1])
+            print(atmos.mask[wl_mask])
+            assert np.all(atmos.mask[wl_mask] == 1)
+
+    # assert False
 
 
 @pytest.mark.parametrize("consec_test", [True, False])
-def test_atmos_barycenter_shift_mask(atmosphere_fixture, consec_test):
+def test_atmos_barycenter_shift_mask(sliced_atmmodel_default_mask, consec_test):
     """Test barycentric shift code."""
-    # Barymask should have more pixels mask (at 0) so count will be lower
-    atmos = atmosphere_fixture
+    # Bary mask should have more pixels mask (at 0) so count will be lower
+    atmos = sliced_atmmodel_default_mask
     org_mask = atmos.mask.copy()
     org_number_masked = np.sum(org_mask)
     org_len = len(org_mask)
     atmos.bary_shift_mask(consecutive_test=consec_test)
     new_number_masked = np.sum(atmos.mask)
 
-    assert new_number_masked < org_number_masked
+    assert (new_number_masked < org_number_masked) or (
+        (org_len == np.sum(org_number_masked)) or (org_number_masked == 0)
+    )
     assert len(atmos.mask) == org_len
     assert np.all(
         (atmos.mask * org_mask) == atmos.mask
@@ -172,12 +198,14 @@ def test_atmos_barycenter_shift_mask(atmosphere_fixture, consec_test):
 
 
 @pytest.mark.parametrize("consec_test", [True, False])
-def test_barycenter_shift_verse_class(atmosphere_fixture, consec_test):
+def test_barycenter_shift_verse_class(short_atmosphere, consec_test):
     """Test barycentric shift code is equivalent inside class."""
-    atmos = atmosphere_fixture
+    atmos = short_atmosphere
     mask30kms = barycenter_shift(atmos.wl, atmos.mask, consecutive_test=consec_test)
 
-    assert not np.allclose(mask30kms, atmos.mask)
+    assert not np.allclose(mask30kms, atmos.mask) or (
+        len(mask30kms) == np.sum(mask30kms) or np.sum(mask30kms) == 0
+    )
     atmos.bary_shift_mask(consecutive_test=consec_test)
     # They are now close
     assert np.allclose(mask30kms, atmos.mask)
