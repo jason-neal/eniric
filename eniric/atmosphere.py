@@ -166,7 +166,7 @@ class Atmosphere(object):
         # print("bary mask", bary_mask)
         self.mask = np.asarray(bary_mask, dtype=np.bool)
 
-    def broaden(self, resolution: float):
+    def broaden(self, resolution: float, fwhm_lim: float = 5, **kwargs):
         """Broaden atmospheric transmission profile.
 
         This does not change any created masks.
@@ -175,22 +175,38 @@ class Atmosphere(object):
         ----------
         resolution: float
             Instrumental resolution/resolving power
+        fwhm_lim: int/float
+            Number of FWHM to extend convolution.
         """
         from eniric.broaden import resolution_convolution
 
         self.transmission = resolution_convolution(
-            self.wl, self.transmission, R=resolution
+            wav_band=self.wl,
+            wav_extended=self.wl,
+            flux_conv_rot=self.transmission,
+            R=resolution,
+            fwhm_lim=fwhm_lim,
+            **kwargs,
         )
 
     def __getitem__(self, item):
         """Index Atmosphere by returning a Atmosphere with indexed components."""
-        return Atmosphere(wavelength=self.wl[item], transmission=self.transmission[item],
-                           mask=self.mask[item], std=self.std[item])
+        return Atmosphere(
+            wavelength=self.wl[item],
+            transmission=self.transmission[item],
+            mask=self.mask[item],
+            std=self.std[item],
+        )
 
     def copy(self):
         """Index Atmosphere by returning a Atmosphere with indexed components."""
-        return Atmosphere(wavelength=self.wl.copy(), transmission=self.transmission.copy(),
-                           mask=self.mask.copy(), std=self.std.copy())
+        return Atmosphere(
+            wavelength=self.wl.copy(),
+            transmission=self.transmission.copy(),
+            mask=self.mask.copy(),
+            std=self.std.copy(),
+        )
+
 
 def barycenter_shift(
     wav_atm: ndarray,

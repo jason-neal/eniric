@@ -31,6 +31,8 @@ def test_consecutive_truths():
     )  # random values
     assert np.sum(rand_array) == np.sum(consecutive_truths(rand_array))
 
+
+# TODO
 # If I multiply the flux by the mask then the smallest flux should be 0.98
 # If not then there would be an issue.
 
@@ -181,12 +183,82 @@ def test_barycenter_shift_verse_class(atmosphere_fixture, consec_test):
     assert np.allclose(mask30kms, atmos.mask)
 
 
-# todo
-# test rv usage
-# test input into rv work
+@pytest.mark.parametrize("resolution", [1000, 50000])
+def test_atmos_broadening(atmosphere_fixture, resolution):
+    # Test broadening transmission preforms instrumental convolution
+    atm = atmosphere_fixture[:10000]
+    atm_org = atm.copy()
+
+    from eniric.broaden import resolution_convolution
+
+    new_trans = resolution_convolution(
+        atm_org.wl, atm_org.wl, atm_org.transmission, R=resolution, fwhm_lim=5
+    )
+
+    atm.broaden(resolution=resolution)
+
+    assert not np.allclose(
+        atm.transmission, atm_org.transmission
+    )  # Should have changed
+    assert np.allclose(atm.transmission, new_trans)  # Should be equal
+
+    assert np.allclose(atm.wl, atm_org.wl)  # Should not have changed
+    assert np.allclose(atm.mask, atm_org.mask)  # Should not have changed
+    assert np.allclose(atm.std, atm_org.std)  # Should not have changed
+
+
+@pytest.mark.parametrize("resolution", [1000, 20000])
+def test_atmos_broadening_reduces_number_of_masked_points(
+    atmosphere_fixture, resolution
+):
+    """Test broadening transmission preforms instrumental convolution."""
+    percent = 4
+    cuttoff = 1 - percent / 100
+    atm = atmosphere_fixture[:4000]
+    atm.mask_transmission(percent)
+
+    atm_org = atm.copy()
+
+    atm.broaden(resolution=resolution)
+    assert np.allclose(atm.wl, atm_org.wl)  # Should not have changed
+    assert np.allclose(atm.mask, atm_org.mask)  # Should not have changed
+    assert np.allclose(atm.std, atm_org.std)  # Should not have changed
+
+    # Transmission changes but number of points in mask may not
+    assert not np.allclose(
+        atm.transmission, atm_org.transmission
+    )  # Should have changed
+    atm.mask_transmission(percent)
+
+    if np.allclose(atm.mask, atm_org.mask):  # Mask changes after convolution
+        # If masks don't change check both conditions still the same
+        assert np.all((atm.transmission > cuttoff) == (atm_org.transmission > cuttoff))
+
+
 @pytest.mark.xfail()
-def test_atmos_broadenning():
-    assert False
+@pytest.mark.parametrize("resolution", [5000000])
+def test_atmos_broadening_at_higher_res_should_not_reduce_number_of_masked_points(
+    atmosphere_fixture, resolution
+):
+    # TODO Fix up this test
+    # Test broadening transmission preforms instrumental convolution
+    atm = atmosphere_fixture[:5000]
+    atm.mask_transmission(1)
+
+    atm_org = atm.copy()
+
+    atm.broaden(resolution=resolution)
+    assert np.allclose(atm.wl, atm_org.wl)  # Should not have changed
+    assert np.allclose(atm.mask, atm_org.mask)  # Should not have changed
+    assert np.allclose(atm.std, atm_org.std)  # Should not have changed
+    assert not np.allclose(
+        atm.transmission, atm_org.transmission
+    )  # Should have changed
+    atm.mask_transmission(1)
+
+    assert np.allclose(atm.mask, atm_org.mask)  # Mask changes after convolution
+    assert np.sum(atm.mask) >= np.sum(atm_org.mask)  # Less points are masked out
+
 
 def test_Atmosphere_has_getitem():
     assert hasattr(Atmosphere, "__getitem__")
