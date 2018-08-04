@@ -121,6 +121,9 @@ def _parser():
         type=str,
     )
     parser.add_argument(
+        "--air", help="Convert wavelengths from vacuum to air", action="store_true"
+    )
+    parser.add_argument(
         "--rv", help="Radial velocity shift. (Not Implemented)", default=0.0, type=float
     )
     parser.add_argument("--correct", help="Apply RV corrections", action="store_true")
@@ -137,6 +140,7 @@ def do_analysis(
     snr: float = 100.0,
     ref_band: str = "J",
     rv: float = 0.0,
+    air: bool = False,
 ):
     """Precision and Quality for specific parameter set.
 
@@ -153,7 +157,7 @@ def do_analysis(
         ref_band = band
 
     # Full photon count spectrum
-    wav, flux = load_aces_spectrum(star_params, photons=True)
+    wav, flux = load_aces_spectrum(star_params, photons=True, air=air)
 
     wav_grid, sampled_flux = convolve_and_resample(
         wav, flux, vsini, R, band, sampling, conv_kwargs
@@ -291,6 +295,7 @@ if __name__ == "__main__":
         normalize = True
 
     snr = args.snr
+    air = args.air
     ref_band = args.ref_band
 
     conv_kwargs = {
@@ -361,6 +366,7 @@ if __name__ == "__main__":
                         snr=snr,
                         ref_band=ref_band,
                         sampling=sample,
+                        air=air,
                     )
                     result = [
                         round(res.value, 1) if res is not None else None
@@ -391,4 +397,4 @@ if __name__ == "__main__":
                             int(args.correct),
                         )
                     )
-                    print("done ")
+    print("Done")

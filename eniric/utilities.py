@@ -335,7 +335,7 @@ def res2str(res: Any) -> str:
 #################################
 
 
-def load_aces_spectrum(params, photons=True):
+def load_aces_spectrum(params, photons=True, air=False):
     """Load a Phoenix spectrum from the phoenix library using STARFISH.
 
     Parameters
@@ -357,11 +357,11 @@ def load_aces_spectrum(params, photons=True):
     if params[3] == 0:  # Alpha value
         params = params[:-1]
         assert len(params) == 3
-        phoenix_grid = PHOENIXNoAlpha(base=base)
+        phoenix_grid = PHOENIXNoAlpha(base=base, air=air, norm=False)
     elif len(params) == 4:
         print("USING ALPHA in PHOENIX LOADING")
         phoenix_grid = PHOENIX(
-            base=base
+            base=base, air=air, norm=False
         )  # , param_names = ["temp", "logg", "Z", "alpha"])
     else:
         raise ValueError("Number of parameters is incorrect")
