@@ -5,6 +5,7 @@ name: eniric_default
 # The parameters defining the spectral libraries live here.
 paths:
   phoenix_raw: "../../data/PHOENIX-ALL/PHOENIX"
+  btsettl_raw: "../../data/PHOENIX-All/BT-SETTL"
   phoenix_dat: "data/PHOENIX-ACES_spectra"
   results: "data/results"
   resampled: "data/resampled"
