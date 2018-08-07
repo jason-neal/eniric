@@ -42,11 +42,9 @@ clean-data:
 data:
 	python eniric_scripts/make_test_data.py
 
-
 atmos:
 	split_atmmodel.py
 	bary_shift_atmmodel.py
-
 
 clean-build:
 	rm --force --recursive build/

@@ -44,11 +44,12 @@ install:
 before_script:
   - mv tests/config.yaml config.yaml
 
+
   # Generate data
   - make_test_data.py
 
-  # Split atmosphere model file into bands
-  - split_atmmodel.py
+  # Prepare atmosphere models
+  - make atmos
 
 script:
     - pytest --cov=eniric --cov-report term-missing --durations 5
