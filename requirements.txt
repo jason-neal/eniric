@@ -2,7 +2,7 @@ astropy==3.0.4
 joblib==0.12.2
 matplotlib==2.2.2
 multiprocess==0.70.6
-numpy==1.14.5
+numpy==1.15.0
 pandas==0.23.3
 pyyaml==3.13
 scipy==1.1.0
