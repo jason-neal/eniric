@@ -86,9 +86,9 @@ def main(bands: Optional[List[str]] = None, plot: bool = False):
             )
         )
 
+        shifted_atmmodel = unshifted_atmmodel.replace(".txt", "_bary.txt")
         print("Saving doppler-shifted atmosphere model to {}".format(shifted_atmmodel))
 
-        shifted_atmmodel = unshifted_atmmodel.replace(".txt", "_bary.txt")
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
         atm.to_file(new_atmmodel=shifted_atmmodel, header=header, fmt="%11.8f")
 
@@ -96,6 +96,7 @@ def main(bands: Optional[List[str]] = None, plot: bool = False):
             plot_atm_masks(
                 atm.wl, atm.transmission, org_mask, new_mask=atm.mask, block=True
             )
+        print("Done")
 
 
 if __name__ == "__main__":
