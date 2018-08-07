@@ -1,17 +1,19 @@
 """
 Auxiliary functions for eniric
 """
+import collections
 import errno
 import os
 import re
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
-import collections
 import numpy as np
-from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
-from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
-from Starfish.grid_tools import CIFISTGridInterface as BTSETTL
 from numpy import ndarray
+from Starfish.grid_tools import (
+    CIFISTGridInterface as BTSETTL,
+    PHOENIXGridInterface as PHOENIX,
+    PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha,
+)
 
 import eniric
 import eniric.IOmodule as io
@@ -423,6 +425,7 @@ def load_btsettl_spectrum(params, photons=True, air=False):
     if (2 < len(params)) and (len(params) <= 4):
         assert params[2] == 0
         assert params[-1] == 0  # Checks index 3 when present.
+        params = params[0:2]  # Only allow 2 params
 
     base = eniric.paths["btsettl"] + os.sep
 
