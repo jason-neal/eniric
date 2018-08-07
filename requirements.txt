@@ -3,7 +3,7 @@ joblib==0.12.2
 matplotlib==2.2.2
 multiprocess==0.70.6
 numpy==1.15.0
-pandas==0.23.3
+pandas==0.23.4
 pyyaml==3.13
 scipy==1.1.0
 tqdm==4.23.4
