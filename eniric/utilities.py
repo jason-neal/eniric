@@ -397,3 +397,38 @@ def load_aces_spectrum(params, photons=True):
 # TODO: Use BT-Settl also
 def load_btsettl_spectrum(params, photons=True):
     raise NotImplementedError("Need to include BT-SETTL")
+
+
+def rv_cumulative(rv_vector, single=False):
+    """Function that calculates the cumulative RV vector weighted_error."""
+    if single:
+        # Include 1st value for reference
+        return [
+            weighted_error(rv_vector[0]),
+            weighted_error(rv_vector[:2]),
+            weighted_error(rv_vector[:3]),
+            weighted_error(rv_vector[:4]),
+            weighted_error(rv_vector),
+        ]
+
+    else:
+        return [
+            weighted_error(rv_vector[:2]),
+            weighted_error(rv_vector[:3]),
+            weighted_error(rv_vector[:4]),
+            weighted_error(rv_vector),
+        ]
+
+
+def weighted_error(rv_vector):
+    """Function that calculates the average weighted error from a vector of errors."""
+    rv_vector = np.array(rv_vector)
+    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / rv_vector) ** 2.0)))
+
+    return rv_value
+
+
+def moving_average(x, window_size):
+    """Moving average."""
+    window = np.ones(int(window_size)) / float(window_size)
+    return np.convolve(x, window, "same")
