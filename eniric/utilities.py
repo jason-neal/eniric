@@ -420,6 +420,27 @@ def rv_cumulative(rv_vector, single=False):
         ]
 
 
+def rv_cumulative_full(rv_vector):
+    """Function that calculates the cumulative RV vector weighted_error. In both directions."""
+    assert len(rv_vector) == 5, "This hardcoded solution only meant for 5 bands."
+
+    cumulation = np.asarray(
+        [
+            weighted_error(rv_vector[0]),  # First
+            weighted_error(rv_vector[:2]),
+            weighted_error(rv_vector[:3]),
+            weighted_error(rv_vector[:4]),
+            weighted_error(rv_vector[:]),  # All
+            weighted_error(rv_vector[1:]),
+            weighted_error(rv_vector[2:]),
+            weighted_error(rv_vector[3:]),
+            weighted_error(rv_vector[4]),  # Last
+        ],
+        dtype=float,
+    )
+    return cumulation
+
+
 def weighted_error(rv_vector):
     """Function that calculates the average weighted error from a vector of errors."""
     rv_vector = np.array(rv_vector)
