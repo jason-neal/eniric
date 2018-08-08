@@ -26,19 +26,25 @@ date: XXXX 2018
 bibliography: paper.bib
 ---
 
-Eniric provides a simple way to calcualte the spectral quality and/or precsion of stellar spectra.
+Eniric provides a simple way to calculate the spectral quality and/or precsion of stellar spectra.
 
-Functions are available to calcualte the precision for any PHOENIX-ACES library spectra.
-Or can be apllied to  observed spectra.
+Functions are available to calculate the precision for any PHOENIX-ACES library spectra.
+Or can be applied to  observed spectra.
 
 The fundamental RV precision as provided by photon noise as formulated in [@Connes1985, @bouchy_fundamental_2001] is calculated for model spectra.
 
-2 situations:  quality (flux independant), precision of models, full, with masking of telluric lines, or with perfect telluric correction
+2 situations:  quality (flux independent), precision of models, full, with masking of telluric lines, or with perfect telluric correction
 
 SNR scaling...
 Accounts for stellar parameters, rotational and instrumental broadening, sampling rate, SNR level, (and doppler shift)
 
-This code has been used to calcualte the RV precision of M-dwarfs in the NIR bands to access [@figueira_radial_2016], and its results have provided for use in the  Exposure Time Calculators of two new NIR spectrographs, NIRPS [@bouchy_nearinfrared_2017] and SPIRou [@artigau_spirou_2014] . 
+This code has been used to calculate the RV precision of M-dwarfs in the NIR bands to access [@figueira_radial_2016], and its results have provided for use in the  Exposure Time Calculators of two new NIR spectrographs, NIRPS [@bouchy_nearinfrared_2017] and SPIRou [@artigau_spirou_2014] . 
+
+
+![Precision results from **Eniric**, relative to a SNR of 100 per pixel at the center of the J-Band. 
+  Similar to Figure 1 from [@figueira_radial_2016] with updated precisions. The blue, ren green ... 
+  while the dashed line, circles etc are. ](./precisions.png)
+
 
 
 ## Acknowledgements
