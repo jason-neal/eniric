@@ -27,9 +27,9 @@ def _parser():
         "-b",
         "--bands",
         type=str,
-        default="J",
+        default=None,
         choices=eniric.bands["all"],
-        help="Wavelength bands to select. Default=J.",
+        help="Wavelength bands to select. Default=None.",
         nargs="+",
     )
     parser.add_argument(
