@@ -8,7 +8,7 @@ import argparse
 import sys
 
 import numpy as np
-
+import eniric
 import eniric.atmosphere as atm
 import eniric.IOmodule as io
 
@@ -19,7 +19,7 @@ def _parser():
     :returns: the args
     """
     parser = argparse.ArgumentParser(
-        description=("Calculate radial velocity" "precision of model spectra.")
+        description=("Calculate radial velocity precision of model spectra.")
     )
 
     parser.add_argument(
@@ -27,7 +27,7 @@ def _parser():
         "--bands",
         type=str,
         default="J",
-        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", None, "visible"],
+        choices=eniric.bands["all"],
         help="Wavelength bands to select. Default=J.",
         nargs="+",
     )
