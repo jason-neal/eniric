@@ -2,19 +2,16 @@
 
 import os
 import sys
+
 import matplotlib
-
-matplotlib.use("Agg")
-
-import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib import rc
+import pandas as pd
 
-# To remove labels in one tick
-from matplotlib.ticker import MaxNLocator
 import eniric
-from eniric.utilities import band_selector, rv_cumulative, rv_cumulative_full
+from eniric.utilities import rv_cumulative, rv_cumulative_full
+
+matplotlib.use("Agg")
 
 
 def load_dataframe(filename):
@@ -40,14 +37,12 @@ def load_dataframe(filename):
 
 
 def plot_precision(
-    precision_file,
-    teffs=[3900, 3500, 2800, 2600],
-    logg=4.5,
-    fe_h=0.0,
-    vsini=1.0,
-    sampling=3,
+    precision_file, teffs=None, logg=4.5, fe_h=0.0, vsini=1.0, sampling=3
 ):
     """Plot precision 4 panel with RV. precision."""
+    if teffs is None:
+        # Default teffs
+        teffs = [3900, 3500, 2800, 2600]
     assert len(teffs) == 4
     df = load_dataframe(precision_file)
     filter_dict = {"logg": logg, "[Fe/H]": fe_h, "vsini": vsini, "Sampling": sampling}
@@ -206,9 +201,9 @@ def plot_precision(
     )
 
     fig.subplots_adjust(hspace=0, wspace=0, bottom=0.12, top=0.95, right=0.95)
-    import datetime
 
     fig.savefig("plots/precision_logg{0}_feh_{1}.pdf".format(logg, fe_h))
+    fig.savefig("plots/precision_logg{0}_feh_{1}.png".format(logg, fe_h), dpi=400)
 
 
 def filter_df(df, filter_dict, drop_list=None):
@@ -250,7 +245,7 @@ def cumulative_df(df, full_cum=False):
 
 def cumulative_plot(
     precision_file,
-    teffs=[3900, 3500, 2800, 2600],
+    teffs=None,
     logg=4.5,
     fe_h=0.0,
     vsini=1.0,
@@ -263,7 +258,11 @@ def cumulative_plot(
     Cumlative over entire range [ "Z","ZY", "ZYJ", "ZYJH", "ZYJHK","YJHK", "JHK","HK","K"]
 
     """
+    if teffs is None:
+        # Default values
+        teffs = [3900, 3500, 2800, 2600]
     assert len(teffs) == 4
+
     df = load_dataframe(precision_file)
     filter_dict = {"logg": logg, "[Fe/H]": fe_h, "vsini": vsini, "Sampling": sampling}
     df = filter_df(
@@ -440,13 +439,12 @@ def cumulative_plot(
     )
 
     fig.subplots_adjust(hspace=0, wspace=0, bottom=0.17, top=0.95, right=0.95)
-    import datetime
 
-    fig.savefig(
-        "plots/cummulative_precision_logg{0}_feh_{1}_{2}.pdf".format(
-            logg, fe_h, full_cum
-        )
+    fname = "plots/cummulative_precision_logg{0}_feh_{1}_{2}".format(
+        logg, fe_h, full_cum
     )
+    fig.savefig(fname + ".pdf")
+    fig.savefig(fname + ".png", dpi=400)
 
 
 if __name__ == "__main__":

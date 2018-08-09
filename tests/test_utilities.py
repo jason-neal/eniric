@@ -503,13 +503,15 @@ def test_moving_average_size(window_size):
     assert len(result) == len(x)
 
 
-@pytest.mark.parametrize("input_, expected",  [
-    ([1, 1, 1], 1/np.sqrt(3)),
-    ([2, 2, 2], np.sqrt(4.0/3)),
-    ([1], 1),
-    ([1,2,3,4,5], 60/np.sqrt(5269)),
-])
+@pytest.mark.parametrize(
+    "input_, expected",
+    [
+        ([1, 1, 1], 1 / np.sqrt(3)),
+        ([2, 2, 2], np.sqrt(4.0 / 3)),
+        ([1], 1),
+        ([1, 2, 3, 4, 5], 60 / np.sqrt(5269)),
+    ],
+)
 def test_weighted_error(input_, expected):
     result = weighted_error(input_)
     assert np.allclose(result, expected)
-

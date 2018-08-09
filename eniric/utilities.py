@@ -1,16 +1,18 @@
 """
 Auxiliary functions for eniric
 """
+import collections
 import errno
 import os
 import re
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
-import collections
 import numpy as np
-from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
-from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
 from numpy import ndarray
+from Starfish.grid_tools import (
+    PHOENIXGridInterface as PHOENIX,
+    PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha,
+)
 
 import eniric
 import eniric.IOmodule as io
