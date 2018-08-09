@@ -1,16 +1,19 @@
 """
 Auxiliary functions for eniric
 """
+import collections
 import errno
 import os
 import re
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
-import collections
 import numpy as np
-from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
-from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
 from numpy import ndarray
+from Starfish.grid_tools import (
+    CIFISTGridInterface as BTSETTL,
+    PHOENIXGridInterface as PHOENIX,
+    PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha,
+)
 
 import eniric
 import eniric.IOmodule as io
@@ -332,7 +335,7 @@ def res2str(res: Any) -> str:
 #################################
 
 
-def load_aces_spectrum(params, photons=True):
+def load_aces_spectrum(params, photons=True, air=False):
     """Load a Phoenix spectrum from the phoenix library using STARFISH.
 
     Parameters
@@ -354,11 +357,11 @@ def load_aces_spectrum(params, photons=True):
     if params[3] == 0:  # Alpha value
         params = params[:-1]
         assert len(params) == 3
-        phoenix_grid = PHOENIXNoAlpha(base=base)
+        phoenix_grid = PHOENIXNoAlpha(base=base, air=air, norm=False)
     elif len(params) == 4:
         print("USING ALPHA in PHOENIX LOADING")
         phoenix_grid = PHOENIX(
-            base=base
+            base=base, air=air, norm=False
         )  # , param_names = ["temp", "logg", "Z", "alpha"])
     else:
         raise ValueError("Number of parameters is incorrect")
@@ -392,5 +395,63 @@ def load_aces_spectrum(params, photons=True):
 
 
 # TODO: Use BT-Settl also
-def load_btsettl_spectrum(params, photons=True):
-    raise NotImplementedError("Need to include BT-SETTL")
+def load_btsettl_spectrum(params, photons=True, air=False):
+    """Load a BT-Settl spectrum from the CIFIST2011 library using STARFISH.
+
+    Parameters
+    ----------
+    params: ndarray
+         [temp, logg]. Metallicity = 0, alpha = 0
+    photons: bool
+        Necessary conversions into photons for precisions.
+
+    Returns
+    -------
+    wav_micron: ndarray
+        Wavelength in microns
+    flux_micron: ndarray
+        Photon counts or SED/micron
+
+    Notes:
+    From BT-SETTL readme -
+        CIFIST2011_2015: published version of the BT-Settl grid (Baraffe et al. 2015,
+        Allard et al. 2015. This grid will be the most complete
+        of the CIFIST2011 grids above, but currently: Teff = 1200 - 7000K, logg = 2.5 - 5.5,
+        [M/H] = 0.0.
+    """
+    if (2 < len(params)) and (len(params) <= 4):
+        assert params[2] == 0
+        assert params[-1] == 0  # Checks index 3 when present.
+        params = params[0:2]  # Only allow 2 params
+
+    base = eniric.paths["btsettl"] + os.sep
+
+    btsettl_grid = BTSETTL(base=base, air=air, norm=False, wl_range=[3000, 24000])
+
+    wav = btsettl_grid.wl
+    flux, hdr = btsettl_grid.load_flux(params)
+
+    # Convert wavelength Angstrom to micron
+    wav_micron = wav * 10 ** -4
+    # Convert SED from /cm  to /micron
+    # TODO check the conversion fraction.
+    flux_micron = flux * 10 ** -4
+
+    if photons:
+        # Convert to photons
+        """The energy units of CIFIST fits files is erg/s/cm**2/cm
+        BT-Settl gives the Spectral Energy Density (SED)
+        We transform the SED into photons by
+        multiplying the flux by the wavelength (lambda)
+
+            Flux_photon = Flux_energy/Energy_photon
+        with
+            Energy_photon = h*c/lambda
+        Flux_photon = Flux_energy * lambda / (h * c)
+
+        Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/micron
+        Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
+        """
+        # Turn into photon counts
+        flux_micron = flux_micron * wav_micron
+    return wav_micron, flux_micron
