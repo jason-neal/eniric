@@ -388,7 +388,7 @@ def moving_average(x: ndarray, window_size: Union[int, float]) -> ndarray:
     window = np.ones(int(window_size)) / float(window_size)
     return np.convolve(x, window, "same")
 
-  
+
 #################################
 def load_aces_spectrum(params, photons=True, air=False):
     """Load a Phoenix spectrum from the phoenix library using STARFISH.
