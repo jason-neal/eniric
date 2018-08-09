@@ -153,10 +153,7 @@ def sqrt_sum_wis(
     if not isinstance(flux, np.ndarray):
         flux = np.asarray(flux)
 
-    delta_flux = np.diff(flux)
-    delta_lambda = np.diff(wavelength)
-
-    derivf_over_lambda = delta_flux / delta_lambda
+    derivf_over_lambda = slope(wavelength, flux)
 
     if isinstance(flux, u.Quantity):
         """Units of variance are squared"""
@@ -173,6 +170,13 @@ def sqrt_sum_wis(
         warnings.warn("Weight sum is not finite = {}".format(wis))
     return wis
 
+
+def slope(wavelength, flux):
+    """Original version used to calculate the slope. [Looses one value of array]."""
+    delta_flux = np.diff(flux)
+    delta_lambda = np.diff(wavelength)
+
+    return delta_flux / delta_lambda
 
 def RVprec_calc_masked(
     wavelength: Union[List[List[Any]], ndarray],
@@ -392,10 +396,7 @@ def sqrt_sum_wis_trans(
         if np.any(transmission > 1) or np.any(transmission < 0):
             raise ValueError("Transmission should range from 0 to 1 only.")
 
-    delta_flux = np.diff(flux)
-    delta_lambda = np.diff(wavelength)
-
-    derivf_over_lambda = delta_flux / delta_lambda
+    derivf_over_lambda = slope(wavelength, flux)
 
     if isinstance(flux, u.Quantity):
         """Units of variance are squared"""

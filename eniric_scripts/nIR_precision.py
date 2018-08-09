@@ -15,8 +15,9 @@ import eniric.IOmodule as io
 import eniric.plotting_functions as plt_functions
 import eniric.Qcalculator as Qcalculator
 import eniric.snr_normalization as snrnorm
-import eniric.utilities as utils
 from eniric.atmosphere import barycenter_shift, Atmosphere
+from eniric.utilities import moving_average, band_selector
+
 
 rc("text", usetex=True)  # set stuff for latex usage
 
@@ -35,7 +36,7 @@ def _parser():
         "--bands",
         type=str,
         default="J",
-        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", "None"],
+        choices=eniric.bands["all"],
         help="Wavelength bands to select. Default=J.",
         nargs="+",
     )
@@ -56,7 +57,7 @@ def _parser():
         "--ref_band",
         help="SNR reference band. Default=J. (Default=100). "
         "'self' scales each band relative to the SNR itself.",
-        choices=["self", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
+        choices=["SELF", "self"].extend(eniric.bands["all"]),
         default="J",
         type=str,
     )
@@ -438,9 +439,7 @@ def calculate_prec(
 ###############################################################################
 def compare_output():
     """Function that compares a spectrum prior to convolution, after, and after resampling."""
-    pre_convolution = (
-        "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
-    )
+    pre_convolution = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
     pre_wav, pre_flux = io.pdread_2col(pre_convolution)
     pre_wav = np.array(pre_wav, dtype="float64") * 1.0e-4  # conversion to microns
     pre_flux = np.array(pre_flux, dtype="float64") * pre_wav
@@ -489,11 +488,11 @@ def calculate_all_masked(wav_atm, mask_atm):
     concatenate result.
     """
     # calculating the number of pixels inside the mask
-    wav_Z, mask_Z = utils.band_selector(wav_atm, mask_atm, "Z")
-    wav_Y, mask_Y = utils.band_selector(wav_atm, mask_atm, "Y")
-    wav_J, mask_J = utils.band_selector(wav_atm, mask_atm, "J")
-    wav_H, mask_H = utils.band_selector(wav_atm, mask_atm, "H")
-    wav_K, mask_K = utils.band_selector(wav_atm, mask_atm, "K")
+    wav_Z, mask_Z = band_selector(wav_atm, mask_atm, "Z")
+    wav_Y, mask_Y = band_selector(wav_atm, mask_atm, "Y")
+    wav_J, mask_J = band_selector(wav_atm, mask_atm, "J")
+    wav_H, mask_H = band_selector(wav_atm, mask_atm, "H")
+    wav_K, mask_K = band_selector(wav_atm, mask_atm, "K")
 
     bands_masked = np.concatenate((mask_Z, mask_Y, mask_J, mask_H, mask_K))
 
@@ -507,30 +506,6 @@ def calculate_all_masked(wav_atm, mask_atm):
             np.sum(bands_masked) / len(bands_masked),
         )
     )
-
-
-def rv_cumulative(rv_vector):
-    """Function that calculates the cumulative RV vector weighted_error."""
-    return [
-        weighted_error(rv_vector[:2]),
-        weighted_error(rv_vector[:3]),
-        weighted_error(rv_vector[:4]),
-        weighted_error(rv_vector),
-    ]
-
-
-def weighted_error(rv_vector):
-    """Function that calculates the average weighted error from a vector of errors."""
-    rv_vector = np.array(rv_vector)
-    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / rv_vector) ** 2.0)))
-
-    return rv_value
-
-
-def moving_average(x, window_size):
-    """Moving average."""
-    window = np.ones(int(window_size)) / float(window_size)
-    return np.convolve(x, window, "same")
 
 
 ###############################################################################

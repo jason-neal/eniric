@@ -10,7 +10,6 @@ from os.path import join
 from typing import List, Optional
 
 import numpy as np
-
 import eniric
 from eniric.atmosphere import Atmosphere, plot_atm_masks
 
@@ -28,9 +27,9 @@ def _parser():
         "-b",
         "--bands",
         type=str,
-        default=None,
-        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", None, "visible"],
-        help="Wavelength bands to select. Default=None.",
+        default="J",
+        choices=eniric.bands["all"],
+        help="Wavelength bands to select. Default=J.",
         nargs="+",
     )
     parser.add_argument(

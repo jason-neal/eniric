@@ -20,7 +20,7 @@ from eniric.Qcalculator import (
 )
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
-from eniric.utilities import band_middle, load_aces_spectrum
+from eniric.utilities import band_middle, load_aces_spectrum, load_btsettl_spectrum
 
 num_procs_minus_1 = mprocess.cpu_count() - 1
 
@@ -29,7 +29,6 @@ def _parser():
     """Take care of all the argparse stuff.
 
     :returns: the args
-
     """
     parser = argparse.ArgumentParser(
         description="Calculate quality for any library spectra."
@@ -83,7 +82,7 @@ def _parser():
         "--bands",
         type=str,
         default="J",
-        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", "None"],
+        choices=eniric.bands["all"],
         help="Wavelength bands to select. Default=J.",
         nargs="+",
     )
@@ -104,7 +103,7 @@ def _parser():
         "--ref_band",
         help="SNR reference band. Default=J. (Default=100). "
         "'self' scales each band relative to the SNR itself.",
-        choices=["SELF", "self", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
+        choices=["SELF", "self"].extend(eniric.bands["all"]),
         default="J",
         type=str,
     )
@@ -120,6 +119,9 @@ def _parser():
         help="Filename for results",
         default="quality_results.csv",
         type=str,
+    )
+    parser.add_argument(
+        "--air", help="Convert wavelengths from vacuum to air", action="store_true"
     )
     parser.add_argument(
         "--rv", help="Radial velocity shift. (Not Implemented)", default=0.0, type=float
@@ -138,9 +140,18 @@ def do_analysis(
     snr: float = 100.0,
     ref_band: str = "J",
     rv: float = 0.0,
+    air: bool = False,
+    model="phoenix",
 ):
     """Precision and Quality for specific parameter set.
 
+     Parameters
+     ----------
+
+     air: bool
+        Get model in air wavelengths.
+     model: str
+        Name of synthetic library to use. (phoenix, btsettl).
         """
     if conv_kwargs is None:
         conv_kwargs = {
@@ -153,8 +164,17 @@ def do_analysis(
     if ref_band.upper() == "SELF":
         ref_band = band
 
-    # Full photon count spectrum
-    wav, flux = load_aces_spectrum(star_params, photons=True)
+    if model == "phoenix":
+        # Full photon count spectrum
+        wav, flux = load_aces_spectrum(star_params, photons=True, air=air)
+    elif model == "btsettl":
+        wav, flux = load_btsettl_spectrum(star_params, photons=True, air=air)
+    else:
+        raise ValueError(
+            "Model name error in '{}'. Valid choices are 'phoenix and 'btsettl'".format(
+                model
+            )
+        )
 
     wav_grid, sampled_flux = convolve_and_resample(
         wav, flux, vsini, R, band, sampling, conv_kwargs
@@ -298,6 +318,14 @@ def model_format_args(model, pars):
 
 if __name__ == "__main__":
     args = _parser()
+
+    # check bt-settl parameters
+    if args.model == "btsettl":
+        if (args.metal != [0]) or (args.alpha != [0]):
+            raise ValueError(
+                "You cannot vary metallicity and alpha for BT-Settl, remove these flags."
+            )
+
     try:
         num_procs = args.num_procs
     except AttributeError:
@@ -309,6 +337,7 @@ if __name__ == "__main__":
         normalize = True
 
     snr = args.snr
+    air = args.air
     ref_band = args.ref_band
 
     conv_kwargs = {
@@ -319,7 +348,10 @@ if __name__ == "__main__":
     }
 
     # Load the relevant spectra
-    models_list = itertools.product(args.temp, args.logg, args.metal, args.alpha)
+    if args.model == "phoenix":
+        models_list = itertools.product(args.temp, args.logg, args.metal, args.alpha)
+    else:
+        models_list = itertools.product(args.temp, args.logg, [0], [0])
 
     if args.rv != 0.0:
         raise NotImplementedError("Still to add doppler option.")
@@ -379,6 +411,8 @@ if __name__ == "__main__":
                         snr=snr,
                         ref_band=ref_band,
                         sampling=sample,
+                        air=air,
+                        model=args.model,
                     )
                     result = [
                         round(res.value, 1) if res is not None else None
@@ -409,4 +443,4 @@ if __name__ == "__main__":
                             int(args.correct),
                         )
                     )
-                    print("done ")
+    print("Done")
