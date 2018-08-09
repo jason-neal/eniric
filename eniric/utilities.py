@@ -333,8 +333,63 @@ def res2str(res: Any) -> str:
 
 
 #################################
+def rv_cumulative(rv_vector: Union[List, ndarray], single: bool = False) -> List[float]:
+    """Function that calculates the cumulative RV vector weighted_error."""
+    if single:
+        # Include 1st value for reference
+        return [
+            weighted_error(rv_vector[0]),
+            weighted_error(rv_vector[:2]),
+            weighted_error(rv_vector[:3]),
+            weighted_error(rv_vector[:4]),
+            weighted_error(rv_vector),
+        ]
+
+    else:
+        return [
+            weighted_error(rv_vector[:2]),
+            weighted_error(rv_vector[:3]),
+            weighted_error(rv_vector[:4]),
+            weighted_error(rv_vector),
+        ]
 
 
+def rv_cumulative_full(rv_vector: Union[List, ndarray]) -> ndarray:
+    """Function that calculates the cumulative RV vector weighted_error. In both directions."""
+    assert len(rv_vector) == 5, "This hardcoded solution only meant for 5 bands."
+
+    cumulation = np.asarray(
+        [
+            weighted_error(rv_vector[0]),  # First
+            weighted_error(rv_vector[:2]),
+            weighted_error(rv_vector[:3]),
+            weighted_error(rv_vector[:4]),
+            weighted_error(rv_vector[:]),  # All
+            weighted_error(rv_vector[1:]),
+            weighted_error(rv_vector[2:]),
+            weighted_error(rv_vector[3:]),
+            weighted_error(rv_vector[4]),  # Last
+        ],
+        dtype=float,
+    )
+    return cumulation
+
+
+def weighted_error(rv_vector: Union[List[float], ndarray]) -> float:
+    """Function that calculates the average weighted error from a vector of errors."""
+    rv_vector = np.asarray(rv_vector)
+    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / rv_vector) ** 2.0)))
+
+    return rv_value
+
+
+def moving_average(x: ndarray, window_size: Union[int, float]) -> ndarray:
+    """Moving average."""
+    window = np.ones(int(window_size)) / float(window_size)
+    return np.convolve(x, window, "same")
+
+
+#################################
 def load_aces_spectrum(params, photons=True, air=False):
     """Load a Phoenix spectrum from the phoenix library using STARFISH.
 
@@ -394,7 +449,6 @@ def load_aces_spectrum(params, photons=True, air=False):
     return wav_micron, flux_micron
 
 
-# TODO: Use BT-Settl also
 def load_btsettl_spectrum(params, photons=True, air=False):
     """Load a BT-Settl spectrum from the CIFIST2011 library using STARFISH.
 
