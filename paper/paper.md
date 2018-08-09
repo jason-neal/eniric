@@ -41,10 +41,10 @@ Accounts for stellar parameters, rotational and instrumental broadening, samplin
 This code has been used to calculate the RV precision of M-dwarfs in the NIR bands to access [@figueira_radial_2016], and its results have provided for use in the  Exposure Time Calculators of two new NIR spectrographs, NIRPS [@bouchy_nearinfrared_2017] and SPIRou [@artigau_spirou_2014] . 
 
 
-![Precision results from **Eniric**, relative to a SNR of 100 per pixel at the center of the J-Band. 
-  Similar to Figure 1 from [@figueira_radial_2016] with updated precisions. The blue, ren green ... 
-  while the dashed line, circles etc are. ](./precisions.png)
-
+![Precision achieved with *eniric* as a function of spectral band for stars with a rotational velocity of vsini=1.0 kms\(^{−1}\) and temperatures 3900 K, 3500 K, 2800 K, 2600 K, corresponding to spectral types M0, M3, M6, and M9 respectively.
+The dashed line represents the theoretical limits imposed by condition 1, and the ﬁlled area represents the values within the limits set by conditions 2 (circles) and 3 (triangles); blue, green, and red represent the results obtained for resolutions of 60000, 80000, and 100000, respectively. 
+The spectra were normalized to have a S/N of 100 per resolution element as measured at the center of the J-band.
+This is similar to Figure 1 from [@figueira_radial_2016] but with updated precision values.](./precisions.png)
 
 
 ## Acknowledgements
@@ -52,5 +52,3 @@ This code has been used to calculate the RV precision of M-dwarfs in the NIR ban
 This work was supported by Funda\c{c}\~ao para a Ci\^encia e a Tecnologia (FCT) (Portugal) research grants through national funds and from FEDER through COMPETE2020 by the following grants: UID/FIS/04434/2013 & POCI--01--0145-FEDER--007672, PTDC/FIS-AST/1526/2014 & POCI--01--0145-FEDER--016886 & PTDC/FIS-AST/7073/2014 & POCI-01-0145-FEDER-016880.
 <!--  -->
 J.J.N. acknowledges support from FCT though the PhD::Space fellowship PD/BD/52700/2014.
-
-  
