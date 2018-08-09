@@ -10,7 +10,13 @@ from hypothesis import given, settings
 import eniric
 import eniric.utilities as utils
 from eniric.broaden import rotation_kernel, unitary_gaussian
-from eniric.utilities import mask_between
+from eniric.utilities import (
+    mask_between,
+    moving_average,
+    rv_cumulative,
+    rv_cumulative_full,
+    weighted_error,
+)
 
 
 # @pytest.mark.xfail(raises=FileNotFoundError)
@@ -450,3 +456,62 @@ def test_mask_between(x, x1, x2):
     assert np.all(x[mask] < xmax)
     # Dropped values are all outside range.
     assert np.all((x[~mask] >= xmax) | (x[~mask] < xmin))
+
+
+@pytest.mark.parametrize(
+    "input_, flag",
+    [
+        ([1, 2, 3, 4.5, 5], False),
+        ([1, 2, 3, 4, 5], True),
+        ([10, 2.5, 12, 4.5, 0.1], False),
+        ([10, 2.5, 12.5, 4, 0.05], True),
+    ],
+)
+def test_rv_cumulative(input_, flag):
+    """Test it works on well formed input."""
+    result = rv_cumulative(input_, single=flag)
+    assert result[-2] == weighted_error(input_[:-1])
+    assert result[-1] == weighted_error(input_)
+    if flag:
+        assert result[0] == input_[0]
+
+
+@pytest.mark.parametrize(
+    "input_", [[1, 2, 3, 4, 5], [10, 3, 12, 4, 50], [10, 66, 10.5, 4.5, 1]]
+)
+def test_rv_cumulative_full(input_,):
+    result = rv_cumulative_full(input_)
+    assert len(result) == 9
+    assert result[4] == weighted_error(input_)
+    assert result[0] == input_[0]
+    assert result[-1] == input_[-1]
+    assert isinstance(result, np.ndarray)
+
+
+@pytest.mark.parametrize("input_", [[1, 5], [3, 4, 5], [1, 1, 3, 7, 11, 16], []])
+def test_rv_cumulative_full_errors_on_size(input_):
+    """Test it errors when not given 5 values."""
+    with pytest.raises(AssertionError):
+        rv_cumulative_full(input_)
+
+
+@pytest.mark.parametrize("window_size", [1, 5, 100])
+def test_moving_average_size(window_size):
+    x = np.arange(300)
+    result = moving_average(x, window_size)
+    assert isinstance(result, np.ndarray)
+    assert len(result) == len(x)
+
+
+@pytest.mark.parametrize(
+    "input_, expected",
+    [
+        ([1, 1, 1], 1 / np.sqrt(3)),
+        ([2, 2, 2], np.sqrt(4.0 / 3)),
+        ([1], 1),
+        ([1, 2, 3, 4, 5], 60 / np.sqrt(5269)),
+    ],
+)
+def test_weighted_error(input_, expected):
+    result = weighted_error(input_)
+    assert np.allclose(result, expected)
