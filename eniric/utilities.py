@@ -399,7 +399,7 @@ def load_btsettl_spectrum(params, photons=True):
     raise NotImplementedError("Need to include BT-SETTL")
 
 
-def rv_cumulative(rv_vector, single=False):
+def rv_cumulative(rv_vector: Union[List, ndarray], single: bool = False) -> List[float]:
     """Function that calculates the cumulative RV vector weighted_error."""
     if single:
         # Include 1st value for reference
@@ -420,7 +420,7 @@ def rv_cumulative(rv_vector, single=False):
         ]
 
 
-def rv_cumulative_full(rv_vector):
+def rv_cumulative_full(rv_vector: Union[List, ndarray]) -> ndarray:
     """Function that calculates the cumulative RV vector weighted_error. In both directions."""
     assert len(rv_vector) == 5, "This hardcoded solution only meant for 5 bands."
 
@@ -441,15 +441,15 @@ def rv_cumulative_full(rv_vector):
     return cumulation
 
 
-def weighted_error(rv_vector):
+def weighted_error(rv_vector: Union[List[float], ndarray]) -> float:
     """Function that calculates the average weighted error from a vector of errors."""
-    rv_vector = np.array(rv_vector)
+    rv_vector = np.asarray(rv_vector)
     rv_value = 1.0 / (np.sqrt(np.sum((1.0 / rv_vector) ** 2.0)))
 
     return rv_value
 
 
-def moving_average(x, window_size):
+def moving_average(x: ndarray, window_size: Union[int, float]) -> ndarray:
     """Moving average."""
     window = np.ones(int(window_size)) / float(window_size)
     return np.convolve(x, window, "same")
