@@ -34,7 +34,7 @@ def _parser():
         type=str,
         default=None,
         nargs="+",
-        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
+        choices=eniric.bands["all"],
         help="Wavelength band to select, Default='All'",
     )
     parser.add_argument(
