@@ -1,8 +1,16 @@
-from eniric.precisioncalc import RvPrecision
 import numpy as np
 import pytest
-from eniric.Qcalculator import quality as qual
 from astropy.constants import c
+from hypothesis import assume, given, strategies as st
+
+from eniric.precisioncalc import RvPrecision
+from eniric.Qcalculator import (
+    RV_prec_calc_Trans,
+    RVprec_calc,
+    RVprec_calc_masked,
+    quality as qual,
+)
+
 
 @pytest.mark.parametrize("l1, l2, l3", [(2, 2, 2), (60, 60, 60), (30, 30, None)])
 def test_even_inputs_allowed(l1, l2, l3):
@@ -14,7 +22,9 @@ def test_even_inputs_allowed(l1, l2, l3):
     assert True
 
 
-@pytest.mark.parametrize("l1, l2, l3", [(1, 2, 3), (20, 60, 20), (5, 5, 1), (1, 10, 10), (1, 2, None)])
+@pytest.mark.parametrize(
+    "l1, l2, l3", [(1, 2, 3), (20, 60, 20), (5, 5, 1), (1, 10, 10), (1, 2, None)]
+)
 def test_uneven_inputs_errors(l1, l2, l3):
     """Sizes need to be the same."""
     if l3 is None:
@@ -39,20 +49,21 @@ def test_mask_initialized_as_ones(length):
 #     return wave, flux, mask
 
 
-from eniric.Qcalculator import RVprec_calc, RVprec_calc_masked, RV_prec_calc_Trans
-
-
 #############################
 # Testing consistency these test will be removed later
 
-from hypothesis import given, assume
-from hypothesis import strategies as st
 
-#@given(wav=st.lists(st.floats(min_value=0.5, max_value=5000), min_size=2, max_size=500),
+# @given(wav=st.lists(st.floats(min_value=0.5, max_value=5000), min_size=2, max_size=500),
 #       flux=st.lists(st.floats(min_value=0, max_value=5000), min_size=2, max_size=500),)
-@given(st.integers(min_value=2, max_value=100).flatmap(
-    lambda n: st.lists(st.lists(st.floats(min_value=0.5, max_value=5000),
-                                min_size=n, max_size=n), min_size=2, max_size=2)))
+@given(
+    st.integers(min_value=2, max_value=100).flatmap(
+        lambda n: st.lists(
+            st.lists(st.floats(min_value=0.5, max_value=5000), min_size=n, max_size=n),
+            min_size=2,
+            max_size=2,
+        )
+    )
+)
 def test_rv1_prec_consistency(wav_flux):
     wavelength = np.asarray(wav_flux[0])
     wavelength.sort()
@@ -64,10 +75,17 @@ def test_rv1_prec_consistency(wav_flux):
 
     assert old_rv == rv_prec.rv_prec()
 
-@given(st.integers(min_value=10, max_value=100).flatmap(
-    lambda n: st.lists(st.lists(st.floats(min_value=0.5, max_value=5000),
-                                min_size=n, max_size=n), min_size=3, max_size=3)))
-#@given(wav=st.lists(st.floats(min_value=0.5, max_value=5000), min_size=2, max_size=500),
+
+@given(
+    st.integers(min_value=10, max_value=100).flatmap(
+        lambda n: st.lists(
+            st.lists(st.floats(min_value=0.5, max_value=5000), min_size=n, max_size=n),
+            min_size=3,
+            max_size=3,
+        )
+    )
+)
+# @given(wav=st.lists(st.floats(min_value=0.5, max_value=5000), min_size=2, max_size=500),
 #       flux=st.lists(st.floats(min_value=0, max_value=5000), min_size=2, max_size=500),
 #       mask= st.lists(st.integers(min_value=0, max_value=1), min_size=2, max_size=500))
 def test_rv2_prec_clumped_consistency(wav_flux_mask):
@@ -78,7 +96,7 @@ def test_rv2_prec_clumped_consistency(wav_flux_mask):
     flux = np.array(wav_flux_mask[1])
     mask = wav_flux_mask[2]
     mask = np.array(mask) > np.mean(mask)
-    assume(sum(mask) > len(mask)/4)
+    assume(sum(mask) > len(mask) / 4)
 
     rv_prec = RvPrecision(wav, flux, mask)
     print(mask, np.max(mask), np.min(mask))
@@ -89,9 +107,15 @@ def test_rv2_prec_clumped_consistency(wav_flux_mask):
     assert rv2 == rv2_
 
 
-@given(st.integers(min_value=10, max_value=100).flatmap(
-    lambda n: st.lists(st.lists(st.floats(min_value=0.5, max_value=5000),
-                                min_size=n, max_size=n), min_size=3, max_size=3)))
+@given(
+    st.integers(min_value=10, max_value=100).flatmap(
+        lambda n: st.lists(
+            st.lists(st.floats(min_value=0.5, max_value=5000), min_size=n, max_size=n),
+            min_size=3,
+            max_size=3,
+        )
+    )
+)
 def test_rv2_prec_consistency(wav_flux_mask):
     wav = np.array(wav_flux_mask[0])
     wav.sort()
@@ -100,7 +124,7 @@ def test_rv2_prec_consistency(wav_flux_mask):
     mask = wav_flux_mask[2]
     mask = np.array(mask) > np.mean(mask)
 
-    assume(sum(mask) > len(mask)/4)
+    assume(sum(mask) > len(mask) / 4)
 
     rv_prec = RvPrecision(wav, flux, mask)
     print(mask, np.max(mask), np.min(mask))
@@ -110,10 +134,15 @@ def test_rv2_prec_consistency(wav_flux_mask):
     assert rv2 == rv2_old
 
 
-
-@given(st.integers(min_value=10, max_value=100).flatmap(
-    lambda n: st.lists(st.lists(st.floats(min_value=0.5, max_value=5000),
-                                min_size=n, max_size=n), min_size=3, max_size=3)))
+@given(
+    st.integers(min_value=10, max_value=100).flatmap(
+        lambda n: st.lists(
+            st.lists(st.floats(min_value=0.5, max_value=5000), min_size=n, max_size=n),
+            min_size=3,
+            max_size=3,
+        )
+    )
+)
 def test_rv3_prec_consistency(wav_flux_tell):
 
     wav = np.array(wav_flux_tell[0])
@@ -122,7 +151,7 @@ def test_rv3_prec_consistency(wav_flux_tell):
     flux = np.array(wav_flux_tell[1])
     tell = wav_flux_tell[2]
 
-    telluric = np.array(tell/np.max(tell))
+    telluric = np.array(tell / np.max(tell))
     assume(np.all(tell >= 0))
 
     rv_prec = RvPrecision(wav, flux, telluric=telluric)
@@ -134,7 +163,7 @@ def test_rv3_prec_consistency(wav_flux_tell):
 
 def test_pixel_mask_verse_clump():
     length = 500
-    wavelength = np.random.randn(length)+1.1
+    wavelength = np.random.randn(length) + 1.1
     flux = np.random.randn(length) + 1
     mask = np.random.randint(0, 1, length)
     rv_prec = RvPrecision(wavelength, flux, mask)
@@ -154,7 +183,7 @@ def test_mask_deep_telluric(resampled_data, percentage):
     tell = flux / np.max(flux)
 
     # Check tell between 0 and 1, and there are some deep telluric lines.
-    assert np.all((tell<= 1) | (tell >= 0))
+    assert np.all((tell <= 1) | (tell >= 0))
     assert not np.all(tell >= (1 - percentage / 100))
 
     # Initialize class
@@ -162,10 +191,10 @@ def test_mask_deep_telluric(resampled_data, percentage):
 
     # Check initial mask
     assert np.all(rv.mask == 1)
-    assert not np.all(rv.telluric[rv.mask] >= (1 - percentage/100))
+    assert not np.all(rv.telluric[rv.mask] >= (1 - percentage / 100))
 
     rv.mask_deep_telluric(percentage)
-    assert np.all(rv.telluric[rv.mask] >= (1 - percentage/100))
+    assert np.all(rv.telluric[rv.mask] >= (1 - percentage / 100))
 
 
 def test_quality_same(resampled_data):
@@ -179,7 +208,9 @@ def test_quality_same(resampled_data):
 
     assert old_quality == rv.Q()
 
+
 ################################
+
 
 def test_rv_precision_functional_test(resampled_data):
     # Load a spectra from file
@@ -224,7 +255,7 @@ def test_rv_precision_functional_test(resampled_data):
     assert rv2 == rv2_clumped
 
 
-#@pytest.fixture()
-#TODO multiple tests hypothesis?
+# @pytest.fixture()
+# TODO multiple tests hypothesis?
 
 # TODo sort out nan/inf issues.
