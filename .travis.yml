@@ -49,7 +49,7 @@ before_script:
   - make_test_data.py
 
   # Prepare atmosphere models
-  - make atmos
+  - make atmos V=1
 
 script:
     - pytest --cov=eniric --cov-report term-missing --durations 5
