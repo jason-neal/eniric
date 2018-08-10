@@ -156,14 +156,12 @@ class Atmosphere(object):
                     )  # Any 0s will make it 0
 
                 # Checks
-
                 if not this_mask_value:
-                    assert np.any(mask_slice == False)
+                    assert np.any(~mask_slice)
                 else:
                     if not consecutive_test:
                         assert np.all(mask_slice)
             bary_mask.append(this_mask_value)
-        # print("bary mask", bary_mask)
         self.mask = np.asarray(bary_mask, dtype=np.bool)
 
     def broaden(self, resolution: float, fwhm_lim: float = 5, **kwargs):
