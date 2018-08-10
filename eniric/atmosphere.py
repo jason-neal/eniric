@@ -77,7 +77,7 @@ class Atmosphere(object):
             self.wl * 1000,
             self.transmission,
             self.std,
-            self.mask,
+            self.mask.astype(int),
             header=header,
             float_format=fmt,
         )
