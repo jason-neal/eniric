@@ -17,6 +17,7 @@ import eniric.plotting_functions as plt_functions
 import eniric.Qcalculator as Qcalculator
 import eniric.snr_normalization as snrnorm
 import eniric.utilities as utils
+from eniric.utilities import moving_average
 
 rc("text", usetex=True)  # set stuff for latex usage
 
@@ -35,7 +36,7 @@ def _parser():
         "--bands",
         type=str,
         default="J",
-        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", "None"],
+        choices=eniric.bands["all"],
         help="Wavelength bands to select. Default=J.",
         nargs="+",
     )
@@ -56,7 +57,7 @@ def _parser():
         "--ref_band",
         help="SNR reference band. Default=J. (Default=100). "
         "'self' scales each band relative to the SNR itself.",
-        choices=["self", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
+        choices=["SELF","self"].extend(eniric.bands["all"]),
         default="J",
         type=str,
     )
@@ -491,30 +492,6 @@ def calculate_all_masked(wav_atm, mask_atm):
             np.sum(bands_masked) / len(bands_masked),
         )
     )
-
-
-def rv_cumulative(rv_vector):
-    """Function that calculates the cumulative RV vector weighted_error."""
-    return [
-        weighted_error(rv_vector[:2]),
-        weighted_error(rv_vector[:3]),
-        weighted_error(rv_vector[:4]),
-        weighted_error(rv_vector),
-    ]
-
-
-def weighted_error(rv_vector):
-    """Function that calculates the average weighted error from a vector of errors."""
-    rv_vector = np.array(rv_vector)
-    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / rv_vector) ** 2.0)))
-
-    return rv_value
-
-
-def moving_average(x, window_size):
-    """Moving average."""
-    window = np.ones(int(window_size)) / float(window_size)
-    return np.convolve(x, window, "same")
 
 
 ###############################################################################
