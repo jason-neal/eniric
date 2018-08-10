@@ -13,7 +13,8 @@ from astropy import constants
 
 import eniric
 import eniric.IOmodule as io
-import eniric.utilities as utils
+from eniric.utilities import band_limits, wav_selector
+from eniric.atmosphere import Atmosphere
 
 c = constants.c
 
@@ -137,7 +138,7 @@ def main(
             with tarfile.open(str(model_name) + ".tar.gz", "r") as tar:
                 tar.extractall(data_dir_)
 
-    atm_wav, atm_flux, atm_std_flux, atm_mask = io.pdread_4col(model_name)
+    atm = Atmosphere.from_file(model_name)
 
     # Return value from saving each band
     write_status = np.empty_like(bands, dtype=int)
@@ -147,44 +148,18 @@ def main(
             continue
         else:
             filename_band = "{0}_{1}.txt".format(new_name, band)
-            band_min, band_max = utils.band_limits(band)
+            band_min, band_max = band_limits(band)
 
             # * 1000 to convert into km/s
             band_min = band_min * (1 - rv_extend * 1000 / c.value)
             band_max = band_max * (1 + rv_extend * 1000 / c.value)
 
-            # Convert band limits (micron) into nanometers (Keeps datafiles cleaner)
-            band_min, band_max = band_min * 1e3, band_max * 1e3
-
-            band_wav, band_flux = utils.wav_selector(
-                atm_wav, atm_flux, band_min, band_max
-            )
-            __, band_std_flux = utils.wav_selector(
-                atm_wav, atm_std_flux, band_min, band_max
-            )
-            __, band_mask = utils.wav_selector(atm_wav, atm_mask, band_min, band_max)
-            assert (
-                (len(band_wav) == len(band_flux))
-                & (len(band_std_flux) == len(band_mask))
-                & (len(band_flux) == len(band_mask))
-            )  # Check lengths are the same
-
-            band_mask = np.asarray(band_mask, dtype=bool)
+            split_atm = atm.wave_select(band_min, band_max)
 
             # Save the result to file
             filename = join(data_dir_, filename_band)
             header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
-
-            write_status[i] = io.pdwrite_cols(
-                filename,
-                band_wav,
-                band_flux,
-                band_std_flux,
-                band_mask,
-                sep="\t",
-                header=header,
-                float_format="%10.8f",
-            )
+            split_atm.to_file(filename, header=header, fmt="%11.8f")
 
     return np.sum(write_status)  # If any extracts fail they will turn up here.
 
