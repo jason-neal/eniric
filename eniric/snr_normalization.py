@@ -8,8 +8,6 @@ to achieve a consistent SNR at a specific location.
 """
 
 import os
-
-# Normalize to SNR 100 in middle of J band 1.25 micron!
 import re
 from typing import Optional, Tuple, Union
 
@@ -21,10 +19,6 @@ import eniric.utilities as utils
 from eniric.IOmodule import pdread_2col
 
 resampled_dir = eniric.paths["resampled"]
-
-
-def normalize_spectrum(*args, **kwargs):
-    raise NotImplementedError("Use normalize_flux")
 
 
 def normalize_flux(
@@ -63,7 +57,7 @@ def normalize_flux(
         wav_ref, flux_ref = get_reference_spectrum(id_string, ref_band)
         norm_const = snr_constant_band(wav_ref, flux_ref, snr=snr, band=ref_band)
     else:
-        if ref_band != "J" or snr != 100:
+        if (ref_band.upper() != "J") or (snr != 100):
             raise ValueError("The old way does not work with these reference values.")
         norm_const = old_norm_constant(id_string) * 1e4  # Input flux offset
 
