@@ -196,6 +196,11 @@ class Atmosphere(object):
             std=self.std[item],
         )
 
+    def wave_select(self, wl_min, wl_max):
+        """Slice a between two wavelengths."""
+        wl_mask = (self.wl < wl_max) & (self.wl > wl_min)
+        return self[wl_mask]
+
     def copy(self):
         """Index Atmosphere by returning a Atmosphere with indexed components."""
         return Atmosphere(
