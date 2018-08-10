@@ -249,53 +249,24 @@ def get_corresponding_atm(wav, band, bary=True):
     """Bary: bool
         Use the +/- 30km/s shifted atmospheric masks."""
     # Load atmosphere
-    if bary:
-        atmmodel = join(
-            eniric.paths["atmmodel"],
-            "{0}_{1}_bary.txt".format(eniric.atmmodel["base"], band),
-        )
-    else:
-        atmmodel = join(
-            eniric.paths["atmmodel"],
-            "{0}_{1}.txt".format(eniric.atmmodel["base"], band),
-        )
-    if not os.path.exists(atmmodel):
-        # Fall back to full file (will be slower)
-        atmmodel = join(
-            eniric.paths["atmmodel"], "{0}.txt".format(eniric.atmmodel["base"])
-        )
-        atm = Atmosphere.from_file(atmmodel)
-        atm.bary_shift(con)
-    else:
-        atm = Atmosphere.from_file(atmmodel)
-
-    wav_atm, flux_atm, std_flux_atm, mask_atm = (
-        atm.wl,
-        atm.transmission,
-        atm.std,
-        atm.mask,
-    )
+    atm = Atmosphere.from_band(band, bary=bary)
 
     # Getting the wav, flux and mask values from the atm model
     # that are the closest to the stellar wav values, see
     # https://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
-    index_atm = np.searchsorted(wav_atm, wav)
+    index_atm = np.searchsorted(atm.wl, wav)
     # replace indexes outside the array, at the very end, by the value at the very end
     # index_atm = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in index_atm]
-    index_mask = index_atm >= len(wav_atm)  # find broken indices
-    index_atm[index_mask] = len(wav_atm) - 1  # replace with index of end.
+    index_mask = index_atm >= len(atm.wl)  # find broken indices
+    index_atm[index_mask] = len(atm.wl) - 1  # replace with index of end.
 
-    wav_atm_selected = wav_atm[index_atm]
-    flux_atm_selected = flux_atm[index_atm]
-    mask_atm_selected = mask_atm[index_atm]
+    atm_selected = atm[index_atm]
 
-    assert len(mask_atm_selected) == len(wav)
-    assert len(wav_atm_selected) == len(wav)
     if not bary:
         # Check 2% mask
-        assert np.all((flux_atm_selected > 0.98) == mask_atm_selected)
+        assert np.all((atm.transmission > 0.98) == atm.mask)
 
-    return wav_atm_selected, flux_atm_selected, mask_atm_selected
+    return atm_selected
 
 
 def model_format_args(model, pars):

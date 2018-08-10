@@ -322,3 +322,33 @@ def test_Atmosphere_copyable(atmosphere_fixture):
 
 def test_Atmosphere_copyable():
     assert hasattr(Atmosphere, "copy")
+
+
+from eniric_scripts.aces_precision import get_corresponding_atm
+from eniric.utilities import band_limits
+
+
+@pytest.mark.parametrize("bary", [True, False])
+def test_get_corresponding_atm_returns_Atmosphere(bary):
+    """Returns the same wavelengths as input nd as Atmosphere."""
+    band="TEST"
+    print(band_limits(band))
+    wlmin, wlmax = band_limits(band)
+    wav = np.linspace(wlmin, wlmax, 20)
+    atm = get_corresponding_atm(wav, band, bary)
+    assert np.allclose(atm.wl, wav)
+    assert isinstance(atm, Atmosphere)
+
+
+
+def test_Atmosphere_band_select():
+    """Smalle test to check band selection."""
+    band = "K"  #  "K": (2.07, 2.35),
+
+    atm = Atmosphere([2.0, 2.1, 2.2, 2.4, 2.5],
+                     np.arange(5),std=None,
+                     mask=[1, 0, 0, 1, 1])
+
+    atm2 = atm.band_select("K")
+    assert np.allclose(atm2.wl, [2.1,2.2, 2.3])
+    assert np.allclose(atm2.mask, [0,0,1])

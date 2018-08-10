@@ -2,15 +2,16 @@
 
 Mainly the barycentric shifting of the absorption mask.
 """
-
+import warnings
 from typing import List, Optional, Tuple
-
+from os.path import join
 import matplotlib.pyplot as plt
 import numpy as np
 from astropy.constants import c
 from numpy import ndarray
-
+import eniric
 import eniric.IOmodule as io
+from eniric.utilities import band_limits
 
 
 class Atmosphere(object):
@@ -53,6 +54,47 @@ class Atmosphere(object):
         return cls(
             wavelength=wav_atm, transmission=flux_atm, mask=mask_atm, std=std_flux_atm
         )
+
+    @classmethod
+    def from_band(cls, band: str, bary: bool = False):
+        """Read in atmospheric model for given band.
+
+        Alternate constructor for Atmosphere. Base on "base" path in config.yaml.
+
+        Parameters
+        ----------
+        band: str
+            Name of atmosphere file.
+        bary: bool
+            Barycentric shifted mask.
+        """
+
+        extension = "_bary.txt" if bary else ".txt"
+
+        atmmodel = join(
+            eniric.paths["atmmodel"],
+            "{0}_{1}{2}".format(eniric.atmmodel["base"], band, extension),
+        )
+
+        try:
+            # Try find the band file
+            atm = cls.from_file(atmmodel)
+        except:
+            warnings.warn("""Could not find band file for band {0}.
+             It is recommend to create this using 
+                `split_atmosphere.py -b {0}` 
+                `bary_shift_atmmodel.py -b {0}`
+             Trying to load main atmosphere file for now. (will be slower).""".format(band))
+        full_model = join(
+            eniric.paths["atmmodel"], "{0}.txt".format(eniric.atmmodel["base"])
+        )
+        atm = cls.from_file(full_model)
+
+        # Shorten to nearby wavelength to band
+        atm = atm.wave_select(*band_limits(band))
+        if bary:
+            atm.bary_shift_mask(consecutive_test=True)
+        return atm
 
     def to_file(
         self, new_atmmodel: str, header: Optional[List[str]] = None, fmt: str = "%11.8f"
@@ -200,6 +242,12 @@ class Atmosphere(object):
         """Slice a between two wavelengths."""
         wl_mask = (self.wl < wl_max) & (self.wl > wl_min)
         return self[wl_mask]
+
+
+    def band_select(self, band):
+        wl_min, wl_max = band_limits(band)
+        return self.wave_select(wl_min, wl_max)
+
 
     def copy(self):
         """Index Atmosphere by returning a Atmosphere with indexed components."""
