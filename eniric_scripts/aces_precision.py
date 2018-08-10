@@ -207,7 +207,7 @@ def do_analysis(
     prec1 = RVprec_calc(wav_grid, sampled_flux)
 
     # Precision as given by the second condition
-    wav_atm, flux_atm, mask_atm = get_corresponding_atm(wav_grid, bary=True)
+    wav_atm, flux_atm, mask_atm = get_corresponding_atm(wav_grid, band, bary=True)
     # When mask is given to RVprec_calc_masked it clumps the spectra itself.
     prec2 = RVprec_calc_masked(wav_grid, sampled_flux, mask_atm)
 
@@ -244,7 +244,7 @@ def convolve_and_resample(
     return wav_grid, sampled_flux
 
 
-def get_corresponding_atm(wav, bary=True):
+def get_corresponding_atm(wav, band, bary=True):
     """Bary: bool
         Use the +/- 30km/s shifted atmospheric masks."""
     # Load atmosphere

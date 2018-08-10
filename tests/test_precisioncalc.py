@@ -187,7 +187,10 @@ def test_rv_precision_functional_test(resampled_data):
 
     # Obtain the telluric mask spectra
     from eniric_scripts.aces_precision import get_corresponding_atm
-    wav_atm, flux_atm, mask_atm = get_corresponding_atm(wav, band=id_string.split("-")[1], bary=True)
+
+    wav_atm, flux_atm, mask_atm = get_corresponding_atm(
+        wav, id_string.split("-")[1], bary=True
+    )
 
     # Add to RvPrecision object
     rv_prec = RvPrecision(wav, flux, mask=mask_atm, telluric=flux_atm)
