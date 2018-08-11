@@ -243,11 +243,9 @@ class Atmosphere(object):
         wl_mask = (self.wl < wl_max) & (self.wl > wl_min)
         return self[wl_mask]
 
-
     def band_select(self, band):
         wl_min, wl_max = band_limits(band)
         return self.wave_select(wl_min, wl_max)
-
 
     def copy(self):
         """Index Atmosphere by returning a Atmosphere with indexed components."""
@@ -257,6 +255,30 @@ class Atmosphere(object):
             mask=self.mask.copy(),
             std=self.std.copy(),
         )
+
+    def at(self, wave):
+        """Return the transmission value at the closest points.
+        This assumes that the atmosphere model is
+        sampled much haigher than the stellar spectra.
+
+        For instance the default has a sampling if 10 compred to 3.
+        (instead of interpolation)
+
+        Parameters
+        ----------
+        wave: ndarray
+            Wavelengths at which to return closest atmosphere values.
+        """
+        # Getting the wav, flux and mask values from the atm model
+        # that are the closest to the stellar wav values, see
+        # https://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
+        index_atm = np.searchsorted(self.wl, wave)
+        wl_len = len(self.wl)
+        # replace indexes outside the array, at the very end, by the value at the very end
+        # index_atm = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in index_atm]
+        index_mask = index_atm >= wl_len  # find broken indices
+        index_atm[index_mask] = wl_len - 1  # replace with index of end.
+        return self[index_atm]
 
 
 def barycenter_shift(
@@ -384,6 +406,6 @@ def consecutive_truths(condition: ndarray) -> ndarray:
         where_changes = np.where(unequal_consec)[0]  # indices where condition changes
         len_consecutive = np.diff(where_changes)[
             ::2
-        ]  # step through every second to get the "True" lenghts.
+        ]  # step through every second to get the "True" lengths.
     return len_consecutive
 
