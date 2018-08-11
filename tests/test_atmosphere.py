@@ -87,7 +87,7 @@ def test_Amosphere_class_nomask(wave, transmission):
 
 @pytest.fixture(
     params=[
-        "Average_TAPAS_2014_H.txt",
+        # "Average_TAPAS_2014_H.txt",
         "Average_TAPAS_2014_K.txt",
         "Average_TAPAS_2014_J.txt",
     ]
@@ -97,7 +97,7 @@ def atm_model(request):
     return os.path.join(eniric.paths["atmmodel"], request.param)
 
 
-@pytest.fixture(params=[1, 4, 10])
+@pytest.fixture(params=[1, 4])
 def atmosphere_fixture(request, atm_model):
     percent_cutoff = request.param
     atm = Atmosphere.from_file(atm_model)
@@ -105,7 +105,7 @@ def atmosphere_fixture(request, atm_model):
     return atm
 
 
-@pytest.fixture(params=[1, 4, 10])
+@pytest.fixture(params=[1, 4])
 def short_atmosphere(request, atm_model):
     # First 500 data points only to speed up tests
     percent_cutoff = request.param
@@ -114,7 +114,7 @@ def short_atmosphere(request, atm_model):
     return atm[:2000]
 
 
-@pytest.fixture(params=[(0, 2000), (3500, 5000), (8000, 9000)])
+@pytest.fixture(params=[(0, 1500), (8000, 9000)])
 def sliced_atmmodel_default_mask(request, atm_model):
     """To do own masking. Sliced in different places."""
     lower, upper = request.param  # slice limits
@@ -151,7 +151,7 @@ def test_atmosphere_masking(trans, percent):
     assert np.all(atmos.transmission[atmos.mask] < cutoff)
 
 
-@pytest.mark.parametrize("rv", [-2001.4, -471, 65, 1589])  # some fixed RV values
+@pytest.mark.parametrize("rv", [-1471, 65])  # some fixed RV values
 def test_values_within_the_rv_of_telluric_lines_are_masked(
     sliced_atmmodel_default_mask, rv
 ):
@@ -214,7 +214,7 @@ def test_barycenter_shift_verse_class(short_atmosphere, consec_test):
 @pytest.mark.parametrize("resolution", [1000, 50000])
 def test_atmos_broadening(atmosphere_fixture, resolution):
     # Test broadening transmission preforms instrumental convolution
-    atm = atmosphere_fixture[:10000]
+    atm = atmosphere_fixture[:4000]
     atm_org = atm.copy()
 
     from eniric.broaden import resolution_convolution
@@ -292,8 +292,8 @@ def test_Atmosphere_has_getitem():
     assert hasattr(Atmosphere, "__getitem__")
 
 
-def test_Atmosphere_sliceable(atmosphere_fixture):
-    atm = atmosphere_fixture
+def test_Atmosphere_sliceable(short_atmosphere):
+    atm = short_atmosphere
     assert len(atm.wl) != 500
     # Indexing on object.
     atm2 = atm[:500]
@@ -304,8 +304,8 @@ def test_Atmosphere_sliceable(atmosphere_fixture):
     assert len(atm2.mask) == 500
 
 
-def test_Atmosphere_copyable(atmosphere_fixture):
-    atm = atmosphere_fixture[10:50]
+def test_Atmosphere_copyable(short_atmosphere):
+    atm = short_atmosphere[10:50]
 
     atm2 = atm.copy()
 
@@ -320,14 +320,14 @@ def test_Atmosphere_copyable(atmosphere_fixture):
     assert not (atm.mask is atm2.mask)
 
 
-def test_Atmosphere_copyable():
+def test_Atmosphere_copyable_attr():
     assert hasattr(Atmosphere, "copy")
 
 
 from eniric.utilities import band_limits
 
 
-def test_Atmosphere_band_select(band):
+def test_Atmosphere_band_select():
     """Small test to check band selection."""
     band = "K"  # "K": (2.07, 2.35),
 
@@ -335,14 +335,7 @@ def test_Atmosphere_band_select(band):
         [2.0, 2.1, 2.2, 2.4, 2.5], np.arange(5), std=None, mask=[1, 0, 0, 1, 1]
     )
 
-def test_Atmosphere_band_select():
-    """Smalle test to check band selection."""
-    band = "K"  #  "K": (2.07, 2.35),
+    atm2 = atm.band_select(band)
+    assert np.allclose(atm2.wl, [2.1, 2.2, 2.3])
+    assert np.allclose(atm2.mask, [0, 0, 1])
 
-    atm = Atmosphere([2.0, 2.1, 2.2, 2.4, 2.5],
-                     np.arange(5),std=None,
-                     mask=[1, 0, 0, 1, 1])
-
-    atm2 = atm.band_select("K")
-    assert np.allclose(atm2.wl, [2.1,2.2, 2.3])
-    assert np.allclose(atm2.mask, [0,0,1])
