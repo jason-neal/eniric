@@ -387,20 +387,3 @@ def consecutive_truths(condition: ndarray) -> ndarray:
         ]  # step through every second to get the "True" lenghts.
     return len_consecutive
 
-
-def plot_atm_masks(wav, flux, mask, old_mask=None, new_mask=None, block=True):
-    """Plot spectrum with absorption masks."""
-    plt.figure()
-    plt.plot(wav, flux, label="Spectrum")
-    plt.plot(wav, mask, label="Absorption Mask")
-
-    if old_mask is not None:
-        plt.plot(wav, old_mask + 0.01, ".-", label="Old code Mask")
-
-    if new_mask is not None:
-        plt.plot(wav, new_mask + 0.02, "+-", label="New code Mask")
-
-    plt.legend(loc=0)
-    plt.show(block=block)
-
-    return 0

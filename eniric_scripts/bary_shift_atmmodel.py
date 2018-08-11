@@ -11,7 +11,7 @@ from typing import List, Optional
 
 import numpy as np
 import eniric
-from eniric.atmosphere import Atmosphere, plot_atm_masks
+from eniric.atmosphere import Atmosphere
 
 
 def _parser():
@@ -91,10 +91,6 @@ def main(bands: Optional[List[str]] = None, plot: bool = False):
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
         atm.to_file(new_atmmodel=shifted_atmmodel, header=header, fmt="%11.8f")
 
-        if plot:
-            plot_atm_masks(
-                atm.wl, atm.transmission, org_mask, new_mask=atm.mask, block=True
-            )
         print("Done")
 
 
