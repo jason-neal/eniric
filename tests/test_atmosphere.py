@@ -338,8 +338,13 @@ def test_get_corresponding_atm_returns_Atmosphere(bary):
     atm = get_corresponding_atm(wav, band, bary)
     assert np.allclose(atm.wl, wav)
     assert isinstance(atm, Atmosphere)
+def test_Atmosphere_band_select(band):
+    """Small test to check band selection."""
+    band = "K"  # "K": (2.07, 2.35),
 
-
+    atm = Atmosphere(
+        [2.0, 2.1, 2.2, 2.4, 2.5], np.arange(5), std=None, mask=[1, 0, 0, 1, 1]
+    )
 
 def test_Atmosphere_band_select():
     """Smalle test to check band selection."""
