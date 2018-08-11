@@ -80,20 +80,24 @@ class Atmosphere(object):
             # Try find the band file
             atm = cls.from_file(atmmodel)
         except:
-            warnings.warn("""Could not find band file for band {0}.
+            warnings.warn(
+                """Could not find band file for band {0}.
              It is recommend to create this using 
                 `split_atmosphere.py -b {0}` 
                 `bary_shift_atmmodel.py -b {0}`
-             Trying to load main atmosphere file for now. (will be slower).""".format(band))
-        full_model = join(
-            eniric.paths["atmmodel"], "{0}.txt".format(eniric.atmmodel["base"])
-        )
-        atm = cls.from_file(full_model)
+             Trying to load main atmosphere file for now. (will be slower).""".format(
+                    band
+                )
+            )
+            full_model = join(
+                eniric.paths["atmmodel"], "{0}.txt".format(eniric.atmmodel["base"])
+            )
+            atm = cls.from_file(full_model)
 
-        # Shorten to nearby wavelength to band
-        atm = atm.wave_select(*band_limits(band))
-        if bary:
-            atm.bary_shift_mask(consecutive_test=True)
+            # Shortten to nearby wavelength to band
+            atm = atm.wave_select(*band_limits(band))
+            if bary:
+                atm.bary_shift_mask(consecutive_test=True)
         return atm
 
     def to_file(
