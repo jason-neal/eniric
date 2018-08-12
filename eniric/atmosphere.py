@@ -260,7 +260,7 @@ class Atmosphere(object):
             bary_mask.append(this_mask_value)
         self.mask = np.asarray(bary_mask, dtype=np.bool)
 
-    def broaden(self, resolution: float, fwhm_lim: float = 5, **kwargs):
+    def broaden(self, resolution: float, fwhm_lim: float = 5, num_procs=None):
         """Broaden atmospheric transmission profile.
 
         This does not change any created masks.
@@ -271,6 +271,8 @@ class Atmosphere(object):
             Instrumental resolution/resolving power
         fwhm_lim: int/float
             Number of FWHM to extend convolution.
+        num_procs: Optional[int]
+            Number of processors to comupte the convolution with. Default = total processers - 1
         """
         self.transmission = resolution_convolution(
             wav_band=self.wl,
@@ -278,7 +280,8 @@ class Atmosphere(object):
             flux_conv_rot=self.transmission,
             R=resolution,
             fwhm_lim=fwhm_lim,
-            **kwargs,
+            num_procs=num_procs,
+            normalize=True,
         )
 
 
