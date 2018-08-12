@@ -92,7 +92,7 @@ def main(bands: Optional[List[str]] = None, plot: bool = False):
         print("Saving doppler-shifted atmosphere model to {}".format(shifted_atmmodel))
 
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
-        atm.to_file(new_atmmodel=shifted_atmmodel, header=header, fmt="%11.8f")
+        atm.to_file(fname=shifted_atmmodel, header=header, fmt="%11.8f")
 
         print("Done")
 
