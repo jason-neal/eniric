@@ -21,7 +21,6 @@ cachedir = os.path.join(os.path.expanduser("~"), ".joblib")
 memory = Memory(cachedir=cachedir, verbose=0)
 
 
-@memory.cache
 def rotational_convolution(
     wav_extended,
     wav_ext_rotation,
@@ -115,7 +114,6 @@ def rotational_convolution(
     return flux_conv_rot
 
 
-@memory.cache
 def resolution_convolution(
     wav_band,
     wav_extended,
