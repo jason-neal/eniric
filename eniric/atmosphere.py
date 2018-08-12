@@ -8,7 +8,7 @@ from typing import List, Optional
 
 from eniric.broaden import resolution_convolution
 import numpy as np
-from astropy.constants import c
+from astropy import constants as const
 from numpy import ndarray
 
 import eniric
@@ -207,7 +207,7 @@ class Atmosphere(object):
         """
         rv_mps = rv * 1e3  # Convert from km/s into m/s
 
-        shift_amplitudes = self.wl * rv_mps / c.value
+        shift_amplitudes = self.wl * rv_mps / const.c.value
         # Operate element wise
         blue_shifts = self.wl - shift_amplitudes
         red_shifts = self.wl + shift_amplitudes
@@ -308,8 +308,8 @@ def barycenter_shift(
     offset_rv = rv_offset * 1.0e3  # Convert to m/s
 
     # Doppler shift  applied to the vectors
-    delta_lambdas = wav_atm * barycenter_rv / c.value
-    offset_lambdas = wav_atm * offset_rv / c.value  # offset lambda
+    delta_lambdas = wav_atm * barycenter_rv / const.c.value
+    offset_lambdas = wav_atm * offset_rv / const.c.value  # offset lambda
 
     # Doppler shift limits of each pixel
     wav_lower_barys = wav_atm + offset_lambdas - delta_lambdas

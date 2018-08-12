@@ -9,14 +9,12 @@ from os.path import join
 from typing import List, Optional
 
 import numpy as np
-from astropy import constants
+from astropy import constants as const
 
 import eniric
-import eniric.IOmodule as io
 from eniric.atmosphere import Atmosphere
-from eniric.utilities import band_limits, wav_selector
+from eniric.utilities import band_limits
 
-c = constants.c
 
 atmmodel = "{0}.txt".format(eniric.atmmodel["base"])
 
@@ -152,8 +150,8 @@ def main(
         band_min, band_max = band_limits(band)
 
         # * 1000 to convert into km/s
-        band_min = band_min * (1 - rv_extend * 1000 / c.value)
-        band_max = band_max * (1 + rv_extend * 1000 / c.value)
+        band_min = band_min * (1 - rv_extend * 1000 / const.c.value)
+        band_max = band_max * (1 + rv_extend * 1000 / const.c.value)
 
         split_atm = atm.wave_select(band_min, band_max)
 
