@@ -168,4 +168,6 @@ def main(
 if __name__ == "__main__":
     args = vars(_parser())
     opts = {k: args[k] for k in args}
-    sys.exit(int(main(**opts)))
+    exit_status = int(main(**opts))
+    print("exit_status", exit_status)
+    sys.exit(exit_status)
