@@ -129,20 +129,19 @@ class Atmosphere(object):
         )
 
     def mask_transmission(self, depth: float) -> None:
+    def mask_transmission(self, depth: float=2.0) -> None:
         """Mask the transmission below given depth. e.g. 3%
 
         Parameters
         ----------
-        depth : float
+        depth : float (default = 2.0)
             Telluric line depth percentage to mask out.
             E.g. depth=2 will mask transmission deeper than 2%.
 
-        Returns
-        -------
-
+        Updates the mask.
         """
         cutoff = 1 - depth / 100.0
-        self.mask = self.transmission < cutoff
+        self.mask = self.transmission >= cutoff
 
     def bary_shift_mask(self, rv: float = 30.0, consecutive_test: bool = False):
         """RV shift mask symmetrically.

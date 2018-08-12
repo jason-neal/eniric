@@ -7,34 +7,26 @@ from hypothesis import assume, given, strategies as st
 
 import eniric
 from eniric.atmosphere import Atmosphere, barycenter_shift, consecutive_truths
+from eniric.utilities import band_limits
 
 
-def test_consecutive_truths():
-    """Test consecutive truths lists count of consecutive ones."""
-    array1 = np.array([1, 1, 1, 0, 1, 1, 0, 0, 1, 0], dtype=bool)  # [3,2 1]
-    array2 = np.array([0, 0, 1, 1, 1, 1, 1, 0, 1, 1], dtype=bool)  # [5, 2]
-    array3 = np.array([1, 0, 1, 0, 1, 0, 1, 0, 1, 0], dtype=bool)  # [1,1,1,1,1]
-    array4 = np.zeros(5, dtype=bool)  # []
-    array5 = np.ones(5, dtype=bool)  # [5]
-
-    assert np.all(consecutive_truths(array1) == [3, 2, 1])
-    assert np.all(consecutive_truths(array2) == [5, 2])
-    assert np.all(consecutive_truths(array3) == [1, 1, 1, 1, 1])
-    assert np.all(consecutive_truths(array5) == [5])
-    assert np.all(consecutive_truths(array4) == [])
-
-    # Check sum of trues equal sum of returned list
-    assert np.sum(array1) == np.sum(consecutive_truths(array1))
-
-    rand_array = np.asarray(
-        np.floor(np.random.random(50) * 2), dtype=bool
-    )  # random values
-    assert np.sum(rand_array) == np.sum(consecutive_truths(rand_array))
+def test_Atmosphere_funtional_test(short_atmosphere):
+    """ Check Mask still works after shifting and masks out correct values.
+    Load in telluric file.
+    Mask the lines,
+    Bary shift the lines.
+    Check masks are still ok.
+    """
+    atm = short_atmosphere
+    atm.mask = np.ones_like(atm.wl, dtype=bool)  # reset mask
+    assert not np.all(atm.transmission[atm.mask] >= 0.98)
+    atm.broaden(100000)
+    atm.mask_transmission(2)
+    assert np.all(atm.transmission[atm.mask] >= 0.98)
+    atm.bary_shift_mask(consecutive_test=True)
+    assert np.all(atm.transmission[atm.mask] >= 0.98)
 
 
-# TODO
-# If I multiply the flux by the mask then the smallest flux should be 0.98
-# If not then there would be an issue.
 
 
 size = 10
@@ -141,14 +133,15 @@ def test_atmosphere_masking(trans, percent):
     cutoff = 1 - (percent / 100.0)
 
     assume(np.any(np.array(trans) < cutoff))
-    assume(np.any(np.array(trans) > cutoff))
+    assume(np.any(np.array(trans) >= cutoff))
 
     atmos = Atmosphere(wavelength=np.arange(len(trans)), transmission=trans)
     org_mask = atmos.mask
     atmos.mask_transmission(percent)
 
     assert np.any(atmos.mask != org_mask)
-    assert np.all(atmos.transmission[atmos.mask] < cutoff)
+    assert np.all(atmos.transmission[atmos.mask] >= cutoff)
+    assert np.all(atmos.transmission[~atmos.mask] < cutoff)
 
 
 @pytest.mark.parametrize("rv", [-1471, 65])  # some fixed RV values
@@ -196,6 +189,28 @@ def test_atmos_barycenter_shift_mask(sliced_atmmodel_default_mask, consec_test):
         (atmos.mask * org_mask) == atmos.mask
     )  # zeros should not turn into ones
 
+
+def test_consecutive_truths():
+    """Test consecutive truths lists count of consecutive ones."""
+    array1 = np.array([1, 1, 1, 0, 1, 1, 0, 0, 1, 0], dtype=bool)  # [3,2 1]
+    array2 = np.array([0, 0, 1, 1, 1, 1, 1, 0, 1, 1], dtype=bool)  # [5, 2]
+    array3 = np.array([1, 0, 1, 0, 1, 0, 1, 0, 1, 0], dtype=bool)  # [1,1,1,1,1]
+    array4 = np.zeros(5, dtype=bool)  # []
+    array5 = np.ones(5, dtype=bool)  # [5]
+
+    assert np.all(consecutive_truths(array1) == [3, 2, 1])
+    assert np.all(consecutive_truths(array2) == [5, 2])
+    assert np.all(consecutive_truths(array3) == [1, 1, 1, 1, 1])
+    assert np.all(consecutive_truths(array5) == [5])
+    assert np.all(consecutive_truths(array4) == [])
+
+    # Check sum of trues equal sum of returned list
+    assert np.sum(array1) == np.sum(consecutive_truths(array1))
+
+    rand_array = np.asarray(
+        np.floor(np.random.random(50) * 2), dtype=bool
+    )  # random values
+    assert np.sum(rand_array) == np.sum(consecutive_truths(rand_array))
 
 @pytest.mark.parametrize("consec_test", [True, False])
 def test_barycenter_shift_verse_class(short_atmosphere, consec_test):
