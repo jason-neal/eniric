@@ -5,7 +5,6 @@ Used to convolve the spectra for
     - instrumental resolution
 
 """
-import os
 from typing import Optional, Union
 
 import multiprocess as mprocess
@@ -14,11 +13,11 @@ from joblib import Memory
 from numpy.core.multiarray import ndarray
 from tqdm import tqdm
 
+import eniric
 from eniric.utilities import band_selector, mask_between, wav_selector
 
 # Cache convolution results.
-cachedir = os.path.join(os.path.expanduser("~"), ".joblib")
-memory = Memory(cachedir=cachedir, verbose=0)
+memory = Memory(cachedir=eniric.cache["cachedir"], verbose=0)
 
 
 @memory.cache
