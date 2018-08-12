@@ -56,10 +56,10 @@ def main(bands: Optional[List[str]] = None, plot: bool = False):
     plot: bool
         Flag to plot test plots of masks.
     """
-    bands_upper = [band.upper for band in bands]
-    if (bands is None) or ("ALL" in bands_upper):
+    if bands is None:
         bands = eniric.bands["all"]
-
+    elif "ALL" in [band.upper for band in bands]:
+        bands = eniric.bands["all"]
 
     for band in bands:
         unshifted_atmmodel = join(

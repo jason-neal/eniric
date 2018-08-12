@@ -117,8 +117,9 @@ def main(
     rv_extend: float (positive) (default 100)
         Rv amount to extend wavelength range of telluric band. To later apply barycenter shifting.
     """
-    bands_upper = [band.upper for band in bands]
-    if (bands is None) or ("ALL" in bands_upper):
+    if bands is None:
+        bands = eniric.bands["all"]
+    elif "ALL" in [band.upper for band in bands]:
         bands = eniric.bands["all"]
     if new_name is None:
         new_name = model.split(".")[0]
