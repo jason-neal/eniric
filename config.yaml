@@ -13,6 +13,9 @@ paths:
   atmmodel: "data/atmmodel"
   precision: "precision/"
 
+cache:
+   cachedir: [".joblib"]
+
 atmmodel:
   # Base name of telluric model
   base: "Average_TAPAS_2014"

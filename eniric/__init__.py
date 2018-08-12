@@ -38,8 +38,14 @@ paths = config["paths"]
 bands = config["bands"]
 custom_bands = config["custom_bands"]
 atmmodel = config["atmmodel"]
+cache = config["cache"]
 
 # Turn list into path
 for key, value in paths.items():
     if isinstance(value, list):
         paths[key] = os.path.join(*value)
+
+if (cache["cachedir"] is None) or (cache["cachedir"] == "None"):
+    cache["cachedir"] = os.path.join(os.path.expanduser("~"), ".joblib")
+else:
+    cache["cachedir"] = os.path.join(*cache["cachedir"])
