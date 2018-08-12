@@ -15,9 +15,8 @@ import eniric.IOmodule as io
 import eniric.plotting_functions as plt_functions
 import eniric.Qcalculator as Qcalculator
 import eniric.snr_normalization as snrnorm
-from eniric.atmosphere import barycenter_shift, Atmosphere
-from eniric.utilities import moving_average, band_selector
-
+from eniric.atmosphere import Atmosphere, barycenter_shift
+from eniric.utilities import band_selector, moving_average
 
 rc("text", usetex=True)  # set stuff for latex usage
 

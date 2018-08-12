@@ -10,6 +10,7 @@ from os.path import join
 from typing import List, Optional
 
 import numpy as np
+
 import eniric
 from eniric.atmosphere import Atmosphere
 

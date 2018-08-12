@@ -3,12 +3,14 @@
 Mainly the barycentric shifting of the absorption mask.
 """
 import warnings
-from typing import List, Optional, Tuple
 from os.path import join
+from typing import List, Optional, Tuple
+
 import matplotlib.pyplot as plt
 import numpy as np
 from astropy.constants import c
 from numpy import ndarray
+
 import eniric
 import eniric.IOmodule as io
 from eniric.utilities import band_limits
@@ -70,7 +72,6 @@ class Atmosphere(object):
         """
 
         extension = "_bary.txt" if bary else ".txt"
-
         atmmodel = join(
             eniric.paths["atmmodel"],
             "{0}_{1}{2}".format(eniric.atmmodel["base"], band, extension),

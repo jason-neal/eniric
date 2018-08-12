@@ -9,6 +9,8 @@ import eniric
 from eniric.atmosphere import Atmosphere, barycenter_shift, consecutive_truths
 from eniric.utilities import band_limits
 
+size = 50  # Size of arrays if need consistent length
+
 
 def test_Atmosphere_funtional_test(short_atmosphere):
     """ Check Mask still works after shifting and masks out correct values.
@@ -27,14 +29,13 @@ def test_Atmosphere_funtional_test(short_atmosphere):
     assert np.all(atm.transmission[atm.mask] >= 0.98)
 
 
-size = 10
-
-
-@given(
-    st.lists(st.floats(min_value=1, max_value=3000), min_size=size, max_size=size),
-    st.lists(st.floats(min_value=0, max_value=1), min_size=size, max_size=size),
-    st.lists(st.floats(min_value=0, max_value=1), min_size=size, max_size=size),
-    st.lists(st.booleans(), min_size=size, max_size=size),
+@pytest.mark.parametrize(
+    "wave, transmission, std, mask",
+    [
+        ([1, 2, 3, 4], [.5, .6, .7, 8], [0., 0.2, 0.1, 0.2], [0, 1, 1, 1]),
+        ([2000, 2100], [0.97, 0.99], [0.1, 0.1], [False, True]),
+        ([], [], [], []),
+    ],
 )
 def test_atmosphere_class(wave, transmission, std, mask):
     atmos = Atmosphere(
@@ -47,11 +48,8 @@ def test_atmosphere_class(wave, transmission, std, mask):
     assert atmos.mask.dtype == np.bool
 
 
-@given(
-    st.lists(st.floats(min_value=1, max_value=3000), min_size=size, max_size=size),
-    st.lists(st.floats(min_value=0, max_value=1), min_size=size, max_size=size),
-    st.lists(st.floats(min_value=0, max_value=1), min_size=size, max_size=size),
-    st.lists(st.booleans(), min_size=size, max_size=size),
+@pytest.mark.parametrize(
+    "wave, transmission, std, mask ", [([1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12])]
 )
 def test_atmosphere_class_turns_lists_to_arrays(wave, transmission, std, mask):
     atmos = Atmosphere(wave, transmission, mask, std)
@@ -62,11 +60,10 @@ def test_atmosphere_class_turns_lists_to_arrays(wave, transmission, std, mask):
     assert atmos.mask.dtype == np.bool
 
 
-@given(
-    st.lists(st.floats(min_value=1, max_value=3000), min_size=size, max_size=size),
-    st.lists(st.floats(min_value=0, max_value=1), min_size=size, max_size=size),
+@pytest.mark.parametrize(
+    "wave, transmission", [([1, 2, 3], [0.4, 0.5, 0.6]), ([7, 8, 9], [.10, .11, .12])]
 )
-def test_Amosphere_class_nomask(wave, transmission):
+def test_atmosphere_class_nomask(wave, transmission):
     atmos = Atmosphere(wave, transmission)
     assert np.all(atmos.wl == wave)
     assert np.all(atmos.transmission == transmission)
@@ -114,9 +111,6 @@ def sliced_atmmodel_default_mask(request, atm_model):
 
 def test_atmosphere_from_file(atm_model):
     atmos = Atmosphere.from_file(atmmodel=atm_model)
-    print(atmos)
-    print(atmos.transmission)
-    print(atmos.wl)
     assert len(atmos.wl) == len(atmos.transmission)
     assert len(atmos.transmission[atmos.mask]) != len(
         atmos.transmission
@@ -159,13 +153,8 @@ def test_values_within_the_rv_of_telluric_lines_are_masked(
         else:
             # Find rv limits to this pixel.
             wl_lower, wl_upper = pixel * (1 - rv / 3e5), pixel * (1 + rv / 3e5)
-
             wl_mask = (atmos.wl >= wl_lower) * (atmos.wl < wl_upper)
-            print(pixel, mask_value, wl_lower, wl_upper, atmos.wl[0], atmos.wl[-1])
-            print(atmos.mask[wl_mask])
             assert np.all(atmos.mask[wl_mask] == 1)
-
-    # assert False
 
 
 @pytest.mark.parametrize("consec_test", [True, False])

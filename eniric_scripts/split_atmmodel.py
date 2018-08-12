@@ -13,8 +13,8 @@ from astropy import constants
 
 import eniric
 import eniric.IOmodule as io
-from eniric.utilities import band_limits, wav_selector
 from eniric.atmosphere import Atmosphere
+from eniric.utilities import band_limits, wav_selector
 
 c = constants.c
 
