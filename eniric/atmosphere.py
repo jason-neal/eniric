@@ -119,7 +119,7 @@ class Atmosphere(object):
         """
         if header is None:
             header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
-        io.pdwrite_cols(
+        return io.pdwrite_cols(
             fname,
             self.wl * 1000,
             self.transmission,

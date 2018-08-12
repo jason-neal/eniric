@@ -160,8 +160,9 @@ def main(
         filename = join(data_dir_, filename_band)
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
         print("Saving to_file {}".format(filename))
-        split_atm.to_file(filename, header=header, fmt="%11.8f")
+        write_status[i] = split_atm.to_file(filename, header=header, fmt="%11.8f")
     print("Done Splitting")
+
     return np.sum(write_status)  # If any extracts fail they will turn up here.
 
 
