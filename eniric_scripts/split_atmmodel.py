@@ -117,8 +117,9 @@ def main(
     rv_extend: float (positive) (default 100)
         Rv amount to extend wavelength range of telluric band. To later apply barycenter shifting.
     """
-    if (bands is None) or ("ALL" in bands):
-        bands = ["VIS", "GAP", "Z", "Y", "J", "H", "K"]
+    bands_upper = [band.upper for band in bands]
+    if (bands is None) or ("ALL" in bands_upper):
+        bands = eniric.bands["all"]
     if new_name is None:
         new_name = model.split(".")[0]
     if data_dir is None:
@@ -144,23 +145,19 @@ def main(
     write_status = np.empty_like(bands, dtype=int)
 
     for i, band in enumerate(bands):
-        if band.upper == "ALL":
-            continue
-        else:
-            filename_band = "{0}_{1}.txt".format(new_name, band)
-            band_min, band_max = band_limits(band)
+        filename_band = "{0}_{1}.txt".format(new_name, band)
+        band_min, band_max = band_limits(band)
 
-            # * 1000 to convert into km/s
-            band_min = band_min * (1 - rv_extend * 1000 / c.value)
-            band_max = band_max * (1 + rv_extend * 1000 / c.value)
+        # * 1000 to convert into km/s
+        band_min = band_min * (1 - rv_extend * 1000 / c.value)
+        band_max = band_max * (1 + rv_extend * 1000 / c.value)
 
-            split_atm = atm.wave_select(band_min, band_max)
+        split_atm = atm.wave_select(band_min, band_max)
 
-            # Save the result to file
-            filename = join(data_dir_, filename_band)
-            header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
-            split_atm.to_file(filename, header=header, fmt="%11.8f")
-
+        # Save the result to file
+        filename = join(data_dir_, filename_band)
+        header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
+        split_atm.to_file(filename, header=header, fmt="%11.8f")
     return np.sum(write_status)  # If any extracts fail they will turn up here.
 
 
