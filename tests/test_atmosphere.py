@@ -27,8 +27,6 @@ def test_Atmosphere_funtional_test(short_atmosphere):
     assert np.all(atm.transmission[atm.mask] >= 0.98)
 
 
-
-
 size = 10
 
 
@@ -212,9 +210,12 @@ def test_consecutive_truths():
     )  # random values
     assert np.sum(rand_array) == np.sum(consecutive_truths(rand_array))
 
+
 @pytest.mark.parametrize("consec_test", [True, False])
 def test_barycenter_shift_verse_class(short_atmosphere, consec_test):
-    """Test barycentric shift code is equivalent inside class."""
+    """Test barycentric shift code is equivalent inside class.
+
+    TODO: Delete this test when barycenter_shift function is removed."""
     atmos = short_atmosphere
     mask30kms = barycenter_shift(atmos.wl, atmos.mask, consecutive_test=consec_test)
 
@@ -309,14 +310,14 @@ def test_Atmosphere_has_getitem():
 
 def test_Atmosphere_sliceable(short_atmosphere):
     atm = short_atmosphere
-    assert len(atm.wl) != 500
+    assert len(atm.wl) != 100
     # Indexing on object.
-    atm2 = atm[:500]
+    atm2 = atm[:100]
 
-    assert len(atm2.wl) == 500
-    assert len(atm2.transmission) == 500
-    assert len(atm2.std) == 500
-    assert len(atm2.mask) == 500
+    assert len(atm2.wl) == 100
+    assert len(atm2.transmission) == 100
+    assert len(atm2.std) == 100
+    assert len(atm2.mask) == 100
 
 
 def test_Atmosphere_copyable(short_atmosphere):
@@ -339,18 +340,25 @@ def test_Atmosphere_copyable_attr():
     assert hasattr(Atmosphere, "copy")
 
 
-from eniric.utilities import band_limits
-
-
 def test_Atmosphere_band_select():
     """Small test to check band selection."""
     band = "K"  # "K": (2.07, 2.35),
 
     atm = Atmosphere(
-        [2.0, 2.1, 2.2, 2.4, 2.5], np.arange(5), std=None, mask=[1, 0, 0, 1, 1]
+        [2.0, 2.1, 2.2, 2.3, 2.4, 2.5], np.arange(6), std=None, mask=[1, 0, 0, 1, 1, 0]
     )
-
     atm2 = atm.band_select(band)
+
     assert np.allclose(atm2.wl, [2.1, 2.2, 2.3])
     assert np.allclose(atm2.mask, [0, 0, 1])
 
+
+@pytest.mark.parametrize("band", ["TEST", "K"])
+def test_from_band_is_a_constructor(band):
+    """This is testing loading files using from_band method."""
+    atm = Atmosphere.from_band(band)
+
+    min_wl, max_wl = band_limits(band)
+    assert isinstance(atm, Atmosphere)
+    assert np.all(atm.wl <= max_wl * 1.01)
+    assert np.all(atm.wl >= min_wl * 0.99)
