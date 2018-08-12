@@ -13,6 +13,9 @@ paths:
   atmmodel: "data/atmmodel"
   precision: "precision/"
 
+cache:
+   cachedir: [".joblib"]
+
 bands:
   all: [None, "VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP", "CARMENES_NIR", "CARMENES_VIS"]
 
