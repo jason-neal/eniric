@@ -4,9 +4,9 @@ Mainly the barycentric shifting of the absorption mask.
 """
 import warnings
 from os.path import join
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
-import matplotlib.pyplot as plt
+from eniric.broaden import resolution_convolution
 import numpy as np
 from astropy.constants import c
 from numpy import ndarray
@@ -95,7 +95,7 @@ class Atmosphere(object):
             )
             atm = cls.from_file(full_model)
 
-            # Shortten to nearby wavelength to band
+            # Shorten to band
             atm = atm.wave_select(*band_limits(band))
             if bary:
                 atm.bary_shift_mask(consecutive_test=True)
@@ -272,8 +272,6 @@ class Atmosphere(object):
         fwhm_lim: int/float
             Number of FWHM to extend convolution.
         """
-        from eniric.broaden import resolution_convolution
-
         self.transmission = resolution_convolution(
             wav_band=self.wl,
             wav_extended=self.wl,
