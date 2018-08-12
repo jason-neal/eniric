@@ -138,13 +138,15 @@ def main(
 
             with tarfile.open(str(model_name) + ".tar.gz", "r") as tar:
                 tar.extractall(data_dir_)
-
+            print("Unpacked")
+    print("Loading from_file {0}".format(model_name))
     atm = Atmosphere.from_file(model_name)
 
     # Return value from saving each band
     write_status = np.empty_like(bands, dtype=int)
 
     for i, band in enumerate(bands):
+        print("Starting {0}".format(band))
         filename_band = "{0}_{1}.txt".format(new_name, band)
         band_min, band_max = band_limits(band)
 
@@ -157,7 +159,9 @@ def main(
         # Save the result to file
         filename = join(data_dir_, filename_band)
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
+        print("Saving to_file {}".format(filename))
         split_atm.to_file(filename, header=header, fmt="%11.8f")
+    print("Done Splitting")
     return np.sum(write_status)  # If any extracts fail they will turn up here.
 
 
