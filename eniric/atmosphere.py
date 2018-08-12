@@ -102,15 +102,15 @@ class Atmosphere(object):
         return atm
 
     def to_file(
-        self, new_atmmodel: str, header: Optional[List[str]] = None, fmt: str = "%11.8f"
+        self, fname: str, header: Optional[List[str]] = None, fmt: str = "%11.8f"
     ):
-        """Save the atmospheric model to new_atmmodel file.
+        """Save the atmospheric model to a file.
 
         Converts micron back into nanometers to be consistent with from_file().
 
         Parameters
         ----------
-        new_atmmodel: str
+        fname: str
             Name of atmosphere file to save to.
         header:
             Header lines to add.
@@ -120,7 +120,7 @@ class Atmosphere(object):
         if header is None:
             header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
         io.pdwrite_cols(
-            new_atmmodel,
+            fname,
             self.wl * 1000,
             self.transmission,
             self.std,
