@@ -132,7 +132,7 @@ class Atmosphere(object):
         try:
             # Try find the band file
             atm = cls.from_file(atmmodel)
-        except:
+        except IOError:
             warnings.warn(
                 """Could not find band file for band {0}.
              It is recommend to create this using
