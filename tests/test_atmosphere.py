@@ -93,6 +93,7 @@ def atmosphere_fixture(request, atm_model):
     return atm
 
 
+@pytest.fixture()
 def short_atmosphere(atmosphere_fixture):
     # First 500 data points only to speed up tests
     return atmosphere_fixture[:500]
@@ -222,7 +223,13 @@ def test_atmos_broadening(atmosphere_fixture, resolution):
     #    normalize: bool = True,
 
     new_trans = resolution_convolution(
-        atm_org.wl, atm_org.wl, atm_org.transmission, R=resolution, fwhm_lim=5, num_procs=1, normalize=True
+        atm_org.wl,
+        atm_org.wl,
+        atm_org.transmission,
+        R=resolution,
+        fwhm_lim=5,
+        num_procs=1,
+        normalize=True,
     )
 
     atm.broaden(resolution=resolution, num_procs=1)
