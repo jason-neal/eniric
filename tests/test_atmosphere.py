@@ -95,8 +95,8 @@ def atmosphere_fixture(request, atm_model):
 
 @pytest.fixture()
 def short_atmosphere(atmosphere_fixture):
-    # First 500 data points only to speed up tests
-    return atmosphere_fixture[:500]
+    # First 2000 data points only to speed up tests
+    return atmosphere_fixture[:2000]
 
 
 @pytest.fixture(params=[(0, 1500), (8000, 9000)])
