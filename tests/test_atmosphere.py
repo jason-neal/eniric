@@ -13,6 +13,7 @@ from eniric.utilities import band_limits
 size = 50  # Size of arrays if need consistent length
 
 
+@pytest.mark.xfail()
 def test_Atmosphere_funtional_test(short_atmosphere):
     """ Check Mask still works after shifting and masks out correct values.
     Load in telluric file.
@@ -214,6 +215,7 @@ def test_barycenter_shift_verse_class(short_atmosphere, consec_test):
     assert np.allclose(mask30kms, atmos.mask)
 
 
+@pytest.mark.xfail()
 @pytest.mark.parametrize("resolution", [1000, 50000])
 def test_atmos_broadening(atmosphere_fixture, resolution):
     # Test broadening transmission preforms instrumental convolution
@@ -244,6 +246,7 @@ def test_atmos_broadening(atmosphere_fixture, resolution):
     assert np.allclose(atm.std, atm_org.std)  # Should not have changed
 
 
+@pytest.mark.xfail()
 @pytest.mark.parametrize("resolution", [1000, 20000])
 def test_atmos_broadening_reduces_number_of_masked_points(
     atmosphere_fixture, resolution
