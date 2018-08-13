@@ -144,24 +144,21 @@ def main(
     write_status = np.empty_like(bands, dtype=int)
 
     for i, band in enumerate(bands):
-        if band.upper != "ALL":
-            print("Starting {0}".format(band))
-            filename_band = "{0}_{1}.txt".format(new_name, band)
-            band_min, band_max = band_limits(band)
+        print("Starting {0}".format(band))
+        filename_band = "{0}_{1}.txt".format(new_name, band)
+        band_min, band_max = band_limits(band)
 
-            # * 1000 to convert into km/s
-            band_min = band_min * (1 - rv_extend * 1000 / const.c.value)
-            band_max = band_max * (1 + rv_extend * 1000 / const.c.value)
+        # * 1000 to convert into km/s
+        band_min = band_min * (1 - rv_extend * 1000 / const.c.value)
+        band_max = band_max * (1 + rv_extend * 1000 / const.c.value)
 
-            split_atm = atm.wave_select(band_min, band_max)
+        split_atm = atm.wave_select(band_min, band_max)
 
-            # Save the result to file
-            filename = join(data_dir_, filename_band)
-            header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
-            print("Saving to_file {}".format(filename))
-            write_status[i] = split_atm.to_file(filename, header=header, fmt="%11.8f")
-        else:
-            continue
+        # Save the result to file
+        filename = join(data_dir_, filename_band)
+        header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
+        print("Saving to_file {}".format(filename))
+        write_status[i] = split_atm.to_file(filename, header=header, fmt="%11.8f")
     print("Done Splitting")
 
     return np.sum(write_status)  # If any extracts fail they will turn up here.

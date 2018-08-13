@@ -63,40 +63,37 @@ def main(bands: Optional[List[str]] = None, plot: bool = False):
         bands = eniric.bands["all"]
 
     for band in bands:
-        if bands.upper != "ALL":
-            unshifted_atmmodel = join(
-                eniric.paths["atmmodel"],
-                "{0}_{1}.txt".format(eniric.atmmodel["base"], band),
+        unshifted_atmmodel = join(
+            eniric.paths["atmmodel"],
+            "{0}_{1}.txt".format(eniric.atmmodel["base"], band),
+        )
+
+        print("Reading atmospheric model...", unshifted_atmmodel)
+
+        atm = Atmosphere.from_file(unshifted_atmmodel)
+
+        print("Calculating impact of Barycentric movement on mask...")
+        org_mask = atm.mask
+        masked_before = np.sum(org_mask)
+        atm.bary_shift_mask(consecutive_test=True)
+
+        masked_after = np.sum(atm.mask)
+        print(
+            "Masked fraction before = {0:0.03f}".format(
+                (len(org_mask) - masked_before) / len(org_mask)
             )
-
-            print("Reading atmospheric model...", unshifted_atmmodel)
-
-            atm = Atmosphere.from_file(unshifted_atmmodel)
-
-            print("Calculating impact of Barycentric movement on mask...")
-            org_mask = atm.mask
-            masked_before = np.sum(org_mask)
-            atm.bary_shift_mask(consecutive_test=True)
-
-            masked_after = np.sum(atm.mask)
-            print(
-                "Masked fraction before = {0:0.03f}".format(
-                    (len(org_mask) - masked_before) / len(org_mask)
-                )
+        )
+        print(
+            "Masked fraction after = {0:0.03f}".format(
+                (len(atm.mask) - masked_after) / len(atm.mask)
             )
-            print(
-                "Masked fraction after = {0:0.03f}".format(
-                    (len(atm.mask) - masked_after) / len(atm.mask)
-                )
-            )
+        )
 
-            shifted_atmmodel = unshifted_atmmodel.replace(".txt", "_bary.txt")
-            print("Saving doppler-shifted atmosphere model to {}".format(shifted_atmmodel))
+        shifted_atmmodel = unshifted_atmmodel.replace(".txt", "_bary.txt")
+        print("Saving doppler-shifted atmosphere model to {}".format(shifted_atmmodel))
 
-            header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
-            atm.to_file(fname=shifted_atmmodel, header=header, fmt="%11.8f")
-        else:
-            continue
+        header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
+        atm.to_file(fname=shifted_atmmodel, header=header, fmt="%11.8f")
     print("Done")
 
 
