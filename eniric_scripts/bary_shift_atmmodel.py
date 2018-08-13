@@ -14,6 +14,9 @@ import numpy as np
 import eniric
 from eniric.atmosphere import Atmosphere
 
+choices = [None, "ALL"]
+choices.extend(eniric.bands["all"])
+
 
 def _parser():
     """Take care of all the argparse stuff.
@@ -28,8 +31,8 @@ def _parser():
         "-b",
         "--bands",
         type=str,
-        default=None,
-        choices=["ALL"].extend(eniric.bands["all"]),
+        default="ALL",
+        choices=choices,
         help="Wavelength bands to select. Default=None.",
         nargs="+",
     )
@@ -56,9 +59,7 @@ def main(bands: Optional[List[str]] = None, plot: bool = False):
     plot: bool
         Flag to plot test plots of masks.
     """
-    if bands is None:
-        bands = eniric.bands["all"]
-    elif "ALL" in [band.upper for band in bands]:
+    if (bands is None) or ("ALL" in bands):
         bands = eniric.bands["all"]
 
     for band in bands:

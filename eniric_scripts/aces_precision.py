@@ -24,6 +24,9 @@ from eniric.utilities import band_middle, load_aces_spectrum, load_btsettl_spect
 
 num_procs_minus_1 = mprocess.cpu_count() - 1
 
+ref_choices = ["SELF"]
+ref_choices.extend(eniric.bands["all"])
+
 
 def _parser():
     """Take care of all the argparse stuff.
@@ -103,7 +106,7 @@ def _parser():
         "--ref_band",
         help="SNR reference band. Default=J. (Default=100). "
         "'self' scales each band relative to the SNR itself.",
-        choices=["SELF", "self"].extend(eniric.bands["all"]),
+        choices=ref_choices,
         default="J",
         type=str,
     )
@@ -286,6 +289,9 @@ if __name__ == "__main__":
 
     snr = args.snr
     air = args.air
+    if "ALL" in args.bands:
+        args.bands.extend(eniric.bands["all"])
+        args.bands = set(args.bands)  # Unique
     ref_band = args.ref_band
 
     conv_kwargs = {

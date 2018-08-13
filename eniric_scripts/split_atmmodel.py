@@ -15,8 +15,9 @@ import eniric
 from eniric.atmosphere import Atmosphere
 from eniric.utilities import band_limits
 
-
 atmmodel = "{0}.txt".format(eniric.atmmodel["base"])
+choices = ["ALL"]
+choices.extend(eniric.bands["all"])
 
 
 def _parser():
@@ -32,9 +33,9 @@ def _parser():
         "-b",
         "--bands",
         type=str,
-        default=None,
+        default="ALL",
         nargs="+",
-        choices=["ALL"].extend(eniric.bands["all"]),
+        choices=choices,
         help="Wavelength band to select, Default='All'",
     )
     parser.add_argument(
@@ -115,9 +116,7 @@ def main(
     rv_extend: float (positive) (default 100)
         Rv amount to extend wavelength range of telluric band. To later apply barycenter shifting.
     """
-    if bands is None:
-        bands = eniric.bands["all"]
-    elif "ALL" in [band.upper for band in bands]:
+    if (bands is None) or ("ALL" in bands):
         bands = eniric.bands["all"]
     if new_name is None:
         new_name = model.split(".")[0]

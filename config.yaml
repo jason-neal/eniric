@@ -21,7 +21,7 @@ atmmodel:
   base: "Average_TAPAS_2014"
 
 bands:
-  all: [None, "VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP", "CARMENES_NIR", "CARMENES_VIS", "TEST"]
+  all: ["VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP", "CARMENES_NIR", "CARMENES_VIS", "TEST"]
 
 # Add your custom band limits here
 custom_bands:

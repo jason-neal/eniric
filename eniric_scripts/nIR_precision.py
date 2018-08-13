@@ -20,6 +20,9 @@ from eniric.utilities import band_selector, moving_average
 
 rc("text", usetex=True)  # set stuff for latex usage
 
+ref_choices = ["SELF"]
+ref_choices.extend(eniric.bands["all"])
+
 
 def _parser():
     """Take care of all the argparse stuff.
@@ -56,7 +59,7 @@ def _parser():
         "--ref_band",
         help="SNR reference band. Default=J. (Default=100). "
         "'self' scales each band relative to the SNR itself.",
-        choices=["SELF", "self"].extend(eniric.bands["all"]),
+        choices=ref_choices,
         default="J",
         type=str,
     )
@@ -79,9 +82,9 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
     os.makedirs(eniric.paths["precision"], exist_ok=True)
 
     spectral_types = ["M0", "M3", "M6", "M9"]
-    if ("ALL" in bands) or ("None" in bands):
+    if "ALL" in bands:
         bands = ["Z", "Y", "J", "H", "K"]
-    elif isinstance(bands, str) and (bands != "None"):
+    elif isinstance(bands, str):
         bands = [bands]
 
     vsini = ["1.0", "5.0", "10.0"]
