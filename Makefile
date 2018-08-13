@@ -43,10 +43,8 @@ data:
 	python eniric_scripts/make_test_data.py
 
 atmos:
-	split_atmmodel.py
-	bary_shift_atmmodel.py
-	split_atmmodel.py -b TEST
-	bary_shift_atmmodel.py -b TEST
+	split_atmmodel.py -b ALL
+	bary_shift_atmmodel.py -b ALL
 
 clean-build:
 	rm --force --recursive build/

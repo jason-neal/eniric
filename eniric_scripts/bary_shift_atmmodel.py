@@ -29,7 +29,7 @@ def _parser():
         "--bands",
         type=str,
         default=None,
-        choices=eniric.bands["all"],
+        choices=["ALL"].extend(eniric.bands["all"]),
         help="Wavelength bands to select. Default=None.",
         nargs="+",
     )

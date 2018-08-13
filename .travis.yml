@@ -48,9 +48,9 @@ before_script:
   - make_test_data.py
 
   # Prepare atmosphere models
-  #  - make atmos V=1
-  - python eniric_scripts/split_atmmodel.py -b K H J Y Z TEST
-  - python eniric_scripts/bary_shift_atmmodel.py -b K H J Y Z TEST
+  - make atmos V=1
+  # - python eniric_scripts/split_atmmodel.py -b K H J Y Z TEST
+  # - python eniric_scripts/bary_shift_atmmodel.py -b K H J Y Z TEST
 
 script:
     - pytest --cov=eniric --cov-report term-missing --durations 5

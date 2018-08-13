@@ -36,8 +36,8 @@ install:
   - cmd: "%PYTHON%\\python.exe eniric_scripts\\make_test_data.py"
 
   # Prepare atmosphere models
-  - cmd: "%PYTHON%\\python.exe eniric_scripts\\split_atmmodel.py"
-  - cmd: "%PYTHON%\\python.exe eniric_scripts\\bary_shift_atmmodel.py"
+  - cmd: "%PYTHON%\\python.exe eniric_scripts\\split_atmmodel.py -b ALL"
+  - cmd: "%PYTHON%\\python.exe eniric_scripts\\bary_shift_atmmodel.py -b ALL"
 
 build: off
 
