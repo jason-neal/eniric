@@ -20,7 +20,7 @@ from eniric.utilities import band_selector, mask_between, wav_selector
 memory = Memory(cachedir=eniric.cache["cachedir"], verbose=0)
 
 
-@memory.cache
+@memory.cache(ignore=["num_procs"])
 def rotational_convolution(
     wav_extended,
     wav_ext_rotation,
@@ -114,7 +114,7 @@ def rotational_convolution(
     return flux_conv_rot
 
 
-@memory.cache
+@memory.cache(ignore=["num_procs"])
 def resolution_convolution(
     wav_band,
     wav_extended,
@@ -182,7 +182,7 @@ def resolution_convolution(
     return flux_conv_res
 
 
-@memory.cache
+@memory.cache(ignore=["num_procs"])
 def convolution(
     wav,
     flux,
