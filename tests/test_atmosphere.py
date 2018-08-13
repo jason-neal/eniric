@@ -7,6 +7,7 @@ from hypothesis import assume, given, strategies as st
 
 import eniric
 from eniric.atmosphere import Atmosphere, barycenter_shift, consecutive_truths
+from eniric.broaden import resolution_convolution
 from eniric.utilities import band_limits
 
 size = 50  # Size of arrays if need consistent length
@@ -222,13 +223,13 @@ def test_atmos_broadening(atmosphere_fixture, resolution):
     atm = atmosphere_fixture[:4000]
     atm_org = atm.copy()
 
-    from eniric.broaden import resolution_convolution
+    #    normalize: bool = True,
 
     new_trans = resolution_convolution(
-        atm_org.wl, atm_org.wl, atm_org.transmission, R=resolution, fwhm_lim=5
+        atm_org.wl, atm_org.wl, atm_org.transmission, R=resolution, fwhm_lim=5, num_procs=1, normalize=True
     )
 
-    atm.broaden(resolution=resolution)
+    atm.broaden(resolution=resolution, num_procs=1)
 
     assert not np.allclose(
         atm.transmission, atm_org.transmission
@@ -252,7 +253,7 @@ def test_atmos_broadening_reduces_number_of_masked_points(
 
     atm_org = atm.copy()
 
-    atm.broaden(resolution=resolution)
+    atm.broaden(resolution=resolution, num_procs=1)
     assert np.allclose(atm.wl, atm_org.wl)  # Should not have changed
     assert np.allclose(atm.mask, atm_org.mask)  # Should not have changed
     assert np.allclose(atm.std, atm_org.std)  # Should not have changed
@@ -280,7 +281,7 @@ def test_atmos_broadening_at_higher_res_should_not_reduce_number_of_masked_point
 
     atm_org = atm.copy()
 
-    atm.broaden(resolution=resolution)
+    atm.broaden(resolution=resolution, num_procs=1)
     assert np.allclose(atm.wl, atm_org.wl)  # Should not have changed
     assert np.allclose(atm.mask, atm_org.mask)  # Should not have changed
     assert np.allclose(atm.std, atm_org.std)  # Should not have changed

@@ -272,7 +272,7 @@ class Atmosphere(object):
         fwhm_lim: int/float
             Number of FWHM to extend convolution.
         num_procs: Optional[int]
-            Number of processors to comupte the convolution with. Default = total processers - 1
+            Number of processors to compute the convolution with. Default = total processors - 1
         """
         self.transmission = resolution_convolution(
             wav_band=self.wl,
