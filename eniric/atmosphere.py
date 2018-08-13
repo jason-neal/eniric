@@ -301,11 +301,12 @@ class Atmosphere(object):
                         this_mask_value = True
                         if np.sum(~mask_slice) > 3:
                             print(
-                                "There were {0}/{1} ".format(
-                                    np.sum(~mask_slice), len(mask_slice)
-                                )
-                                + "zeros in this barycentric shift but None were 3 consecutive!"
+                                (
+                                    "There were {0}/{1} zeros in this "
+                                    "barycentric shift but None were 3 consecutive!"
+                                ).format(np.sum(~mask_slice), len(mask_slice))
                             )
+
                 else:
                     this_mask_value = np.bool(
                         np.product(mask_slice)
