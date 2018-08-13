@@ -85,7 +85,7 @@ def atm_model(request):
     return os.path.join(eniric.paths["atmmodel"], request.param)
 
 
-@pytest.fixture(params=[1, 4])
+@pytest.fixture(params=[2.5, 4])
 def atmosphere_fixture(request, atm_model):
     percent_cutoff = request.param
     atm = Atmosphere.from_file(atm_model)
@@ -93,13 +93,9 @@ def atmosphere_fixture(request, atm_model):
     return atm
 
 
-@pytest.fixture(params=[1, 4])
-def short_atmosphere(request, atm_model):
+def short_atmosphere(atmosphere_fixture):
     # First 500 data points only to speed up tests
-    percent_cutoff = request.param
-    atm = Atmosphere.from_file(atm_model)
-    atm.mask_transmission(percent_cutoff)
-    return atm[:2000]
+    return atmosphere_fixture[:500]
 
 
 @pytest.fixture(params=[(0, 1500), (8000, 9000)])
