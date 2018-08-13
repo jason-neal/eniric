@@ -1,7 +1,3 @@
-"""Functions to deal with the atmosphere models.
-
-Mainly the barycentric shifting of the absorption mask.
-"""
 import warnings
 from os.path import join
 from typing import List, Optional
@@ -20,6 +16,57 @@ class Atmosphere(object):
     """Atmospheric transmission object.
 
     Stores wavelength and atmospheric transmission arrays.
+    Enables telluric masking and accounting for barycentric motion.
+
+    Attributes
+    ----------
+    wl: ndarray
+        Wavelength array
+    transmission: ndarray
+        Atmospheric transmission (between 0 and 1)
+    std: ndarray
+        Standard deviation of transmission.
+    mask: ndarray
+        Transmission mask (1's are kept)
+    shifted: bool
+        Indicate shifted mask
+
+    Constructors
+    ----------
+    from_file(atmmodel)
+        Read in atmospheric model and prepare.
+    from_band(band, bary=False)
+        Read in atmospheric model for given band.
+
+    Methods
+    -------
+    to_file(fname, header, fmt)
+        Save the atmospheric model to a txt file.
+    at(wave)
+        Return the transmission value at the closest points to wave.
+    wave_select(wl_min, wl_max)
+       Slice Atmosphere between two wavelengths.
+    band_select(band)
+        Slice Atmosphere to a given band.
+    copy()
+        Make a copy of atmosphere object.
+    mask_transmission(depth)
+        Mask the transmission below given depth. e.g. 2%
+    bary_shift_mask(rv, consecutive_test)
+        Sweep telluric mask symmetrically by rv.
+    broaden(resolution, *kwargs)
+        Instrument broadening of the atmospheric transmission profile.
+
+    Configuration
+    -------------
+    Two things can be set for the Atmosphere class in the `config.yaml` file
+    The path to atmosphere data
+    e.g.
+        paths:
+            atmmodel: "path/to/atmmodel/directory"
+    The name for the atmosphere model .txt file
+        atmmodel:
+            base: "Average_TAPAS_2014"
     """
 
     def __init__(self, wavelength, transmission, mask=None, std=None, shifted=False):
@@ -109,7 +156,7 @@ class Atmosphere(object):
     def to_file(
         self, fname: str, header: Optional[List[str]] = None, fmt: str = "%11.8f"
     ):
-        """Save the atmospheric model to a file.
+        """Save the atmospheric model to a txt file.
 
         Converts micron back into nanometers to be consistent with from_file().
 
@@ -144,11 +191,12 @@ class Atmosphere(object):
         )
 
     def at(self, wave):
-        """Return the transmission value at the closest points.
-        This assumes that the atmosphere model is
-        sampled much haigher than the stellar spectra.
+        """Return the transmission value at the closest points to wave.
 
-        For instance the default has a sampling if 10 compred to 3.
+        This assumes that the atmosphere model is
+        sampled much higher than the stellar spectra.
+
+        For instance the default has a sampling if 10 compared to 3.
         (instead of interpolation)
 
         Parameters
@@ -168,16 +216,17 @@ class Atmosphere(object):
         return self[index_atm]
 
     def wave_select(self, wl_min, wl_max):
-        """Slice a between two wavelengths."""
+        """Slice Atmosphere between two wavelengths."""
         wl_mask = (self.wl < wl_max) & (self.wl > wl_min)
         return self[wl_mask]
 
     def band_select(self, band):
+        """Slice Atmosphere to a given Band."""
         wl_min, wl_max = band_limits(band)
         return self.wave_select(wl_min, wl_max)
 
     def copy(self):
-        """Index Atmosphere by returning a Atmosphere with indexed components."""
+        """Make a copy of atmosphere object."""
         return Atmosphere(
             wavelength=self.wl.copy(),
             transmission=self.transmission.copy(),
@@ -186,7 +235,7 @@ class Atmosphere(object):
         )
 
     def mask_transmission(self, depth: float = 2.0) -> None:
-        """Mask the transmission below given depth. e.g. 3%
+        """Mask the transmission below given depth. e.g. 2%
 
         Parameters
         ----------
@@ -200,7 +249,7 @@ class Atmosphere(object):
         self.mask = self.transmission >= cutoff
 
     def bary_shift_mask(self, rv: float = 30.0, consecutive_test: bool = False):
-        """RV shift mask symmetrically.
+        """Sweep telluric mask symmetrically by rv.
 
         Parameters
         ----------
@@ -230,7 +279,7 @@ class Atmosphere(object):
                 this_mask_value = False
             else:
                 # np.searchsorted is faster then the boolean masking wavelength range
-                # It returns index locations to place the min/max doppler-shifted values
+                # It returns index locations to put the min/max doppler-shifted values
                 slice_limits = np.searchsorted(self.wl, [blue_wl, red_wl])
                 slice_limits = [
                     index if (index < len(self.wl)) else len(self.wl) - 1
@@ -240,7 +289,7 @@ class Atmosphere(object):
                 mask_slice = self.mask[slice_limits[0] : slice_limits[1]]
 
                 if consecutive_test:
-                    # Make mask value False if there are 3 or more consecutive zeros in slice.
+                    # Mask value False if 3 or more consecutive zeros in slice.
                     len_consec_zeros = consecutive_truths(~mask_slice)
                     if np.all(
                         ~mask_slice
@@ -252,9 +301,10 @@ class Atmosphere(object):
                         this_mask_value = True
                         if np.sum(~mask_slice) > 3:
                             print(
-                                "There were {0}/{1} zeros in this barycentric shift but None were 3 consecutive!".format(
+                                "There were {0}/{1} ".format(
                                     np.sum(~mask_slice), len(mask_slice)
                                 )
+                                + "zeros in this barycentric shift but None were 3 consecutive!"
                             )
                 else:
                     this_mask_value = np.bool(
@@ -272,7 +322,7 @@ class Atmosphere(object):
         self.shifted = True
 
     def broaden(self, resolution: float, fwhm_lim: float = 5, num_procs=None):
-        """Broaden atmospheric transmission profile.
+        """Instrument broadening of the atmospheric transmission profile.
 
         This does not change any created masks.
 
