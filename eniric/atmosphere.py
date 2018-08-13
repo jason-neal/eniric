@@ -22,7 +22,7 @@ class Atmosphere(object):
     Stores wavelength and atmospheric transmission arrays.
     """
 
-    def __init__(self, wavelength, transmission, mask=None, std=None):
+    def __init__(self, wavelength, transmission, mask=None, std=None, shifted=False):
         assert len(wavelength) == len(
             transmission
         ), "Wavelength and transmission do not match length."
@@ -36,7 +36,7 @@ class Atmosphere(object):
             self.mask = np.ones_like(wavelength, dtype=bool)
         else:
             self.mask = np.asarray(mask, dtype=bool)
-        self.shifted = False
+        self.shifted = shifted
 
     @classmethod
     def from_file(cls, atmmodel: str):
@@ -53,8 +53,13 @@ class Atmosphere(object):
         wav_atm = wav_atm / 1e3  # conversion from nanometers to micrometers
         mask_atm = np.array(mask_atm, dtype=bool)
         # We do not use the std from the year atmosphere but need it for compatibility.
+        shifted = True if "_bary" in atmmodel else False
         return cls(
-            wavelength=wav_atm, transmission=flux_atm, mask=mask_atm, std=std_flux_atm
+            wavelength=wav_atm,
+            transmission=flux_atm,
+            mask=mask_atm,
+            std=std_flux_atm,
+            shifted=shifted,
         )
 
     @classmethod
@@ -205,6 +210,11 @@ class Atmosphere(object):
             Checks for 3 consecutive zeros to mask out transmission.
 
         """
+        if self.shifted:
+            warnings.warn(
+                "Detected that 'shifted' is already True. "
+                "Check that you want to rv extend masks again."
+            )
         rv_mps = rv * 1e3  # Convert from km/s into m/s
 
         shift_amplitudes = self.wl * rv_mps / const.c.value
@@ -259,6 +269,7 @@ class Atmosphere(object):
                         assert np.all(mask_slice)
             bary_mask.append(this_mask_value)
         self.mask = np.asarray(bary_mask, dtype=np.bool)
+        self.shifted = True
 
     def broaden(self, resolution: float, fwhm_lim: float = 5, num_procs=None):
         """Broaden atmospheric transmission profile.
