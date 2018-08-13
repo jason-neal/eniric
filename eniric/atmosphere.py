@@ -272,9 +272,7 @@ class Atmosphere(object):
         red_shifts = self.wl + shift_amplitudes
 
         bary_mask = []
-        for (blue_wl, wl, red_wl, mask) in zip(
-            blue_shifts, self.wl, red_shifts, self.mask
-        ):
+        for (blue_wl, red_wl, mask) in zip(blue_shifts, red_shifts, self.mask):
             if mask == 0:
                 this_mask_value = False
             else:
