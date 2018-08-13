@@ -178,6 +178,7 @@ def slope(wavelength, flux):
 
     return delta_flux / delta_lambda
 
+
 def RVprec_calc_masked(
     wavelength: Union[List[List[Any]], ndarray],
     flux: Union[ndarray, List[List[Any]]],

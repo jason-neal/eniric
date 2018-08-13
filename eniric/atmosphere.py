@@ -2,13 +2,13 @@ import warnings
 from os.path import join
 from typing import List, Optional
 
-from eniric.broaden import resolution_convolution
 import numpy as np
 from astropy import constants as const
 from numpy import ndarray
 
 import eniric
 import eniric.IOmodule as io
+from eniric.broaden import resolution_convolution
 from eniric.utilities import band_limits
 
 
@@ -135,8 +135,8 @@ class Atmosphere(object):
         except:
             warnings.warn(
                 """Could not find band file for band {0}.
-             It is recommend to create this using 
-                `split_atmosphere.py -b {0}` 
+             It is recommend to create this using
+                `split_atmosphere.py -b {0}`
                 `bary_shift_atmmodel.py -b {0}`
              Trying to load main atmosphere file for now. (will be slower).""".format(
                     band
