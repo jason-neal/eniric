@@ -11,9 +11,10 @@ from hypothesis import given, settings
 
 import eniric
 import eniric.utilities as utils
-from eniric.Qcalculator import quality
 from eniric.broaden import rotation_kernel, unitary_gaussian
+from eniric.Qcalculator import quality
 from eniric.utilities import (
+    doppler_shift,
     mask_between,
     moving_average,
     rv_cumulative,

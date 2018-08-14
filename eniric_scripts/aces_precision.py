@@ -2,7 +2,7 @@ import argparse
 import itertools
 import os
 from os.path import join
-from typing import Tuple
+from typing import List, Tuple
 
 import multiprocess as mprocess
 import numpy as np
@@ -158,7 +158,6 @@ def do_analysis(
 
     Parameters
     ----------
-
     air: bool
         Get model in air wavelengths.
     model: str
@@ -170,7 +169,7 @@ def do_analysis(
         We apply the radial velocity doppler shift after
            - convolution (rotation and resolution)
            - resampling
-          - SNR normalization.
+           - SNR normalization.
         in this way the RV only effects the precision due to the telluric mask interaction.
         The RV should maybe come between the rotational and instrumental convolution
         but we assume this effect is negligible.

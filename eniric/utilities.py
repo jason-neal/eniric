@@ -513,6 +513,7 @@ def load_btsettl_spectrum(params, photons=True, air=False):
     return wav_micron, flux_micron
 
 
+#####################################################
 def doppler_shift(wavelength, vel):
     r"""Doppler shift wavelength by a given velocity (non-relativistic).
 
