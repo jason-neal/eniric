@@ -5,7 +5,6 @@ Used to convolve the spectra for
     - instrumental resolution
 
 """
-import os
 from typing import Optional, Union
 
 import multiprocess as mprocess
@@ -14,21 +13,21 @@ from joblib import Memory
 from numpy.core.multiarray import ndarray
 from tqdm import tqdm
 
+import eniric
 from eniric.utilities import band_selector, mask_between, wav_selector
 
 # Cache convolution results.
-cachedir = os.path.join(os.path.expanduser("~"), ".joblib")
-memory = Memory(cachedir=cachedir, verbose=0)
+memory = Memory(cachedir=eniric.cache["cachedir"], verbose=0)
 
 
-@memory.cache
+@memory.cache(ignore=["num_procs"])
 def rotational_convolution(
     wav_extended,
     wav_ext_rotation,
     flux_ext_rotation,
     vsini,
     epsilon,
-    num_procs=None,
+    num_procs: Optional[int] = None,
     normalize: bool = True,
 ):
     """Perform Rotational convolution part of convolution.
@@ -115,14 +114,14 @@ def rotational_convolution(
     return flux_conv_rot
 
 
-@memory.cache
+@memory.cache(ignore=["num_procs"])
 def resolution_convolution(
     wav_band,
     wav_extended,
     flux_conv_rot,
     R,
     fwhm_lim,
-    num_procs: int = 1,
+    num_procs: Optional[int] = 1,
     normalize: bool = True,
 ):
     """Perform Resolution convolution part of convolution."""
@@ -183,7 +182,7 @@ def resolution_convolution(
     return flux_conv_res
 
 
-@memory.cache
+@memory.cache(ignore=["num_procs"])
 def convolution(
     wav,
     flux,

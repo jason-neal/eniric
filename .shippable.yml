@@ -48,6 +48,8 @@ install:
   - mv tests/config.yaml config.yaml
   # Generate data
   - make_test_data.py
+  # Prepare atmosphere models
+  - make atmos
 
 build:
   # pre_ci:
