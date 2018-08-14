@@ -11,7 +11,7 @@ from matplotlib import rc
 # to remove labels in one tick
 from matplotlib.ticker import MaxNLocator
 
-from eniric.utilities import band_selector
+from eniric.utilities import band_selector, rv_cumulative
 
 # set stuff for latex usage
 rc("text", usetex=True)
@@ -1139,59 +1139,59 @@ def plot_paper_plots():
 
     positiony_max = np.max(
         [
-            np.max(RV_cumulative(y1_60k_top)),
-            np.max(RV_cumulative(y1_60k_bottom)),
-            np.max(RV_cumulative(y1_80k_top)),
-            np.max(RV_cumulative(y1_80k_bottom)),
-            np.max(RV_cumulative(y1_100k_top)),
-            np.max(RV_cumulative(y1_100k_bottom)),
-            np.max(RV_cumulative(y2_60k_top)),
-            np.max(RV_cumulative(y2_60k_bottom)),
-            np.max(RV_cumulative(y2_80k_top)),
-            np.max(RV_cumulative(y2_80k_bottom)),
-            np.max(RV_cumulative(y2_100k_top)),
-            np.max(RV_cumulative(y2_100k_bottom)),
-            np.max(RV_cumulative(y3_60k_top)),
-            np.max(RV_cumulative(y3_60k_bottom)),
-            np.max(RV_cumulative(y3_80k_top)),
-            np.max(RV_cumulative(y3_80k_bottom)),
-            np.max(RV_cumulative(y3_100k_top)),
-            np.max(RV_cumulative(y3_100k_bottom)),
-            np.max(RV_cumulative(y4_60k_top)),
-            np.max(RV_cumulative(y4_60k_bottom)),
-            np.max(RV_cumulative(y4_80k_top)),
-            np.max(RV_cumulative(y4_80k_bottom)),
-            np.max(RV_cumulative(y4_100k_top)),
-            np.max(RV_cumulative(y4_100k_bottom)),
+            np.max(rv_cumulative(y1_60k_top)),
+            np.max(rv_cumulative(y1_60k_bottom)),
+            np.max(rv_cumulative(y1_80k_top)),
+            np.max(rv_cumulative(y1_80k_bottom)),
+            np.max(rv_cumulative(y1_100k_top)),
+            np.max(rv_cumulative(y1_100k_bottom)),
+            np.max(rv_cumulative(y2_60k_top)),
+            np.max(rv_cumulative(y2_60k_bottom)),
+            np.max(rv_cumulative(y2_80k_top)),
+            np.max(rv_cumulative(y2_80k_bottom)),
+            np.max(rv_cumulative(y2_100k_top)),
+            np.max(rv_cumulative(y2_100k_bottom)),
+            np.max(rv_cumulative(y3_60k_top)),
+            np.max(rv_cumulative(y3_60k_bottom)),
+            np.max(rv_cumulative(y3_80k_top)),
+            np.max(rv_cumulative(y3_80k_bottom)),
+            np.max(rv_cumulative(y3_100k_top)),
+            np.max(rv_cumulative(y3_100k_bottom)),
+            np.max(rv_cumulative(y4_60k_top)),
+            np.max(rv_cumulative(y4_60k_bottom)),
+            np.max(rv_cumulative(y4_80k_top)),
+            np.max(rv_cumulative(y4_80k_bottom)),
+            np.max(rv_cumulative(y4_100k_top)),
+            np.max(rv_cumulative(y4_100k_bottom)),
         ]
     )
 
     positiony_min = np.min(
         [
-            np.min(RV_cumulative(y1_60k_top)),
-            np.min(RV_cumulative(y1_60k_bottom)),
-            np.min(RV_cumulative(y1_80k_top)),
-            np.min(RV_cumulative(y1_80k_bottom)),
-            np.min(RV_cumulative(y1_100k_top)),
-            np.min(RV_cumulative(y1_100k_bottom)),
-            np.min(RV_cumulative(y2_60k_top)),
-            np.min(RV_cumulative(y2_60k_bottom)),
-            np.min(RV_cumulative(y2_80k_top)),
-            np.min(RV_cumulative(y2_80k_bottom)),
-            np.min(RV_cumulative(y2_100k_top)),
-            np.min(RV_cumulative(y2_100k_bottom)),
-            np.min(RV_cumulative(y3_60k_top)),
-            np.min(RV_cumulative(y3_60k_bottom)),
-            np.min(RV_cumulative(y3_80k_top)),
-            np.min(RV_cumulative(y3_80k_bottom)),
-            np.min(RV_cumulative(y3_100k_top)),
-            np.min(RV_cumulative(y3_100k_bottom)),
-            np.min(RV_cumulative(y4_60k_top)),
-            np.min(RV_cumulative(y4_60k_bottom)),
-            np.min(RV_cumulative(y4_80k_top)),
-            np.min(RV_cumulative(y4_80k_bottom)),
-            np.min(RV_cumulative(y4_100k_top)),
-            np.min(RV_cumulative(y4_100k_bottom)),
+            np.min(rv_cumulative(y1_60k_top)),
+            np.min(rv_cumulative(y1_60k_bottom)),
+            np.min(rv_cumulative(y1_80k_top)),
+            np.min(rv_cumulative(y1_80k_bottom)),
+            np.min(rv_cumulative(y1_100k_top)),
+            np.min(rv_cumulative(y1_100k_bottom)),
+            np.min(rv_cumulative(y2_60k_top)),
+            np.min(rv_cumulative(y2_60k_bottom)),
+            np.min(rv_cumulative(y2_80k_top)),
+            np.min(rv_cumulative(y2_80k_bottom)),
+            np.min(rv_cumulative(y2_100k_top)),
+            np.min(rv_cumulative(y2_100k_bottom)),
+            np.min(rv_cumulative(y3_60k_top)),
+            np.min(rv_cumulative(y3_60k_bottom)),
+            np.min(rv_cumulative(y3_80k_top)),
+            np.min(rv_cumulative(y3_80k_bottom)),
+            np.min(rv_cumulative(y3_100k_top)),
+            np.min(rv_cumulative(y3_100k_bottom)),
+            np.min(rv_cumulative(y4_60k_top)),
+            np.min(rv_cumulative(y4_60k_bottom)),
+            np.min(rv_cumulative(y4_80k_top)),
+            np.min(rv_cumulative(y4_80k_bottom)),
+            np.min(rv_cumulative(y4_100k_top)),
+            np.min(rv_cumulative(y4_100k_bottom)),
         ]
     )
 
@@ -1201,36 +1201,36 @@ def plot_paper_plots():
 
     ax1.fill_between(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y1_60k_bottom),
-        RV_cumulative(y1_60k_top),
+        rv_cumulative(y1_60k_bottom),
+        rv_cumulative(y1_60k_top),
         color="b",
         alpha=0.2,
     )
     ax1.fill_between(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y1_80k_bottom),
-        RV_cumulative(y1_80k_top),
+        rv_cumulative(y1_80k_bottom),
+        rv_cumulative(y1_80k_top),
         color="g",
         alpha=0.2,
     )
     ax1.fill_between(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y1_100k_bottom),
-        RV_cumulative(y1_100k_top),
+        rv_cumulative(y1_100k_bottom),
+        rv_cumulative(y1_100k_top),
         color="r",
         alpha=0.2,
     )
 
     ax1.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y1_60k_bottom),
+        rv_cumulative(y1_60k_bottom),
         marker="^",
         color="b",
         alpha=0.4,
     )
     ax1.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y1_60k_top),
+        rv_cumulative(y1_60k_top),
         marker="o",
         color="b",
         alpha=0.4,
@@ -1238,14 +1238,14 @@ def plot_paper_plots():
 
     ax1.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y1_80k_bottom),
+        rv_cumulative(y1_80k_bottom),
         marker="^",
         color="g",
         alpha=0.4,
     )
     ax1.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y1_80k_top),
+        rv_cumulative(y1_80k_top),
         marker="o",
         color="g",
         alpha=0.4,
@@ -1253,14 +1253,14 @@ def plot_paper_plots():
 
     ax1.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y1_100k_bottom),
+        rv_cumulative(y1_100k_bottom),
         marker="^",
         color="r",
         alpha=0.4,
     )
     ax1.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y1_100k_top),
+        rv_cumulative(y1_100k_top),
         marker="o",
         color="r",
         alpha=0.4,
@@ -1284,36 +1284,36 @@ def plot_paper_plots():
 
     ax2.fill_between(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y2_60k_bottom),
-        RV_cumulative(y2_60k_top),
+        rv_cumulative(y2_60k_bottom),
+        rv_cumulative(y2_60k_top),
         color="b",
         alpha=0.2,
     )
     ax2.fill_between(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y2_80k_bottom),
-        RV_cumulative(y2_80k_top),
+        rv_cumulative(y2_80k_bottom),
+        rv_cumulative(y2_80k_top),
         color="g",
         alpha=0.2,
     )
     ax2.fill_between(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y2_100k_bottom),
-        RV_cumulative(y2_100k_top),
+        rv_cumulative(y2_100k_bottom),
+        rv_cumulative(y2_100k_top),
         color="r",
         alpha=0.2,
     )
 
     ax2.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y2_60k_bottom),
+        rv_cumulative(y2_60k_bottom),
         marker="^",
         color="b",
         alpha=0.4,
     )
     ax2.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y2_60k_top),
+        rv_cumulative(y2_60k_top),
         marker="o",
         color="b",
         alpha=0.4,
@@ -1321,14 +1321,14 @@ def plot_paper_plots():
 
     ax2.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y2_80k_bottom),
+        rv_cumulative(y2_80k_bottom),
         marker="^",
         color="g",
         alpha=0.4,
     )
     ax2.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y2_80k_top),
+        rv_cumulative(y2_80k_top),
         marker="o",
         color="g",
         alpha=0.4,
@@ -1336,14 +1336,14 @@ def plot_paper_plots():
 
     ax2.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y2_100k_bottom),
+        rv_cumulative(y2_100k_bottom),
         marker="^",
         color="r",
         alpha=0.4,
     )
     ax2.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y2_100k_top),
+        rv_cumulative(y2_100k_top),
         marker="o",
         color="r",
         alpha=0.4,
@@ -1367,36 +1367,36 @@ def plot_paper_plots():
 
     ax3.fill_between(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y3_60k_bottom),
-        RV_cumulative(y3_60k_top),
+        rv_cumulative(y3_60k_bottom),
+        rv_cumulative(y3_60k_top),
         color="b",
         alpha=0.2,
     )
     ax3.fill_between(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y3_80k_bottom),
-        RV_cumulative(y3_80k_top),
+        rv_cumulative(y3_80k_bottom),
+        rv_cumulative(y3_80k_top),
         color="g",
         alpha=0.2,
     )
     ax3.fill_between(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y3_100k_bottom),
-        RV_cumulative(y3_100k_top),
+        rv_cumulative(y3_100k_bottom),
+        rv_cumulative(y3_100k_top),
         color="r",
         alpha=0.2,
     )
 
     ax3.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y3_60k_bottom),
+        rv_cumulative(y3_60k_bottom),
         marker="^",
         color="b",
         alpha=0.4,
     )
     ax3.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y3_60k_top),
+        rv_cumulative(y3_60k_top),
         marker="o",
         color="b",
         alpha=0.4,
@@ -1404,14 +1404,14 @@ def plot_paper_plots():
 
     ax3.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y3_80k_bottom),
+        rv_cumulative(y3_80k_bottom),
         marker="^",
         color="g",
         alpha=0.4,
     )
     ax3.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y3_80k_top),
+        rv_cumulative(y3_80k_top),
         marker="o",
         color="g",
         alpha=0.4,
@@ -1419,14 +1419,14 @@ def plot_paper_plots():
 
     ax3.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y3_100k_bottom),
+        rv_cumulative(y3_100k_bottom),
         marker="^",
         color="r",
         alpha=0.4,
     )
     ax3.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y3_100k_top),
+        rv_cumulative(y3_100k_top),
         marker="o",
         color="r",
         alpha=0.4,
@@ -1451,36 +1451,36 @@ def plot_paper_plots():
 
     ax4.fill_between(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y4_60k_bottom),
-        RV_cumulative(y4_60k_top),
+        rv_cumulative(y4_60k_bottom),
+        rv_cumulative(y4_60k_top),
         color="b",
         alpha=0.2,
     )
     ax4.fill_between(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y4_80k_bottom),
-        RV_cumulative(y4_80k_top),
+        rv_cumulative(y4_80k_bottom),
+        rv_cumulative(y4_80k_top),
         color="g",
         alpha=0.2,
     )
     ax4.fill_between(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y4_100k_bottom),
-        RV_cumulative(y4_100k_top),
+        rv_cumulative(y4_100k_bottom),
+        rv_cumulative(y4_100k_top),
         color="r",
         alpha=0.2,
     )
 
     ax4.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y4_60k_bottom),
+        rv_cumulative(y4_60k_bottom),
         marker="^",
         color="b",
         alpha=0.4,
     )
     ax4.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y4_60k_top),
+        rv_cumulative(y4_60k_top),
         marker="o",
         color="b",
         alpha=0.4,
@@ -1488,14 +1488,14 @@ def plot_paper_plots():
 
     ax4.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y4_80k_bottom),
+        rv_cumulative(y4_80k_bottom),
         marker="^",
         color="g",
         alpha=0.4,
     )
     ax4.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y4_80k_top),
+        rv_cumulative(y4_80k_top),
         marker="o",
         color="g",
         alpha=0.4,
@@ -1503,14 +1503,14 @@ def plot_paper_plots():
 
     ax4.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y4_100k_bottom),
+        rv_cumulative(y4_100k_bottom),
         marker="^",
         color="r",
         alpha=0.4,
     )
     ax4.scatter(
         range(1, len(bands_total) + 1),
-        RV_cumulative(y4_100k_top),
+        rv_cumulative(y4_100k_top),
         marker="o",
         color="r",
         alpha=0.4,

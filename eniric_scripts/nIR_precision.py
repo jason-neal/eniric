@@ -11,14 +11,17 @@ import numpy as np
 from matplotlib import rc
 
 import eniric
-import eniric.atmosphere as atm
 import eniric.IOmodule as io
 import eniric.plotting_functions as plt_functions
 import eniric.Qcalculator as Qcalculator
 import eniric.snr_normalization as snrnorm
-import eniric.utilities as utils
+from eniric.atmosphere import Atmosphere, barycenter_shift
+from eniric.utilities import band_selector, moving_average
 
 rc("text", usetex=True)  # set stuff for latex usage
+
+ref_choices = ["SELF"]
+ref_choices.extend(eniric.bands["all"])
 
 
 def _parser():
@@ -35,7 +38,7 @@ def _parser():
         "--bands",
         type=str,
         default="J",
-        choices=["ALL", "VIS", "GAP", "Z", "Y", "J", "H", "K", "None"],
+        choices=eniric.bands["all"],
         help="Wavelength bands to select. Default=J.",
         nargs="+",
     )
@@ -56,7 +59,7 @@ def _parser():
         "--ref_band",
         help="SNR reference band. Default=J. (Default=100). "
         "'self' scales each band relative to the SNR itself.",
-        choices=["self", "VIS", "GAP", "Z", "Y", "J", "H", "K"],
+        choices=ref_choices,
         default="J",
         type=str,
     )
@@ -79,9 +82,9 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
     os.makedirs(eniric.paths["precision"], exist_ok=True)
 
     spectral_types = ["M0", "M3", "M6", "M9"]
-    if ("ALL" in bands) or ("None" in bands):
+    if "ALL" in bands:
         bands = ["Z", "Y", "J", "H", "K"]
-    elif isinstance(bands, str) and (bands != "None"):
+    elif isinstance(bands, str):
         bands = [bands]
 
     vsini = ["1.0", "5.0", "10.0"]
@@ -193,10 +196,18 @@ def calculate_prec(
 
         if use_unshifted:
             atmmodel = os.path.join(
-                eniric.paths["atmmodel"], "Average_TAPAS_2014_{}.txt".format(band)
+                eniric.paths["atmmodel"],
+                "{0}_{1}.txt".format(eniric.atmmodel["base"], band),
             )
             print("Reading atmospheric model...")
-            wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(atmmodel)
+            atm = Atmosphere.from_file(atmmodel)
+            wav_atm, flux_atm, std_flux_atm, mask_atm = (
+                atm.wl,
+                atm.transmission,
+                atm.std,
+                atm.mask,
+            )
+
             print(
                 (
                     "There were {0:d} unmasked pixels out of {1:d}., or {2:.1%}." ""
@@ -213,15 +224,21 @@ def calculate_prec(
             print("Done.")
             print("Calculating impact of Barycentric movement on mask...")
             # mask_atm = atm.old_barycenter_shift(wav_atm, mask_atm, rv_offset=rv_offset)
-            mask_atm = atm.barycenter_shift(wav_atm, mask_atm, rv_offset=rv_offset)
+            mask_atm = barycenter_shift(wav_atm, mask_atm, rv_offset=rv_offset)
         else:
             shifted_atmmodel = os.path.join(
-                eniric.paths["atmmodel"], "Average_TAPAS_2014_{}_bary.txt".format(band)
+                eniric.paths["atmmodel"],
+                "{0}_{1}_bary.txt".format(eniric.atmmodel["base"], band),
             )
             print("Reading pre-doppler-shifted atmospheric model...")
-            wav_atm, flux_atm, std_flux_atm, mask_atm = atm.prepare_atmosphere(
-                shifted_atmmodel
+            atm = Atmosphere.from_file(shifted_atmmodel)
+            wav_atm, flux_atm, std_flux_atm, mask_atm = (
+                atm.wl,
+                atm.transmission,
+                atm.std,
+                atm.mask,
             )
+
         print("Done.")
 
         print(
@@ -473,11 +490,11 @@ def calculate_all_masked(wav_atm, mask_atm):
     concatenate result.
     """
     # calculating the number of pixels inside the mask
-    wav_Z, mask_Z = utils.band_selector(wav_atm, mask_atm, "Z")
-    wav_Y, mask_Y = utils.band_selector(wav_atm, mask_atm, "Y")
-    wav_J, mask_J = utils.band_selector(wav_atm, mask_atm, "J")
-    wav_H, mask_H = utils.band_selector(wav_atm, mask_atm, "H")
-    wav_K, mask_K = utils.band_selector(wav_atm, mask_atm, "K")
+    wav_Z, mask_Z = band_selector(wav_atm, mask_atm, "Z")
+    wav_Y, mask_Y = band_selector(wav_atm, mask_atm, "Y")
+    wav_J, mask_J = band_selector(wav_atm, mask_atm, "J")
+    wav_H, mask_H = band_selector(wav_atm, mask_atm, "H")
+    wav_K, mask_K = band_selector(wav_atm, mask_atm, "K")
 
     bands_masked = np.concatenate((mask_Z, mask_Y, mask_J, mask_H, mask_K))
 
@@ -491,30 +508,6 @@ def calculate_all_masked(wav_atm, mask_atm):
             np.sum(bands_masked) / len(bands_masked),
         )
     )
-
-
-def rv_cumulative(rv_vector):
-    """Function that calculates the cumulative RV vector weighted_error."""
-    return [
-        weighted_error(rv_vector[:2]),
-        weighted_error(rv_vector[:3]),
-        weighted_error(rv_vector[:4]),
-        weighted_error(rv_vector),
-    ]
-
-
-def weighted_error(rv_vector):
-    """Function that calculates the average weighted error from a vector of errors."""
-    rv_vector = np.array(rv_vector)
-    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / rv_vector) ** 2.0)))
-
-    return rv_value
-
-
-def moving_average(x, window_size):
-    """Moving average."""
-    window = np.ones(int(window_size)) / float(window_size)
-    return np.convolve(x, window, "same")
 
 
 ###############################################################################

@@ -2,6 +2,7 @@ language: python
 python:
     - 3.5
     - 3.6
+    - 3.7
 
 before_install:
   # http://conda.pydata.org/docs/travis.html
@@ -47,6 +48,8 @@ install:
   - mv tests/config.yaml config.yaml
   # Generate data
   - make_test_data.py
+  # Prepare atmosphere models
+  - make atmos
 
 build:
   # pre_ci:

@@ -5,6 +5,7 @@ name: eniric_default
 # The parameters defining the spectral libraries live here.
 paths:
   phoenix_raw: "../../data/PHOENIX-ALL/PHOENIX"
+  btsettl_raw: "../../data/PHOENIX-All/BT-SETTL"
   phoenix_dat: "data/PHOENIX-ACES_spectra"
   results: "data/results"
   resampled: "data/resampled"
@@ -12,13 +13,28 @@ paths:
   atmmodel: "data/atmmodel"
   precision: "precision/"
 
+cache:
+   cachedir: [".joblib"]
+
+atmmodel:
+  # Base name of telluric model
+  base: "Average_TAPAS_2014"
+
 bands:
-  all: ["VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP"]
+  all: ["VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP", "CARMENES_NIR", "CARMENES_VIS", "TEST"]
+
+# Add your custom band limits here
+custom_bands:
+    CARMENES_NIR: [0.96, 1.71]
+    CARMENES_VIS: [0.52, 0.96]
+    TEST: [2.1,2.2]
+#  g: ()
+#  r: ()
+#  z: ()
 
 
 # Keywords needed for Starfish to be used
 outdir : results/
-
 plotdir : plots/
 
 # Starfish parameters defining your raw spectral library live here.
@@ -34,5 +50,5 @@ grid:
     buffer: 50. # AA
 
 data:
-    grid_name: "Eniric"
+    grid_name: "eniric"
     instruments: []

@@ -28,6 +28,8 @@ config = {
         "eniric_scripts/nIR_run.py",
         "eniric_scripts/nIR_precision.py",
         "eniric_scripts/prepare_data.py",
+        "eniric_scripts/split_atmmodel.py",
+        "eniric_scripts/bary_shift_atmmodel.py",
     ],
     "name": "eniric",
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -48,6 +50,7 @@ config = {
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Natural Language :: English",
     ],
     # What does your project relate to?
