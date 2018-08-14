@@ -27,7 +27,7 @@ def rotational_convolution(
     flux_ext_rotation,
     vsini,
     epsilon,
-    num_procs=None,
+    num_procs: Optional[int] = None,
     normalize: bool = True,
 ):
     """Perform Rotational convolution part of convolution.
@@ -121,7 +121,7 @@ def resolution_convolution(
     flux_conv_rot,
     R,
     fwhm_lim,
-    num_procs: int = 1,
+    num_procs: Optional[int] = 1,
     normalize: bool = True,
 ):
     """Perform Resolution convolution part of convolution."""
