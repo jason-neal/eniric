@@ -14,7 +14,7 @@ data/resampled/*
 data/results/*
 data/PHOENIX-ACES_spectra/Z*
 data/atmmodel/Average_TAPAS_2014_visible.txt
-data/atmmodel/Average_TAPAS_2014.txt
+data/atmmodel/Average_TAPAS_2014*.txt
 data/test_data/*
 
 # updated_files data

@@ -1,9 +1,9 @@
 """Test Qcaclulator."""
 
-import astropy.constants as const
 import astropy.units as u
 import numpy as np
 import pytest
+from astropy import constants as const
 
 import eniric.Qcalculator as Q
 

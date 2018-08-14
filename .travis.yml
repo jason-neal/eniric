@@ -21,14 +21,14 @@ cache:
 install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
-  
+
   # Install heavy science packages
   - travis_retry conda install --yes astropy cython emcee h5py matplotlib scikit-learn scipy
-  
+
   # Install eniric requirements
   - travis_retry pip install -r requirements.txt
   - travis_retry pip install -r requirements_dev.txt
-  
+
   # Install Starfish
   - cd $HOME
   - travis_retry git clone https://github.com/iancze/Starfish.git
@@ -46,6 +46,12 @@ before_script:
 
   # Generate data
   - make_test_data.py
+
+  # Prepare atmosphere models
+  - make atmos V=1
+  # - python eniric_scripts/split_atmmodel.py -b K H J Y Z TEST
+  # - python eniric_scripts/bary_shift_atmmodel.py -b K H J Y Z TEST
+
 script:
     - pytest --cov=eniric --cov-report term-missing --durations 5
     - coverage xml -i

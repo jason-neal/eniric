@@ -13,13 +13,21 @@ paths:
   atmmodel: "data/atmmodel"
   precision: "precision/"
 
+cache:
+   cachedir: [".joblib"]
+
+atmmodel:
+  # Base name of telluric model
+  base: "Average_TAPAS_2014"
+
 bands:
-  all: [None, "VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP", "CARMENES_NIR", "CARMENES_VIS"]
+  all: ["VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP", "CARMENES_NIR", "CARMENES_VIS", "TEST"]
 
 # Add your custom band limits here
 custom_bands:
-    CARMENES_NIR: (0.96, 1.71),
-    CARMENES_VIS: (0.52, 0.96),
+    CARMENES_NIR: [0.96, 1.71]
+    CARMENES_VIS: [0.52, 0.96]
+    TEST: [2.1,2.2]
 #  g: ()
 #  r: ()
 #  z: ()
