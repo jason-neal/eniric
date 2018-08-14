@@ -12,6 +12,8 @@ help:
 	@echo "		Remove test data."
 	@echo "	data"
 	@echo "		Create test data."
+	@echo "	atmos"
+	@echo "		Prepare atmosphere model data."
 	@echo "	isort"
 	@echo "		Sort import statements."
 	@echo "	lint"
@@ -19,9 +21,9 @@ help:
 	@echo "	test"
 	@echo "		Run py.test"
 	@echo "	init"
-	@echo "		Initalize by installing requirements"
+	@echo "		Initialise by installing requirements"
 	@echo "	init-dev"
-	@echo "		Initalize by installing normal and dev requirements"
+	@echo "		Initialise by installing normal and dev requirements"
 	@echo "	cov"
 	@echo "		Produce coverage report"
 	@echo "	mypy"
@@ -39,6 +41,10 @@ clean-data:
 
 data:
 	python eniric_scripts/make_test_data.py
+
+atmos:
+	split_atmmodel.py -b ALL
+	bary_shift_atmmodel.py -b ALL
 
 clean-build:
 	rm --force --recursive build/

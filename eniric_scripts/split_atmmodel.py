@@ -1,20 +1,23 @@
 #!/usr/bin/env python
-"""Split the large atmospheric model transmission spectra into the separate bands.
-To be able to include the separate files and to speed up performances for
-calculations on individual bands only.
+"""Script to split the large atmospheric model transmission spectra into the separate bands.
+This create smaller files to load for each band for individual bands only.
 """
-
 import argparse
 import os
 import sys
+from os.path import join
 from typing import List, Optional
 
 import numpy as np
-from astropy.constants import c
+from astropy import constants as const
 
 import eniric
-import eniric.IOmodule as io
-import eniric.utilities as utils
+from eniric.atmosphere import Atmosphere
+from eniric.utilities import band_limits
+
+atmmodel = "{0}.txt".format(eniric.atmmodel["base"])
+choices = ["ALL"]
+choices.extend(eniric.bands["all"])
 
 
 def _parser():
@@ -25,16 +28,14 @@ def _parser():
 
     parser = argparse.ArgumentParser(description="Band separate out atmospheric model.")
 
-    parser.add_argument(
-        "-m", "--model", help="Model name", type=str, default="Average_TAPAS_2014.txt"
-    )
+    parser.add_argument("-m", "--model", help="Model name", type=str, default=atmmodel)
     parser.add_argument(
         "-b",
         "--bands",
         type=str,
-        default=None,
+        default="ALL",
         nargs="+",
-        choices=eniric.bands["all"],
+        choices=choices,
         help="Wavelength band to select, Default='All'",
     )
     parser.add_argument(
@@ -92,73 +93,80 @@ def check_positive(value: str) -> float:
 
 
 def main(
-    model: str = "Average_TAPAS_2014.txt",
+    model: str = atmmodel,
     bands: Optional[List[str]] = None,
-    new_name=None,
-    data_dir=None,
+    new_name: Optional[str] = None,
+    data_dir: Optional[str] = None,
     rv_extend: float = 100,
 ):
     """Split the large atmospheric model transmission spectra into the separate bands.
 
     Keeps wavelength of atmosphere model as nanometers.
+
+    Parameters
+    ----------
+    model: str
+        Telluric model file to load. It has columns wavelength, flux, std_flux, mask.
+    bands: list[str]
+        List bands to split model into separate files.
+    new_name: str
+        New file name base.
+    data_dir: Optional[str]
+        Directory for results. Can also be given in config.yaml "paths:atmmodel:"...
+    rv_extend: float (positive) (default 100)
+        Rv amount to extend wavelength range of telluric band. To later apply barycenter shifting.
     """
-    if bands is None:
-        bands = ["All"]
+    if (bands is None) or ("ALL" in bands):
+        bands = eniric.bands["all"]
     if new_name is None:
         new_name = model.split(".")[0]
     if data_dir is None:
-        data_dir = eniric.paths["atmmodel"]
+        data_dir_ = eniric.paths["atmmodel"]
+    else:
+        data_dir_ = str(data_dir)
 
-    model_name = os.path.join(data_dir, model)
+    model_name = join(data_dir_, model)
 
-    atm_wav, atm_flux, atm_std_flux, atm_mask = io.pdread_4col(model_name)
+    # If trying to obtain the provided model extract from and it doesn't yet exist
+    # extract from tar.gz file. (Extracted it is 230 MB which is to large for Git)
+    if "Average_TAPAS_2014.txt" == atmmodel:
+        if not os.path.exists(model_name):
+            print("Unpacking Average_TAPAS_2014.txt.tar.gz...")
+            import tarfile
+
+            with tarfile.open(str(model_name) + ".tar.gz", "r") as tar:
+                tar.extractall(data_dir_)
+            print("Unpacked")
+    print("Loading from_file {0}".format(model_name))
+    atm = Atmosphere.from_file(model_name)
 
     # Return value from saving each band
     write_status = np.empty_like(bands, dtype=int)
 
     for i, band in enumerate(bands):
-        band_name = "{0}_{1}.txt".format(new_name, band)
-        band_min, band_max = utils.band_limits(band)
+        print("Starting {0}".format(band))
+        filename_band = "{0}_{1}.txt".format(new_name, band)
+        band_min, band_max = band_limits(band)
 
-        # Doppler shift values to extend saved wavelengths
-        band_min = band_min * (1 - rv_extend / c.value)
-        band_max = band_max * (1 + rv_extend / c.value)
+        # * 1000 to convert into km/s
+        band_min = band_min * (1 - rv_extend * 1000 / const.c.value)
+        band_max = band_max * (1 + rv_extend * 1000 / const.c.value)
 
-        # Convert band limits (micron) into nanometers (Keeps datafiles cleaner)
-        band_min, band_max = band_min * 1e3, band_max * 1e3
-
-        band_wav, band_flux = utils.wav_selector(atm_wav, atm_flux, band_min, band_max)
-        __, band_std_flux = utils.wav_selector(
-            atm_wav, atm_std_flux, band_min, band_max
-        )
-        __, band_mask = utils.wav_selector(atm_wav, atm_mask, band_min, band_max)
-        assert (
-            (len(band_wav) == len(band_flux))
-            & (len(band_std_flux) == len(band_mask))
-            & (len(band_flux) == len(band_mask))
-        )  # Check lengths are the same
-
-        band_mask = np.asarrya(band_mask, dtype=bool)
+        split_atm = atm.wave_select(band_min, band_max)
 
         # Save the result to file
-        filename = os.path.join(data_dir, band_name)
+        filename = join(data_dir_, filename_band)
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
+        print("Saving to_file {}".format(filename))
+        write_status[i] = split_atm.to_file(filename, header=header, fmt="%11.8f")
+    print("Done Splitting")
 
-        write_status[i] = io.pdwrite_cols(
-            filename,
-            band_wav,
-            band_flux,
-            band_std_flux,
-            band_mask,
-            sep="\t",
-            header=header,
-            float_format="%10.8f",
-        )
-
-        return np.sum(write_status)  # If any extracts fail they will turn up here.
+    return np.sum(write_status)  # If any extracts fail they will turn up here.
 
 
 if __name__ == "__main__":
     args = vars(_parser())
     opts = {k: args[k] for k in args}
-    sys.exit(main(**opts))
+    exit_status = int(main(**opts))
+    print("exit_status", exit_status)
+    sys.exit(exit_status)

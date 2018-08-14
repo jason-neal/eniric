@@ -28,6 +28,8 @@ config = {
         "eniric_scripts/nIR_run.py",
         "eniric_scripts/nIR_precision.py",
         "eniric_scripts/prepare_data.py",
+        "eniric_scripts/split_atmmodel.py",
+        "eniric_scripts/bary_shift_atmmodel.py",
     ],
     "name": "eniric",
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
