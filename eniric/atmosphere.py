@@ -1,25 +1,348 @@
-"""Functions to deal with the atmosphere models.
+import warnings
+from os.path import join
+from typing import List, Optional
 
-Mainly the barycentric shifting of the absorption mask.
-"""
-
-from typing import Tuple
-
-import matplotlib.pyplot as plt
 import numpy as np
-from astropy.constants import c
+from astropy import constants as const
 from numpy import ndarray
 
+import eniric
 import eniric.IOmodule as io
+from eniric.broaden import resolution_convolution
+from eniric.utilities import band_limits
 
 
-def prepare_atmosphere(atmmodel: str) -> Tuple[ndarray, ndarray, ndarray, ndarray]:
-    """Read in atmospheric model and prepare."""
-    wav_atm, flux_atm, std_flux_atm, mask_atm = io.pdread_4col(atmmodel)
-    # pandas already returns numpy arrays
-    wav_atm = wav_atm / 1000.0  # conversion from nanometers to micrometers
-    mask_atm = np.array(mask_atm, dtype=bool)
-    return wav_atm, flux_atm, std_flux_atm, mask_atm
+class Atmosphere(object):
+    """Atmospheric transmission object.
+
+    Stores wavelength and atmospheric transmission arrays.
+    Enables telluric masking and accounting for barycentric motion.
+
+    Attributes
+    ----------
+    wl: ndarray
+        Wavelength array
+    transmission: ndarray
+        Atmospheric transmission (between 0 and 1)
+    std: ndarray
+        Standard deviation of transmission.
+    mask: ndarray
+        Transmission mask (1's are kept)
+    shifted: bool
+        Indicate shifted mask
+
+    Constructors
+    ----------
+    from_file(atmmodel)
+        Read in atmospheric model and prepare.
+    from_band(band, bary=False)
+        Read in atmospheric model for given band.
+
+    Methods
+    -------
+    to_file(fname, header, fmt)
+        Save the atmospheric model to a txt file.
+    at(wave)
+        Return the transmission value at the closest points to wave.
+    wave_select(wl_min, wl_max)
+       Slice Atmosphere between two wavelengths.
+    band_select(band)
+        Slice Atmosphere to a given band.
+    copy()
+        Make a copy of atmosphere object.
+    mask_transmission(depth)
+        Mask the transmission below given depth. e.g. 2%
+    bary_shift_mask(rv, consecutive_test)
+        Sweep telluric mask symmetrically by rv.
+    broaden(resolution, *kwargs)
+        Instrument broadening of the atmospheric transmission profile.
+
+    Configuration
+    -------------
+    Two things can be set for the Atmosphere class in the `config.yaml` file
+    The path to atmosphere data
+    e.g.
+        paths:
+            atmmodel: "path/to/atmmodel/directory"
+    The name for the atmosphere model .txt file
+        atmmodel:
+            base: "Average_TAPAS_2014"
+    """
+
+    def __init__(self, wavelength, transmission, mask=None, std=None, shifted=False):
+        assert len(wavelength) == len(
+            transmission
+        ), "Wavelength and transmission do not match length."
+        self.wl = np.asarray(wavelength)
+        self.transmission = np.asarray(transmission)
+        if std is None:
+            self.std = np.zeros_like(wavelength)
+        else:
+            self.std = np.asarray(std)
+        if mask is None:
+            self.mask = np.ones_like(wavelength, dtype=bool)
+        else:
+            self.mask = np.asarray(mask, dtype=bool)
+        self.shifted = shifted
+
+    @classmethod
+    def from_file(cls, atmmodel: str):
+        """Read in atmospheric model and prepare.
+
+        Alternate constructor for Atmosphere.
+
+        Parameters
+        ----------
+        atmmodel: str
+            Name of atmosphere file.
+        """
+        wav_atm, flux_atm, std_flux_atm, mask_atm = io.pdread_4col(atmmodel)
+        wav_atm = wav_atm / 1e3  # conversion from nanometers to micrometers
+        mask_atm = np.array(mask_atm, dtype=bool)
+        # We do not use the std from the year atmosphere but need it for compatibility.
+        shifted = True if "_bary" in atmmodel else False
+        return cls(
+            wavelength=wav_atm,
+            transmission=flux_atm,
+            mask=mask_atm,
+            std=std_flux_atm,
+            shifted=shifted,
+        )
+
+    @classmethod
+    def from_band(cls, band: str, bary: bool = False):
+        """Read in atmospheric model for given band.
+
+        Alternate constructor for Atmosphere. Base on "base" path in config.yaml.
+
+        Parameters
+        ----------
+        band: str
+            Name of atmosphere file.
+        bary: bool
+            Barycentric shifted mask.
+        """
+
+        extension = "_bary.txt" if bary else ".txt"
+        atmmodel = join(
+            eniric.paths["atmmodel"],
+            "{0}_{1}{2}".format(eniric.atmmodel["base"], band, extension),
+        )
+
+        try:
+            # Try find the band file
+            atm = cls.from_file(atmmodel)
+        except IOError:
+            warnings.warn(
+                """Could not find band file for band {0}.
+             It is recommend to create this using
+                `split_atmosphere.py -b {0}`
+                `bary_shift_atmmodel.py -b {0}`
+             Trying to load main atmosphere file for now. (will be slower).""".format(
+                    band
+                )
+            )
+            full_model = join(
+                eniric.paths["atmmodel"], "{0}.txt".format(eniric.atmmodel["base"])
+            )
+            atm = cls.from_file(full_model)
+
+            # Shorten to band
+            atm = atm.wave_select(*band_limits(band))
+            if bary:
+                atm.bary_shift_mask(consecutive_test=True)
+        return atm
+
+    def to_file(
+        self, fname: str, header: Optional[List[str]] = None, fmt: str = "%11.8f"
+    ):
+        """Save the atmospheric model to a txt file.
+
+        Converts micron back into nanometers to be consistent with from_file().
+
+        Parameters
+        ----------
+        fname: str
+            Name of atmosphere file to save to.
+        header:
+            Header lines to add.
+        fmt: str
+             String formatting
+        """
+        if header is None:
+            header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
+        return io.pdwrite_cols(
+            fname,
+            self.wl * 1000,
+            self.transmission,
+            self.std,
+            self.mask.astype(int),
+            header=header,
+            float_format=fmt,
+        )
+
+    def __getitem__(self, item):
+        """Index Atmosphere by returning a Atmosphere with indexed components."""
+        return Atmosphere(
+            wavelength=self.wl[item],
+            transmission=self.transmission[item],
+            mask=self.mask[item],
+            std=self.std[item],
+        )
+
+    def at(self, wave):
+        """Return the transmission value at the closest points to wave.
+
+        This assumes that the atmosphere model is
+        sampled much higher than the stellar spectra.
+
+        For instance the default has a sampling if 10 compared to 3.
+        (instead of interpolation)
+
+        Parameters
+        ----------
+        wave: ndarray
+            Wavelengths at which to return closest atmosphere values.
+        """
+        # Getting the wav, flux and mask values from the atm model
+        # that are the closest to the stellar wav values, see
+        # https://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
+        index_atm = np.searchsorted(self.wl, wave)
+        wl_len = len(self.wl)
+        # replace indexes outside the array, at the very end, by the value at the very end
+        # index_atm = [index if(index < len(wav_atm)) else len(wav_atm)-1 for index in index_atm]
+        index_mask = index_atm >= wl_len  # find broken indices
+        index_atm[index_mask] = wl_len - 1  # replace with index of end.
+        return self[index_atm]
+
+    def wave_select(self, wl_min, wl_max):
+        """Slice Atmosphere between two wavelengths."""
+        wl_mask = (self.wl < wl_max) & (self.wl > wl_min)
+        return self[wl_mask]
+
+    def band_select(self, band):
+        """Slice Atmosphere to a given Band."""
+        wl_min, wl_max = band_limits(band)
+        return self.wave_select(wl_min, wl_max)
+
+    def copy(self):
+        """Make a copy of atmosphere object."""
+        return Atmosphere(
+            wavelength=self.wl.copy(),
+            transmission=self.transmission.copy(),
+            mask=self.mask.copy(),
+            std=self.std.copy(),
+        )
+
+    def mask_transmission(self, depth: float = 2.0) -> None:
+        """Mask the transmission below given depth. e.g. 2%
+
+        Parameters
+        ----------
+        depth : float (default = 2.0)
+            Telluric line depth percentage to mask out.
+            E.g. depth=2 will mask transmission deeper than 2%.
+
+        Updates the mask.
+        """
+        cutoff = 1 - depth / 100.0
+        self.mask = self.transmission >= cutoff
+
+    def bary_shift_mask(self, rv: float = 30.0, consecutive_test: bool = False):
+        """Sweep telluric mask symmetrically by rv.
+
+        Parameters
+        ----------
+        rv: float (default=30 km/s)
+            Barycentric RV to extend masks in km/s. (Default=30 km/s)
+        consecutive_test: bool (default False)
+            Checks for 3 consecutive zeros to mask out transmission.
+
+        """
+        if self.shifted:
+            warnings.warn(
+                "Detected that 'shifted' is already True. "
+                "Check that you want to rv extend masks again."
+            )
+        rv_mps = rv * 1e3  # Convert from km/s into m/s
+
+        shift_amplitudes = self.wl * rv_mps / const.c.value
+        # Operate element wise
+        blue_shifts = self.wl - shift_amplitudes
+        red_shifts = self.wl + shift_amplitudes
+
+        bary_mask = []
+        for (blue_wl, red_wl, mask) in zip(blue_shifts, red_shifts, self.mask):
+            if mask == 0:
+                this_mask_value = False
+            else:
+                # np.searchsorted is faster then the boolean masking wavelength range
+                # It returns index locations to put the min/max doppler-shifted values
+                slice_limits = np.searchsorted(self.wl, [blue_wl, red_wl])
+                slice_limits = [
+                    index if (index < len(self.wl)) else len(self.wl) - 1
+                    for index in slice_limits
+                ]  # Fix searchsorted end index
+
+                mask_slice = self.mask[slice_limits[0] : slice_limits[1]]
+
+                if consecutive_test:
+                    # Mask value False if 3 or more consecutive zeros in slice.
+                    len_consec_zeros = consecutive_truths(~mask_slice)
+                    if np.all(
+                        ~mask_slice
+                    ):  # All pixels of slice is zeros (shouldn't get here)
+                        this_mask_value = False
+                    elif np.max(len_consec_zeros) >= 3:
+                        this_mask_value = False
+                    else:
+                        this_mask_value = True
+                        if np.sum(~mask_slice) > 3:
+                            print(
+                                (
+                                    "There were {0}/{1} zeros in this "
+                                    "barycentric shift but None were 3 consecutive!"
+                                ).format(np.sum(~mask_slice), len(mask_slice))
+                            )
+
+                else:
+                    this_mask_value = np.bool(
+                        np.product(mask_slice)
+                    )  # Any 0s will make it 0
+
+                # Checks
+                if not this_mask_value:
+                    assert np.any(~mask_slice)
+                else:
+                    if not consecutive_test:
+                        assert np.all(mask_slice)
+            bary_mask.append(this_mask_value)
+        self.mask = np.asarray(bary_mask, dtype=np.bool)
+        self.shifted = True
+
+    def broaden(self, resolution: float, fwhm_lim: float = 5, num_procs=None):
+        """Instrument broadening of the atmospheric transmission profile.
+
+        This does not change any created masks.
+
+        Parameters
+        ----------
+        resolution: float
+            Instrumental resolution/resolving power
+        fwhm_lim: int/float
+            Number of FWHM to extend convolution.
+        num_procs: Optional[int]
+            Number of processors to compute the convolution with. Default = total processors - 1
+        """
+        self.transmission = resolution_convolution(
+            wav_band=self.wl,
+            wav_extended=self.wl,
+            flux_conv_rot=self.transmission,
+            R=resolution,
+            fwhm_lim=fwhm_lim,
+            num_procs=num_procs,
+            normalize=True,
+        )
 
 
 def barycenter_shift(
@@ -48,8 +371,8 @@ def barycenter_shift(
     offset_rv = rv_offset * 1.0e3  # Convert to m/s
 
     # Doppler shift  applied to the vectors
-    delta_lambdas = wav_atm * barycenter_rv / c.value
-    offset_lambdas = wav_atm * offset_rv / c.value  # offset lambda
+    delta_lambdas = wav_atm * barycenter_rv / const.c.value
+    offset_lambdas = wav_atm * offset_rv / const.c.value  # offset lambda
 
     # Doppler shift limits of each pixel
     wav_lower_barys = wav_atm + offset_lambdas - delta_lambdas
@@ -147,185 +470,5 @@ def consecutive_truths(condition: ndarray) -> ndarray:
         where_changes = np.where(unequal_consec)[0]  # indices where condition changes
         len_consecutive = np.diff(where_changes)[
             ::2
-        ]  # step through every second to get the "True" lenghts.
+        ]  # step through every second to get the "True" lengths.
     return len_consecutive
-
-
-def plot_atm_masks(wav, flux, mask, old_mask=None, new_mask=None, block=True):
-    """Plot spectrum with absorption masks."""
-    plt.figure()
-    plt.plot(wav, flux, label="Spectrum")
-    plt.plot(wav, mask, label="Absorption Mask")
-
-    if old_mask is not None:
-        plt.plot(wav, old_mask + 0.01, ".-", label="Old code Mask")
-
-    if new_mask is not None:
-        plt.plot(wav, new_mask + 0.02, "+-", label="New code Mask")
-
-    plt.legend(loc=0)
-    plt.show(block=block)
-
-    return 0
-
-
-def bugged_old_barycenter_shift(
-    wav_atm: ndarray, mask_atm: ndarray, rv_offset: float = 0.0
-):
-    """Buggy Old version Calculating impact of Barycentric movement on mask...
-
-    Extends the masked region to +-30 km/s due to the barycentric motion of the earth.
-    """
-    pixels_total = len(mask_atm)
-    masked_start = pixels_total - np.sum(mask_atm)
-
-    mask_atm_30kms = []
-    for value in zip(wav_atm, mask_atm):
-        if (value[1] is False) and (
-            rv_offset == 666.0
-        ):  # if the mask is false and the offset is equal to zero
-            mask_atm_30kms.append(value[1])
-
-        else:
-            delta_lambda = value[0] * 3.0e4 / c.value
-            starting_lambda = value[0] * rv_offset * 1.0e3 / c.value
-            indexes_30kmslice = np.searchsorted(
-                wav_atm,
-                [
-                    starting_lambda + value[0] - delta_lambda,
-                    starting_lambda + value[0] + delta_lambda,
-                ],
-            )
-            indexes_30kmslice = [
-                index if (index < len(wav_atm)) else len(wav_atm) - 1
-                for index in indexes_30kmslice
-            ]
-
-            mask_atm_30kmslice = np.array(
-                mask_atm[indexes_30kmslice[0] : indexes_30kmslice[1]], dtype=bool
-            )  # selecting only the slice in question
-
-            mask_atm_30kmslice_reversed = [not i for i in mask_atm_30kmslice]
-
-            # Found suspected culprit code
-            clump = np.array_split(
-                mask_atm_30kmslice,
-                np.where(np.diff(mask_atm_30kmslice_reversed))[0] + 1,
-            )[
-                ::2
-            ]  # This code is the bug!
-
-            tester = True
-            for block in clump:
-                if len(clump) >= 3:  # This is the bug! should read len(block)
-                    tester = False
-                    break
-
-            mask_atm_30kms.append(tester)
-
-    mask_atm = np.array(mask_atm_30kms, dtype=bool)
-    masked_end = pixels_total - np.sum(mask_atm)
-    print(
-        (
-            "Old Barycentric impact affects number of masked pixels by {0:04.1%} due to the atmospheric"
-            " spectrum"
-        ).format((masked_end - masked_start) / pixels_total)
-    )
-    print(
-        ("Pedros Pixels start = {1}, Pixel_end = {0}, Total = {2}").format(
-            masked_end, masked_start, pixels_total
-        )
-    )
-    return mask_atm
-
-
-def old_barycenter_shift(
-    wav_atm: ndarray, mask_atm: ndarray, rv_offset: float = 0.0
-) -> ndarray:
-    """Bug Fixed old version Calculating impact of Barycentric movement on mask...
-
-    Extends the masked region to +-30 km/s due to the barycentric motion of the earth.
-
-    This fixed version is used to compare with the new version.
-    """
-    pixels_total = len(mask_atm)
-    masked_start = pixels_total - np.sum(mask_atm)
-
-    mask_atm_30kms = []
-    for value in zip(wav_atm, mask_atm):
-        if (value[1] is False) and (
-            rv_offset == 666.0
-        ):  # if the mask is false and the offset is equal to zero
-            mask_atm_30kms.append(value[1])
-
-        else:
-            delta_lambda = value[0] * 3.0e4 / c.value
-            starting_lambda = value[0] * rv_offset * 1.0e3 / c.value
-            indexes_30kmslice = np.searchsorted(
-                wav_atm,
-                [
-                    starting_lambda + value[0] - delta_lambda,
-                    starting_lambda + value[0] + delta_lambda,
-                ],
-            )
-            indexes_30kmslice = [
-                index if (index < len(wav_atm)) else len(wav_atm) - 1
-                for index in indexes_30kmslice
-            ]
-
-            mask_atm_30kmslice = np.array(
-                mask_atm[indexes_30kmslice[0] : indexes_30kmslice[1]], dtype=bool
-            )  # selecting only the slice in question
-
-            # mask_atm_30kmslice_reversed = [not i for i in mask_atm_30kmslice] # Unneeded
-
-            # Found suspected culprit code
-            # clump = np.array_split(mask_atm_30kmslice,
-            #                        np.where(np.diff(mask_atm_30kmslice_reversed))[0] + 1)[::2]  # <<<<<< Bug!
-            if mask_atm_30kmslice[0]:  # A true first value
-                clump = np.array_split(
-                    mask_atm_30kmslice, np.where(np.diff(mask_atm_30kmslice))[0] + 1
-                )[1::2]
-            else:
-                clump = np.array_split(
-                    mask_atm_30kmslice, np.where(np.diff(mask_atm_30kmslice))[0] + 1
-                )[::2]
-
-            tester = True
-            for block in clump:
-                if True in block:
-                    raise ValueError("There is a true value in False blocks!")
-
-                if len(block) >= 3:  # This is the bug! should read len(block)
-                    tester = False
-                    break
-
-            mask_atm_30kms.append(tester)
-
-    mask_atm = np.array(mask_atm_30kms, dtype=bool)
-    masked_end = pixels_total - np.sum(mask_atm)
-    print(
-        (
-            "Old Barycentric impact affects number of masked pixels by {0:04.1%} due to the atmospheric"
-            " spectrum"
-        ).format((masked_end - masked_start) / pixels_total)
-    )
-    print(
-        ("Pedros Pixels start = {1}, Pixel_end = {0}, Total = {2}").format(
-            masked_end, masked_start, pixels_total
-        )
-    )
-    return mask_atm
-
-
-def dopplershift(wav, flux):
-    """Doppler shift the flux of spectrum."""
-    pass
-    # return newflux
-
-
-def atm_mask(flux, cutoff=0.98):
-    """Mask flux below the cutoff value."""
-    if not isinstance(flux, np.ndarray):
-        flux = np.asarary(flux)
-    return flux < cutoff

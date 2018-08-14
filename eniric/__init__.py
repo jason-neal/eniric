@@ -37,7 +37,7 @@ name = config["name"]
 paths = config["paths"]
 bands = config["bands"]
 custom_bands = config["custom_bands"]
-
+atmmodel = config["atmmodel"]
 cache = config["cache"]
 
 # Turn list into path

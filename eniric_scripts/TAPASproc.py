@@ -67,7 +67,7 @@ def read_allfiles(mask_limit=0.02):
             mask.append(0.0)
 
     write_4col_eeed(
-        os.path.join(outdir, "Average_TAPAS_2014_visible.txt"),
+        os.path.join(outdir, "{0}_visible.txt".format(eniric.atmmodel["base"])),
         wav,
         mean_flux,
         std_flux,

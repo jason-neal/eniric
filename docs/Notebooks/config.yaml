@@ -10,7 +10,7 @@ paths:
   results: ["data","test_data","results"]
   resampled: ["data","test_data","resampled"]
   test_data: ["data","test_data"]
-  atmmodel: ["data", "atmmodel"]
+  atmmodel: ["..","..","data", "atmmodel"]
   precision: ["precision"]
 
 cache:
@@ -21,10 +21,12 @@ atmmodel:
   base: "Average_TAPAS_2014"
 
 bands:
-  all: ["K", "H", "J", "Y", "Z", "TEST"]
+  all: ["VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP", "CARMENES_NIR", "CARMENES_VIS", "TEST"]
 
 # Add your custom band limits here
 custom_bands:
+    CARMENES_NIR: [0.96, 1.71]
+    CARMENES_VIS: [0.52, 0.96]
     TEST: [2.1,2.2]
 #  g: ()
 #  r: ()
