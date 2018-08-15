@@ -150,13 +150,14 @@ def sqrt_sum_wis(
     content of the spectrum, given by the derivative of the amplitude, and
     calculated following Connes (1985).
 
-    Mask is used to apply a masking function to the weights (to mask out teluric lines for example)
+    Mask is used to apply a masking function to the weights (to mask out telluric lines for example)
 
         W(i) = W(i) * m(i)
 
     """
     if mask is None:
-        mask = np.ones_like(wavelength)
+        # Don't use np.ones_like() as it will take units of a Quantity.
+        mask = np.ones(len(wavelength))
 
     if (len(mask) != len(wavelength)) or (len(wavelength) != len(flux)):
         raise ValueError("Input values are not correct length")
