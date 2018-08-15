@@ -7,9 +7,11 @@ from typing import Any, List, Optional, Tuple, Union
 
 import astropy.units as u
 import numpy as np
-from astropy.constants import c
+import astropy.constants as const
 from astropy.units.quantity import Quantity
 from numpy import float64, ndarray
+
+c = const.c
 
 
 def RVprec_calc(
@@ -167,7 +169,6 @@ def sqrt_sum_wis(
     if not isinstance(flux, np.ndarray):
         flux = np.asarray(flux)
 
-
     pixel_wis = pixel_weights(wavelength, flux, grad=False)
     masked_wis = pixel_wis * mask[:-1] ** 2  # Apply masking function
 
@@ -301,10 +302,8 @@ def mask_clumping(
     return wave_clumps, flux_clumps
 
 
-def RVprec_calc_weigths_masked(
-    wavelength: ndarray,
-    flux: ndarray,
-    mask: Optional[ndarray] = None,
+def RVprec_calc_weights_masked(
+    wavelength: ndarray, flux: ndarray, mask: Optional[ndarray] = None
 ) -> Quantity:
     """RV precision setting weights of telluric lines to zero.
 
@@ -439,7 +438,6 @@ def sqrt_sum_wis_trans(
     # Check for values of transmission
     if np.any(transmission > 1) or np.any(transmission < 0):
         raise ValueError("Transmission should range from 0 to 1 only.")
-
 
     pixel_wis = pixel_weights(wavelength, flux, grad=False)
 
