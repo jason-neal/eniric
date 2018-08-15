@@ -1,4 +1,4 @@
-"""Test Qcaclulator."""
+"""Test Qcalculator."""
 
 import astropy.units as u
 import numpy as np
@@ -15,6 +15,7 @@ from eniric.Qcalculator import pixel_weights
 
 m_per_s = u.meter / u.second
 per_s_cm2 = (1 / u.second) / (u.centimeter ** 2)
+c = const.c
 
 
 def test_rvprev_calc():
@@ -77,7 +78,7 @@ def test_sqrt_sum_wis():
     assert sqrtsumwis == sqrtsumwis2.value
 
     # Test relation to RVprec_calc
-    assert Q.RVprec_calc(wav, flux) == const.c / sqrtsumwis
+    assert Q.RVprec_calc(wav, flux) == c / sqrtsumwis
 
 
 def test_RV_prec_calc_Trans():
@@ -124,9 +125,6 @@ def test_SQRTSumWisTrans():
     sqrtsum_trans2 = Q.sqrt_sum_wis_trans(wav, flux, trans * u.dimensionless_unscaled)
     assert not hasattr(sqrtsum_trans2, "__len__")  # assert scalar
     assert not isinstance(sqrtsum_trans2, u.Quantity)
-    #assert (
-    #    sqrtsum_trans2.unit == u.dimensionless_unscaled
-    #)  # unscaled and dimensionless quantity
 
     sqrtsum_trans3 = Q.sqrt_sum_wis_trans(wav * u.micron, flux, trans)
     assert not hasattr(sqrtsum_trans3.value, "__len__")  # assert value is a scalar
@@ -298,15 +296,12 @@ def test_quality_independent_of_flux_level(scale):
 @pytest.mark.parametrize("flux_unit", [1, 1 / u.second / u.micron ** 2, 1. / u.second])
 def test_quality_independent_of_units(wave_unit, flux_unit):
     """Quality should be unitless, or dimensionless_unscaled...
-
-    Needed to remove unit from flux in quality() to make quality unitless.
     """
     wave = np.arange(10) + 1
     flux = np.random.randn(10) + 1
     wave = wave * wave_unit
     flux = flux * flux_unit
     q = Q.quality(wave, flux)
-    print(q)
     if isinstance(q, u.Quantity):
         assert q.unit == u.dimensionless_unscaled
     else:
