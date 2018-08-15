@@ -176,7 +176,7 @@ def sqrt_sum_wis(
         flux_variance = flux
 
     pixel_wis = wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 / flux_variance[:-1]
-    masked_wis = pixel_wis * mask[:-1]  # Apply masking function
+    masked_wis = pixel_wis * mask[:-1] ** 2  # Apply masking function
 
     sqrt_sum = np.sqrt(np.nansum(masked_wis))
     if not np.isfinite(sqrt_sum):
