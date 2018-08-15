@@ -161,14 +161,14 @@ def test_transmission_reduces_precision():
 
 
 def test_RV_prec_masked():
-    """Test same prections results between past pre-clumped version and mask version."""
+    """Test same precision results between past pre-clumped version and mask version."""
     wav = np.arange(100)
     flux = np.random.random(100) * 10
     mask = np.asarray(np.floor(2 * np.random.random(100)), dtype=bool)
 
-    # Pre clumping as in nIR_precion.py
-    wav_chunks, flux_chunks = Q.bug_fixed_clumping_method(wav, flux, mask)
-    rv_chunks = Q.RVprec_calc_masked(wav_chunks, flux_chunks, mask=None)
+    # Pre clumping as in nIR_precision.py
+    wav_masked, flux_masked = Q.mask_clumping(wav, flux, mask)
+    rv_chunks = Q.RVprec_calc_masked(wav_masked, flux_masked, mask=None)
 
     rv_masked = Q.RVprec_calc_masked(wav, flux, mask)
 
@@ -177,17 +177,11 @@ def test_RV_prec_masked():
     assert rv_masked.unit == u.m / u.s
 
 
-def test_mask_clumping():
-    """Test properties of clumping function using masked_arrays."""
+def test_mask_clumping_of_mask():
+    """Masking mask show return all ones."""
     wav = np.arange(1, 101)
     flux = np.random.random(100) * 10
     mask = np.asarray(np.floor(2 * np.random.random(100)), dtype=bool)
-
-    wav_chunks, flux_chunks = Q.bug_fixed_clumping_method(wav, flux, mask)
-    wav_masked, flux_masked = Q.mask_clumping(wav, flux, mask)
-    for i, __ in enumerate(wav_chunks):
-        assert np.all(wav_chunks[i] == wav_masked[i])
-        assert np.all(flux_chunks[i] == flux_masked[i])
 
     # All values of clumped mask should be True.
     mask_clumped, mask2_clumped = Q.mask_clumping(mask, mask, mask)
@@ -204,22 +198,17 @@ def test_manual_clumping():
     mask = np.array([1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0])  # , dtype=bool
     mask_bool = np.array([1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0], dtype=bool)
 
-    wav_chunks, flux_chunks = Q.bug_fixed_clumping_method(wav, flux, mask)
     wav_masked, flux_masked = Q.mask_clumping(wav, flux, mask)
     wav_masked_bool, flux_masked_bool = Q.mask_clumping(wav, flux, mask_bool)
 
     expected_wav = [np.arange(0, 4), np.arange(7, 10), np.arange(11, 14)]
     expected_flux = [np.arange(15, 19), np.arange(22, 25), np.arange(26, 29)]
-    for i, chunk in enumerate(wav_chunks):
-        assert np.all(wav_chunks[i] == expected_wav[i])
-        assert np.all(flux_chunks[i] == expected_flux[i])
+    for i, chunk in enumerate(wav_masked):
         assert np.all(wav_masked[i] == expected_wav[i])
         assert np.all(flux_masked[i] == expected_flux[i])
         assert np.all(wav_masked_bool[i] == expected_wav[i])
         assert np.all(flux_masked_bool[i] == expected_flux[i])
 
-    assert len(wav_chunks) == len(wav_masked)
-    assert len(flux_chunks) == len(flux_masked)
     assert len(expected_wav) == len(wav_masked)
     assert len(expected_flux) == len(flux_masked)
 

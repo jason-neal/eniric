@@ -308,35 +308,6 @@ def mask_clumping(
     return wave_clumps, flux_clumps
 
 
-def bug_fixed_clumping_method(
-    wav: ndarray, flux: ndarray, mask: ndarray
-) -> Tuple[List[Any], List[Any]]:
-    """Old clumping method that is difficult to understand ...[0] + 1)[::2].
-
-    There was a significant bug which was fixed.
-    The returned values were dependant on the first value in the mask.
-    """
-    if mask[0] == 1:
-        wav_chunks_unformatted = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[
-            ::2
-        ]
-        flux_chunks_unformatted = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[
-            ::2
-        ]
-    else:
-        wav_chunks_unformatted = np.array_split(wav, np.where(np.diff(mask))[0] + 1)[
-            1::2
-        ]
-        flux_chunks_unformatted = np.array_split(flux, np.where(np.diff(mask))[0] + 1)[
-            1::2
-        ]
-
-    wav_chunks = [list(chunk) for chunk in wav_chunks_unformatted]
-    flux_chunks = [list(chunk) for chunk in flux_chunks_unformatted]
-
-    return wav_chunks, flux_chunks
-
-
 def RVprec_calc_weigths_masked(
     wavelength: ndarray,
     flux: ndarray,
