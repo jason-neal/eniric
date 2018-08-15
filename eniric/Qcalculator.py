@@ -167,15 +167,8 @@ def sqrt_sum_wis(
     if not isinstance(flux, np.ndarray):
         flux = np.asarray(flux)
 
-    derivf_over_lambda = slope(wavelength, flux)
 
-    if isinstance(flux, u.Quantity):
-        """Units of variance are squared"""
-        flux_variance = flux.value * flux.unit * flux.unit
-    else:
-        flux_variance = flux
-
-    pixel_wis = wavelength[:-1] ** 2.0 * derivf_over_lambda ** 2.0 / flux_variance[:-1]
+    pixel_wis = pixel_weights(wavelength, flux, grad=False)
     masked_wis = pixel_wis * mask[:-1] ** 2  # Apply masking function
 
     sqrt_sum = np.sqrt(np.nansum(masked_wis))
@@ -447,21 +440,10 @@ def sqrt_sum_wis_trans(
     if np.any(transmission > 1) or np.any(transmission < 0):
         raise ValueError("Transmission should range from 0 to 1 only.")
 
-    derivf_over_lambda = slope(wavelength, flux)
 
-    if isinstance(flux, u.Quantity):
-        """Units of variance are squared"""
-        flux_variance = flux.value * flux.unit * flux.unit
-    else:
-        flux_variance = flux
+    pixel_wis = pixel_weights(wavelength, flux, grad=False)
 
-    return np.sqrt(
-        np.nansum(
-            wavelength[:-1] ** 2.0
-            * derivf_over_lambda ** 2.0
-            / (flux_variance[:-1] / transmission[:-1] ** 2.0)
-        )
-    )
+    return np.sqrt(np.nansum(pixel_wis * transmission[:-1] ** 2.0))
 
 
 def pixel_weights(
