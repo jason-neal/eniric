@@ -403,6 +403,8 @@ def RVprec_calc_weigths_masked(
     rv_value = 1.0 / (np.sqrt(np.nansum((1.0 / slice_rvs) ** 2.0)))
 
     return rv_value
+
+
 ###############################################################################
 def RV_prec_calc_Trans(
     wavelength: ndarray, flux: ndarray, transmission: ndarray
@@ -489,3 +491,41 @@ def sqrt_sum_wis_trans(
             / (flux_variance[:-1] / transmission[:-1] ** 2.0)
         )
     )
+
+
+def pixel_weights(
+    wavelength: Union[ndarray, Quantity],
+    flux: Union[ndarray, Quantity],
+    grad: bool = False,
+):
+    """Calculate individual pixel weights.
+    w(i) = \lambda(i)^2 (\partial A(i)/\partial\lambda)^2 / A(i)
+
+    Parameters
+    ----------
+    grad: bool
+        Toggle function for spectral slope. Default False + forward finite difference.
+    """
+    if isinstance(flux, u.Quantity):
+        """Units of variance are squared"""
+        flux_variance = flux.value * flux.unit * flux.unit
+    else:
+        flux_variance = flux
+
+    dydx_unit = 1
+    if grad:
+        # Hack for quantities with numpy gradient
+        if isinstance(flux, Quantity):
+            dydx_unit *= flux.unit
+            flux = flux.value
+        if isinstance(wavelength, Quantity):
+            dydx_unit /= wavelength.unit
+            wave = wavelength.value
+        else:
+            wave = wavelength
+        derivf_over_lambda = np.gradient(flux, wave) * dydx_unit
+
+        return (wavelength * derivf_over_lambda) ** 2.0 / flux_variance
+    else:
+        derivf_over_lambda = slope(wavelength, flux)
+        return (wavelength[:-1] * derivf_over_lambda) ** 2.0 / flux_variance[:-1]

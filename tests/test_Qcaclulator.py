@@ -4,8 +4,10 @@ import astropy.units as u
 import numpy as np
 import pytest
 from astropy import constants as const
+from astropy.units import Quantity
 
 import eniric.Qcalculator as Q
+from eniric.Qcalculator import pixel_weights
 
 # test RVprec_calc returns a single values
 # test it returns a quantity in m/s
@@ -320,3 +322,49 @@ def test_quality_independent_of_units(wave_unit, flux_unit):
         assert q.unit == u.dimensionless_unscaled
     else:
         assert True
+
+
+@pytest.mark.parametrize(
+    "wav_unit, flux_unit, quantity",
+    ([(u.nanometer, 1 / u.second, True), (u.meter, u.erg, True), (1, 1, False)]),
+)
+@pytest.mark.parametrize(
+    "wave, flux, expected",
+    [
+        ([1, 2, 3], [1, 2, 3], [1, 2, 3]),
+        ([2.2, 2.3, 2.4], [.99, 0.97, 0.7], [0.195555556, 11.46621134, 59.9868571]),
+    ],
+)
+def test_pixel_weights_gradient(wave, flux, expected, wav_unit, flux_unit, quantity):
+    """Pixel_weights with gradient formulation.
+    Change detector with some simple numbers.
+    """
+    result = pixel_weights(wave * wav_unit, flux * flux_unit, grad=True)
+    assert np.allclose(result, expected)
+    # Checks quantities also work
+    if quantity:
+        assert isinstance(result, Quantity)
+        assert result.unit == u.dimensionless_unscaled
+
+
+@pytest.mark.parametrize(
+    "wav_unit, flux_unit, quantity",
+    ([(u.nanometer, 1 / u.second, True), (u.meter, u.erg, True), (1, 1, False)]),
+)
+@pytest.mark.parametrize(
+    "wave, flux, expected",
+    [
+        ([1, 2, 3], [1, 2, 3], [1, 2]),
+        ([2.2, 2.3, 2.4], [.99, 0.97, 0.7], [0.195555556, 39.75680412]),
+    ],
+)
+def test_pixel_weights(wave, flux, expected, wav_unit, flux_unit, quantity):
+    """Pixel_weights with finite difference formulation.
+    Change detector with some simple numbers.
+    """
+    result = pixel_weights(wave * wav_unit, flux * flux_unit, grad=False)
+    assert np.allclose(result, expected)
+    # Checks quantities also work
+    if quantity:
+        assert isinstance(result, Quantity)
+        assert result.unit == u.dimensionless_unscaled
