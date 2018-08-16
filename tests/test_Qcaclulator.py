@@ -352,3 +352,23 @@ def test_pixel_weights(wave, flux, expected, wav_unit, flux_unit, quantity):
     if quantity:
         assert isinstance(result, Quantity)
         assert result.unit == u.dimensionless_unscaled
+
+
+from eniric.Qcalculator import mask_check
+
+
+@pytest.mark.parametrize(
+    "mask",
+    [np.array([1, 0, -0.1]), np.array([1.1, 0, 1])],  # lower than 0  # Greater than 1
+)
+def test_mask_check(mask):
+    with pytest.raises(ValueError):
+        mask_check(mask)
+
+
+@pytest.mark.parametrize(
+    "mask", [np.array([1, 0, 1, 0, .2, 1, .4]) * u.m, np.array([1, 0, 1]) * u.s]
+)
+def test_mask_check_type_error(mask):
+    with pytest.raises(TypeError):
+        mask_check(mask)

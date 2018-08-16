@@ -159,16 +159,8 @@ def sqrt_sum_wis(
         # Don't use np.ones_like() as it will take units of a Quantity.
         mask = np.ones(len(wavelength))
 
-    if (len(mask) != len(wavelength)) or (len(wavelength) != len(flux)):
-        raise ValueError("Input values are not correct length")
+    mask_check(mask)
 
-    if not isinstance(wavelength, np.ndarray):
-        print(
-            "Your wavelength and flux should really be numpy arrays! Converting them here."
-        )
-        wavelength = np.asarray(wavelength)
-    if not isinstance(flux, np.ndarray):
-        flux = np.asarray(flux)
 
     pixel_wis = pixel_weights(wavelength, flux, grad=False)
     masked_wis = pixel_wis * mask[:-1] ** 2  # Apply masking function
@@ -179,6 +171,18 @@ def sqrt_sum_wis(
     return sqrt_sum
 
 
+def mask_check(mask):
+    """Checks for mask array."""
+    if isinstance(mask, u.Quantity):
+        if not (mask.unit == u.dimensionless_unscaled):
+            raise TypeError(
+                "Mask should not be a non-dimensionless and unscaled Quantity!"
+            )
+        mask = mask.value
+
+    # Check for values of mask
+    if np.any(mask > 1) or np.any(mask < 0):
+        raise ValueError("Mask should be within range from 0 to 1 only.")
 def slope(wavelength, flux):
     """Original version used to calculate the slope. [Looses one value of array]."""
     delta_flux = np.diff(flux)
