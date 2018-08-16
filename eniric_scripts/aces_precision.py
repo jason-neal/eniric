@@ -13,7 +13,7 @@ from eniric.atmosphere import Atmosphere
 from eniric.broaden import convolution
 from eniric.corrections import correct_artigau_2018
 from eniric.Qcalculator import (
-    RV_prec_calc_Trans,
+    RVprec_calc_Trans,
     RVprec_calc,
     RVprec_calc_masked,
     quality,
@@ -218,7 +218,7 @@ def do_analysis(
     prec2 = RVprec_calc_masked(wav_grid, sampled_flux, atm.mask)
 
     # Precision as given by the third condition
-    prec3 = RV_prec_calc_Trans(wav_grid, sampled_flux, atm.transmission)
+    prec3 = RVprec_calc_Trans(wav_grid, sampled_flux, atm.transmission)
     return [q, prec1, prec2, prec3]
 
 

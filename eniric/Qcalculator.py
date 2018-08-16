@@ -1,38 +1,8 @@
 """Calculate the Radial Velocity Precision of NIR Spectra.
 
 Using the Quality factor of the spectra.
-"""
-import warnings
-from typing import Any, List, Optional, Tuple, Union
-
-import astropy.units as u
-import numpy as np
-import astropy.constants as const
-from astropy.units.quantity import Quantity
-from numpy import float64, ndarray
-
-c = const.c
 
 
-def RVprec_calc(
-    wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]
-) -> Quantity:
-    """Calculate the RV precision achievable on a spectrum.
-
-    Parameters
-    ----------
-    wavelength: array-like or Quantity array
-        Wavelength of spectrum.
-    flux: array-like or Quantity array
-        Flux of spectrum.
-
-    Returns
-    -------
-    RVrms : Quantity scalar
-       Radial velocity precision of spectra in m/s.
-
-    Notes
-    -----
     Extract from https://arxiv.org/pdf/1511.07468v1.pdf
     From Eq. (11) and (12) of
     https://arxiv.org/pdf/1511.07468v1.pdf#cite.2001A%26A...374..733B
@@ -59,12 +29,44 @@ def RVprec_calc(
     signal-to-noise ratio regime, so we can approximate A_0(i) + sigma_D**2
     to A_0(i).
 
+
+"""
+import warnings
+from typing import Any, List, Optional, Tuple, Union
+
+import astropy.units as u
+import numpy as np
+import astropy.constants as const
+from astropy.units.quantity import Quantity
+from numpy import float64, ndarray
+
+c = const.c
+
+
+def RVprec_calc(
+    wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray], **kwargs
+) -> Quantity:
+    """Calculate the theoretical RV precision achievable on a spectrum.
+
+    Parameters
+    ----------
+    wavelength: array-like or Quantity array
+        Wavelength of spectrum.
+    flux: array-like or Quantity array
+        Flux of spectrum.
+    kwargs:
+        Kwargs for sqrt_sum_wis
+    Returns
+    -------
+    RVrms : Quantity scalar
+       Radial velocity precision of spectra in m/s.
+
     """
-    return c / sqrt_sum_wis(wavelength, flux)
+    return c / sqrt_sum_wis(wavelength, flux, **kwargs)
 
 
 def quality(
-    wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray]
+    wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray], **kwargs
 ) -> Union[float64, Quantity]:
     """Calculation of the spectral Quality, Q, for a spectrum.
 
@@ -74,6 +76,8 @@ def quality(
         Wavelength of spectrum.
     flux: array-like or Quantity array
         Flux of spectrum.
+    kwargs:
+        Kwargs for sqrt_sum_wis
 
     Returns
     -------
@@ -110,13 +114,13 @@ def quality(
     flux = flux * u.dimensionless_unscaled  # Turn into Quantity if not already
     flux = flux / flux.unit  # Remove units from flux (sqrt(N_e) is unitless)
 
-    wis = sqrt_sum_wis(wavelength, flux)
+    wis = sqrt_sum_wis(wavelength, flux, **kwargs)
 
     return wis / np.sqrt(np.nansum(flux))
 
 
-def RV_prec_calc_Trans(
-    wavelength: ndarray, flux: ndarray, transmission: ndarray
+def RVprec_calc_Trans(
+    wavelength: ndarray, flux: ndarray, transmission: ndarray, **kwargs
 ) -> Quantity:
     """The same as RV_prec_calc, but considering a transmission different than zero.
 
@@ -128,6 +132,8 @@ def RV_prec_calc_Trans(
         Flux array
     transmission: array-like
         Transmission array
+    kwargs:
+        Kwargs for sqrt_sum_wis
 
     Returns
     -------
@@ -135,14 +141,14 @@ def RV_prec_calc_Trans(
         Radial velocity precision for a spectrum affected by atmospheric transmission
 
     """
-    return c / sqrt_sum_wis(wavelength, flux, mask=transmission)
-
+    return c / sqrt_sum_wis(wavelength, flux, mask=transmission, **kwargs)
 
 
 def sqrt_sum_wis(
     wavelength: Union[Quantity, ndarray],
     flux: Union[Quantity, ndarray],
-    mask: Optional[ndarray] = None,
+    mask: Optional[Union[Quantity, ndarray]] = None,
+    grad: bool = True,
 ) -> Union[float64, Quantity]:
     """Calculation of the Square root of the sum of the weights(Wis) for a spectrum.
 
@@ -154,6 +160,8 @@ def sqrt_sum_wis(
         Flux of spectrum.
     mask: Optional ndarray
         Weighting mask function. Default is all ones.
+    grad: bool
+        Flag to use np.gradient. Default=True. Original publication used less precise method.
 
     Returns
     -------
@@ -185,9 +193,16 @@ def sqrt_sum_wis(
 
     mask_check(mask)
 
+    # Square mask for telluric masking.
+    # Boolean mask is not affected by square 0->0, 1->1.
+    mask = mask ** 2
+    pixel_wis = pixel_weights(wavelength, flux, grad=grad)
 
-    pixel_wis = pixel_weights(wavelength, flux, grad=False)
-    masked_wis = pixel_wis * mask[:-1] ** 2  # Apply masking function
+    # Apply masking function
+    if grad:
+        masked_wis = pixel_wis * mask
+    else:
+        masked_wis = pixel_wis * mask[:-1]
 
     sqrt_sum = np.sqrt(np.nansum(masked_wis))
     if not np.isfinite(sqrt_sum):
@@ -213,6 +228,7 @@ def RVprec_calc_masked(
     wavelength: Union[List[List[Any]], ndarray],
     flux: Union[ndarray, List[List[Any]]],
     mask: Optional[ndarray] = None,
+    **kwargs,
 ) -> Quantity:
     """RV precision for split apart spectra.
 
@@ -234,12 +250,13 @@ def RVprec_calc_masked(
     mask: array-like of bool or None
         Mask of transmission cuts. Zero values are excluded and used to cut up
         the spectrum.
+    kwargs:
+        Kwargs for sqrt_sum_wis
 
     Returns
     -------
     RV_value: Quantity scalar
         Weighted average RV value of spectral chunks.
-
 
     Notes
     -----
@@ -278,7 +295,7 @@ def RVprec_calc_masked(
         else:
             wav_slice = np.asarray(wav_slice)
             flux_slice = np.asarray(flux_slice)
-            slice_rvs[i] = RVprec_calc(wav_slice, flux_slice)
+            slice_rvs[i] = RVprec_calc(wav_slice, flux_slice, **kwargs)
 
     # Zeros created from the initial empty array, when skipping single element chunks)
     slice_rvs = slice_rvs[np.nonzero(slice_rvs)]  # Only use nonzero values.
@@ -326,12 +343,12 @@ def mask_clumping(
 
 
 def RVprec_calc_weights_masked(
-    wavelength: ndarray, flux: ndarray, mask: Optional[ndarray] = None
+    wavelength: ndarray, flux: ndarray, mask: Optional[ndarray] = None, **kwargs
 ) -> Quantity:
     """RV precision setting weights of telluric lines to zero.
 
     Instead of splitting the spectra after every telluric line and
-    individually calculating precision and taking hte weighted average
+    individually calculating precision and taking the weighted average
     this just sets the pixel weights to zero.
 
     Parameters
@@ -382,7 +399,7 @@ def RVprec_calc_weights_masked(
         else:
             wav_slice = np.asarray(wav_slice)
             flux_slice = np.asarray(flux_slice)
-            slice_rvs[i] = RVprec_calc(wav_slice, flux_slice)
+            slice_rvs[i] = RVprec_calc(wav_slice, flux_slice, **kwargs)
 
     # Zeros created from the initial empty array, when skipping single element chunks)
     slice_rvs = slice_rvs[np.nonzero(slice_rvs)]  # Only use nonzero values.
@@ -405,7 +422,7 @@ def slope(wavelength, flux):
 def pixel_weights(
     wavelength: Union[ndarray, Quantity],
     flux: Union[ndarray, Quantity],
-    grad: bool = False,
+    grad: bool = True,
 ):
     """Calculate individual pixel weights.
     w(i) = \lambda(i)^2 (\partial A(i)/\partial\lambda)^2 / A(i)

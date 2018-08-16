@@ -81,18 +81,18 @@ def test_sqrt_sum_wis():
     assert Q.RVprec_calc(wav, flux) == c / sqrtsumwis
 
 
-def test_RV_prec_calc_Trans():
+def test_RVprec_calc_Trans():
     """Transmission should not have units."""
     wav = np.arange(1, 101)
     flux = np.random.random(100)
     trans = np.random.random(100)
 
-    rv_trans = Q.RV_prec_calc_Trans(wav, flux, trans)
+    rv_trans = Q.RVprec_calc_Trans(wav, flux, trans)
     assert not hasattr(rv_trans.value, "__len__")  # assert scalar
     assert rv_trans.unit == m_per_s
 
     # dimensionless_unscaled unit is ok
-    rv_trans2 = Q.RV_prec_calc_Trans(wav, flux, trans * u.dimensionless_unscaled)
+    rv_trans2 = Q.RVprec_calc_Trans(wav, flux, trans * u.dimensionless_unscaled)
     assert not hasattr(rv_trans2.value, "__len__")  # assert  scalar
     assert rv_trans2.unit == m_per_s
 
@@ -100,13 +100,13 @@ def test_RV_prec_calc_Trans():
 
     with pytest.raises(TypeError):
         # transmission mistakenly given as a flux unit
-        Q.RV_prec_calc_Trans(wav, flux, (trans / u.s) / (u.centimeter ** 2))
+        Q.RVprec_calc_Trans(wav, flux, (trans / u.s) / (u.centimeter ** 2))
 
     with pytest.raises(ValueError):
-        Q.RV_prec_calc_Trans(wav, flux, trans + 1)
+        Q.RVprec_calc_Trans(wav, flux, trans + 1)
 
     with pytest.raises(ValueError):
-        Q.RV_prec_calc_Trans(wav, flux, trans * -5)
+        Q.RVprec_calc_Trans(wav, flux, trans * -5)
 
 
 def test_SQRTSumWisTrans():
@@ -148,9 +148,9 @@ def test_transmission_reduces_precision():
     transmission = np.random.random(100)
 
     # Value should be less then normal if trans <=1
-    assert Q.RVprec_calc(wav, flux) < Q.RV_prec_calc_Trans(wav, flux, transmission)
+    assert Q.RVprec_calc(wav, flux) < Q.RVprec_calc_Trans(wav, flux, transmission)
     # Unitary transmission should give equivalent result.
-    assert Q.RVprec_calc(wav, flux) == Q.RV_prec_calc_Trans(
+    assert Q.RVprec_calc(wav, flux) == Q.RVprec_calc_Trans(
         wav, flux, np.ones_like(wav)
     )
 

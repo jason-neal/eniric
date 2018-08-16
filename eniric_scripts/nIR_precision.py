@@ -176,8 +176,13 @@ def calculate_prec(
     snr=100,
     ref_band="J",
     new=True,
+    grad=True
 ):
-    """Calculate precisions for given combinations."""
+    """Calculate precisions for given combinations.
+
+    grad: bool
+        Use more precise gradient function.
+    """
     # TODO: iterate over band last so that the J band normalization value can be
     # obtained first and applied to each band.
 
@@ -369,7 +374,7 @@ def calculate_prec(
 
             # Precision given by the first method:
             print("Performing analysis for: ", id_string)
-            prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar)
+            prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar, grad=grad)
 
             # Precision as given by the second_method
             wav_stellar_chunks, flux_stellar_chunks = Qcalculator.mask_clumping(
@@ -377,10 +382,10 @@ def calculate_prec(
             )
 
             prec_2_old = Qcalculator.RVprec_calc_masked(
-                wav_stellar_chunks, flux_stellar_chunks
+                wav_stellar_chunks, flux_stellar_chunks, grad=grad
             )
             prec_2 = Qcalculator.RVprec_calc_masked(
-                wav_stellar, flux_stellar, mask_atm_selected
+                wav_stellar, flux_stellar, mask_atm_selected, grad=grad
             )
 
             assert np.all(prec_2_old == prec_2)
@@ -394,8 +399,8 @@ def calculate_prec(
             """
 
             # Precision as given by the third_method
-            prec_3 = Qcalculator.RV_prec_calc_Trans(
-                wav_stellar, flux_stellar, flux_atm_selected
+            prec_3 = Qcalculator.RVprec_calc_Trans(
+                wav_stellar, flux_stellar, flux_atm_selected, grad=grad
             )
 
             # Adding Precision results to the dictionary

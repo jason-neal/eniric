@@ -33,6 +33,7 @@ def test_old_calc_precision(SpType, band, vsini, R, expected):
         snr=100,
         ref_band="J",
         new=False,
+        grad=False # Old values without new gradient
     )
 
     # precision 1
@@ -61,6 +62,7 @@ def test_published_precision_with_old_normalization(model_parameters, published_
         snr=100,
         ref_band="J",
         new=False,
+        grad=False    # Old values without new gradient
     )
     print(published_data.head())
 
@@ -94,6 +96,7 @@ def test_published_precision_with_new_normalization(model_parameters, published_
         snr=100,
         ref_band="J",
         new=True,
+        grad=False, # Old values without new gradient
     )
     published = published_data[published_data.Simulation == id_string]
     print(published.head())
