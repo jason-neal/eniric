@@ -115,33 +115,30 @@ def test_SQRTSumWisTrans():
     flux = np.random.random(100)
     trans = np.random.random(100)
 
-    swrtsum_trans = Q.sqrt_sum_wis_trans(wav, flux, trans)
-    assert not isinstance(
-        swrtsum_trans, u.Quantity
-    )  # Doesn't turn into quantity if does not have to.
-    assert not hasattr(swrtsum_trans, "__len__")  # assert scalar
+    sqrtsum_trans = Q.sqrt_sum_wis(wav, flux, trans)
+    # Doesn't turn into quantity if does not have to.
+    assert not isinstance(sqrtsum_trans, u.Quantity)
+    assert not hasattr(sqrtsum_trans, "__len__")  # assert scalar
 
     # dimensionless_unscaled unit is ok for transmission
-    sqrtsum_trans2 = Q.sqrt_sum_wis_trans(wav, flux, trans * u.dimensionless_unscaled)
-    assert not hasattr(sqrtsum_trans2, "__len__")  # assert scalar
-    assert not isinstance(sqrtsum_trans2, u.Quantity)
+    sqrtsum_trans2 = Q.sqrt_sum_wis(wav, flux, trans * u.dimensionless_unscaled)
+    assert not hasattr(sqrtsum_trans2.value, "__len__")  # assert scalar
+    assert isinstance(sqrtsum_trans2, u.Quantity)
 
-    sqrtsum_trans3 = Q.sqrt_sum_wis_trans(wav * u.micron, flux, trans)
+    sqrtsum_trans3 = Q.sqrt_sum_wis(wav * u.micron, flux, trans)
     assert not hasattr(sqrtsum_trans3.value, "__len__")  # assert value is a scalar
     assert isinstance(sqrtsum_trans3, u.Quantity)
-    assert (
-        sqrtsum_trans3.unit == u.dimensionless_unscaled
-    )  # unscaled and dimensionless quantity
+    assert sqrtsum_trans3.unit == u.dimensionless_unscaled
 
     with pytest.raises(TypeError):
         # transmission mistakenly given as a flux unit
-        Q.sqrt_sum_wis_trans(wav, flux, (trans / u.s) / (u.centimeter ** 2))
+        Q.sqrt_sum_wis(wav, flux, (trans / u.s) / (u.centimeter ** 2))
 
     with pytest.raises(ValueError):
-        Q.sqrt_sum_wis_trans(wav, flux, trans + 1)
+        Q.sqrt_sum_wis(wav, flux, trans + 1)
 
     with pytest.raises(ValueError):
-        Q.sqrt_sum_wis_trans(wav, flux, trans * -5)
+        Q.sqrt_sum_wis(wav, flux, trans * -5)
 
 
 def test_transmission_reduces_precision():
@@ -245,7 +242,7 @@ def test_sqrt_sum_wis_trans_with_quantities(wave_unit, flux_unit):
     wav = np.arange(1, 101) * wave_unit
     flux = (np.random.randn(100) + 1) * flux_unit
     transmission = np.random.rand(len(wav))
-    wis = Q.sqrt_sum_wis_trans(wav, flux, transmission)
+    wis = Q.sqrt_sum_wis(wav, flux, transmission)
 
     if isinstance(wis, u.Quantity):
         assert wis.unit == u.dimensionless_unscaled
@@ -263,7 +260,7 @@ def test_sqrt_sum_wis_trans_with_trans_unit_fails(wave_unit, flux_unit, trans_un
     transmission = np.random.rand(len(wav))
 
     with pytest.raises(TypeError):
-        Q.sqrt_sum_wis_trans(wav, flux, transmission * trans_unit)
+        Q.sqrt_sum_wis(wav, flux, transmission * trans_unit)
 
 
 @pytest.mark.parametrize("wave_unit", [1, u.centimeter, u.nanometer])
@@ -279,9 +276,9 @@ def test_sqrt_sum_wis_transmission_outofbounds(wave_unit, flux_unit):
     transmission2[-1] = -2  # Outside 0-1
 
     with pytest.raises(ValueError):
-        Q.sqrt_sum_wis_trans(wav, flux, transmission1)  # Higher value
+        Q.sqrt_sum_wis(wav, flux, transmission1)  # Higher value
     with pytest.raises(ValueError):
-        Q.sqrt_sum_wis_trans(wav, flux, transmission2)  # Lower value
+        Q.sqrt_sum_wis(wav, flux, transmission2)  # Lower value
 
 
 @pytest.mark.parametrize("scale", [0.1, 1, 2, 100, 0.1, 0.5])

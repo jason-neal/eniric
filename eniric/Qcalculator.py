@@ -115,6 +115,30 @@ def quality(
     return wis / np.sqrt(np.nansum(flux))
 
 
+def RV_prec_calc_Trans(
+    wavelength: ndarray, flux: ndarray, transmission: ndarray
+) -> Quantity:
+    """The same as RV_prec_calc, but considering a transmission different than zero.
+
+    Parameters
+    ----------
+    wavelength: array-like or Quantity array
+        Wavelength array
+    flux: array-like or Quantity array
+        Flux array
+    transmission: array-like
+        Transmission array
+
+    Returns
+    -------
+    RVrms: Quantity scalar
+        Radial velocity precision for a spectrum affected by atmospheric transmission
+
+    """
+    return c / sqrt_sum_wis(wavelength, flux, mask=transmission)
+
+
+
 def sqrt_sum_wis(
     wavelength: Union[Quantity, ndarray],
     flux: Union[Quantity, ndarray],
@@ -373,80 +397,10 @@ def RVprec_calc_weights_masked(
     return rv_value
 
 
-###############################################################################
-def RV_prec_calc_Trans(
-    wavelength: ndarray, flux: ndarray, transmission: ndarray
-) -> Quantity:
-    """The same as RV_prec_calc, but considering a transmission different than zero.
 
-    Parameters
-    ----------
-    wavelength: array-like or Quantity array
-        Wavelength array
-    flux: array-like or Quantity array
-        Flux array
-    transmission: array-like
-        Transmission array
-
-    Returns
-    -------
-    RVrms: Quantity scalar
-        Radial velocity precision for a spectrum affected by atmospheric transmission
 
     """
-    return c / sqrt_sum_wis_trans(wavelength, flux, transmission)
 
-
-def sqrt_sum_wis_trans(
-    wavelength: Union[Quantity, ndarray],
-    flux: Union[Quantity, ndarray],
-    transmission: Union[Quantity, ndarray],
-) -> Union[float64, Quantity]:
-    """Calculation of the Square root of the sum of the Weights for a spectrum, considering transmission.
-
-    The transmission reduces the flux so has an affect on the variance.
-
-    Parameters
-    ----------
-    wavelength: array-like or Quantity array
-        Wavelength array
-    flux: array-like or Quantity array
-        Flux array
-    transmission: array-like
-        Transmission array
-
-    Returns
-    -------
-    sqrt_sum_wis_trans: array-like or Quantity
-        Square root sum of pixel weights including effects of transmission.
-
-    """
-    if not isinstance(wavelength, np.ndarray):
-        print(
-            "Your wavelength and flux should really be numpy arrays! Converting them here."
-        )
-        wavelength = np.asarray(wavelength)
-    if not isinstance(flux, np.ndarray):
-        flux = np.asarray(flux)
-    if not isinstance(transmission, np.ndarray):
-        transmission = np.asarray(transmission)
-
-    # Check for units of transmission
-    if isinstance(transmission, u.Quantity):
-        if not transmission.unit == u.dimensionless_unscaled:
-            raise TypeError(
-                "transmission has a unit that is not dimensionless and unscaled!"
-            )
-        # Only need value
-        transmission = transmission.value
-
-    # Check for values of transmission
-    if np.any(transmission > 1) or np.any(transmission < 0):
-        raise ValueError("Transmission should range from 0 to 1 only.")
-
-    pixel_wis = pixel_weights(wavelength, flux, grad=False)
-
-    return np.sqrt(np.nansum(pixel_wis * transmission[:-1] ** 2.0))
 
 
 def pixel_weights(
