@@ -369,14 +369,16 @@ def RVprec_calc_weights_masked(
 
 
 def slope(wavelength, flux):
-    """Finite difference derivative which looses one value of array.
+    """Forward Finite difference derivative which looses one value of array.
 
-        f' = (f(x+h)-f(x)) / h
+        f' = (f(x+h)-f(x)) / h.
+        f'[i] = (flux[i+1] - flux[i])/ (wavelength[i+1] - wavelength[i])
+
+    Returns
+    -------
+    Array with n-1 points.
     """
-    delta_flux = np.diff(flux)
-    delta_lambda = np.diff(wavelength)
-
-    return delta_flux / delta_lambda
+    return np.diff(flux) / np.diff(wavelength)
 
 
 def pixel_weights(
