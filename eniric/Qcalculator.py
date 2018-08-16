@@ -221,7 +221,7 @@ def RVprec_calc_masked(
     wavelength: Union[List[List[Any]], ndarray],
     flux: Union[ndarray, List[List[Any]]],
     mask: Optional[ndarray] = None,
-    **kwargs,
+    **kwargs
 ) -> Quantity:
     """RV precision for split apart spectra.
 
