@@ -207,12 +207,6 @@ def mask_check(mask):
     # Check for values of mask
     if np.any(mask > 1) or np.any(mask < 0):
         raise ValueError("Mask should be within range from 0 to 1 only.")
-def slope(wavelength, flux):
-    """Original version used to calculate the slope. [Looses one value of array]."""
-    delta_flux = np.diff(flux)
-    delta_lambda = np.diff(wavelength)
-
-    return delta_flux / delta_lambda
 
 
 def RVprec_calc_masked(
@@ -397,10 +391,15 @@ def RVprec_calc_weights_masked(
     return rv_value
 
 
+def slope(wavelength, flux):
+    """Finite difference derivative which looses one value of array.
 
-
+        f' = (f(x+h)-f(x)) / h
     """
+    delta_flux = np.diff(flux)
+    delta_lambda = np.diff(wavelength)
 
+    return delta_flux / delta_lambda
 
 
 def pixel_weights(
