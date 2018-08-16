@@ -1,8 +1,7 @@
 """Calculate the Radial Velocity Precision of NIR Spectra.
 
-Using the Quality factor of the spectra.
-
-
+    Notes
+    -----
     Extract from https://arxiv.org/pdf/1511.07468v1.pdf
     From Eq. (11) and (12) of
     https://arxiv.org/pdf/1511.07468v1.pdf#cite.2001A%26A...374..733B
@@ -29,6 +28,25 @@ Using the Quality factor of the spectra.
     signal-to-noise ratio regime, so we can approximate A_0(i) + sigma_D**2
     to A_0(i).
 
+    Spectral Quality:
+        Q = sqrt{sum{W(i)}} / sqrt{sum{A_0{i}}
+
+    The spectral quality, Q, is independent of the flux level and is only
+    a function of the spectral profile.
+
+    Notes
+    -----
+    Extract from https://arxiv.org/pdf/1511.07468v1.pdf
+
+    The precision can only be calculated using the concept of optimal pixel weight W(i) for each of the pixels i
+    that compose the spectra.
+
+        W(i) = lambda(i)**2 (d'A_0(i) / d'lambda(i))**2 / (A_0(i) + sigma_D**2)
+
+    in which lambda(i) and A_0(i) are the values of each pixel wave-length and
+    flux, respectively. The weight will be proportional to the information
+    content of the spectrum, given by the derivative of the amplitude, and
+    calculated following Connes (1985).
 
 """
 import warnings
@@ -86,20 +104,9 @@ def quality(
 
     Notes
     -----
-    Extract from https://arxiv.org/pdf/1511.07468v1.pdf
-
         Q = sqrt{sum{W(i)}} / sqrt{sum{A_0{i}}
 
-    where, W(i), is the optimal pixel weights
-
-        W(i) = lambda(i)**2 (d'A_0(i) / d'lambda(i))**2 / (A_0(i) + sigma_D**2)
-
-    in which lambda(i) and A_0(i) are the values of each pixel wave-length and
-    flux, respectively. The weight will be proportional to the information
-    content of the spectrum, given by the derivative of the amplitude, and
-    calculated following Connes (1985).
-
-    The spectral quality, Q, is independent of the flux level and is only
+        The spectral quality, Q, is independent of the flux level and is only
     a function of the spectral profile.
 
     """
@@ -152,6 +159,10 @@ def sqrt_sum_wis(
 ) -> Union[float64, Quantity]:
     """Calculation of the Square root of the sum of the weights(Wis) for a spectrum.
 
+    Mask is used to apply a masking function to the weights (to mask out telluric lines for example)
+
+        W(i) = W(i) * m(i)
+
     Parameters
     ----------
     wavelength: array-like or Quantity array
@@ -167,24 +178,6 @@ def sqrt_sum_wis(
     -------
     sqrt{sum{W(i)}}: float or Quantity scalar
        Square root of the sum of the pixel weights(Wis)
-
-    Notes
-    -----
-    Extract from https://arxiv.org/pdf/1511.07468v1.pdf
-
-    The precision can only be calculated using the concept of optimal pixel weight W(i) for each of the pixels i
-    that compose the spectra.
-
-        W(i) = lambda(i)**2 (d'A_0(i) / d'lambda(i))**2 / (A_0(i) + sigma_D**2)
-
-    in which lambda(i) and A_0(i) are the values of each pixel wave-length and
-    flux, respectively. The weight will be proportional to the information
-    content of the spectrum, given by the derivative of the amplitude, and
-    calculated following Connes (1985).
-
-    Mask is used to apply a masking function to the weights (to mask out telluric lines for example)
-
-        W(i) = W(i) * m(i)
 
     """
     if mask is None:
@@ -263,11 +256,6 @@ def RVprec_calc_masked(
     A "clump" is defined as a contiguous region of the array.
     Solution for clumping comes from
     https://stackoverflow.com/questions/14605734/numpy-split-1d-array-of-chunks-separated-by-nans-into-a-list-of-the-chunks
-
-    There was a bug in the original clumping code which meant that chose the
-    clump depending on the first element of mask.
-    A test for the failing condition is added so that if ever encountered we
-    can investigate the effect on the previously published results.
     """
     if mask is not None:
         # Turn wavelength and flux into masked arrays
@@ -366,9 +354,6 @@ def RVprec_calc_weights_masked(
     RV_value: Quantity scalar
         RV precision.
 
-
-    Notes
-    -----
     """
     if mask is None:
         # Turn wavelength and flux into masked arrays
