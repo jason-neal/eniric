@@ -36,11 +36,9 @@ def test_old_calc_precision(SpType, band, vsini, R, expected):
         grad=False # Old values without new gradient
     )
 
-    # precision 1
-    assert expected[0] == round(results[id_string][0].value, 1)
-
-    # precision 3
-    assert expected[2] == round(results[id_string][2].value, 1)
+    for ii in [0, 2]:  # Condition 1 # Condition 3
+        print("Condition # {}".format(ii + 1))
+        assert expected[ii] == round(results[id_string][ii].value, 1)
 
 
 def test_published_precision_with_old_normalization(model_parameters, published_data):
@@ -71,7 +69,7 @@ def test_published_precision_with_old_normalization(model_parameters, published_
     assert published["RV_Cond_1[m/s]"].values == round(results[id_string][0].value, 1)
 
     # precision 2 has changed
-    assert published["RV_Cond_1[m/s]"].values != round(results[id_string][1].value, 1)
+    assert published["RV_Cond_2[m/s]"].values != round(results[id_string][1].value, 1)
 
     # precision 3
     assert published["RV_Cond_3[m/s]"].values == round(results[id_string][2].value, 1)
