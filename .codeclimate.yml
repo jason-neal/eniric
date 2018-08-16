@@ -14,7 +14,10 @@ engines:
     checks:
       E501:
         enabled: false
-
+      E203:
+        enbled: false
+      W503:
+        enabed: false
 ratings:
   paths:
   - "**.py"
@@ -24,4 +27,4 @@ exclude_paths:
 - data/
 - precision/
 - venv/
-- plots/ 
+- plots/
