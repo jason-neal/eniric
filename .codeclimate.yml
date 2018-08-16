@@ -20,4 +20,8 @@ ratings:
   - "**.py"
 
 exclude_paths:
-- tests/
+# - tests/
+- data/
+- precision/
+- venv/
+- plots/ 
