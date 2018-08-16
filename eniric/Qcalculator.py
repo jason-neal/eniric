@@ -62,7 +62,7 @@ c = const.c
 
 
 def RVprec_calc(
-    wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray], **kwargs
+        wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray], mask=None, **kwargs
 ) -> Quantity:
     """Calculate the theoretical RV precision achievable on a spectrum.
 
@@ -80,7 +80,7 @@ def RVprec_calc(
        Radial velocity precision of spectra in m/s.
 
     """
-    return c / sqrt_sum_wis(wavelength, flux, **kwargs)
+    return c / sqrt_sum_wis(wavelength, flux, mask=mask, **kwargs)
 
 
 def quality(
@@ -124,31 +124,6 @@ def quality(
     wis = sqrt_sum_wis(wavelength, flux, **kwargs)
 
     return wis / np.sqrt(np.nansum(flux))
-
-
-def RVprec_calc_Trans(
-    wavelength: ndarray, flux: ndarray, transmission: ndarray, **kwargs
-) -> Quantity:
-    """The same as RV_prec_calc, but considering a transmission different than zero.
-
-    Parameters
-    ----------
-    wavelength: array-like or Quantity array
-        Wavelength array
-    flux: array-like or Quantity array
-        Flux array
-    transmission: array-like
-        Transmission array
-    kwargs:
-        Kwargs for sqrt_sum_wis
-
-    Returns
-    -------
-    RVrms: Quantity scalar
-        Radial velocity precision for a spectrum affected by atmospheric transmission
-
-    """
-    return c / sqrt_sum_wis(wavelength, flux, mask=transmission, **kwargs)
 
 
 def sqrt_sum_wis(
