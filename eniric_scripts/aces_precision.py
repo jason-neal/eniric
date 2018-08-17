@@ -12,11 +12,7 @@ import eniric
 from eniric.atmosphere import Atmosphere
 from eniric.broaden import convolution
 from eniric.corrections import correct_artigau_2018
-from eniric.Qcalculator import (
-    RVprec_calc,
-    RVprec_calc_masked,
-    quality,
-)
+from eniric.Qcalculator import RVprec_calc, RVprec_calc_masked, quality
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import band_middle, load_aces_spectrum, load_btsettl_spectrum

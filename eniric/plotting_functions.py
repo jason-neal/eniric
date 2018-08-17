@@ -813,10 +813,32 @@ def plot_paper_plots():
 
     y4_100k_lim = [y[0] for y in y4_100k]
 
-    datasets = [y1_60k_top, y1_60k_bottom, y1_80k_top, y1_80k_bottom, y1_100k_top, y1_100k_bottom,
-                y2_60k_top, y2_60k_bottom, y2_80k_top, y2_80k_bottom, y2_100k_top, y2_100k_bottom,
-                y3_60k_top, y3_60k_bottom, y3_80k_top, y3_80k_bottom, y3_100k_top, y3_100k_bottom,
-                y4_60k_top, y4_60k_bottom, y4_80k_top, y4_80k_bottom, y4_100k_top, y4_100k_bottom]
+    datasets = [
+        y1_60k_top,
+        y1_60k_bottom,
+        y1_80k_top,
+        y1_80k_bottom,
+        y1_100k_top,
+        y1_100k_bottom,
+        y2_60k_top,
+        y2_60k_bottom,
+        y2_80k_top,
+        y2_80k_bottom,
+        y2_100k_top,
+        y2_100k_bottom,
+        y3_60k_top,
+        y3_60k_bottom,
+        y3_80k_top,
+        y3_80k_bottom,
+        y3_100k_top,
+        y3_100k_bottom,
+        y4_60k_top,
+        y4_60k_bottom,
+        y4_80k_top,
+        y4_80k_bottom,
+        y4_100k_top,
+        y4_100k_bottom,
+    ]
 
     positiony_min, poisition_ymax = min_max_y(datasets)
 
@@ -1085,10 +1107,32 @@ def plot_paper_plots():
     """
     same plot for total precision
     """
-    datasets = [y1_60k_top, y1_60k_bottom, y1_80k_top, y1_80k_bottom, y1_100k_top, y1_100k_bottom,
-                y2_60k_top, y2_60k_bottom, y2_80k_top, y2_80k_bottom, y2_100k_top, y2_100k_bottom,
-                y3_60k_top, y3_60k_bottom, y3_80k_top, y3_80k_bottom, y3_100k_top, y3_100k_bottom,
-                y4_60k_top, y4_60k_bottom, y4_80k_top, y4_80k_bottom, y4_100k_top, y4_100k_bottom]
+    datasets = [
+        y1_60k_top,
+        y1_60k_bottom,
+        y1_80k_top,
+        y1_80k_bottom,
+        y1_100k_top,
+        y1_100k_bottom,
+        y2_60k_top,
+        y2_60k_bottom,
+        y2_80k_top,
+        y2_80k_bottom,
+        y2_100k_top,
+        y2_100k_bottom,
+        y3_60k_top,
+        y3_60k_bottom,
+        y3_80k_top,
+        y3_80k_bottom,
+        y3_100k_top,
+        y3_100k_bottom,
+        y4_60k_top,
+        y4_60k_bottom,
+        y4_80k_top,
+        y4_80k_bottom,
+        y4_100k_top,
+        y4_100k_bottom,
+    ]
 
     positiony_min, poisition_ymax = min_max_y(datasets)
 
@@ -1595,10 +1639,32 @@ def plot_paper_plots():
 
     y4_100k_lim = [y[0] for y in y4_100k]
 
-    datasets = [y1_60k_top, y1_60k_bottom, y1_80k_top, y1_80k_bottom, y1_100k_top, y1_100k_bottom,
-                y2_60k_top, y2_60k_bottom, y2_80k_top, y2_80k_bottom, y2_100k_top, y2_100k_bottom,
-                y3_60k_top, y3_60k_bottom, y3_80k_top, y3_80k_bottom, y3_100k_top, y3_100k_bottom,
-                y4_60k_top, y4_60k_bottom, y4_80k_top, y4_80k_bottom, y4_100k_top, y4_100k_bottom]
+    datasets = [
+        y1_60k_top,
+        y1_60k_bottom,
+        y1_80k_top,
+        y1_80k_bottom,
+        y1_100k_top,
+        y1_100k_bottom,
+        y2_60k_top,
+        y2_60k_bottom,
+        y2_80k_top,
+        y2_80k_bottom,
+        y2_100k_top,
+        y2_100k_bottom,
+        y3_60k_top,
+        y3_60k_bottom,
+        y3_80k_top,
+        y3_80k_bottom,
+        y3_100k_top,
+        y3_100k_bottom,
+        y4_60k_top,
+        y4_60k_bottom,
+        y4_80k_top,
+        y4_80k_bottom,
+        y4_100k_top,
+        y4_100k_bottom,
+    ]
 
     positiony_min, poisition_ymax = min_max_y(datasets)
 
@@ -1971,10 +2037,32 @@ def plot_paper_plots():
 
     y4_100k_lim = [y[0] for y in y4_100k]
 
-    datasets = [y1_60k_top, y1_60k_bottom, y1_80k_top, y1_80k_bottom, y1_100k_top, y1_100k_bottom,
-                y2_60k_top, y2_60k_bottom, y2_80k_top, y2_80k_bottom, y2_100k_top, y2_100k_bottom,
-                y3_60k_top, y3_60k_bottom, y3_80k_top, y3_80k_bottom, y3_100k_top, y3_100k_bottom,
-                y4_60k_top, y4_60k_bottom, y4_80k_top, y4_80k_bottom, y4_100k_top, y4_100k_bottom]
+    datasets = [
+        y1_60k_top,
+        y1_60k_bottom,
+        y1_80k_top,
+        y1_80k_bottom,
+        y1_100k_top,
+        y1_100k_bottom,
+        y2_60k_top,
+        y2_60k_bottom,
+        y2_80k_top,
+        y2_80k_bottom,
+        y2_100k_top,
+        y2_100k_bottom,
+        y3_60k_top,
+        y3_60k_bottom,
+        y3_80k_top,
+        y3_80k_bottom,
+        y3_100k_top,
+        y3_100k_bottom,
+        y4_60k_top,
+        y4_60k_bottom,
+        y4_80k_top,
+        y4_80k_bottom,
+        y4_100k_top,
+        y4_100k_bottom,
+    ]
 
     positiony_min, poisition_ymax = min_max_y(datasets)
 
@@ -2242,10 +2330,32 @@ def plot_paper_plots():
 
     # correction figure
 
-    datasets = [y1_60k_vsini1, y1_60k_vsini10, y1_80k, y1_80k_vsini10, y1_100k_vsini1, y1_100k_vsini10,
-                y2_60k_vsini1, y2_60k_vsini10, y2_80k_vsini1, y2_80k_vsini10, y2_100k_vsini1, y2_100k_vsini10,
-                y3_60k_vsini1, y3_60k_vsini10, y3_80k_vsini1, y3_80k_vsini10, y3_100k_vsini1, y3_100k_vsini10,
-                y4_60k_vsini1, y4_60k_vsini10, y4_80k_vsini1, y4_80k_vsini10, y4_100k_vsini1, y4_100k_vsini10]
+    datasets = [
+        y1_60k_vsini1,
+        y1_60k_vsini10,
+        y1_80k,
+        y1_80k_vsini10,
+        y1_100k_vsini1,
+        y1_100k_vsini10,
+        y2_60k_vsini1,
+        y2_60k_vsini10,
+        y2_80k_vsini1,
+        y2_80k_vsini10,
+        y2_100k_vsini1,
+        y2_100k_vsini10,
+        y3_60k_vsini1,
+        y3_60k_vsini10,
+        y3_80k_vsini1,
+        y3_80k_vsini10,
+        y3_100k_vsini1,
+        y3_100k_vsini10,
+        y4_60k_vsini1,
+        y4_60k_vsini10,
+        y4_80k_vsini1,
+        y4_80k_vsini10,
+        y4_100k_vsini1,
+        y4_100k_vsini10,
+    ]
 
     positiony_min, poisition_ymax = min_max_y(datasets)
     rc("xtick", labelsize=15)

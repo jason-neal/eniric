@@ -52,9 +52,9 @@
 import warnings
 from typing import Any, List, Optional, Tuple, Union
 
+import astropy.constants as const
 import astropy.units as u
 import numpy as np
-import astropy.constants as const
 from astropy.units.quantity import Quantity
 from numpy import float64, ndarray
 
@@ -62,7 +62,10 @@ c = const.c
 
 
 def RVprec_calc(
-        wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray], mask=None, **kwargs
+    wavelength: Union[Quantity, ndarray],
+    flux: Union[Quantity, ndarray],
+    mask=None,
+    **kwargs,
 ) -> Quantity:
     """Calculate the theoretical RV precision achievable on a spectrum.
 
@@ -188,7 +191,7 @@ def RVprec_calc_masked(
     wavelength: Union[List[List[Any]], ndarray],
     flux: Union[ndarray, List[List[Any]]],
     mask: Optional[ndarray] = None,
-    **kwargs
+    **kwargs,
 ) -> Quantity:
     """RV precision for split apart spectra.
 

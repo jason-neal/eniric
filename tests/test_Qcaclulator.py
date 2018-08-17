@@ -7,7 +7,7 @@ from astropy import constants as const
 from astropy.units import Quantity
 
 import eniric.Qcalculator as Q
-from eniric.Qcalculator import pixel_weights
+from eniric.Qcalculator import mask_check, pixel_weights
 
 # test RVprec_calc returns a single values
 # test it returns a quantity in m/s
@@ -150,9 +150,7 @@ def test_transmission_reduces_precision():
     # Value should be less then normal if trans <=1
     assert Q.RVprec_calc(wav, flux) < Q.RVprec_calc(wav, flux, mask=transmission)
     # Unitary transmission should give equivalent result.
-    assert Q.RVprec_calc(wav, flux) == Q.RVprec_calc(
-        wav, flux, mask=np.ones_like(wav)
-    )
+    assert Q.RVprec_calc(wav, flux) == Q.RVprec_calc(wav, flux, mask=np.ones_like(wav))
 
 
 def test_RV_prec_masked():
@@ -198,7 +196,7 @@ def test_manual_clumping():
 
     expected_wav = [np.arange(0, 4), np.arange(7, 10), np.arange(11, 14)]
     expected_flux = [np.arange(15, 19), np.arange(22, 25), np.arange(26, 29)]
-    for i, chunk in enumerate(wav_masked):
+    for i, __ in enumerate(wav_masked):
         assert np.all(wav_masked[i] == expected_wav[i])
         assert np.all(flux_masked[i] == expected_flux[i])
         assert np.all(wav_masked_bool[i] == expected_wav[i])
@@ -349,9 +347,6 @@ def test_pixel_weights(wave, flux, expected, wav_unit, flux_unit, quantity):
     if quantity:
         assert isinstance(result, Quantity)
         assert result.unit == u.dimensionless_unscaled
-
-
-from eniric.Qcalculator import mask_check
 
 
 @pytest.mark.parametrize(

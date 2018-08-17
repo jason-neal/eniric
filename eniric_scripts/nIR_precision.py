@@ -176,7 +176,7 @@ def calculate_prec(
     snr=100,
     ref_band="J",
     new=True,
-    grad=True
+    grad=True,
 ):
     """Calculate precisions for given combinations.
 
