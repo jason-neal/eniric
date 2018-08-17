@@ -106,18 +106,10 @@ def quality(
     -----
         Q = sqrt{sum{W(i)}} / sqrt{sum{A_0{i}}
 
-        The spectral quality, Q, is independent of the flux level and is only
+    The spectral quality, Q, is independent of the flux level and is only
     a function of the spectral profile.
 
     """
-    if not isinstance(wavelength, np.ndarray):
-        print(
-            "Your wavelength and flux should really be numpy arrays! Converting them here."
-        )
-        wavelength = np.asarray(wavelength)
-    if not isinstance(flux, np.ndarray):
-        flux = np.asarray(flux)
-
     flux = flux * u.dimensionless_unscaled  # Turn into Quantity if not already
     flux = flux / flux.unit  # Remove units from flux (sqrt(N_e) is unitless)
 
