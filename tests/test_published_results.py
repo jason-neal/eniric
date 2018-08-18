@@ -1,7 +1,6 @@
 """To test if the new code produces the same precision values on the published results."""
 
 import numpy as np
-import pandas as pd
 import pytest
 
 from eniric_scripts.nIR_precision import calculate_prec

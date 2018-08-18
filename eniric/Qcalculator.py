@@ -102,7 +102,7 @@ def quality(
 
     Returns
     -------
-    sqrt{sum{W(i)}}: float or Quantity scalar
+    sqrt{sum{W(i)}}: float
        Spectral quality
 
     Notes
@@ -117,8 +117,8 @@ def quality(
     flux = flux / flux.unit  # Remove units from flux (sqrt(N_e) is unitless)
 
     wis = sqrt_sum_wis(wavelength, flux, **kwargs)
-
-    return wis / np.sqrt(np.nansum(flux))
+    quality = wis / np.sqrt(np.nansum(flux))
+    return quality.value
 
 
 def sqrt_sum_wis(
