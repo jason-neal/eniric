@@ -211,7 +211,7 @@ def test_manual_clumping():
 
     expected_wav = [np.arange(0, 4), np.arange(7, 10), np.arange(11, 14)]
     expected_flux = [np.arange(15, 19), np.arange(22, 25), np.arange(26, 29)]
-    for i in range(len(wav_masked)):
+    for i, __ in enumerate(wav_masked):
         assert np.allclose(wav_masked[i], expected_wav[i])
         assert np.allclose(flux_masked[i], expected_flux[i])
         assert np.allclose(wav_masked_bool[i], expected_wav[i])
