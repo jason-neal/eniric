@@ -170,6 +170,12 @@ def sqrt_sum_wis(
     sqrt_sum = np.sqrt(np.nansum(masked_wis))
     if not np.isfinite(sqrt_sum):
         warnings.warn("Weight sum is not finite = {}".format(sqrt_sum))
+    if sqrt_sum == 0:
+        warnings.warn(
+            "Sum of weights sum is = {}. This will cause infinite errors.".format(
+                sqrt_sum
+            )
+        )
     return sqrt_sum
 
 
