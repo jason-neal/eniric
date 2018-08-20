@@ -75,14 +75,6 @@ def test_legacy_RV_warns_nonfinite(grad_flag):
             grad=grad_flag,
         )
 
-    with pytest.warns(RuntimeWarning, match="divide by zero"):
-        RVprec_calc_masked(
-            np.array([1, 2, 3, 4]),
-            np.array([1, 2, 3, 4]),
-            np.array([0, 1, 0, 0]),
-            grad=grad_flag,
-        )
-
 
 def test_weigths_clumping_grad(resampled_data, grad_flag):
     # Test masked clumping vere weight mask with new gradients
