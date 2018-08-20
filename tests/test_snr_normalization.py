@@ -327,9 +327,7 @@ def test_decompose_bad_id_strings_give_errors(id_string):
         ("M0-H-1.0-100k", ("M0", "H", "1.0", "100k")),
         ("M9-K-5.0-50k", ("M9", "K", "5.0", "50k")),
         ("M9-J-5.0-30k", ("M9", "J", "5.0", "30k")),
-        ("M3-VIS-5.0-50k", ("M3", "VIS", "5.0", "50k")),
-        ("M6-NIR-10.0-80k", ("M6", "NIR", "10.0", "80k")),
-        ("M6-CONT-10.0-80k", ("M6", "CONT", "10.0", "80k")),
+        ("M6-TEST-10.0-80k", ("M6", "TEST", "10.0", "80k")),
     ],
 )
 def test_decompose_id_string(id_string, expected):
