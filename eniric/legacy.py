@@ -70,7 +70,7 @@ def RVprec_calc_masked(
 
     for i, (wav_slice, flux_slice) in enumerate(zip(wavelength_clumps, flux_clumps)):
         if len(wav_slice) == 1:
-            """Results in infinite rv, can not determine the slope of single point."""
+            # Results in infinite rv, can not determine the slope of single point.
             continue
 
         else:
