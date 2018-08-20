@@ -1,12 +1,10 @@
 """Test Qcalculator."""
 
 import astropy.units as u
-import hypothesis.strategies as st
 import numpy as np
 import pytest
 from astropy import constants as const
 from astropy.units import Quantity
-from hypothesis import given
 
 import eniric.Qcalculator as Q
 from eniric.Qcalculator import mask_check, pixel_weights
@@ -163,64 +161,6 @@ def test_improved_gradient_reduces_precision(test_spec):
     )
 
 
-def test_RV_prec_masked(test_spec):
-    """Test same precision results between past pre-clumped version and mask clump version."""
-    wav = test_spec[0]
-    flux = test_spec[1]
-    mask = test_spec[2]
-    if mask is not None:
-        mask = mask.round().astype(bool)
-    else:
-        mask = np.ones_like(wav)
-    print(mask)
-
-    # Pre clumping as in nIR_precision.py
-    wav_masked, flux_masked = Q.mask_clumping(wav, flux, mask)
-    rv_chunks = Q.RVprec_calc_masked(wav_masked, flux_masked, mask=None)
-
-    rv_masked = Q.RVprec_calc_masked(wav, flux, mask)
-
-    assert rv_masked.value == rv_chunks.value
-    assert isinstance(rv_masked, u.Quantity)
-    assert rv_masked.unit == u.m / u.s
-
-
-@given(st.lists(st.booleans(), min_size=5, max_size=300))
-def test_mask_clumping_of_mask(mask):
-    """Masking mask show return all ones."""
-    wav_clumped, flux_clumped = Q.mask_clumping(mask, mask, mask)
-    assert len(wav_clumped) == len(flux_clumped)
-    for wav_i, flux_i in zip(wav_clumped, flux_clumped):
-        assert np.all(wav_i)
-        assert np.all(flux_i)
-    # sum of masked_clumped should equal mask sum
-    mask_sum = np.sum(mask)
-    assert np.sum([np.sum(wav_i) for wav_i in wav_clumped]) == mask_sum
-    assert np.sum([np.sum(flux_i) for flux_i in flux_clumped]) == mask_sum
-
-
-def test_manual_clumping():
-    """Test properties of clumping function using manually defined masked_arrays."""
-    wav = np.arange(15)
-    flux = np.arange(15, 30)
-    mask = np.array([1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0])
-    mask_bool = np.array([1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0], dtype=bool)
-
-    wav_masked, flux_masked = Q.mask_clumping(wav, flux, mask)
-    wav_masked_bool, flux_masked_bool = Q.mask_clumping(wav, flux, mask_bool)
-
-    expected_wav = [np.arange(0, 4), np.arange(7, 10), np.arange(11, 14)]
-    expected_flux = [np.arange(15, 19), np.arange(22, 25), np.arange(26, 29)]
-    for i, __ in enumerate(wav_masked):
-        assert np.allclose(wav_masked[i], expected_wav[i])
-        assert np.allclose(flux_masked[i], expected_flux[i])
-        assert np.allclose(wav_masked_bool[i], expected_wav[i])
-        assert np.allclose(flux_masked_bool[i], expected_flux[i])
-
-    assert len(expected_wav) == len(wav_masked)
-    assert len(expected_flux) == len(flux_masked)
-
-
 @pytest.mark.parametrize("scale", [0.1, 1, 2, 100, 0.1, 0.5])
 def test_quality_independent_of_flux_level(scale):
     """Q of a spectrum is independent of flux level."""
@@ -349,22 +289,6 @@ def test_sqrt_sum_wis_transmission_outofbounds(test_spec, wav_unit, flux_unit):
 
 def test_sqrtsumwis_warns_nonfinite(grad_flag):
     """Some warning tests."""
-    with pytest.warns(RuntimeWarning, match="divide by zero"):
-        Q.RVprec_calc_masked(
-            np.array([1, 2, 3, 4]),
-            np.array([1, 2, 3, 4]),
-            np.array([0, 1, 0, 0]),
-            grad=grad_flag,
-        )
-
-    with pytest.warns(RuntimeWarning, match="divide by zero"):
-        Q.RVprec_calc_masked(
-            np.array([1, 2, 3, 4]),
-            np.array([1, 2, 3, 4]),
-            np.array([0, 1, 0, 0]),
-            grad=grad_flag,
-        )
-
     with pytest.warns(UserWarning, match="This will cause infinite errors."):
         Q.sqrt_sum_wis(
             np.array([1, 2, 3]),

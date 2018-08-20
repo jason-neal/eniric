@@ -12,6 +12,7 @@ from matplotlib import rc
 
 import eniric
 import eniric.IOmodule as io
+import eniric.legacy
 import eniric.plotting_functions as plt_functions
 import eniric.Qcalculator as Qcalculator
 import eniric.snr_normalization as snrnorm
@@ -377,14 +378,14 @@ def calculate_prec(
             prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar, grad=grad)
 
             # Precision as given by the second_method
-            wav_stellar_chunks, flux_stellar_chunks = Qcalculator.mask_clumping(
+            wav_stellar_chunks, flux_stellar_chunks = eniric.legacy.mask_clumping(
                 wav_stellar, flux_stellar, mask_atm_selected
             )
 
-            prec_2_old = Qcalculator.RVprec_calc_masked(
+            prec_2_old = eniric.legacy.RVprec_calc_masked(
                 wav_stellar_chunks, flux_stellar_chunks, grad=grad
             )
-            prec_2 = Qcalculator.RVprec_calc_masked(
+            prec_2 = eniric.legacy.RVprec_calc_masked(
                 wav_stellar, flux_stellar, mask_atm_selected, grad=grad
             )
 
