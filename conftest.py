@@ -1,5 +1,7 @@
 import os
 
+import astropy.units as u
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -67,3 +69,48 @@ def resampled_data(request):
     )
     wav, flux = pdread_2col(test_data)
     return id_string, wav, flux
+
+
+# Define some fixtures for Qcalculator.
+per_s_cm2 = (1 / u.second) / (u.centimeter ** 2)
+
+
+@pytest.fixture(
+    params=[
+        (np.arange(1, 101), np.random.random(100), None),
+        (np.linspace(2.1, 2.5, 200), np.random.random(200), np.random.random(200)),
+        (
+            np.linspace(0.5, 1.5, 50),
+            np.random.random(50),
+            np.floor(2 * np.random.random(50)),
+        ),
+    ]
+)
+def test_spec(request):
+    """Wave and flux, mask examples."""
+    return request.param
+
+
+# 3 situations each variable, no unit. a unit. or a dimensionless unscaled unit.
+@pytest.fixture(params=[1, u.micron, u.dimensionless_unscaled])
+def wav_unit(request):
+    """Iterate some units on wavelength."""
+    return request.param
+
+
+@pytest.fixture(params=[1, per_s_cm2, u.dimensionless_unscaled])
+def flux_unit(request):
+    """Iterate some units on flux"""
+    return request.param
+
+
+@pytest.fixture(params=[1, u.dimensionless_unscaled])
+def trans_unit(request):
+    """Iterate some units on mask/transmission."""
+    return request.param
+
+
+@pytest.fixture(params=[True, False])
+def grad_flag(request):
+    """Gradient flag parameter."""
+    return request.param
