@@ -108,15 +108,14 @@ def test_transmission_reduces_precision(test_spec):
 
 
 def test_improved_gradient_reduces_precision(test_spec):
-    """Check that the gradient produces  larger RV error."""
+    """Check that the gradient produces larger RV error."""
     wav = test_spec[0]
     flux = test_spec[1]
     transmission = test_spec[2]
 
-    # mask=None is the same as mask of all 1.
-    assert Q.RVprec_calc(wav, flux, mask=transmission, grad=False) <= Q.RVprec_calc(
-        wav, flux, mask=transmission, grad=True
-    )
+    a = Q.RVprec_calc(wav, flux, mask=transmission, grad=False).value
+    b = Q.RVprec_calc(wav, flux, mask=transmission, grad=True).value
+    assert a <= b
 
 
 @pytest.mark.parametrize("scale", [0.1, 1, 2, 100, 0.1, 0.5])
