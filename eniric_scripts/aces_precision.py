@@ -12,12 +12,8 @@ import eniric
 from eniric.atmosphere import Atmosphere
 from eniric.broaden import convolution
 from eniric.corrections import correct_artigau_2018
-from eniric.Qcalculator import (
-    RV_prec_calc_Trans,
-    RVprec_calc,
-    RVprec_calc_masked,
-    quality,
-)
+from eniric.legacy import RVprec_calc_masked
+from eniric.Qcalculator import RVprec_calc, quality
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import (
@@ -198,7 +194,7 @@ def do_analysis(
         )
 
     wav_grid, sampled_flux = convolve_and_resample(
-        wav, flux, vsini, R, band, sampling, conv_kwargs
+        wav, flux, vsini, R, band, sampling, **conv_kwargs
     )
 
     # Doppler shift
@@ -221,7 +217,7 @@ def do_analysis(
 
     # Scale normalization for precision
     wav_ref, sampled_ref = convolve_and_resample(
-        wav, flux, vsini, R, ref_band, sampling, conv_kwargs
+        wav, flux, vsini, R, ref_band, sampling, **conv_kwargs
     )
     # TODO: Is there now a precision verse RV dependence due to the SNR normalization.
     snr_normalize = snr_constant_band(wav_ref, sampled_ref, snr=snr, band=ref_band)
@@ -252,7 +248,7 @@ def do_analysis(
     prec2 = RVprec_calc_masked(wav_grid, sampled_flux, atm.mask)
 
     # Precision as given by the third condition
-    prec3 = RV_prec_calc_Trans(wav_grid, sampled_flux, atm.transmission)
+    prec3 = RVprec_calc(wav_grid, sampled_flux, mask=atm.transmission)
     return [q, prec1, prec2, prec3]
 
 
@@ -263,7 +259,7 @@ def convolve_and_resample(
     R: float,
     band: str,
     sampling: float,
-    conv_kwargs,
+    **conv_kwargs,
 ) -> Tuple[ndarray, ndarray]:
     """Convolve and resample functions together.
 

@@ -4,12 +4,12 @@ name: eniric_default
 
 # The parameters defining the spectral libraries live here.
 paths:
-  phoenix_raw: ["data", "test_data","PHOENIX-raw"]
-  btsettl_raw: ["data", "test_data", "BT-Settl"]
-  phoenix_dat: ["data", "test_data","PHOENIX-ACES_spectra"]
-  results: ["data","test_data","results"]
-  resampled: ["data","test_data","resampled"]
-  test_data: ["data","test_data"]
+  phoenix_raw: ["..","..","data", "test_data","PHOENIX-raw"]
+  btsettl_raw: ["..","..","data", "test_data", "BT-Settl"]
+  phoenix_dat: ["..","..","data", "test_data","PHOENIX-ACES_spectra"]
+  results: ["..","..","data","test_data","results"]
+  resampled: ["..","..","data","test_data","resampled"]
+  test_data: ["..","..","data","test_data"]
   atmmodel: ["..","..","data", "atmmodel"]
   precision: ["precision"]
 

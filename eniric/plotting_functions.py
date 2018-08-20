@@ -813,63 +813,34 @@ def plot_paper_plots():
 
     y4_100k_lim = [y[0] for y in y4_100k]
 
-    positiony_max = np.max(
-        [
-            np.max(y1_60k_top),
-            np.max(y1_60k_bottom),
-            np.max(y1_80k_top),
-            np.max(y1_80k_bottom),
-            np.max(y1_100k_top),
-            np.max(y1_100k_bottom),
-            np.max(y2_60k_top),
-            np.max(y2_60k_bottom),
-            np.max(y2_80k_top),
-            np.max(y2_80k_bottom),
-            np.max(y2_100k_top),
-            np.max(y2_100k_bottom),
-            np.max(y3_60k_top),
-            np.max(y3_60k_bottom),
-            np.max(y3_80k_top),
-            np.max(y3_80k_bottom),
-            np.max(y3_100k_top),
-            np.max(y3_100k_bottom),
-            np.max(y4_60k_top),
-            np.max(y4_60k_bottom),
-            np.max(y4_80k_top),
-            np.max(y4_80k_bottom),
-            np.max(y4_100k_top),
-            np.max(y4_100k_bottom),
-        ]
-    )
+    datasets = [
+        y1_60k_top,
+        y1_60k_bottom,
+        y1_80k_top,
+        y1_80k_bottom,
+        y1_100k_top,
+        y1_100k_bottom,
+        y2_60k_top,
+        y2_60k_bottom,
+        y2_80k_top,
+        y2_80k_bottom,
+        y2_100k_top,
+        y2_100k_bottom,
+        y3_60k_top,
+        y3_60k_bottom,
+        y3_80k_top,
+        y3_80k_bottom,
+        y3_100k_top,
+        y3_100k_bottom,
+        y4_60k_top,
+        y4_60k_bottom,
+        y4_80k_top,
+        y4_80k_bottom,
+        y4_100k_top,
+        y4_100k_bottom,
+    ]
 
-    positiony_min = np.min(
-        [
-            np.min(y1_60k_top),
-            np.min(y1_60k_bottom),
-            np.min(y1_80k_top),
-            np.min(y1_80k_bottom),
-            np.min(y1_100k_top),
-            np.min(y1_100k_bottom),
-            np.min(y2_60k_top),
-            np.min(y2_60k_bottom),
-            np.min(y2_80k_top),
-            np.min(y2_80k_bottom),
-            np.min(y2_100k_top),
-            np.min(y2_100k_bottom),
-            np.min(y3_60k_top),
-            np.min(y3_60k_bottom),
-            np.min(y3_80k_top),
-            np.min(y3_80k_bottom),
-            np.min(y3_100k_top),
-            np.min(y3_100k_bottom),
-            np.min(y4_60k_top),
-            np.min(y4_60k_bottom),
-            np.min(y4_80k_top),
-            np.min(y4_80k_bottom),
-            np.min(y4_100k_top),
-            np.min(y4_100k_bottom),
-        ]
-    )
+    positiony_min, poisition_ymax = min_max_y(datasets)
 
     # data for correction plot
     y1_60k_vsini1 = (
@@ -1136,64 +1107,34 @@ def plot_paper_plots():
     """
     same plot for total precision
     """
+    datasets = [
+        y1_60k_top,
+        y1_60k_bottom,
+        y1_80k_top,
+        y1_80k_bottom,
+        y1_100k_top,
+        y1_100k_bottom,
+        y2_60k_top,
+        y2_60k_bottom,
+        y2_80k_top,
+        y2_80k_bottom,
+        y2_100k_top,
+        y2_100k_bottom,
+        y3_60k_top,
+        y3_60k_bottom,
+        y3_80k_top,
+        y3_80k_bottom,
+        y3_100k_top,
+        y3_100k_bottom,
+        y4_60k_top,
+        y4_60k_bottom,
+        y4_80k_top,
+        y4_80k_bottom,
+        y4_100k_top,
+        y4_100k_bottom,
+    ]
 
-    positiony_max = np.max(
-        [
-            np.max(rv_cumulative(y1_60k_top)),
-            np.max(rv_cumulative(y1_60k_bottom)),
-            np.max(rv_cumulative(y1_80k_top)),
-            np.max(rv_cumulative(y1_80k_bottom)),
-            np.max(rv_cumulative(y1_100k_top)),
-            np.max(rv_cumulative(y1_100k_bottom)),
-            np.max(rv_cumulative(y2_60k_top)),
-            np.max(rv_cumulative(y2_60k_bottom)),
-            np.max(rv_cumulative(y2_80k_top)),
-            np.max(rv_cumulative(y2_80k_bottom)),
-            np.max(rv_cumulative(y2_100k_top)),
-            np.max(rv_cumulative(y2_100k_bottom)),
-            np.max(rv_cumulative(y3_60k_top)),
-            np.max(rv_cumulative(y3_60k_bottom)),
-            np.max(rv_cumulative(y3_80k_top)),
-            np.max(rv_cumulative(y3_80k_bottom)),
-            np.max(rv_cumulative(y3_100k_top)),
-            np.max(rv_cumulative(y3_100k_bottom)),
-            np.max(rv_cumulative(y4_60k_top)),
-            np.max(rv_cumulative(y4_60k_bottom)),
-            np.max(rv_cumulative(y4_80k_top)),
-            np.max(rv_cumulative(y4_80k_bottom)),
-            np.max(rv_cumulative(y4_100k_top)),
-            np.max(rv_cumulative(y4_100k_bottom)),
-        ]
-    )
-
-    positiony_min = np.min(
-        [
-            np.min(rv_cumulative(y1_60k_top)),
-            np.min(rv_cumulative(y1_60k_bottom)),
-            np.min(rv_cumulative(y1_80k_top)),
-            np.min(rv_cumulative(y1_80k_bottom)),
-            np.min(rv_cumulative(y1_100k_top)),
-            np.min(rv_cumulative(y1_100k_bottom)),
-            np.min(rv_cumulative(y2_60k_top)),
-            np.min(rv_cumulative(y2_60k_bottom)),
-            np.min(rv_cumulative(y2_80k_top)),
-            np.min(rv_cumulative(y2_80k_bottom)),
-            np.min(rv_cumulative(y2_100k_top)),
-            np.min(rv_cumulative(y2_100k_bottom)),
-            np.min(rv_cumulative(y3_60k_top)),
-            np.min(rv_cumulative(y3_60k_bottom)),
-            np.min(rv_cumulative(y3_80k_top)),
-            np.min(rv_cumulative(y3_80k_bottom)),
-            np.min(rv_cumulative(y3_100k_top)),
-            np.min(rv_cumulative(y3_100k_bottom)),
-            np.min(rv_cumulative(y4_60k_top)),
-            np.min(rv_cumulative(y4_60k_bottom)),
-            np.min(rv_cumulative(y4_80k_top)),
-            np.min(rv_cumulative(y4_80k_bottom)),
-            np.min(rv_cumulative(y4_100k_top)),
-            np.min(rv_cumulative(y4_100k_bottom)),
-        ]
-    )
+    positiony_min, poisition_ymax = min_max_y(datasets)
 
     bands_total = ["ZY", "ZYJ", "ZYJH", "ZYJHK"]
     fig = plt.figure(1)
@@ -1698,63 +1639,34 @@ def plot_paper_plots():
 
     y4_100k_lim = [y[0] for y in y4_100k]
 
-    positiony_max = np.max(
-        [
-            np.max(y1_60k_top),
-            np.max(y1_60k_bottom),
-            np.max(y1_80k_top),
-            np.max(y1_80k_bottom),
-            np.max(y1_100k_top),
-            np.max(y1_100k_bottom),
-            np.max(y2_60k_top),
-            np.max(y2_60k_bottom),
-            np.max(y2_80k_top),
-            np.max(y2_80k_bottom),
-            np.max(y2_100k_top),
-            np.max(y2_100k_bottom),
-            np.max(y3_60k_top),
-            np.max(y3_60k_bottom),
-            np.max(y3_80k_top),
-            np.max(y3_80k_bottom),
-            np.max(y3_100k_top),
-            np.max(y3_100k_bottom),
-            np.max(y4_60k_top),
-            np.max(y4_60k_bottom),
-            np.max(y4_80k_top),
-            np.max(y4_80k_bottom),
-            np.max(y4_100k_top),
-            np.max(y4_100k_bottom),
-        ]
-    )
+    datasets = [
+        y1_60k_top,
+        y1_60k_bottom,
+        y1_80k_top,
+        y1_80k_bottom,
+        y1_100k_top,
+        y1_100k_bottom,
+        y2_60k_top,
+        y2_60k_bottom,
+        y2_80k_top,
+        y2_80k_bottom,
+        y2_100k_top,
+        y2_100k_bottom,
+        y3_60k_top,
+        y3_60k_bottom,
+        y3_80k_top,
+        y3_80k_bottom,
+        y3_100k_top,
+        y3_100k_bottom,
+        y4_60k_top,
+        y4_60k_bottom,
+        y4_80k_top,
+        y4_80k_bottom,
+        y4_100k_top,
+        y4_100k_bottom,
+    ]
 
-    positiony_min = np.min(
-        [
-            np.min(y1_60k_top),
-            np.min(y1_60k_bottom),
-            np.min(y1_80k_top),
-            np.min(y1_80k_bottom),
-            np.min(y1_100k_top),
-            np.min(y1_100k_bottom),
-            np.min(y2_60k_top),
-            np.min(y2_60k_bottom),
-            np.min(y2_80k_top),
-            np.min(y2_80k_bottom),
-            np.min(y2_100k_top),
-            np.min(y2_100k_bottom),
-            np.min(y3_60k_top),
-            np.min(y3_60k_bottom),
-            np.min(y3_80k_top),
-            np.min(y3_80k_bottom),
-            np.min(y3_100k_top),
-            np.min(y3_100k_bottom),
-            np.min(y4_60k_top),
-            np.min(y4_60k_bottom),
-            np.min(y4_80k_top),
-            np.min(y4_80k_bottom),
-            np.min(y4_100k_top),
-            np.min(y4_100k_bottom),
-        ]
-    )
+    positiony_min, poisition_ymax = min_max_y(datasets)
 
     """
     # data for correction plot
@@ -2125,63 +2037,34 @@ def plot_paper_plots():
 
     y4_100k_lim = [y[0] for y in y4_100k]
 
-    positiony_max = np.max(
-        [
-            np.max(y1_60k_top),
-            np.max(y1_60k_bottom),
-            np.max(y1_80k_top),
-            np.max(y1_80k_bottom),
-            np.max(y1_100k_top),
-            np.max(y1_100k_bottom),
-            np.max(y2_60k_top),
-            np.max(y2_60k_bottom),
-            np.max(y2_80k_top),
-            np.max(y2_80k_bottom),
-            np.max(y2_100k_top),
-            np.max(y2_100k_bottom),
-            np.max(y3_60k_top),
-            np.max(y3_60k_bottom),
-            np.max(y3_80k_top),
-            np.max(y3_80k_bottom),
-            np.max(y3_100k_top),
-            np.max(y3_100k_bottom),
-            np.max(y4_60k_top),
-            np.max(y4_60k_bottom),
-            np.max(y4_80k_top),
-            np.max(y4_80k_bottom),
-            np.max(y4_100k_top),
-            np.max(y4_100k_bottom),
-        ]
-    )
+    datasets = [
+        y1_60k_top,
+        y1_60k_bottom,
+        y1_80k_top,
+        y1_80k_bottom,
+        y1_100k_top,
+        y1_100k_bottom,
+        y2_60k_top,
+        y2_60k_bottom,
+        y2_80k_top,
+        y2_80k_bottom,
+        y2_100k_top,
+        y2_100k_bottom,
+        y3_60k_top,
+        y3_60k_bottom,
+        y3_80k_top,
+        y3_80k_bottom,
+        y3_100k_top,
+        y3_100k_bottom,
+        y4_60k_top,
+        y4_60k_bottom,
+        y4_80k_top,
+        y4_80k_bottom,
+        y4_100k_top,
+        y4_100k_bottom,
+    ]
 
-    positiony_min = np.min(
-        [
-            np.min(y1_60k_top),
-            np.min(y1_60k_bottom),
-            np.min(y1_80k_top),
-            np.min(y1_80k_bottom),
-            np.min(y1_100k_top),
-            np.min(y1_100k_bottom),
-            np.min(y2_60k_top),
-            np.min(y2_60k_bottom),
-            np.min(y2_80k_top),
-            np.min(y2_80k_bottom),
-            np.min(y2_100k_top),
-            np.min(y2_100k_bottom),
-            np.min(y3_60k_top),
-            np.min(y3_60k_bottom),
-            np.min(y3_80k_top),
-            np.min(y3_80k_bottom),
-            np.min(y3_100k_top),
-            np.min(y3_100k_bottom),
-            np.min(y4_60k_top),
-            np.min(y4_60k_bottom),
-            np.min(y4_80k_top),
-            np.min(y4_80k_bottom),
-            np.min(y4_100k_top),
-            np.min(y4_100k_bottom),
-        ]
-    )
+    positiony_min, poisition_ymax = min_max_y(datasets)
 
     # data for correction plot
     y1_60k_vsini10 = (
@@ -2446,64 +2329,35 @@ def plot_paper_plots():
     plt.close()
 
     # correction figure
-    positiony_max = np.max(
-        [
-            np.max(y1_60k_vsini1),
-            np.max(y1_60k_vsini10),
-            np.max(y1_80k_vsini1),
-            np.max(y1_80k_vsini10),
-            np.max(y1_100k_vsini1),
-            np.max(y1_100k_vsini10),
-            np.max(y2_60k_vsini1),
-            np.max(y2_60k_vsini10),
-            np.max(y2_80k_vsini1),
-            np.max(y2_80k_vsini10),
-            np.max(y2_100k_vsini1),
-            np.max(y2_100k_vsini10),
-            np.max(y3_60k_vsini1),
-            np.max(y3_60k_vsini10),
-            np.max(y3_80k_vsini1),
-            np.max(y3_80k_vsini10),
-            np.max(y3_100k_vsini1),
-            np.max(y3_100k_vsini10),
-            np.max(y4_60k_vsini1),
-            np.max(y4_60k_vsini10),
-            np.max(y4_80k_vsini1),
-            np.max(y4_80k_vsini10),
-            np.max(y4_100k_vsini1),
-            np.max(y4_100k_vsini10),
-        ]
-    )
 
-    positiony_min = np.min(
-        [
-            np.min(y1_60k_vsini1),
-            np.min(y1_60k_vsini10),
-            np.min(y1_80k_vsini1),
-            np.min(y1_80k_vsini10),
-            np.min(y1_100k_vsini1),
-            np.min(y1_100k_vsini10),
-            np.min(y2_60k_vsini1),
-            np.min(y2_60k_vsini10),
-            np.min(y2_80k_vsini1),
-            np.min(y2_80k_vsini10),
-            np.min(y2_100k_vsini1),
-            np.min(y2_100k_vsini10),
-            np.min(y3_60k_vsini1),
-            np.min(y3_60k_vsini10),
-            np.min(y3_80k_vsini1),
-            np.min(y3_80k_vsini10),
-            np.min(y3_100k_vsini1),
-            np.min(y3_100k_vsini10),
-            np.min(y4_60k_vsini1),
-            np.min(y4_60k_vsini10),
-            np.min(y4_80k_vsini1),
-            np.min(y4_80k_vsini10),
-            np.min(y4_100k_vsini1),
-            np.min(y4_100k_vsini10),
-        ]
-    )
+    datasets = [
+        y1_60k_vsini1,
+        y1_60k_vsini10,
+        y1_80k,
+        y1_80k_vsini10,
+        y1_100k_vsini1,
+        y1_100k_vsini10,
+        y2_60k_vsini1,
+        y2_60k_vsini10,
+        y2_80k_vsini1,
+        y2_80k_vsini10,
+        y2_100k_vsini1,
+        y2_100k_vsini10,
+        y3_60k_vsini1,
+        y3_60k_vsini10,
+        y3_80k_vsini1,
+        y3_80k_vsini10,
+        y3_100k_vsini1,
+        y3_100k_vsini10,
+        y4_60k_vsini1,
+        y4_60k_vsini10,
+        y4_80k_vsini1,
+        y4_80k_vsini10,
+        y4_100k_vsini1,
+        y4_100k_vsini10,
+    ]
 
+    positiony_min, poisition_ymax = min_max_y(datasets)
     rc("xtick", labelsize=15)
     rc("ytick", labelsize=15)
 
@@ -2794,3 +2648,10 @@ def plot_paper_plots():
                                 id_string, precision[0], precision[1], precision[2]
                             )
                         )
+
+
+def min_max_y(datasets):
+    """Get min and max y values for joint plotting."""
+    y_max = np.max([np.max(data) for data in datasets])
+    y_min = np.min([np.min(data) for data in datasets])
+    return y_min, y_max
