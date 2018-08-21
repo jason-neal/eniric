@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from eniric_scripts.nIR_precision import calculate_prec
+from eniric.obsolete.nIR_precision import calculate_prec
 
 
 @pytest.mark.parametrize(

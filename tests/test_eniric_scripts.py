@@ -4,7 +4,6 @@ import argparse
 
 import pytest
 
-from eniric_scripts.nIR_run import main as nir_run
 from eniric_scripts.split_atmmodel import check_positive
 
 

@@ -8,9 +8,10 @@ from datetime import datetime as dt
 from typing import List, Optional, Sequence, Union
 
 import eniric
-from eniric.nIRanalysis import convolve_spectra
+from eniric.obsolete.nIRanalysis import convolve_spectra
+from eniric.obsolete.utilities import get_spectrum_name
 from eniric.resample import resampler
-from eniric.utilities import get_spectrum_name, resolutions2ints
+from eniric.utilities import resolutions2ints
 
 
 def _parser():

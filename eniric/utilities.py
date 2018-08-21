@@ -4,8 +4,7 @@ Auxiliary functions for eniric
 import collections
 import errno
 import os
-import re
-from typing import Any, List, Optional, Sequence, Tuple, Union
+from typing import Any, List, Sequence, Tuple, Union
 
 import numpy as np
 from numpy import ndarray
@@ -16,7 +15,6 @@ from Starfish.grid_tools import (
 )
 
 import eniric
-import eniric.IOmodule as io
 
 # Band limits.
 bands_ = {
@@ -32,110 +30,6 @@ bands_ = {
 }
 
 bands_.update(eniric.custom_bands)
-
-
-def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
-    """Function that reads a flux spectra from the database!.
-
-    If a energy flux spectra is read then it converts it to photons.
-
-    Parameters
-    ----------
-    spec_name: str
-        Location and name of model spectrum file.
-
-    Returns
-    -------
-    wav: array-like, float64
-        Wavelength in microns.
-    flux_photons: array-like, float64
-        Photon flux.
-
-    """
-    if "_res" in spec_name or "_vsini" in spec_name:
-        raise ValueError("Using wrong function to load resampled spectrum.")
-
-    if "photon" in spec_name:
-        wav_micron, flux_photons = io.pdread_2col(spec_name)
-    else:
-        wav, flux = io.pdread_2col(spec_name)
-
-        wav_micron = wav * 1.0e-4  # Conversion to microns
-        flux_photons = flux * wav_micron  # Convert to photons
-
-    return wav_micron, flux_photons
-
-
-def get_spectrum_name(
-    startype: str,
-    logg: Union[float, int] = 4.50,
-    feh: Union[float, int] = 0.0,
-    alpha: Optional[Union[int, float]] = None,
-    org: bool = False,
-    flux_type: str = "photon",
-) -> str:
-    """Return correct phoenix spectrum filename for a given spectral type.
-
-    Based off phoenix_utils module.
-
-    Parameters
-    ----------
-    flux_type: str
-        Indicate which file type to try find. e.g. "photon", "wave", ("fits" Not Implemented yet)
-
-    Returns
-    -------
-    spectrum_name: str
-        The name of spectrum with chosen Parameters
-
-
-    Ability to select logg and metallicity (feh) later on.
-    org = original locations (without Z folder option)
-    """
-    if feh == 0:
-        feh = -0.0  # make zero negative to signed integer.
-
-    temps = {"M0": 3900, "M3": 3500, "M6": 2800, "M9": 2600}
-    if (flux_type == "photon") and (not org):
-        base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
-    else:
-        base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-
-    # noinspection SpellCheckingInspection
-    if startype in temps.keys():
-        if org:
-            phoenix_name = "lte{0:05d}-{1}-{2}.{3}".format(
-                temps[startype], "4.50", "0.0", base
-            )
-        elif (alpha is not None) and (alpha != 0.0):
-            if abs(alpha) > 0.2:
-                raise ValueError(
-                    "Warning! Alpha is outside acceptable range -0.2->0.2. (for current science case)"
-                )
-
-            phoenix_name = os.path.join(
-                "Z{0:+4.1f}.Alpha={1:+5.2f}".format(feh, alpha),
-                "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}.{4:s}".format(
-                    temps[startype], logg, feh, alpha, base
-                ),
-            )
-        else:
-            phoenix_name = os.path.join(
-                "Z{0:+4.1f}".format(feh),
-                "lte{0:05d}-{1:4.2f}{2:+4.1f}.{3:s}".format(
-                    temps[startype], logg, feh, base
-                ),
-            )
-
-        spectrum_name = phoenix_name
-    elif re.match(r"^[OBAFGKML][0-9]$", startype):  # Valid spectral types
-        raise NotImplementedError(
-            "The spectral type '{0:s}' is not implemented yet.".format(startype)
-        )
-    else:
-        raise ValueError("'{0:s}' is not a valid spectral type.".format(startype))
-
-    return spectrum_name
 
 
 def band_selector(wav: ndarray, flux: ndarray, band: str) -> Tuple[ndarray, ndarray]:

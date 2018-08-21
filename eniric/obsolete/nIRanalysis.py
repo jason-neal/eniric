@@ -11,7 +11,7 @@ from numpy import ndarray
 import eniric
 import eniric.IOmodule as io
 from eniric.broaden import convolution
-from eniric.utilities import read_spectrum
+from eniric.obsolete.utilities import read_spectrum
 
 # set stuff for latex usage
 rc("text", usetex=True)
