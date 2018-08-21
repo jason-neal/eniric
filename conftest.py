@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 
 import eniric
+from eniric import utilities as utils
 from eniric.atmosphere import Atmosphere
 from eniric.IOmodule import pdread_2col
 
@@ -149,3 +150,9 @@ def sliced_atmmodel_default_mask(request, atm_model):
     lower, upper = request.param  # slice limits
     atm = Atmosphere.from_file(atm_model)
     return atm[int(lower) : int(upper)]
+
+
+@pytest.fixture(params=[[3900, 4.5, 0, 0], [2600, 4.5, 0, 0]])
+def testing_spectrum(request):
+    wav, flux = utils.load_aces_spectrum(request.param)
+    return wav, flux

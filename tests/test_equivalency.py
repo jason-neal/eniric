@@ -73,14 +73,6 @@ def test_pdwriter():
     utils.silent_remove(threecol_name)
 
 
-def test_prepared_dat_files():
-    """Test that the flux inthe new prepared .dat files matches the original.
-
-    This insures that all any conversions/scaling has been taken care of.
-    """
-    pass
-
-
 def test_pdwrire_cols():
     """Test writer that can take variable column numbers."""
     filedir = "data/test_data"

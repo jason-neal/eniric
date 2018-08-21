@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from hypothesis import assume, given, strategies as st
 
-from eniric.atmosphere import Atmosphere, barycenter_shift, consecutive_truths
+from eniric.atmosphere import Atmosphere, consecutive_truths
 from eniric.broaden import resolution_convolution
 from eniric.utilities import band_limits
 
@@ -161,22 +161,6 @@ def test_consecutive_truths():
         np.floor(np.random.random(50) * 2), dtype=bool
     )  # random values
     assert np.sum(rand_array) == np.sum(consecutive_truths(rand_array))
-
-
-@pytest.mark.parametrize("consec_test", [True, False])
-def test_barycenter_shift_verse_class(short_atmosphere, consec_test):
-    """Test barycentric shift code is equivalent inside class.
-
-    TODO: Delete this test when barycenter_shift function is removed."""
-    atmos = short_atmosphere
-    mask30kms = barycenter_shift(atmos.wl, atmos.mask, consecutive_test=consec_test)
-
-    assert not np.allclose(mask30kms, atmos.mask) or (
-        len(mask30kms) == np.sum(mask30kms) or np.sum(mask30kms) == 0
-    )
-    atmos.bary_shift_mask(consecutive_test=consec_test)
-    # They are now close
-    assert np.allclose(mask30kms, atmos.mask)
 
 
 @pytest.mark.xfail()
