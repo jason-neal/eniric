@@ -1,11 +1,9 @@
 """Test of atmosphere.py functions."""
-import os
 
 import numpy as np
 import pytest
 from hypothesis import assume, given, strategies as st
 
-import eniric
 from eniric.atmosphere import Atmosphere, barycenter_shift, consecutive_truths
 from eniric.broaden import resolution_convolution
 from eniric.utilities import band_limits
@@ -72,40 +70,6 @@ def test_atmosphere_class_nomask(wave, transmission):
     assert np.all(atmos.mask == 1)
     assert len(atmos.mask) == len(atmos.transmission)
     assert atmos.mask.dtype == np.bool
-
-
-@pytest.fixture(
-    params=[
-        # "Average_TAPAS_2014_H.txt",
-        "Average_TAPAS_2014_K.txt",
-        "Average_TAPAS_2014_J.txt",
-    ]
-)
-def atm_model(request):
-    """Get atmospheric model name to load."""
-    return os.path.join(eniric.paths["atmmodel"], request.param)
-
-
-@pytest.fixture(params=[2.5, 4])
-def atmosphere_fixture(request, atm_model):
-    percent_cutoff = request.param
-    atm = Atmosphere.from_file(atm_model)
-    atm.mask_transmission(percent_cutoff)
-    return atm
-
-
-@pytest.fixture()
-def short_atmosphere(atmosphere_fixture):
-    # First 2000 data points only to speed up tests
-    return atmosphere_fixture[:2000]
-
-
-@pytest.fixture(params=[(0, 1500), (8000, 9000)])
-def sliced_atmmodel_default_mask(request, atm_model):
-    """To do own masking. Sliced in different places."""
-    lower, upper = request.param  # slice limits
-    atm = Atmosphere.from_file(atm_model)
-    return atm[int(lower) : int(upper)]
 
 
 def test_atmosphere_from_file(atm_model):
