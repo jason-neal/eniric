@@ -6,6 +6,7 @@ import numpy as np
 from astropy import constants as const
 from numpy.core.multiarray import ndarray
 
+import eniric.obsolete.IOmodule
 from eniric import IOmodule as io
 from eniric.atmosphere import consecutive_truths
 

@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 
 import eniric.IOmodule as io
+import eniric.obsolete.IOmodule
 import eniric.utilities as utils
 
 
@@ -14,12 +15,12 @@ def test_pdread_2col():
     spectrum_2 = "data/test_data/Sample_resampled_spectrum_res3.txt"
 
     wav_1_pd, flux_1_pd = io.pdread_2col(spectrum_1)
-    wav_1, flux_1 = io.read_2col(spectrum_1)
+    wav_1, flux_1 = eniric.obsolete.IOmodule.read_2col(spectrum_1)
     assert np.allclose(wav_1_pd, np.array(wav_1))
     assert np.allclose(flux_1_pd, np.array(flux_1))
 
     wav_2_pd, flux_2_pd = io.pdread_2col(spectrum_2, noheader=True)
-    wav_2, flux_2 = io.read_2col(spectrum_2)
+    wav_2, flux_2 = eniric.obsolete.IOmodule.read_2col(spectrum_2)
     assert np.allclose(wav_2_pd, np.array(wav_2))
     assert np.allclose(flux_2_pd, np.array(flux_2))
 
@@ -32,7 +33,7 @@ def test_pdread_3col():
     filename = "data/test_data/Sample_results_spectrum.txt"
 
     wav_1_pd, theoretical_1_pd, flux_1_pd = io.pdread_3col(filename, noheader=True)
-    wav_1, theoretical_1, flux_1 = io.read_3col(filename)
+    wav_1, theoretical_1, flux_1 = eniric.obsolete.IOmodule.read_3col(filename)
     assert np.allclose(wav_1_pd, np.array(wav_1))
     assert np.allclose(theoretical_1_pd, np.array(theoretical_1))
     assert np.allclose(flux_1_pd, np.array(flux_1))
@@ -50,8 +51,8 @@ def test_pdwriter():
     # write files
     io.pdwrite_2col(pd2col_name, data[0], data[1])
     io.pdwrite_3col(pd3col_name, data[0], data[1], data[2])
-    io.write_e_2col(twocol_name, data[0], data[1])
-    io.write_e_3col(threecol_name, data[0], data[1], data[2])
+    eniric.obsolete.IOmodule.write_e_2col(twocol_name, data[0], data[1])
+    eniric.obsolete.IOmodule.write_e_3col(threecol_name, data[0], data[1], data[2])
 
     # re-read files
     a = io.pdread_2col(pd2col_name)
