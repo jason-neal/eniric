@@ -13,8 +13,8 @@ from matplotlib import rc
 import eniric
 import eniric.IOmodule as io
 import eniric.legacy
+import eniric.obsolete.plotting_functions as plt_functions
 import eniric.obsolete.snr_norm
-import eniric.plotting_functions as plt_functions
 import eniric.Qcalculator as Qcalculator
 import eniric.snr_normalization as snrnorm
 from eniric.atmosphere import Atmosphere
@@ -256,7 +256,7 @@ def calculate_prec(
         )
 
         if plot_atm:
-            # moved plotting code to separate code, eniric.plotting_functions.py
+            # moved plotting code to separate code, eniric.obsolete.plotting_functions.py
             plt_functions.plot_atmosphere_model(wav_atm, flux_atm, mask_atm)
 
         # theoretical ratios calculation
