@@ -13,7 +13,7 @@ import numpy as np
 # to remove labels in one tick
 from matplotlib.ticker import MaxNLocator
 
-import eniric.IOmodule as IOmodule
+import eniric.iomodule as io
 import eniric.Qcalculator as Qcalculator
 from eniric.obsolete.plotting_functions import (
     plot_atmosphere_model,
@@ -26,7 +26,7 @@ from eniric.utilities import band_selector, wav_selector
 
 def prepare_atmosphere():
     """ Read in atmopheric model and prepare. """
-    wav_atm, flux_atm, std_flux_atm, mask_atm = IOmodule.pdread_4col(atmmodel)
+    wav_atm, flux_atm, std_flux_atm, mask_atm = io.pdread_4col(atmmodel)
     # pandas lready returns numpy arrays
     wav_atm = wav_atm / 1000.0  # conversion from nanometers to micrometers
     mask_atm = np.array(mask_atm, dtype=bool)

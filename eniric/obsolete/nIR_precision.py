@@ -11,7 +11,7 @@ import numpy as np
 from matplotlib import rc
 
 import eniric
-import eniric.IOmodule as io
+import eniric.iomodule as io
 import eniric.legacy
 import eniric.obsolete.plotting_functions as plt_functions
 import eniric.obsolete.snr_norm

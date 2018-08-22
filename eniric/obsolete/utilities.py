@@ -10,7 +10,7 @@ from numpy.core.multiarray import ndarray
 
 import eniric
 import eniric.obsolete.IOmodule
-from eniric import IOmodule as io
+from eniric import iomodule as io
 from eniric.atmosphere import consecutive_truths
 from eniric.resample import log_resample
 

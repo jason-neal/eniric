@@ -17,7 +17,7 @@ import numpy as np
 from astropy.io import fits
 
 import eniric
-import eniric.IOmodule as io
+import eniric.iomodule as io
 
 
 def _parser():

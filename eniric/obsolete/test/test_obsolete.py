@@ -6,8 +6,8 @@ import pytest
 
 import eniric
 from eniric import (
-    IOmodule as Io,
     Qcalculator as Q,
+    iomodule as io,
     snr_normalization as snrnorm,
     utilities as utils,
 )
@@ -397,7 +397,7 @@ def test_band_snr_norm_test_data():
         "resampled",
         resampled_template.format(star, band, vel, res),
     )
-    wav, flux = Io.pdread_2col(test_data)
+    wav, flux = io.pdread_2col(test_data)
 
     assert snrnorm.snr_constant_band(
         wav, flux, band="J", snr=100

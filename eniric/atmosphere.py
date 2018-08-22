@@ -7,7 +7,7 @@ from astropy import constants as const
 from numpy import ndarray
 
 import eniric
-import eniric.IOmodule as io
+import eniric.iomodule as io
 from eniric.broaden import resolution_convolution
 from eniric.utilities import band_limits
 

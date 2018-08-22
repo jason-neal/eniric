@@ -8,7 +8,7 @@ import pytest
 import eniric
 from eniric import utilities as utils
 from eniric.atmosphere import Atmosphere
-from eniric.IOmodule import pdread_2col
+from eniric.iomodule import pdread_2col
 
 resampled_template = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}_res3.0.txt"
 
