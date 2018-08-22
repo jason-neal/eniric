@@ -75,7 +75,7 @@ def test_pdwrire_cols(tmpdir):
     utils.silent_remove(pd_multicol_name)
 
 
-def test_write_col_errors(tmpdir):
+def test_write_col_errors_different_length(tmpdir):
     tmpfile = tmpdir.join("pd_multicol_test.txt")
     pd_multicol_name = str(tmpfile)
 
@@ -103,7 +103,7 @@ def test_write_col_errors(tmpdir):
         )
 
 
-def test_write_col_errors(tmpdir):
+def test_write_col_errors_bad_keyword(tmpdir):
     tmpfile = tmpdir.join("pd_multicol_test.txt")
     pd_multicol_name = str(tmpfile)
 

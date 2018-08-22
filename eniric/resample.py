@@ -39,7 +39,6 @@ def log_resample(
 def my_logspace(start, stop, base, end_point: bool = False):
     """Like np.logspace but start and stop in wavelength units.
 
-
     Parameters
     ----------
     start: float
