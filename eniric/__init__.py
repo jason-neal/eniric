@@ -1,4 +1,4 @@
-__version__ = '0.6-beta'
+__version__ = '0.5'
 __all__ = ["atmosphere", "IOmodule", "nIRanalysis", "plotting_functions", "Qcalculator", "resample",
            "snr_normalization", "utilities"]
 # Read the users config.yaml file.
