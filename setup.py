@@ -21,7 +21,7 @@ config = {
         "dev": ["check-manifest"],
         "test": ["coverage", "pytest", "pytest-cov", "python-coveralls", "hypothesis"],
     },
-    "packages": ["eniric", "eniric_scripts"],
+    "packages": ["eniric", "eniric_scripts", "eniric.obsolete"],
     "scripts": [
         "eniric_scripts/aces_precision.py",
         "eniric_scripts/split_atmmodel.py",
