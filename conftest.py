@@ -90,7 +90,17 @@ per_s_cm2 = (1 / u.second) / (u.centimeter ** 2)
 )
 def test_spec(request):
     """Wave and flux, mask examples."""
-    return request.param
+    wav, flux, mask = request.param
+
+    # Modify mask so that there are at least 2 consecutive zeros in "random" mask.
+    if mask is not None:
+        new_mask = np.ones_like(mask)
+        new_mask[:-1] = new_mask[:-1] + mask[1:]  # Left add
+        new_mask[1:] = new_mask[1:] + mask[:-1]  # Right add
+        new_mask = new_mask > 2
+        return wav, flux, new_mask.astype(int)
+    else:
+        return wav, flux, mask
 
 
 # 3 situations each variable, no unit. a unit. or a dimensionless unscaled unit.
