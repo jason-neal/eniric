@@ -9,8 +9,7 @@ from matplotlib import rc
 from numpy import ndarray
 
 import eniric
-import eniric.iomodule as io
-import eniric.obsolete.IOmodule
+import eniric.io_module as io
 from eniric.broaden import convolution
 from eniric.obsolete.utilities import read_spectrum
 

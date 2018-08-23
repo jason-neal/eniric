@@ -13,7 +13,7 @@ import numpy as np
 # to remove labels in one tick
 from matplotlib.ticker import MaxNLocator
 
-import eniric.iomodule as io
+import eniric.io_module as io
 import eniric.Qcalculator as Qcalculator
 from eniric.obsolete.plotting_functions import (
     plot_atmosphere_model,

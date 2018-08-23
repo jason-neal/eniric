@@ -4,7 +4,7 @@ import os
 import numpy as np
 import pytest
 
-import eniric.iomodule as io
+import eniric.io_module as io
 import eniric.obsolete.IOmodule
 import eniric.utilities as utils
 

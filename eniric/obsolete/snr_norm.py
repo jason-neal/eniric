@@ -5,7 +5,7 @@ from typing import Tuple, Union
 from numpy.core.multiarray import ndarray
 
 import eniric
-from eniric.iomodule import pdread_2col
+from eniric.io_module import pdread_2col
 from eniric.snr_normalization import snr_constant_band
 
 resampled_dir = eniric.paths["resampled"]

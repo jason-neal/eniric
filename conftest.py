@@ -6,9 +6,9 @@ import pandas as pd
 import pytest
 
 import eniric
+import eniric.io_module as io
 from eniric import utilities as utils
 from eniric.atmosphere import Atmosphere
-from eniric.iomodule import pdread_2col
 
 resampled_template = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}_res3.0.txt"
 
@@ -69,7 +69,7 @@ def resampled_data(request):
     test_data = os.path.join(
         eniric.paths["resampled"], resampled_template.format(star, band, vel, res)
     )
-    wav, flux = pdread_2col(test_data)
+    wav, flux = io.pdread_2col(test_data)
     return id_string, wav, flux
 
 

@@ -1,7 +1,7 @@
 __version__ = "0.1"
 __all__ = [
     "atmosphere",
-    "iomodule",
+    "io_module",
     "plotting_functions",
     "Qcalculator",
     "resample",

@@ -7,7 +7,7 @@ import pytest
 import eniric
 from eniric import (
     Qcalculator as Q,
-    iomodule as io,
+    io_module as io,
     snr_normalization as snrnorm,
     utilities as utils,
 )
