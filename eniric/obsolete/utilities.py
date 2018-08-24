@@ -240,11 +240,9 @@ def resample_allfiles(
     # Getting a list of all the files
     onlyfiles = [f for f in os.listdir(results_dir) if isfile(join(results_dir, f))]
 
-    [
-        resampler(spectrum_file, results_dir=results_dir, resampled_dir=resampled_dir)
-        for spectrum_file in onlyfiles
-        if spectrum_file.endswith(".txt")
-    ]
+    for spectrum_file in onlyfiles:
+        if spectrum_file.endswith(".txt"):
+            resampler(spectrum_file, results_dir=results_dir, resampled_dir=resampled_dir)
 
     return 0
 
