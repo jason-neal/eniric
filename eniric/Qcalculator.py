@@ -58,7 +58,7 @@ import numpy as np
 from astropy.units.quantity import Quantity
 from numpy import float64, ndarray
 
-from eniric.utilities import log_chunks
+from eniric.resample import log_chunks
 
 c = const.c
 
