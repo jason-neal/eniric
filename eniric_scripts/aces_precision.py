@@ -13,7 +13,6 @@ import eniric
 from eniric.atmosphere import Atmosphere
 from eniric.broaden import convolution
 from eniric.corrections import correct_artigau_2018
-from eniric.legacy import RVprec_calc_masked
 from eniric.Qcalculator import quality, rv_precision
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
@@ -180,9 +179,6 @@ def do_analysis(
         wav, flux, vsini, R, band, sampling, **conv_kwargs
     )
 
-    # Spectral Quality
-    q = quality(wav_grid, sampled_flux)
-
     # Scale normalization for precision
     wav_ref, sampled_ref = convolve_and_resample(
         wav, flux, vsini, R, ref_band, sampling, **conv_kwargs
@@ -206,13 +202,14 @@ def do_analysis(
     atm = Atmosphere.from_band(band=band, bary=True).at(wav_grid)
     assert np.allclose(atm.wl, wav_grid), "The atmosphere does not cover the wav_grid"
 
-    # Spectral Precisions
+    # Spectral Quality/Precision
+    q = quality(wav_grid, sampled_flux)
+
     # Precision given by the first condition:
-    prec1 = rv_precision(wav_grid, sampled_flux)
+    prec1 = rv_precision(wav_grid, sampled_flux, mask=None)
 
     # Precision as given by the second condition
-    # When mask is given to RVprec_calc_masked it clumps the spectra itself.
-    prec2 = RVprec_calc_masked(wav_grid, sampled_flux, atm.mask)
+    prec2 = rv_precision(wav_grid, sampled_flux, mask=atm.mask)
 
     # Precision as given by the third condition
     prec3 = rv_precision(wav_grid, sampled_flux, mask=atm.transmission)
