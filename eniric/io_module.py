@@ -281,7 +281,7 @@ def pdwrite_cols(filename: str, *data, **kwargs) -> int:
 
     data_dict = {}
     for i, data_i in enumerate(data):
-        data_dict[i] = data[i]  # keys are assigned the index value from enumerate
+        data_dict[i] = data_i  # keys are assigned the index value from enumerate
 
         if len(data[i]) != len(data[0]):
             raise ValueError("The length of the data columns are not equal")
