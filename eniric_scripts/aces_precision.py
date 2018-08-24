@@ -14,7 +14,7 @@ from eniric.atmosphere import Atmosphere
 from eniric.broaden import convolution
 from eniric.corrections import correct_artigau_2018
 from eniric.legacy import RVprec_calc_masked
-from eniric.Qcalculator import RVprec_calc, quality
+from eniric.Qcalculator import quality, rv_precision
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import band_middle, load_aces_spectrum, load_btsettl_spectrum
@@ -208,14 +208,14 @@ def do_analysis(
 
     # Spectral Precisions
     # Precision given by the first condition:
-    prec1 = RVprec_calc(wav_grid, sampled_flux)
+    prec1 = rv_precision(wav_grid, sampled_flux)
 
     # Precision as given by the second condition
     # When mask is given to RVprec_calc_masked it clumps the spectra itself.
     prec2 = RVprec_calc_masked(wav_grid, sampled_flux, atm.mask)
 
     # Precision as given by the third condition
-    prec3 = RVprec_calc(wav_grid, sampled_flux, mask=atm.transmission)
+    prec3 = rv_precision(wav_grid, sampled_flux, mask=atm.transmission)
 
     # Turn quality back into a Quantity (to give it a .value method)
     q = q * u.dimensionless_unscaled

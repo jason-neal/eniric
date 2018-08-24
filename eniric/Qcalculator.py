@@ -61,10 +61,10 @@ from numpy import float64, ndarray
 c = const.c
 
 
-def RVprec_calc(
+def rv_precision(
     wavelength: Union[Quantity, ndarray],
     flux: Union[Quantity, ndarray],
-    mask=None,
+    mask: Optional[ndarray] = None,
     **kwargs,
 ) -> Quantity:
     """Calculate the theoretical RV precision achievable on a spectrum.
@@ -75,8 +75,11 @@ def RVprec_calc(
         Wavelength of spectrum.
     flux: array-like or Quantity array
         Flux of spectrum.
+    mask:Optional[ndarray]
+        Masking function array to apply to the pixel weights.
     kwargs:
         Kwargs for sqrt_sum_wis
+
     Returns
     -------
     RVrms : Quantity scalar

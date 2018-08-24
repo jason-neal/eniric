@@ -15,14 +15,14 @@ c = const.c
 
 
 def test_rvprev_calc(test_spec, wav_unit, flux_unit, trans_unit):
-    """Test that RVprec_calc can handle inputs as Quantities or unitless and returns a scalar Quantity."""
+    """Test that rv_precision can handle inputs as Quantities or unitless and returns a scalar Quantity."""
     wav = test_spec[0] * wav_unit
     flux = test_spec[1] * flux_unit
     mask = test_spec[2]
     if test_spec[2] is not None:
         mask *= trans_unit
 
-    rv = Q.RVprec_calc(wav, flux, mask)
+    rv = Q.rv_precision(wav, flux, mask)
     assert rv.unit == m_per_s
     assert not hasattr(rv.value, "__len__")  # assert value is a scalar
     assert isinstance(rv, u.Quantity)
@@ -33,7 +33,7 @@ def test_rvprev_calc_with_lists(test_spec):
     wav = list(test_spec[0])
     flux = list(test_spec[1])
     mask = test_spec[2]
-    rv = Q.RVprec_calc(wav, flux, mask)
+    rv = Q.rv_precision(wav, flux, mask)
     assert not hasattr(rv.value, "__len__")  # assert value is a scalar
     assert isinstance(rv, u.Quantity)
     assert rv.unit == m_per_s
@@ -79,14 +79,14 @@ def test_sqrt_sum_wis(test_spec, wav_unit, flux_unit, trans_unit):
 
 
 def test_relation_of_rv_to_sqrtsumwis(test_spec, wav_unit, flux_unit, trans_unit):
-    """Test relation of sqrtsumwis to RVprec_calc."""
+    """Test relation of sqrtsumwis to rv_precision."""
     wav = test_spec[0] * wav_unit
     flux = test_spec[1] * flux_unit
     mask = test_spec[2]
     if test_spec[2] is not None:
         mask *= trans_unit
     assert np.all(
-        Q.RVprec_calc(wav, flux, mask=mask) == c / Q.sqrt_sum_wis(wav, flux, mask=mask)
+        Q.rv_precision(wav, flux, mask=mask) == c / Q.sqrt_sum_wis(wav, flux, mask=mask)
     )
 
 
@@ -98,11 +98,11 @@ def test_transmission_reduces_precision(test_spec):
 
     # Value should be less then normal if trans <=1
     if transmission is not None:
-        assert Q.RVprec_calc(wav, flux, mask=None) < Q.RVprec_calc(
+        assert Q.rv_precision(wav, flux, mask=None) < Q.rv_precision(
             wav, flux, mask=transmission
         )
     # mask=None is the same as mask of all 1.
-    assert Q.RVprec_calc(wav, flux, mask=None) == Q.RVprec_calc(
+    assert Q.rv_precision(wav, flux, mask=None) == Q.rv_precision(
         wav, flux, mask=np.ones_like(wav)
     )
 
@@ -113,8 +113,8 @@ def test_improved_gradient_reduces_precision(test_spec):
     flux = test_spec[1]
     transmission = test_spec[2]
 
-    a = Q.RVprec_calc(wav, flux, mask=transmission, grad=False).value
-    b = Q.RVprec_calc(wav, flux, mask=transmission, grad=True).value
+    a = Q.rv_precision(wav, flux, mask=transmission, grad=False).value
+    b = Q.rv_precision(wav, flux, mask=transmission, grad=True).value
     assert a <= b
 
 
@@ -216,7 +216,7 @@ def test_sqrt_sum_wis_with_mask_with_unit_fails(
         Q.sqrt_sum_wis(wav, flux, mask=transmission)
 
     with pytest.raises(TypeError):
-        Q.RVprec_calc(wav, flux, mask=transmission)
+        Q.rv_precision(wav, flux, mask=transmission)
 
 
 def test_sqrt_sum_wis_transmission_outofbounds(test_spec, wav_unit, flux_unit):
@@ -231,7 +231,7 @@ def test_sqrt_sum_wis_transmission_outofbounds(test_spec, wav_unit, flux_unit):
 
     # Higher value
     with pytest.raises(ValueError):
-        Q.RVprec_calc(wav, flux, mask=transmission1)
+        Q.rv_precision(wav, flux, mask=transmission1)
 
     with pytest.raises(ValueError):
         Q.sqrt_sum_wis(wav, flux, mask=transmission1)
