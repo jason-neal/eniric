@@ -509,3 +509,16 @@ def load_btsettl_spectrum(params, photons=True, air=False):
         # Turn into photon counts
         flux_micron = flux_micron * wav_micron
     return wav_micron, flux_micron
+
+
+def log_chunks(wavelength, percent):
+    """Define the bounds at which $(\Delta \lambda)/\lambda = X\%$.
+
+    Allows spectrum to be split into chunks in which the size is X% of the given wavelength.
+    This takes logarithmic steps with a base of (1+X/100).
+    """
+    base = 1 + percent / 100.
+    wl_min = np.nanmin(wavelength)
+    wl_max = np.nanmax(wavelength)
+
+    return my_logspace(wl_min, wl_max, base, end_point=True)

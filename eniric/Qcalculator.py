@@ -38,8 +38,8 @@
     -----
     Extract from https://arxiv.org/pdf/1511.07468v1.pdf
 
-    The precision can only be calculated using the concept of optimal pixel weight W(i) for each of the pixels i
-    that compose the spectra.
+    The precision can only be calculated using the concept of
+    optimal pixel weight W(i) for each of the pixels i that compose the spectra.
 
         W(i) = lambda(i)**2 (d'A_0(i) / d'lambda(i))**2 / (A_0(i) + sigma_D**2)
 
@@ -50,13 +50,15 @@
 
 """
 import warnings
-from typing import Optional, Union
+from typing import Optional, Tuple, Union
 
 import astropy.constants as const
 import astropy.units as u
 import numpy as np
 from astropy.units.quantity import Quantity
 from numpy import float64, ndarray
+
+from eniric.utilities import log_chunks
 
 c = const.c
 
@@ -120,8 +122,8 @@ def quality(
     flux = flux / flux.unit  # Remove units from flux (sqrt(N_e) is unitless)
 
     wis = sqrt_sum_wis(wavelength, flux, **kwargs)
-    quality = wis / np.sqrt(np.nansum(flux))
-    return quality.value
+    q = wis / np.sqrt(np.nansum(flux))
+    return q.value
 
 
 def sqrt_sum_wis(
@@ -219,6 +221,10 @@ def pixel_weights(
 
     Parameters
     ----------
+    wavelength: Union[ndarray, Quantity]
+        Wavelength array.
+    flux: Union[ndarray, Quantity]
+     Flux array.
     grad: bool
         Toggle function for spectral slope. Default False + forward finite difference.
     """
@@ -245,3 +251,79 @@ def pixel_weights(
     else:
         derivf_over_lambda = slope(wavelength, flux)
         return (wavelength[:-1] * derivf_over_lambda) ** 2.0 / flux_variance[:-1]
+
+
+def incremental_quality(
+    wavelength: ndarray, flux: ndarray, percent: Union[int, float] = 10, **kwargs
+) -> Tuple[ndarray, ndarray]:
+    """Determine spectral quality in incremental sections.
+
+    Parameters
+    ----------
+    wavelength: array-like or Quantity array
+        Wavelength of spectrum.
+    flux: array-like or Quantity array
+        Flux of spectrum.
+    percent: Union[int,float]  (default=10)
+        The percent size of chunk around each wavelength position.
+    kwargs:
+        Kwargs passed onto quality().
+
+    Returns
+    -------
+    x: ndarray
+     Central wavelength value for quality section.
+    q: ndarray
+       Spectral quality for each section.
+    """
+    positions = log_chunks(wavelength, percent)
+    qualities = []
+    for pos1, pos2 in zip(positions[:-1], positions[1:]):
+        mask = (wavelength >= pos1) & (wavelength < pos2)
+        x = wavelength[mask]
+        y = flux[mask]
+        q = quality(x, y, **kwargs)
+        qualities.append([np.mean(x), q])
+    x, q = np.asarray(qualities).T
+    return x, q
+
+
+def incremental_rv(
+    wavelength: ndarray, flux: ndarray, mask: ndarray, percent: float = 10, **kwargs
+) -> Tuple[ndarray, ndarray]:
+    """Determine spectral RV precision in incremental sections.
+    Parameters
+    ----------
+    wavelength: array-like or Quantity array
+        Wavelength of spectrum.
+    flux: array-like or Quantity array
+        Flux of spectrum.
+    flux: array-like or Quantity array
+        Pixel weight mask.
+    percent: Union[int,float]  (default=10)
+        The percent size of chunk around each wavelength position.
+    kwargs:
+        Kwargs passed onto quality().
+
+    Returns
+    -------
+    x: ndarray
+     Central wavelength value for quality section.
+    rv: ndarray
+       Spectral RV precision for each section.
+       """
+    positions = log_chunks(wavelength, percent)
+    rvs = []
+    for pos1, pos2 in zip(positions[:-1], positions[1:]):
+        pos_mask = (wavelength >= pos1) & (wavelength < pos2)
+        x = wavelength[pos_mask]
+        y = flux[pos_mask]
+        if mask is not None:
+            z = mask[pos_mask]
+        else:
+            z = mask  # None
+        rv_calc = rv_precision(x, y, z, **kwargs)
+        rvs.append([np.mean(x), rv_calc.value])
+
+    x, rv = np.asarray(qualities).T
+    return x, rv
