@@ -300,6 +300,7 @@ def test_increment_quality_gives_reasonable_length(real_spec, increment_percent)
 
     assert len_q >= np.floor(dlambda / d1)
     assert len_q <= np.ceil(dlambda / d2 + 1)
+    assert len(x) == len_q
 
 
 def test_increments_rv__gives_reasonable_length(real_spec, increment_percent):
@@ -316,6 +317,7 @@ def test_increments_rv__gives_reasonable_length(real_spec, increment_percent):
 
     assert len_rv >= np.floor(dlambda / d1)
     assert len_rv <= np.ceil(dlambda / d2 + 1)
+    assert len(x) == len_rv
 
 
 @pytest.mark.parametrize("no_mask", [True, False])
