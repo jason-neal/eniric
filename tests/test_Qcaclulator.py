@@ -7,8 +7,15 @@ from astropy import constants as const
 from astropy.units import Quantity
 
 import eniric.Qcalculator as Q
+from eniric.atmosphere import Atmosphere
 from eniric.Qcalculator import mask_check, pixel_weights
-from eniric.utilities import weighted_error
+from eniric.snr_normalization import snr_constant_band
+from eniric.utilities import (
+    band_limits,
+    load_aces_spectrum,
+    wav_selector,
+    weighted_error,
+)
 
 m_per_s = u.meter / u.second
 per_s_cm2 = (1 / u.second) / (u.centimeter ** 2)
@@ -268,11 +275,6 @@ def test_sqrtsumwis_warns_nonfinite(grad_flag):
 @pytest.fixture(params=[1, 2, 5])
 def increment_percent(request):
     return request.param
-
-
-from eniric.utilities import load_aces_spectrum, wav_selector, band_limits
-from eniric.atmosphere import Atmosphere
-from eniric.snr_normalization import snr_constant_band
 
 
 @pytest.fixture(params=["K", "J"])
