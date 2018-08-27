@@ -7,8 +7,8 @@ Don't do to many.
 from typing import List, Tuple
 
 import eniric
-from eniric_scripts.nIR_run import main as nir_run
-from eniric_scripts.prepare_data import main as prepare_data
+from eniric.obsolete.nIR_run import main as nir_run
+from eniric.obsolete.prepare_data import main as prepare_data
 
 if __name__ == "__main__":
     print("Eniric paths: {}".format(eniric.paths))

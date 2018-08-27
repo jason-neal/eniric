@@ -17,6 +17,9 @@ data/atmmodel/Average_TAPAS_2014_visible.txt
 data/atmmodel/Average_TAPAS_2014*.txt
 data/test_data/*
 
+.joblib
+docs/Notebooks/.joblib
+
 # updated_files data
 eniric/updated_code/resampled_cont/*
 # White list one file
