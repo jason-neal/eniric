@@ -14,6 +14,7 @@ paths:
   precision: ["precision"]
 
 cache:
+   # cachedir: None  # Disables cache
    cachedir: [".joblib"]
 
 atmmodel:
@@ -38,9 +39,7 @@ plotdir : plots/
 # Starfish parameters defining your raw spectral library live here.
 grid:
     raw_path: "../../data/PHOENIX-ALL/PHOENIX"
-    parname: ["temp", "logg", "Z"]
     hdf5_path: ""
-    # raw_path: "../libraries/raw/CIFIST/"
     key_name: "t{0:.0f}g{1:.1f}" # Specifies how the params are stored
     parname: ["temp", "logg", "Z"]
     parrange: [[2300, 3700], [4.0, 5.5], [-1.5, 1.5]]
