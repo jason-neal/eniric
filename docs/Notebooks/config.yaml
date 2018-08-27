@@ -14,7 +14,8 @@ paths:
   precision: ["precision"]
 
 cache:
-   cachedir: [".joblib"]
+  # location: None  # Disables cache
+  location: [".joblib"]
 
 atmmodel:
   # Base name of telluric model
