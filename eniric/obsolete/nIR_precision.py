@@ -11,12 +11,14 @@ import numpy as np
 from matplotlib import rc
 
 import eniric
-import eniric.IOmodule as io
+import eniric.io_module as io
 import eniric.legacy
-import eniric.plotting_functions as plt_functions
+import eniric.obsolete.plotting_functions as plt_functions
+import eniric.obsolete.snr_norm
 import eniric.Qcalculator as Qcalculator
 import eniric.snr_normalization as snrnorm
-from eniric.atmosphere import Atmosphere, barycenter_shift
+from eniric.atmosphere import Atmosphere
+from eniric.obsolete.utilities import barycenter_shift
 from eniric.utilities import band_selector, moving_average
 
 rc("text", usetex=True)  # set stuff for latex usage
@@ -254,7 +256,7 @@ def calculate_prec(
         )
 
         if plot_atm:
-            # moved plotting code to separate code, eniric.plotting_functions.py
+            # moved plotting code to separate code, eniric.obsolete.plotting_functions.py
             plt_functions.plot_atmosphere_model(wav_atm, flux_atm, mask_atm)
 
         # theoretical ratios calculation
@@ -339,7 +341,7 @@ def calculate_prec(
             # Normalize to SNR 100 in middle of J band 1.25 micron!
             # flux_stellar = normalize_flux(flux_stellar, id_string)
             # flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=True)  # snr=100, ref_band="J"
-            flux_stellar = snrnorm.normalize_flux(
+            flux_stellar = eniric.obsolete.snr_norm.normalize_flux(
                 flux_stellar, id_string, new=new, snr=snr, ref_band=ref_band
             )  # snr=100, ref_band="J"
 

@@ -6,7 +6,9 @@ import pandas as pd
 import pytest
 
 import eniric
-from eniric.IOmodule import pdread_2col
+import eniric.io_module as io
+from eniric import utilities as utils
+from eniric.atmosphere import Atmosphere
 
 resampled_template = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}_res3.0.txt"
 
@@ -67,7 +69,7 @@ def resampled_data(request):
     test_data = os.path.join(
         eniric.paths["resampled"], resampled_template.format(star, band, vel, res)
     )
-    wav, flux = pdread_2col(test_data)
+    wav, flux = io.pdread_2col(test_data)
     return id_string, wav, flux
 
 
@@ -124,3 +126,43 @@ def trans_unit(request):
 def grad_flag(request):
     """Gradient flag parameter."""
     return request.param
+
+
+@pytest.fixture(
+    params=[
+        # "Average_TAPAS_2014_H.txt",
+        "Average_TAPAS_2014_K.txt",
+        "Average_TAPAS_2014_J.txt",
+    ]
+)
+def atm_model(request):
+    """Get atmospheric model name to load."""
+    return os.path.join(eniric.paths["atmmodel"], request.param)
+
+
+@pytest.fixture(params=[2.5, 4])
+def atmosphere_fixture(request, atm_model):
+    percent_cutoff = request.param
+    atm = Atmosphere.from_file(atm_model)
+    atm.mask_transmission(percent_cutoff)
+    return atm
+
+
+@pytest.fixture()
+def short_atmosphere(atmosphere_fixture):
+    # First 2000 data points only to speed up tests
+    return atmosphere_fixture[:2000]
+
+
+@pytest.fixture(params=[(0, 1500), (8000, 9000)])
+def sliced_atmmodel_default_mask(request, atm_model):
+    """To do own masking. Sliced in different places."""
+    lower, upper = request.param  # slice limits
+    atm = Atmosphere.from_file(atm_model)
+    return atm[int(lower) : int(upper)]
+
+
+@pytest.fixture(params=[[3900, 4.5, 0, 0], [2600, 4.5, 0, 0]])
+def testing_spectrum(request):
+    wav, flux = utils.load_aces_spectrum(request.param)
+    return wav, flux

@@ -7,7 +7,7 @@ import string
 
 import numpy as np
 
-import eniric.IOmodule as io
+import eniric.io_module as io
 
 dirmodels = "/home/pfigueira/data/tapas/nIRanalysis_visible/"
 list_files = "list_tapas_models.txt"
