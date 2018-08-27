@@ -148,3 +148,16 @@ def my_logspace(start, stop, base, end_point: bool = False):
         n = n + 1
     powers = np.arange(np.ceil(n))
     return start * base ** powers
+
+
+def log_chunks(wavelength, percent):
+    """Define the bounds at which $(\Delta \lambda)/\lambda = X\%$.
+
+    Allows spectrum to be split into chunks in which the size is X% of the given wavelength.
+    This takes logarithmic steps with a base of (1+X/100).
+    """
+    base = 1 + percent / 100.
+    wl_min = np.nanmin(wavelength)
+    wl_max = np.nanmax(wavelength)
+
+    return my_logspace(wl_min, wl_max, base, end_point=True)

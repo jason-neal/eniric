@@ -6,7 +6,7 @@ from astropy import units as u
 from astropy.units import Quantity
 from numpy.core.multiarray import ndarray
 
-from eniric.Qcalculator import RVprec_calc
+from eniric.Qcalculator import rv_precision
 
 
 # Legacy function in which the spectra is split into chunks first and then the pixel weights are calculated.
@@ -18,7 +18,7 @@ def RVprec_calc_masked(
 ) -> Quantity:
     """RV precision for split apart spectra.
 
-    The same as RVprec_calc, but now wavelength and flux are organized into
+    The same as rv_precision, but now wavelength and flux are organized into
     chunks according to the mask and the weighted average formula is used to
     calculate the combined precision.
 
@@ -76,7 +76,7 @@ def RVprec_calc_masked(
         else:
             wav_slice = np.asarray(wav_slice)
             flux_slice = np.asarray(flux_slice)
-            slice_rvs[i] = RVprec_calc(wav_slice, flux_slice, **kwargs)
+            slice_rvs[i] = rv_precision(wav_slice, flux_slice, **kwargs)
 
     # Zeros created from the initial empty array, when skipping single element chunks)
     slice_rvs = slice_rvs[np.nonzero(slice_rvs)]  # Only use nonzero values.
@@ -147,7 +147,7 @@ def RVprec_calc_weights_masked(
     RV_value: Quantity scalar
         RV precision.
 
-    RVprec_calc_weights_masked is just a wrapper around RVprec_calc.
+    RVprec_calc_weights_masked is just a wrapper around rv_precision.
 
     """
-    return RVprec_calc(wavelength, flux, mask=mask, **kwargs)
+    return rv_precision(wavelength, flux, mask=mask, **kwargs)
