@@ -45,7 +45,7 @@ for key, value in paths.items():
     if isinstance(value, list):
         paths[key] = os.path.join(*value)
 
-if (cache["cachedir"] is None) or (cache["cachedir"] == "None"):
-    cache["cachedir"] = os.path.join(os.path.expanduser("~"), ".joblib")
+if (cache["location"] is None) or (cache["location"] == "None"):
+    cache["location"] = None  # Disables caching
 else:
-    cache["cachedir"] = os.path.join(*cache["cachedir"])
+    cache["location"] = os.path.join(*cache["location"])
