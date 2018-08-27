@@ -1,12 +1,10 @@
 """Test of atmosphere.py functions."""
-import os
 
 import numpy as np
 import pytest
 from hypothesis import assume, given, strategies as st
 
-import eniric
-from eniric.atmosphere import Atmosphere, barycenter_shift, consecutive_truths
+from eniric.atmosphere import Atmosphere, consecutive_truths
 from eniric.broaden import resolution_convolution
 from eniric.utilities import band_limits
 
@@ -72,40 +70,6 @@ def test_atmosphere_class_nomask(wave, transmission):
     assert np.all(atmos.mask == 1)
     assert len(atmos.mask) == len(atmos.transmission)
     assert atmos.mask.dtype == np.bool
-
-
-@pytest.fixture(
-    params=[
-        # "Average_TAPAS_2014_H.txt",
-        "Average_TAPAS_2014_K.txt",
-        "Average_TAPAS_2014_J.txt",
-    ]
-)
-def atm_model(request):
-    """Get atmospheric model name to load."""
-    return os.path.join(eniric.paths["atmmodel"], request.param)
-
-
-@pytest.fixture(params=[2.5, 4])
-def atmosphere_fixture(request, atm_model):
-    percent_cutoff = request.param
-    atm = Atmosphere.from_file(atm_model)
-    atm.mask_transmission(percent_cutoff)
-    return atm
-
-
-@pytest.fixture()
-def short_atmosphere(atmosphere_fixture):
-    # First 2000 data points only to speed up tests
-    return atmosphere_fixture[:2000]
-
-
-@pytest.fixture(params=[(0, 1500), (8000, 9000)])
-def sliced_atmmodel_default_mask(request, atm_model):
-    """To do own masking. Sliced in different places."""
-    lower, upper = request.param  # slice limits
-    atm = Atmosphere.from_file(atm_model)
-    return atm[int(lower) : int(upper)]
 
 
 def test_atmosphere_from_file(atm_model):
@@ -197,22 +161,6 @@ def test_consecutive_truths():
         np.floor(np.random.random(50) * 2), dtype=bool
     )  # random values
     assert np.sum(rand_array) == np.sum(consecutive_truths(rand_array))
-
-
-@pytest.mark.parametrize("consec_test", [True, False])
-def test_barycenter_shift_verse_class(short_atmosphere, consec_test):
-    """Test barycentric shift code is equivalent inside class.
-
-    TODO: Delete this test when barycenter_shift function is removed."""
-    atmos = short_atmosphere
-    mask30kms = barycenter_shift(atmos.wl, atmos.mask, consecutive_test=consec_test)
-
-    assert not np.allclose(mask30kms, atmos.mask) or (
-        len(mask30kms) == np.sum(mask30kms) or np.sum(mask30kms) == 0
-    )
-    atmos.bary_shift_mask(consecutive_test=consec_test)
-    # They are now close
-    assert np.allclose(mask30kms, atmos.mask)
 
 
 @pytest.mark.xfail()

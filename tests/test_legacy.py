@@ -18,7 +18,7 @@ def test_RV_prec_masked(test_spec):
         mask = np.ones_like(wav)
     print(mask)
 
-    # Pre clumping as in nIR_precision.py
+    # Pre clumping as done in Figueira et al. 2016
     wav_masked, flux_masked = mask_clumping(wav, flux, mask)
     rv_chunks = RVprec_calc_masked(wav_masked, flux_masked, mask=None)
 

@@ -1,9 +1,7 @@
 __version__ = "0.6-beta"
 __all__ = [
     "atmosphere",
-    "IOmodule",
-    "nIRanalysis",
-    "plotting_functions",
+    "io_module",
     "Qcalculator",
     "resample",
     "snr_normalization",
