@@ -17,7 +17,7 @@ import eniric
 from eniric.utilities import band_selector, mask_between, wav_selector
 
 # Cache convolution results.
-memory = Memory(cachedir=eniric.cache["cachedir"], verbose=0)
+memory = Memory(location=eniric.cache["location"], verbose=0)
 
 
 @memory.cache(ignore=["num_procs"])
