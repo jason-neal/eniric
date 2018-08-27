@@ -377,7 +377,7 @@ def calculate_prec(
 
             # Precision given by the first method:
             print("Performing analysis for: ", id_string)
-            prec_1 = Qcalculator.RVprec_calc(wav_stellar, flux_stellar, grad=grad)
+            prec_1 = Qcalculator.rv_precision(wav_stellar, flux_stellar, grad=grad)
 
             # Precision as given by the second_method
             wav_stellar_chunks, flux_stellar_chunks = eniric.legacy.mask_clumping(
@@ -402,7 +402,7 @@ def calculate_prec(
             """
 
             # Precision as given by the third_method
-            prec_3 = Qcalculator.RVprec_calc(
+            prec_3 = Qcalculator.rv_precision(
                 wav_stellar, flux_stellar, mask=flux_atm_selected, grad=grad
             )
 

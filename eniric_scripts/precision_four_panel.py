@@ -228,7 +228,6 @@ def cumulative_df(df, full_cum=False):
             "Cond. 2": rv_cumulative_full(df["Cond. 2"]),
             "Cond. 3": rv_cumulative_full(df["Cond. 3"]),
         }
-        print(cum_dict)
     else:
         cum_bands = ["Z", "ZY", "ZYJ", "ZYJH", "ZYJHK"]
         cum_dict = {
