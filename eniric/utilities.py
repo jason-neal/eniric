@@ -480,7 +480,7 @@ def load_btsettl_spectrum(params, photons=True, air=False):
         assert params[-1] == 0  # Checks index 3 when present.
         params = params[0:2]  # Only allow 2 params
 
-    base = eniric.paths["btsettl"] + os.sep
+    base = eniric.paths["btsettl_raw"] + os.sep
 
     btsettl_grid = BTSETTL(base=base, air=air, norm=False, wl_range=[3000, 24000])
 

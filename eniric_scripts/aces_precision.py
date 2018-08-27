@@ -6,6 +6,7 @@ from typing import List, Tuple
 
 import multiprocess as mprocess
 import numpy as np
+from astropy import units as u
 from numpy import ndarray
 
 import eniric
@@ -236,7 +237,7 @@ def do_analysis(
         )
 
     # Load Atmosphere for this band.
-    atm = Atmosphere.from_band(band=band, bary=True).at(wav)
+    atm = Atmosphere.from_band(band=band, bary=True).at(wav_grid)
     assert np.allclose(atm.wl, wav_grid), "The atmosphere does not cover the wav_grid"
 
     # Spectral Precisions
@@ -249,6 +250,9 @@ def do_analysis(
 
     # Precision as given by the third condition
     prec3 = RVprec_calc(wav_grid, sampled_flux, mask=atm.transmission)
+
+    # Turn quality back into a Quantity (to give it a .value method)
+    q = q * u.dimensionless_unscaled
     return [q, prec1, prec2, prec3]
 
 
