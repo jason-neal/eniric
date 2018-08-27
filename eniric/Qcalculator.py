@@ -313,7 +313,7 @@ def incremental_rv(
        Spectral RV precision for each section.
        """
     positions = log_chunks(wavelength, percent)
-    rvs = []
+    velocities = []
     for pos1, pos2 in zip(positions[:-1], positions[1:]):
         pos_mask = (wavelength >= pos1) & (wavelength < pos2)
         x = wavelength[pos_mask]
@@ -323,7 +323,7 @@ def incremental_rv(
         else:
             z = mask  # None
         rv_calc = rv_precision(x, y, z, **kwargs)
-        rvs.append([np.mean(x), rv_calc.value])
+        velocities.append([np.mean(x), rv_calc.value])
 
-    x, rv = np.asarray(qualities).T
+    x, rv = np.asarray(velocities).T
     return x, rv
