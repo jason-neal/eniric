@@ -2,9 +2,19 @@ try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
+import codecs
+import os
+
+here = os.path.abspath(os.path.dirname(__file__))
+
+# Get the long description from the README file
+with codecs.open(os.path.join(here, 'README.md')) as f:
+        long_description = f.read()
 
 config = {
     'description': 'Extended NIR Information Content',
+    'long_description': long_description,
+    'long_description_content_type': "text/markdown",
     'author': 'Jason Neal',
     'url': 'https://github.com/jason-neal/eniric.git',
     'download_url': 'https://github.com/jason-neal/eniric.git',
