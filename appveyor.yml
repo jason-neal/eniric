@@ -16,7 +16,7 @@ install:
   - "git clone https://github.com/jason-neal/Starfish.git"
   - "cd c:\\projects\\Starfish"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
-  - "git checkout windows"  # Especially configured to build on windows
+  - "git checkout windows"   # Especially configured to build on windows
   - "%PYTHON%\\python.exe setup.py develop"
 
   # Installing eniric now
