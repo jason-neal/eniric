@@ -17,6 +17,12 @@ To get a list of commit messages since last version to help write change log try
 - Add Contributing.md and Contributors.md.
 - Functions for incremental quality and RV.
 
+
+### v0.5.1
+---------
+- Adjust setup/readme and \_\_init\_\_ files.
+
+
 ### v0.5
 --------
 Modified for the NIRPS ETC calculations
