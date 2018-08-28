@@ -7,6 +7,7 @@ __all__ = [
     "snr_normalization",
     "utilities",
 ]
+
 # Read the users config.yaml file.
 # If it doesn't exist, print a useful help message
 
