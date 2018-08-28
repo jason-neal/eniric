@@ -3,6 +3,11 @@ To get a list of commit messages since last version to help write change log try
     `git log YOUR_LAST_VERSION_TAG..HEAD --no-merges --format=%B`
 
 
+### v0.5.1
+---------
+- Adjust setup/readme and \_\_init\_\_ files.
+
+
 ### v0.5
 --------
 Modified for the NIRPS ETC calculations
