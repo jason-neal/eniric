@@ -9,6 +9,7 @@ from typing import Optional, Union
 
 import multiprocess as mprocess
 import numpy as np
+from astropy.constants import c
 from joblib import Memory
 from numpy.core.multiarray import ndarray
 from tqdm import tqdm
@@ -18,6 +19,8 @@ from eniric.utilities import band_selector, mask_between, wav_selector
 
 # Cache convolution results.
 memory = Memory(location=eniric.cache["location"], verbose=0)
+
+c_kmps = c.value / 1000
 
 
 @memory.cache(ignore=["num_procs"])
@@ -50,8 +53,8 @@ def rotational_convolution(
         normalize: bool,
     ):
         """Embarrassingly parallel part of rotational convolution"""
-        # select all values such that they are within the fwhm limits
-        delta_lambda_l = wav * vsini / 3.0e5
+        # Select all values such that they are within the fwhm limits
+        delta_lambda_l = single_wav * vsini / c_kmps
 
         index_mask = mask_between(
             wav_ext_rotation, wav - delta_lambda_l, wav + delta_lambda_l
@@ -233,8 +236,8 @@ def convolution(
     # performing convolution with rotation kernel
     print("Starting the Rotation convolution for vsini={0:.2f}...".format(vsini))
 
-    delta_lambda_min = wav_band[0] * vsini / 3.0e5
-    delta_lambda_max = wav_band[-1] * vsini / 3.0e5
+    delta_lambda_min = wav_band[0] * vsini / c_kmps
+    delta_lambda_max = wav_band[-1] * vsini / c_kmps
 
     # widest wavelength bin for the rotation convolution
     lower_lim = wav_band[0] - delta_lambda_min - fwhm_lim * fwhm_min
