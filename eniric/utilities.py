@@ -8,11 +8,6 @@ from typing import Any, List, Sequence, Tuple, Union
 
 import numpy as np
 from numpy import ndarray
-from Starfish.grid_tools import (
-    CIFISTGridInterface as BTSETTL,
-    PHOENIXGridInterface as PHOENIX,
-    PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha,
-)
 
 import eniric
 
@@ -308,12 +303,14 @@ def load_aces_spectrum(params, photons=True, air=False):
     if params[3] == 0:  # Alpha value
         params = params[:-1]
         assert len(params) == 3
+        from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
         phoenix_grid = PHOENIXNoAlpha(base=base, air=air, norm=False)
+
     elif len(params) == 4:
         print("USING ALPHA in PHOENIX LOADING")
-        phoenix_grid = PHOENIX(
-            base=base, air=air, norm=False
-        )  # , param_names = ["temp", "logg", "Z", "alpha"])
+        from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
+        phoenix_grid = PHOENIX(base=base, air=air, norm=False)
+        # , param_names = ["temp", "logg", "Z", "alpha"])
     else:
         raise ValueError("Number of parameters is incorrect")
 
@@ -370,6 +367,8 @@ def load_btsettl_spectrum(params, photons=True, air=False):
 
         Available from https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/
     """
+    from Starfish.grid_tools import CIFISTGridInterface as BTSETTL
+
     if (2 < len(params)) and (len(params) <= 4):
         assert params[2] == 0
         assert params[-1] == 0  # Checks index 3 when present.
