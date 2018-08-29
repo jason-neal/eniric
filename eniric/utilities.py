@@ -300,6 +300,8 @@ def load_aces_spectrum(params, photons=True, air=False):
         Wavelength in microns
     flux_micron: ndarray
         Photon counts or SED/micron
+
+    Spectra Availalbe from http://phoenix.astro.physik.uni-goettingen.de
     """
     base = eniric.paths["phoenix_raw"] + os.sep
 
@@ -325,20 +327,19 @@ def load_aces_spectrum(params, photons=True, air=False):
 
     if photons:
         # Convert to photons
-        """The energy units of Phoenix fits files is erg/s/cm**2/cm
-        PHOENIX ACES gives the Spectral Energy Density (SED)
-        We transform the SED into photons by
-        multiplying the flux by the wavelength (lambda)
+        # The energy units of Phoenix fits files is erg/s/cm**2/cm
+        # PHOENIX ACES gives the Spectral Energy Density (SED)
+        # We transform the SED into photons by
+        # multiplying the flux by the wavelength (lambda)
+        #
+        #     Flux_photon = Flux_energy/Energy_photon
+        # with
+        #     Energy_photon = h*c/lambda
+        # Flux_photon = Flux_energy * lambda / (h * c)
+        #
+        # Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/micron
+        # Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
 
-            Flux_photon = Flux_energy/Energy_photon
-        with
-            Energy_photon = h*c/lambda
-        Flux_photon = Flux_energy * lambda / (h * c)
-
-        Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/micron
-        Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
-        """
-        # Turn into photon counts
         flux_micron = flux_micron * wav_micron
     return wav_micron, flux_micron
 
@@ -366,6 +367,8 @@ def load_btsettl_spectrum(params, photons=True, air=False):
         Allard et al. 2015. This grid will be the most complete
         of the CIFIST2011 grids above, but currently: Teff = 1200 - 7000K, logg = 2.5 - 5.5,
         [M/H] = 0.0.
+
+        Available from https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/
     """
     if (2 < len(params)) and (len(params) <= 4):
         assert params[2] == 0
@@ -386,20 +389,19 @@ def load_btsettl_spectrum(params, photons=True, air=False):
     flux_micron = flux * 10 ** -4
 
     if photons:
-        # Convert to photons
-        """The energy units of CIFIST fits files is erg/s/cm**2/cm
-        BT-Settl gives the Spectral Energy Density (SED)
-        We transform the SED into photons by
-        multiplying the flux by the wavelength (lambda)
+        # Convert to photon counts
+        # The energy units of CIFIST fits files is erg/s/cm**2/cm
+        # BT-Settl gives the Spectral Energy Density (SED)
+        # We transform the SED into photons by
+        # multiplying the flux by the wavelength (lambda)
+        #
+        #     Flux_photon = Flux_energy/Energy_photon
+        # with
+        #     Energy_photon = h*c/lambda
+        # Flux_photon = Flux_energy * lambda / (h * c)
+        #
+        # Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/micron
+        # Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
 
-            Flux_photon = Flux_energy/Energy_photon
-        with
-            Energy_photon = h*c/lambda
-        Flux_photon = Flux_energy * lambda / (h * c)
-
-        Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/micron
-        Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
-        """
-        # Turn into photon counts
         flux_micron = flux_micron * wav_micron
     return wav_micron, flux_micron
