@@ -4,6 +4,7 @@ Used to convolve the spectra for
     - Stellar rotation
     - Instrumental resolution
 
+Uses joblib.Memory to cache convolution results to skip repeated computation.
 """
 from typing import Optional, Union
 
@@ -221,11 +222,12 @@ def resolution_convolution(
 
 @memory.cache(ignore=["num_procs"])
 def convolution(
-    wav,
-    flux,
-    vsini,
-    R,
+    wav: ndarray,
+    flux: ndarray,
+    vsini: float,
+    R: float,
     band: str = "All",
+    *,
     epsilon: float = 0.6,
     fwhm_lim: float = 5.0,
     num_procs: Optional[int] = None,
@@ -247,8 +249,15 @@ def convolution(
         Resolution of instrumental profile.
     band: str
         Wavelength band to choose, default="All"
+    epsilon: float (default = 0.6)
+        Limb darkening coefficient
+    fwhm_lim: float (default = 5.0)
+        FWHM limit for instrument broadening.
+    normalize: bool (default = True)
+        Area normalize the broadening kernels (corrects for unequal sampling of position).
     num_procs: int, None
-        Number of processes to use with multiprocess. If None it is assigned to 1 less then total number of cores.
+        Number of processes to use with multiprocess.
+        If None it is assigned to 1 less then total number of cores.
         If num_procs = 0, then multiprocess is not used.
 
     Returns
@@ -378,7 +387,7 @@ def rotation_kernel(
     return c1 * np.sqrt(1.0 - lambda_ratio_sqr) + c2 * (1.0 - lambda_ratio_sqr)
 
 
-def oned_circle_kernel(x, center, fwhm):
+def oned_circle_kernel(x: ndarray, center: float, fwhm: float):
     """Calculate the convolution kernel for a circular fiber.
 
     Parameters
