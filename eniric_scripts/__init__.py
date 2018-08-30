@@ -1,6 +1,6 @@
 __all__ = [
-    "aces_precision",
     "bary_shift_atmmodel",
+    "phoenix_precision.py",
     "precision_four_panel",
     "split_atmmodel",
 ]

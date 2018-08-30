@@ -42,12 +42,12 @@ You will need to configure the path to the phoenix models in ´config.yaml´
 
 e.g.
 
-    aces_precision.py -t 3900 -l 4.5, -m 0.5 -r 100000 -v 1.0 -b J K
+    phoenix_precision.py -t 3900 -l 4.5, -m 0.5 -r 100000 -v 1.0 -b J K
 
 Will calculate the RV precision in the J- and K-band of the PHOENIX-ACES spectra with parameters \[Teff=3900K, logg=4.5, \[Fe/H\]=0.5\] observed at a resolution of 100,000 and rotating with 1.0 km/s.  
 For more details on the command line arguments to use see the wiki or type
 
-    aces_precision.py -h
+    phoenix_precision.py -h
 
 
 ## Outline
@@ -114,4 +114,4 @@ It had a number of efficiency issues with convolution which were improved upon
 
 To reproduce the updated results for [Figueira et al. 2016](http://dx.doi.org/10.1051/0004-6361/201526900) run
 
-    aces_precision.py -t 3900 3500 2800 2600 -l 4.5, -m 0.5 -r 60000 80000 100000 -v 1.0 5.0 10.0 -b Z Y J H K
+    phoenix_precision.py -t 3900 3500 2800 2600 -l 4.5, -m 0.5 -r 60000 80000 100000 -v 1.0 5.0 10.0 -b Z Y J H K

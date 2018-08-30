@@ -3,7 +3,7 @@ import pytest
 
 import eniric.snr_normalization as snrnorm
 import eniric.utilities as utils
-from eniric_scripts.aces_precision import convolve_and_resample
+from eniric_scripts.phoenix_precision import convolve_and_resample
 
 
 @pytest.mark.parametrize("desired_snr", [100.0, 150.0])
