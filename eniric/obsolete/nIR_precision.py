@@ -403,7 +403,7 @@ def calculate_prec(
 
             # Precision as given by the third_method
             prec_3 = Qcalculator.rv_precision(
-                wav_stellar, flux_stellar, mask=flux_atm_selected, grad=grad
+                wav_stellar, flux_stellar, mask=flux_atm_selected**2, grad=grad
             )
 
             # Adding Precision results to the dictionary
