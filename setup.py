@@ -22,7 +22,17 @@ config = {
     "version": "0.6-beta",
     "license": "MIT",
     "setup_requires": ["pytest-runner"],
-    "install_requires": ["pytest"],
+    "install_requires": [
+        "astropy",
+        "joblib>0.12",
+        "matplotlib",
+        "multiprocess",
+        "numpy",
+        "pandas",
+        "pyyaml",
+        "scipy",
+        "tqdm",
+    ],
     "extras_require": {
         "dev": ["check-manifest"],
         "test": ["coverage", "pytest", "pytest-cov", "python-coveralls", "hypothesis"],
