@@ -161,9 +161,6 @@ def sqrt_sum_wis(
 
     mask_check(mask)
 
-    # Square mask for telluric masking.
-    # Boolean mask is not affected by square 0->0, 1->1.
-    mask = mask ** 2
     pixel_wis = pixel_weights(wavelength, flux, grad=grad)
 
     # Apply masking function

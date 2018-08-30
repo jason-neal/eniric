@@ -211,8 +211,8 @@ def do_analysis(
     # Precision as given by the second condition
     prec2 = rv_precision(wav_grid, sampled_flux, mask=atm.mask)
 
-    # Precision as given by the third condition
-    prec3 = rv_precision(wav_grid, sampled_flux, mask=atm.transmission)
+    # Precision as given by the third condition: M = T**2
+    prec3 = rv_precision(wav_grid, sampled_flux, mask=atm.transmission**2)
 
     # Turn quality back into a Quantity (to give it a .value method)
     q = q * u.dimensionless_unscaled
