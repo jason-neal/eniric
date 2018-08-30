@@ -1,15 +1,11 @@
 """Test utilities for eniric."""
 
-import os
-
 import hypothesis.strategies as st
 import numpy as np
 import pytest
-
 from astropy import constants as const
 from hypothesis import given, settings
 
-import eniric
 import eniric.utilities as utils
 from eniric.broaden import rotation_kernel, unitary_gaussian
 from eniric.Qcalculator import quality
@@ -20,91 +16,9 @@ from eniric.utilities import (
     rv_cumulative,
     rv_cumulative_full,
     weighted_error,
-    doppler_shift,
 )
 
 c = const.c
-
-
-# @pytest.mark.xfail(raises=FileNotFoundError)
-def test_read_spectrum():
-    """Test reading in a _wave_photon.dat is the same as a _wave.dat."""
-    photon = os.path.join(
-        eniric.paths["test_data"],
-        "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat",
-    )
-    wave = os.path.join(
-        eniric.paths["test_data"],
-        "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat",
-    )
-    wave_wav, wave_flux = utils.read_spectrum(wave)
-    photon_wav, photon_flux = utils.read_spectrum(photon)
-
-    assert np.allclose(photon_wav, wave_wav)
-    assert np.allclose(photon_flux, wave_flux)
-
-
-# @pytest.mark.xfail(raises=FileNotFoundError)
-def test_get_spectrum_name():
-    """Test specifying file names with stellar parameters."""
-    test = os.path.join(
-        "Z-0.0", "lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-    )
-
-    assert utils.get_spectrum_name("M6", flux_type="wave") == test
-
-    test_alpha = os.path.join(
-        "Z-0.0.Alpha=+0.20",
-        "lte02600-6.00-0.0.Alpha=+0.20.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat",
-    )
-    assert utils.get_spectrum_name("M9", logg=6, alpha=0.2) == test_alpha
-
-    test_pos_feh = os.path.join(
-        "Z+0.5", "lte03500-0.00+0.5.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
-    )
-    assert utils.get_spectrum_name("M3", logg=0, feh=0.5, alpha=0.0) == test_pos_feh
-
-    test_photon = os.path.join(
-        "Z-0.0", "lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
-    )
-    assert utils.get_spectrum_name("M6") == test_photon
-
-
-# noinspection SpellCheckingInspection
-@pytest.mark.parametrize("spec_type", ["MO", "ME", "M11", "X10", "Z3"])
-def test_spectrum_name_value_error(spec_type):
-    """Not valid spectral type in [OBAFGKML] or misspelled"""
-    with pytest.raises(ValueError):
-        utils.get_spectrum_name(spec_type)
-
-
-@pytest.mark.parametrize("spec_type", ["O1", "B2", "A3", "F4", "G5", "K6", "M7", "L8"])
-def test_notimplemented_spectrum_name(spec_type):
-    with pytest.raises(NotImplementedError):
-        utils.get_spectrum_name(spec_type)  # Stellar type not added (only M atm)
-
-
-@pytest.mark.parametrize("bad_alpha", [-0.3, 0.3, 1])
-def test_spectrum_name_with_bad_alpha(bad_alpha):
-    """Bad_alpha is outside range -0.2-0.2 for M-dwarf science case."""
-    with pytest.raises(ValueError):
-        utils.get_spectrum_name("M0", alpha=bad_alpha)
-
-
-@pytest.mark.parametrize("alpha", [-0.2, 0.1, 0.2])
-def test_spectrum_name_with_ok_alpha(alpha):
-    name = utils.get_spectrum_name("M0", alpha=alpha)
-
-    assert isinstance(name, str)
-    assert str(alpha) in name
-    assert "Alpha=" in name
-
-
-# @pytest.mark.xfail(raises=FileNotFoundError)
-def test_org_name():
-    """Test org flag of utils.get_spectrum_name, supposed to be temporary."""
-    test_org = "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-    assert utils.get_spectrum_name("M0", org=True) == test_org
 
 
 @given(
@@ -426,25 +340,6 @@ def test_resolutions2strs_fails_on_single(resolutions):
 
 
 ###############################################
-@pytest.mark.parametrize(
-    "filename",
-    [
-        os.path.join(
-            eniric.paths["test_data"],
-            "results",
-            "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k.txt",
-        ),
-        os.path.join(
-            eniric.paths["test_data"],
-            "resampled",
-            "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k_res3.0.txt",
-        ),
-    ],
-)
-def test_resampled_spectra_isnot_read_by_read_spectrum(filename):
-    """Doesn't allow names with _vsini or _res in them."""
-    with pytest.raises(ValueError, match="Using wrong function"):
-        utils.read_spectrum(filename)
 
 
 @given(

@@ -6,14 +6,14 @@ from typing import List, Tuple
 
 import multiprocess as mprocess
 import numpy as np
+from astropy import units as u
 from numpy import ndarray
 
 import eniric
 from eniric.atmosphere import Atmosphere
 from eniric.broaden import convolution
 from eniric.corrections import correct_artigau_2018
-from eniric.legacy import RVprec_calc_masked
-from eniric.Qcalculator import RVprec_calc, quality
+from eniric.Qcalculator import quality, rv_precision
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import (
@@ -236,19 +236,23 @@ def do_analysis(
         )
 
     # Load Atmosphere for this band.
-    atm = Atmosphere.from_band(band=band, bary=True).at(wav)
+    atm = Atmosphere.from_band(band=band, bary=True).at(wav_grid)
     assert np.allclose(atm.wl, wav_grid), "The atmosphere does not cover the wav_grid"
 
-    # Spectral Precisions
+    # Spectral Quality/Precision
+    q = quality(wav_grid, sampled_flux)
+
     # Precision given by the first condition:
-    prec1 = RVprec_calc(wav_grid, sampled_flux)
+    prec1 = rv_precision(wav_grid, sampled_flux, mask=None)
 
     # Precision as given by the second condition
-    # When mask is given to RVprec_calc_masked it clumps the spectra itself.
-    prec2 = RVprec_calc_masked(wav_grid, sampled_flux, atm.mask)
+    prec2 = rv_precision(wav_grid, sampled_flux, mask=atm.mask)
 
     # Precision as given by the third condition
-    prec3 = RVprec_calc(wav_grid, sampled_flux, mask=atm.transmission)
+    prec3 = rv_precision(wav_grid, sampled_flux, mask=atm.transmission)
+
+    # Turn quality back into a Quantity (to give it a .value method)
+    q = q * u.dimensionless_unscaled
     return [q, prec1, prec2, prec3]
 
 

@@ -9,9 +9,9 @@ from matplotlib import rc
 from numpy import ndarray
 
 import eniric
-import eniric.IOmodule as io
+import eniric.io_module as io
 from eniric.broaden import convolution
-from eniric.utilities import read_spectrum
+from eniric.obsolete.utilities import read_spectrum
 
 # set stuff for latex usage
 rc("text", usetex=True)
@@ -61,7 +61,7 @@ def save_convolution_results(
 
     # Note: difference in sampling at 1.0 and 1.5 microns makes jumps
     # in the beginning of Y and H bands
-    io.write_e_3col(filename, wavelength, flux, convolved_flux)
+    eniric.obsolete.IOmodule.write_e_3col(filename, wavelength, flux, convolved_flux)
     print("Done.")
     return 0
 

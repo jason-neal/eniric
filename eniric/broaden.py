@@ -1,14 +1,16 @@
 """Broadening functions
 
 Used to convolve the spectra for
-    - stellar rotation
-    - instrumental resolution
+    - Stellar rotation
+    - Instrumental resolution
 
+Uses joblib.Memory to cache convolution results to skip repeated computation.
 """
 from typing import Optional, Union
 
 import multiprocess as mprocess
 import numpy as np
+from astropy.constants import c
 from joblib import Memory
 from numpy.core.multiarray import ndarray
 from tqdm import tqdm
@@ -17,49 +19,82 @@ import eniric
 from eniric.utilities import band_selector, mask_between, wav_selector
 
 # Cache convolution results.
-memory = Memory(cachedir=eniric.cache["cachedir"], verbose=0)
+memory = Memory(location=eniric.cache["location"], verbose=0)
+
+c_kmps = c.value / 1000
 
 
 @memory.cache(ignore=["num_procs"])
 def rotational_convolution(
-    wav_extended,
-    wav_ext_rotation,
-    flux_ext_rotation,
-    vsini,
-    epsilon,
-    num_procs: Optional[int] = None,
+    wavelength: ndarray,
+    extended_wav: ndarray,
+    extended_flux: ndarray,
+    vsini: float,
+    *,
+    epsilon: float = 0.6,
     normalize: bool = True,
-):
-    """Perform Rotational convolution part of convolution.
+    num_procs: Optional[int] = None,
+) -> ndarray:
+    """Perform Rotational convolution.
+
+    Parameters
+    ----------
+    wavelength: ndarray
+        Wavelength to calculate convolution at.
+    extended_wav: ndarray
+       Wavelength extended to avoid boundary issues.
+    extended_flux: ndarray
+        Photon flux, at extend wavelength
+    vsini: float
+        Rotational velocity in km/s.
+    epsilon: float (default = 0.6)
+        Limb darkening coefficient
+    normalize: bool (default = True)
+        Area normalize the broadening kernel (corrects for unequal sampling of position).
+    num_procs: int, None
+        Number of processes to use with multiprocess.
+        If None it is assigned to 1 less then total number of cores.
+        If num_procs = 0, then multiprocess is not used.
+
+    Returns
+    -------
+    convolved_flux: ndarray
+        The convolved_flux evaluated at wavelength points.
+
     """
 
-    def wrapper_rot_parallel_convolution(args):
-        """Wrapper for rot_parallel_convolution needed to unpack the arguments for
-        fast_convolve as multiprocess.Pool.map does not accept multiple
-        arguments
-        """
-        return element_rot_convolution(*args)
+    def element_rot_convolution(single_wav: float) -> float:
+        """Embarrassingly parallel part of rotational convolution.
 
-    def element_rot_convolution(
-        wav,
-        wav_extended,
-        wav_ext_rotation,
-        flux_ext_rotation,
-        vsini: float,
-        epsilon: float,
-        normalize: bool,
-    ):
-        """Embarrassingly parallel part of rotational convolution"""
-        # select all values such that they are within the fwhm limits
-        delta_lambda_l = wav * vsini / 3.0e5
+        Calculates the convolution value for a single pixel.
+
+        The parameters extended_wav, extended_flux, vsini, epsilon and normalize
+        are obtained from the outer scope.
+
+        Parameters
+        ----------
+        single_wav: float
+            Wavelength value to calculate convolution at.
+
+        Returns
+        -------
+        sum_val: float
+            Sum of flux convolved for this pixel/wavelength.
+
+        """
+        # Select all values such that they are within the fwhm limits
+        delta_lambda_l = single_wav * vsini / c_kmps
 
         index_mask = mask_between(
-            wav_ext_rotation, wav - delta_lambda_l, wav + delta_lambda_l
+            extended_wav, single_wav - delta_lambda_l, single_wav + delta_lambda_l
         )
 
-        flux_2convolve = flux_ext_rotation[index_mask]
+        flux_2convolve = extended_flux[index_mask]
         rotation_profile = rotation_kernel(
-            wav_ext_rotation[index_mask] - wav, delta_lambda_l, vsini, epsilon
+            extended_wav[index_mask] - single_wav,
+            delta_lambda_l,
+            vsini=vsini,
+            epsilon=epsilon,
         )
 
         sum_val = np.sum(rotation_profile * flux_2convolve)
@@ -71,124 +106,128 @@ def rotational_convolution(
         else:
             return sum_val
 
+    tqdm_wav = tqdm(wavelength)
+
     if num_procs != 0:
         if num_procs is None:
             num_procs = mprocess.cpu_count() - 1
 
         mproc_pool = mprocess.Pool(processes=num_procs)
 
-        args_generator = tqdm(
-            [
-                [
-                    wav,
-                    wav_extended,
-                    wav_ext_rotation,
-                    flux_ext_rotation,
-                    vsini,
-                    epsilon,
-                    normalize,
-                ]
-                for wav in wav_extended
-            ]
-        )
-
-        flux_conv_rot = np.array(
-            mproc_pool.map(wrapper_rot_parallel_convolution, args_generator)
-        )
+        convolved_flux = np.array(mproc_pool.map(element_rot_convolution, tqdm_wav))
 
         mproc_pool.close()
 
     else:  # num_procs == 0
-        flux_conv_rot = np.empty_like(wav_extended)  # Memory assignment
-        for ii, wav in enumerate(tqdm(wav_extended)):
-            flux_conv_rot[ii] = element_rot_convolution(
-                wav,
-                wav_extended,
-                wav_ext_rotation,
-                flux_ext_rotation,
-                vsini,
-                epsilon,
-                normalize=normalize,
-            )
-        print("Done.\n")
-    return flux_conv_rot
+        convolved_flux = np.empty_like(wavelength)  # Memory assignment
+        for ii, single_wav in enumerate(tqdm_wav):
+            convolved_flux[ii] = element_rot_convolution(single_wav)
+    return convolved_flux
 
 
 @memory.cache(ignore=["num_procs"])
 def resolution_convolution(
-    wav_band,
-    wav_extended,
-    flux_conv_rot,
-    R,
-    fwhm_lim,
-    num_procs: Optional[int] = 1,
+    wavelength: ndarray,
+    extended_wav: ndarray,
+    extended_flux: ndarray,
+    R: float,
+    *,
+    fwhm_lim: float = 5.0,
     normalize: bool = True,
-):
-    """Perform Resolution convolution part of convolution."""
+    num_procs: Optional[int] = 1,
+) -> ndarray:
+    """Perform Resolution convolution.
 
-    # Define inner convolution functions
-    def element_res_convolution(
-        wav, R, wav_extended, flux_conv_rot, fwhm_lim, normalize: bool = True
-    ):
-        """Embarrassingly parallel component of resolution convolution"""
-        fwhm = wav / R
+    Parameters
+    ----------
+    wavelength: ndarray
+        Wavelength in microns to
+    extended_wav: ndarray
+        Wavelength array slightly longer to avoid boundary errors.
+    extended_flux: ndarray
+        Photon flux
+    R: float
+        Resolution of instrumental profile.
+    fwhm_lim: float (default = 5.0)
+        FWHM limit for instrument broadening.
+    normalize: bool (default = True)
+        Area normalize the broadening kernels (corrects for unequal sampling of position).
+    num_procs: int, None
+        Number of processes to use with multiprocess.
+        If None it is assigned to 1 less then total number of cores.
+        If num_procs = 0, then multiprocess is not used.
+
+    Returns
+    -------
+    convolved_flux: ndarray
+        The convolved_flux evaluated at wavelength points.
+    """
+
+    def element_res_convolution(single_wav: float) -> float:
+        """Embarrassingly parallel component of resolution convolution.
+
+        Calculates the convolution value for a single pixel.
+
+        The parameters extended_wav, fwhm_lim, R and normalize
+        are obtained from the outer scope.
+
+        Parameters
+        ----------
+        single_wav: float
+            Wavelength value to calculate convolution at.
+
+        Returns
+        -------
+        sum_val: float
+            Sum of flux convolved for this pixel/wavelength
+        """
+        fwhm = single_wav / R
         # Mask of wavelength range within fwhm_lim* fwhm of wav
         fwhm_space = fwhm_lim * fwhm
-        index_mask = mask_between(wav_extended, wav - fwhm_space, wav + fwhm_space)
+        index_mask = mask_between(
+            extended_wav, single_wav - fwhm_space, single_wav + fwhm_space
+        )
 
-        flux_2convolve = flux_conv_rot[index_mask]
+        flux_2convolve = extended_flux[index_mask]
         # Gaussian Instrument Profile for given resolution and wavelength
-        IP = unitary_gaussian(wav_extended[index_mask], wav, fwhm)
+        instrument_profile = unitary_gaussian(
+            extended_wav[index_mask], single_wav, fwhm=fwhm
+        )
 
-        sum_val = np.sum(IP * flux_2convolve)
+        sum_val = np.sum(instrument_profile * flux_2convolve)
         if normalize:
             # Correct for the effect of convolution with non-equidistant positions
-            unitary_val = np.sum(IP)  # Affects precision
+            unitary_val = np.sum(instrument_profile)  # Affects precision
             return sum_val / unitary_val
         else:
             return sum_val
 
-    def wrapper_res_parallel_convolution(args):
-        """Wrapper for res_parallel_convolution needed to unpack the arguments
-        for fast_convolve as multiprocess.Pool.map does not accept multiple
-        arguments
-        """
-        return element_res_convolution(*args)
+    tqdm_wav = tqdm(wavelength)
 
     if num_procs != 0:
         if num_procs is None:
             num_procs = mprocess.cpu_count() - 1
 
         mproc_pool = mprocess.Pool(processes=num_procs)
-        # Need to update the values here
-        args_generator = tqdm(
-            [
-                [wav, R, wav_extended, flux_conv_rot, fwhm_lim, normalize]
-                for wav in wav_band
-            ]
-        )
-        flux_conv_res = np.array(
-            mproc_pool.map(wrapper_res_parallel_convolution, args_generator)
-        )
+
+        convolved_flux = np.array(mproc_pool.map(element_res_convolution, tqdm_wav))
         mproc_pool.close()
 
     else:  # num_procs == 0
-        flux_conv_res = np.empty_like(wav_band)  # Memory assignment
-        for jj, wav in enumerate(tqdm(wav_band)):
-            flux_conv_res[jj] = element_res_convolution(
-                wav, R, wav_extended, flux_conv_rot, fwhm_lim, normalize=normalize
-            )
-        print("Done.\n")
-    return flux_conv_res
+        convolved_flux = np.empty_like(wavelength)  # Memory assignment
+        for jj, single_wav in enumerate(tqdm_wav):
+            convolved_flux[jj] = element_res_convolution(single_wav)
+    return convolved_flux
 
 
 @memory.cache(ignore=["num_procs"])
 def convolution(
-    wav,
-    flux,
-    vsini,
-    R,
+    wav: ndarray,
+    flux: ndarray,
+    vsini: float,
+    R: float,
     band: str = "All",
+    *,
     epsilon: float = 0.6,
     fwhm_lim: float = 5.0,
     num_procs: Optional[int] = None,
@@ -210,8 +249,15 @@ def convolution(
         Resolution of instrumental profile.
     band: str
         Wavelength band to choose, default="All"
+    epsilon: float (default = 0.6)
+        Limb darkening coefficient
+    fwhm_lim: float (default = 5.0)
+        FWHM limit for instrument broadening.
+    normalize: bool (default = True)
+        Area normalize the broadening kernels (corrects for unequal sampling of position).
     num_procs: int, None
-        Number of processes to use with multiprocess. If None it is assigned to 1 less then total number of cores.
+        Number of processes to use with multiprocess.
+        If None it is assigned to 1 less then total number of cores.
         If num_procs = 0, then multiprocess is not used.
 
     Returns
@@ -233,8 +279,8 @@ def convolution(
     # performing convolution with rotation kernel
     print("Starting the Rotation convolution for vsini={0:.2f}...".format(vsini))
 
-    delta_lambda_min = wav_band[0] * vsini / 3.0e5
-    delta_lambda_max = wav_band[-1] * vsini / 3.0e5
+    delta_lambda_min = wav_band[0] * vsini / c_kmps
+    delta_lambda_max = wav_band[-1] * vsini / c_kmps
 
     # widest wavelength bin for the rotation convolution
     lower_lim = wav_band[0] - delta_lambda_min - fwhm_lim * fwhm_min
@@ -244,15 +290,15 @@ def convolution(
     # wide wavelength bin for the resolution_convolution
     lower_lim = wav_band[0] - fwhm_lim * fwhm_min
     upper_lim = wav_band[-1] + fwhm_lim * fwhm_max
-    wav_extended, flux_extended = wav_selector(wav, flux, lower_lim, upper_lim)
+    extended_wav, __ = wav_selector(wav, flux, lower_lim, upper_lim)
 
     # rotational convolution
     flux_conv_rot = rotational_convolution(
-        wav_extended,
+        extended_wav,
         wav_ext_rotation,
         flux_ext_rotation,
         vsini,
-        epsilon,
+        epsilon=epsilon,
         num_procs=num_procs,
         normalize=normalize,
     )
@@ -261,10 +307,10 @@ def convolution(
 
     flux_conv_res = resolution_convolution(
         wav_band,
-        wav_extended,
+        extended_wav,
         flux_conv_rot,
         R,
-        fwhm_lim,
+        fwhm_lim=fwhm_lim,
         num_procs=num_procs,
         normalize=normalize,
     )
@@ -341,7 +387,7 @@ def rotation_kernel(
     return c1 * np.sqrt(1.0 - lambda_ratio_sqr) + c2 * (1.0 - lambda_ratio_sqr)
 
 
-def oned_circle_kernel(x, center, fwhm):
+def oned_circle_kernel(x: ndarray, center: float, fwhm: float):
     """Calculate the convolution kernel for a circular fiber.
 
     Parameters
