@@ -1,27 +1,40 @@
 # ENIRIC - Extended Near InfraRed Information Content
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/24d3d525a79d4ae493de8c527540edef)](https://www.codacy.com/app/jason-neal/eniric?utm_source=github.com&utm_medium=referral&utm_content=jason-neal/eniric&utm_campaign=badger)[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/24d3d525a79d4ae493de8c527540edef)](https://www.codacy.com/app/jason-neal/eniric?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jason-neal/eniric&amp;utm_campaign=Badge_Coverage)
-[![Build Status](https://travis-ci.org/jason-neal/eniric.svg?branch=master)](https://travis-ci.org/jason-neal/eniric)[![Coverage Status](https://coveralls.io/repos/github/jason-neal/eniric/badge.svg?branch=master)](https://coveralls.io/github/jason-neal/eniric?branch=master)[![Updates](https://pyup.io/repos/github/jason-neal/eniric/shield.svg)](https://pyup.io/repos/github/jason-neal/eniric/)[![Code Climate](https://codeclimate.com/github/jason-neal/eniric/badges/gpa.svg)](https://codeclimate.com/github/jason-neal/eniric)[![Issue Count](https://codeclimate.com/github/jason-neal/eniric/badges/issue_count.svg)](https://codeclimate.com/github/jason-neal/eniric)[![Test Coverage](https://codeclimate.com/github/jason-neal/eniric/badges/coverage.svg)](https://codeclimate.com/github/jason-neal/eniric/coverage)[![Python 3](https://pyup.io/repos/github/jason-neal/eniric/python-3-shield.svg)](https://pyup.io/repos/github/jason-neal/eniric/)
+[![Python 3.6+](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/release/python-360/)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/24d3d525a79d4ae493de8c527540edef)](https://www.codacy.com/app/jason-neal/eniric?utm_source=github.com&utm_medium=referral&utm_content=jason-neal/eniric&utm_campaign=badger)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/24d3d525a79d4ae493de8c527540edef)](https://www.codacy.com/app/jason-neal/eniric?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jason-neal/eniric&amp;utm_campaign=Badge_Coverage)
+[![Build Status](https://travis-ci.org/jason-neal/eniric.svg?branch=master)](https://travis-ci.org/jason-neal/eniric)
+[![Coverage Status](https://coveralls.io/repos/github/jason-neal/eniric/badge.svg?branch=master)](https://coveralls.io/github/jason-neal/eniric?branch=master)
+[![Updates](https://pyup.io/repos/github/jason-neal/eniric/shield.svg)](https://pyup.io/repos/github/jason-neal/eniric/)
+[![Python 3](https://pyup.io/repos/github/jason-neal/eniric/python-3-shield.svg)](https://pyup.io/repos/github/jason-neal/eniric/)
+[![PyPI version](https://badge.fury.io/py/eniric.svg)](https://badge.fury.io/py/eniric)
 
-Eniric is a Python 3 software written to access the Radial Velocity precision of Near-InfraRed (NIR) Spectra. 
-Eniric is built upon the code initially used in [Figueria et al. 2016]() to analysis the precision of M-dwarf stars, extending the ability to use any synethetic spectra from the PHOENIX-ACES library and making it easier to use.
+Eniric is a Python 3 software written to access the Radial Velocity precision of Near-InfraRed (NIR) Spectra.
+Eniric is built upon the code initially used in [Figueria et al. 2016](http://dx.doi.org/10.1051/0004-6361/201526900) to analysis the precision of M-dwarf stars, extending the ability to use any synethetic spectra from the PHOENIX-ACES and BT-Settl libraries and making it easier to use.
+
+Checkout the [wiki here](https://github.com/jason-neal/eniric/wiki)!
 
 ## Features:
-- Spectral broadening
-   Allows for Rotational and Instrumental broadening of synthetic spectra given rotation speed `vsini` and resolution `R`.
-- Atmospheric transmission
- Analysis RV precision attainable under 3 conditions presented in [Figueria et al. 2016]().
-    - No treatment of atmospheric transmission
-    - Masking all regions affected by atmospheric absorption of a given % over the course of the year.
-    - Assuming perfect telluric correction in which the variance of the measured flux is impacted.
-- Relative RV precision 
-   The RV precision are present relative to a specified SNR per pixel in the center of a photometric band. The default as usesd in the Figueira et al. 2016 is a SNR of 100 at the center of the J-band.
-- Re-sampling
-   Allows for re-sampling of spectra to n pixels per FWHM. Default=3.
+- [Spectral broadening](https://github.com/jason-neal/eniric/wiki/Broadening)
+   - Rotational
+   - Instrumental
+- [Atmospheric transmission masking](https://github.com/jason-neal/eniric/wiki/Atmospheric-Transmission)
+- Relative RV precision
+   The RV precision can be calculated relative to a specified SNR per pixel in the center of a spectroscopic band.
+    The default as used in the Figueira et al. 2016 is a SNR of 100 at the center of the J-band.
+- Spectral re-sampling
+   - n pixels per FWHM
 - Band selection
-  Analysis the RV precision attainable by the individual photometric bands `Z`, `Y`, `J`, `H`, `K` in the NIR.   
-- Incremental quality/precision
-    As well as the photometric band precision you can determine the incremental spectral quality or RV precision on narrow wavelenght slices across the entire spectrum, similar to that present in Figure 1 of [Artigau et al. 2018](http://adsabs.harvard.edu/abs/2018AJ....155..198A).
+  - Analysis in individual spectroscopic bands.  
+- Incremental quality & precision
+- Synthetic libraries
+    - PHOENIX-ACES
+    - BT-Settl
+
+
+# Installation
+Installation instructions can be found [here](https://github.com/jason-neal/eniric/wiki/Installation).
+
 
 ## Usage
 You can now calculate the theoretical RV precision for any PHOENIX-ACES model.
@@ -30,11 +43,11 @@ You will need to configure the path to the phoenix models in ´config.yaml´
 e.g.
 
     aces_precision.py -t 3900 -l 4.5, -m 0.5 -r 100000 -v 1.0 -b J K
-    
+
 Will calculate the RV precision in the J- and K-band of the PHOENIX-ACES spectra with parameters \[Teff=3900K, logg=4.5, \[Fe/H\]=0.5\] observed at a resolution of 100,000 and rotating with 1.0 km/s.  
 For more details on the command line arguments to use see the wiki or type
 
-    aces_precision.py -h 
+    aces_precision.py -h
 
 
 ## Outline
@@ -91,7 +104,7 @@ e.g. python ../Codes/eniric/eniric_scripts/nIR_run.py -s M0 M3 M6 M9 -b Y J H K 
 
 
 ## Background
-The origin of this code was used in [Figueira et al. 2016](https://arxiv.org/abs/1511.07468).
+The origin of this code was used in [Figueira et al. 2016](http://dx.doi.org/10.1051/0004-6361/201526900).
 
     P. Figueira, V. Zh. Adibekyan, M. Oshagh, J. J. Neal, B. Rojas-Ayala, C. Lovis, C. Melo, F. Pepe, N. C. Santos, M. Tsantaki, 2016,
     Radial velocity information content of M dwarf spectra in the near-infrared,
@@ -99,5 +112,6 @@ The origin of this code was used in [Figueira et al. 2016](https://arxiv.org/abs
 
 It had a number of efficiency issues with convolution which were improved upon
 
+To reproduce the updated results for [Figueira et al. 2016](http://dx.doi.org/10.1051/0004-6361/201526900) run
 
-
+    aces_precision.py -t 3900 3500 2800 2600 -l 4.5, -m 0.5 -r 60000 80000 100000 -v 1.0 5.0 10.0 -b Z Y J H K
