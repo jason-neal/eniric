@@ -8,11 +8,6 @@ from typing import Any, List, Sequence, Tuple, Union
 
 import numpy as np
 from numpy import ndarray
-from Starfish.grid_tools import (
-    CIFISTGridInterface as BTSETTL,
-    PHOENIXGridInterface as PHOENIX,
-    PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha,
-)
 
 import eniric
 
@@ -300,18 +295,22 @@ def load_aces_spectrum(params, photons=True, air=False):
         Wavelength in microns
     flux_micron: ndarray
         Photon counts or SED/micron
+
+    Spectra Availalbe from http://phoenix.astro.physik.uni-goettingen.de
     """
     base = eniric.paths["phoenix_raw"] + os.sep
 
     if params[3] == 0:  # Alpha value
         params = params[:-1]
         assert len(params) == 3
+        from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
         phoenix_grid = PHOENIXNoAlpha(base=base, air=air, norm=False)
+
     elif len(params) == 4:
         print("USING ALPHA in PHOENIX LOADING")
-        phoenix_grid = PHOENIX(
-            base=base, air=air, norm=False
-        )  # , param_names = ["temp", "logg", "Z", "alpha"])
+        from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
+        phoenix_grid = PHOENIX(base=base, air=air, norm=False)
+        # , param_names = ["temp", "logg", "Z", "alpha"])
     else:
         raise ValueError("Number of parameters is incorrect")
 
@@ -325,20 +324,19 @@ def load_aces_spectrum(params, photons=True, air=False):
 
     if photons:
         # Convert to photons
-        """The energy units of Phoenix fits files is erg/s/cm**2/cm
-        PHOENIX ACES gives the Spectral Energy Density (SED)
-        We transform the SED into photons by
-        multiplying the flux by the wavelength (lambda)
+        # The energy units of Phoenix fits files is erg/s/cm**2/cm
+        # PHOENIX ACES gives the Spectral Energy Density (SED)
+        # We transform the SED into photons by
+        # multiplying the flux by the wavelength (lambda)
+        #
+        #     Flux_photon = Flux_energy/Energy_photon
+        # with
+        #     Energy_photon = h*c/lambda
+        # Flux_photon = Flux_energy * lambda / (h * c)
+        #
+        # Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/micron
+        # Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
 
-            Flux_photon = Flux_energy/Energy_photon
-        with
-            Energy_photon = h*c/lambda
-        Flux_photon = Flux_energy * lambda / (h * c)
-
-        Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/micron
-        Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
-        """
-        # Turn into photon counts
         flux_micron = flux_micron * wav_micron
     return wav_micron, flux_micron
 
@@ -366,7 +364,11 @@ def load_btsettl_spectrum(params, photons=True, air=False):
         Allard et al. 2015. This grid will be the most complete
         of the CIFIST2011 grids above, but currently: Teff = 1200 - 7000K, logg = 2.5 - 5.5,
         [M/H] = 0.0.
+
+        Available from https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/
     """
+    from Starfish.grid_tools import CIFISTGridInterface as BTSETTL
+
     if (2 < len(params)) and (len(params) <= 4):
         assert params[2] == 0
         assert params[-1] == 0  # Checks index 3 when present.
@@ -386,20 +388,19 @@ def load_btsettl_spectrum(params, photons=True, air=False):
     flux_micron = flux * 10 ** -4
 
     if photons:
-        # Convert to photons
-        """The energy units of CIFIST fits files is erg/s/cm**2/cm
-        BT-Settl gives the Spectral Energy Density (SED)
-        We transform the SED into photons by
-        multiplying the flux by the wavelength (lambda)
+        # Convert to photon counts
+        # The energy units of CIFIST fits files is erg/s/cm**2/cm
+        # BT-Settl gives the Spectral Energy Density (SED)
+        # We transform the SED into photons by
+        # multiplying the flux by the wavelength (lambda)
+        #
+        #     Flux_photon = Flux_energy/Energy_photon
+        # with
+        #     Energy_photon = h*c/lambda
+        # Flux_photon = Flux_energy * lambda / (h * c)
+        #
+        # Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/micron
+        # Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
 
-            Flux_photon = Flux_energy/Energy_photon
-        with
-            Energy_photon = h*c/lambda
-        Flux_photon = Flux_energy * lambda / (h * c)
-
-        Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/micron
-        Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
-        """
-        # Turn into photon counts
         flux_micron = flux_micron * wav_micron
     return wav_micron, flux_micron
