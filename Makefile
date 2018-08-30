@@ -28,6 +28,9 @@ help:
 	@echo "		Produce coverage report"
 	@echo "	mypy"
 	@echo "		Run type checking with mypy"
+	@echo "	pdf"
+	@echo "		Make pdf from paper.md"
+
 
 clean-pyc:
 	find . -name '*.pyc' -exec rm --force {} +
@@ -74,3 +77,6 @@ cov: $(module)/*
 mypy:
 	# py.test --mypy
 	mypy --ignore-missing-imports .
+
+pdf:
+	(cd paper && pandoc --filter pandoc-citeproc --bibliography=paper.bib --variable classoption=twocolumn --variable papersize=a4paper -s paper.md -o paper.pdf)
