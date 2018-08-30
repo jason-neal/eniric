@@ -97,15 +97,7 @@ The origin of this code was used in [Figueira et al. 2016](https://arxiv.org/abs
     Radial velocity information content of M dwarf spectra in the near-infrared,
     Astronomy and Astrophysics, 586, A101
 
-It had a number of efficiency issues with convolution which were improved upo
+It had a number of efficiency issues with convolution which were improved upon
 
-## Bugs:
-A number of bugs were found when adapting this code. Mainly affecting the condition involving telluric line masking. 
-This alters the RV in this column, sometimes significantly. This, however, does **NOT** alter the conclusions in the published paper. A corrected table will be included in an upcomming publication Neal et. al. 2018 (in prep.).
 
-n. The largest were
-    1) Use numpy mapping slicing instead of comprehension lists.  (~>250 times faster)
-    2) Use `Joblib` to parallelize the convolutions.
-    3) Caching results to avoid repeating the same convolutions.
 
-In addressing 1) the convolution speed for a particular test case went from `1hour 22 minutes` down to `27 seconds`.
