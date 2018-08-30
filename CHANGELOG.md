@@ -12,7 +12,7 @@ To get a list of commit messages since last version to help write change log try
 - Refactor atmosphere handling code into `Atmosphere` class
 - Updated plotting script, cumulatve rv
 - Updated `split_atmmodel.py` and `bary_shift_atmmodel.py` scripts for atmmodel preparation.
-- Precision of `BT-Settl` models in aces_precision.py
+- Precision of `BT-Settl` models in phoenix_precision.py
 - Test on Python 3.7
 - Add Contributing.md and Contributors.md.
 - Functions for incremental quality and RV.
