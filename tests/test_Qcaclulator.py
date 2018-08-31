@@ -93,8 +93,9 @@ def test_relation_of_rv_to_sqrtsumwis(test_spec, wav_unit, flux_unit, trans_unit
     mask = test_spec[2]
     if test_spec[2] is not None:
         mask *= trans_unit
+        mask = mask ** 2
     assert np.all(
-        Q.rv_precision(wav, flux, mask=mask**2) == c / Q.sqrt_sum_wis(wav, flux, mask=mask**2)
+        Q.rv_precision(wav, flux, mask=mask) == c / Q.sqrt_sum_wis(wav, flux, mask=mask)
     )
 
 
@@ -222,10 +223,10 @@ def test_sqrt_sum_wis_with_mask_with_unit_fails(
     transmission = np.random.rand(len(wav)) * trans_unit2
 
     with pytest.raises(TypeError):
-        Q.sqrt_sum_wis(wav, flux, mask=transmission**2)
+        Q.sqrt_sum_wis(wav, flux, mask=transmission ** 2)
 
     with pytest.raises(TypeError):
-        Q.rv_precision(wav, flux, mask=transmission**2)
+        Q.rv_precision(wav, flux, mask=transmission ** 2)
 
 
 def test_sqrt_sum_wis_transmission_outofbounds(test_spec, wav_unit, flux_unit):
