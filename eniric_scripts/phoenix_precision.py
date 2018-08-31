@@ -13,8 +13,7 @@ import eniric
 from eniric.atmosphere import Atmosphere
 from eniric.broaden import convolution
 from eniric.corrections import correct_artigau_2018
-from eniric.legacy import RVprec_calc_masked
-from eniric.Qcalculator import RVprec_calc, quality
+from eniric.Qcalculator import quality, rv_precision
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import (
@@ -240,16 +239,17 @@ def do_analysis(
     atm = Atmosphere.from_band(band=band, bary=True).at(wav_grid)
     assert np.allclose(atm.wl, wav_grid), "The atmosphere does not cover the wav_grid"
 
-    # Spectral Precisions
+    # Spectral Quality/Precision
+    q = quality(wav_grid, sampled_flux)
+
     # Precision given by the first condition:
-    prec1 = RVprec_calc(wav_grid, sampled_flux)
+    prec1 = rv_precision(wav_grid, sampled_flux, mask=None)
 
     # Precision as given by the second condition
-    # When mask is given to RVprec_calc_masked it clumps the spectra itself.
-    prec2 = RVprec_calc_masked(wav_grid, sampled_flux, atm.mask)
+    prec2 = rv_precision(wav_grid, sampled_flux, mask=atm.mask)
 
-    # Precision as given by the third condition
-    prec3 = RVprec_calc(wav_grid, sampled_flux, mask=atm.transmission)
+    # Precision as given by the third condition: M = T**2
+    prec3 = rv_precision(wav_grid, sampled_flux, mask=atm.transmission ** 2)
 
     # Turn quality back into a Quantity (to give it a .value method)
     q = q * u.dimensionless_unscaled
@@ -302,17 +302,23 @@ def model_format_args(model, pars):
     sample = float(pars[3])
     try:
         rv = float(pars[4])
-        return (temp, logg, fe_h, alpha, band, res, vsini, sample, rv)
-    except:
-        return (temp, logg, fe_h, alpha, band, res, vsini, sample)
+        return temp, logg, fe_h, alpha, band, res, vsini, sample, rv
+    except IndexError:
+        return temp, logg, fe_h, alpha, band, res, vsini, sample
 
 
 def header_row(add_rv=False):
     """Header row for output file."""
     if add_rv:
-        header = "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, RV, Quality, Cond. 1, Cond. 2, Cond. 3, correct flag\n"
+        header = (
+            "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, "
+            "RV, Quality, Cond. 1, Cond. 2, Cond. 3, correct flag\n"
+        )
     else:
-        header = "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, Quality, Cond. 1, Cond. 2, Cond. 3, correct flag\n"
+        header = (
+            "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, "
+            "Quality, Cond. 1, Cond. 2, Cond. 3, correct flag\n"
+        )
     return header
 
 
@@ -470,13 +476,15 @@ if __name__ == "__main__":
                     if args.add_rv:
                         output_template = (
                             "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
-                            " {6:4.01f}, {7:3.01f}, {8:3.01f}, {9:6d}, {10:5.01f}, {11:5.01f}, {12:5.01f}, {13:1d}\n"
+                            " {6:4.01f}, {7:3.01f}, {8:3.01f}, {9:6d}, {10:5.01f}, "
+                            "{11:5.01f}, {12:5.01f}, {13:1d}\n"
                         )
                         output_model_args = model_format_args(model, pars)
                     else:
                         output_template = (
                             "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
-                            " {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, {11:5.01f}, {12:1d}\n"
+                            " {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, "
+                            "{11:5.01f}, {12:1d}\n"
                         )
                         output_model_args = model_format_args(model, pars)[:8]
                     f.write(

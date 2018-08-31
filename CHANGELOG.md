@@ -4,16 +4,24 @@ To get a list of commit messages since last version to help write change log try
     `git log YOUR_LAST_VERSION_TAG..HEAD --no-merges --format=%B`
 
 ### Upcomming
--------
+### v0.6
+--------
 - Blacken source code
 - Add pre-commit hooks
 - Use configurable Bands in config.yaml
 - Refactor atmosphere handling code into `Atmosphere` class
 - Updated plotting script, cumulatve rv
 - Updated `split_atmmodel.py` and `bary_shift_atmmodel.py` scripts for atmmodel preparation.
-- Precision of `BT-Settl` models in aces_precision.py
+- Precision of `BT-Settl` models in phoenix_precision.py
 - Test on Python 3.7
 - Add Contributing.md and Contributors.md.
+- Functions for incremental quality and RV.
+
+
+### v0.5.1
+---------
+- Adjust setup/readme and \_\_init\_\_ files.
+
 
 ### v0.5
 --------
@@ -28,12 +36,12 @@ Modified for the NIRPS ETC calculations
 -
 
 ### v0.4
-----
+--------
 - Upgrades for SPIRou ETC calculations
 - Relative SNR in any band
 -
 -
 
 ### v0.3
-----
+--------
 ...

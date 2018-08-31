@@ -1,14 +1,13 @@
 __version__ = "0.6-beta"
 __all__ = [
     "atmosphere",
-    "IOmodule",
-    "nIRanalysis",
-    "plotting_functions",
+    "io_module",
     "Qcalculator",
     "resample",
     "snr_normalization",
     "utilities",
 ]
+
 # Read the users config.yaml file.
 # If it doesn't exist, print a useful help message
 

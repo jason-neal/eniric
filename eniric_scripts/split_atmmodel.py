@@ -57,6 +57,13 @@ def _parser():
         type=check_positive,
         help="Doppler RV (km/s) to extend the wavelength limits of the band. Default=100 km/s",
     )
+    parser.add_argument(
+        "-c",
+        "--cutoff_depth",
+        default=2,
+        type=float,
+        help=r"Telluric line depth cutoff. Default = 2 precent.",
+    )
 
     return parser.parse_args()
 
@@ -98,6 +105,7 @@ def main(
     new_name: Optional[str] = None,
     data_dir: Optional[str] = None,
     rv_extend: float = 100,
+    cutoff_depth: float = 2.0,
 ):
     """Split the large atmospheric model transmission spectra into the separate bands.
 
@@ -115,6 +123,8 @@ def main(
         Directory for results. Can also be given in config.yaml "paths:atmmodel:"...
     rv_extend: float (positive) (default 100)
         Rv amount to extend wavelength range of telluric band. To later apply barycenter shifting.
+    cutoff_depth: float
+       Telluric line depth cutoff. Default = 2%.
     """
     if (bands is None) or ("ALL" in bands):
         bands = eniric.bands["all"]
@@ -153,6 +163,9 @@ def main(
         band_max = band_max * (1 + rv_extend * 1000 / const.c.value)
 
         split_atm = atm.wave_select(band_min, band_max)
+
+        # Apply telluric line mask
+        atm.mask_transmission(depth=cutoff_depth)
 
         # Save the result to file
         filename = join(data_dir_, filename_band)
