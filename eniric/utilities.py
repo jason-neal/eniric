@@ -437,5 +437,5 @@ def doppler_shift(wavelength, vel):
     if not np.isfinite(vel):
         ValueError("The velocity is not finite.")
 
-    shifted_wavelength = wavelength + wavelength * (vel / c.value)
+    shifted_wavelength = wavelength * (1 + (vel * 1000 / c.value))
     return shifted_wavelength
