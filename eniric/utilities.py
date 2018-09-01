@@ -4,7 +4,7 @@ Auxiliary functions for eniric
 import collections
 import errno
 import os
-from typing import Any, List, Sequence, Tuple, Union
+from typing import Any, List, Sequence, Tuple, Union, Optional
 
 import astropy.constants as const
 import numpy as np
@@ -77,7 +77,7 @@ def band_limits(band: str) -> Tuple[float, float]:
         raise ValueError("The band {0} requested is not a valid option".format(band))
 
 
-def band_middle(band):
+def band_middle(band: str) -> float:
     """Calculate band mid-point.
 
     Input
@@ -132,7 +132,7 @@ def wav_selector(
     return wav_sel, flux_sel
 
 
-def mask_between(x, xmin, xmax):
+def mask_between(x: ndarray, xmin: float, xmax: float) -> ndarray:
     """Create boolean mask of x between xmin and xmax."""
     return (x >= xmin) & (x < xmax)
 
@@ -281,7 +281,7 @@ def moving_average(x: ndarray, window_size: Union[int, float]) -> ndarray:
 
 
 #################################
-def load_aces_spectrum(params, photons=True, air=False):
+def load_aces_spectrum(params: Union[ndarray, List[float]], photons=True, air=False):
     """Load a Phoenix spectrum from the phoenix library using STARFISH.
 
     Parameters
@@ -298,7 +298,7 @@ def load_aces_spectrum(params, photons=True, air=False):
     flux_micron: ndarray
         Photon counts or SED/micron
 
-    Spectra Availalbe from http://phoenix.astro.physik.uni-goettingen.de
+    Spectra available from http://phoenix.astro.physik.uni-goettingen.de
     """
     base = eniric.paths["phoenix_raw"] + os.sep
 
@@ -345,7 +345,7 @@ def load_aces_spectrum(params, photons=True, air=False):
     return wav_micron, flux_micron
 
 
-def load_btsettl_spectrum(params, photons=True, air=False):
+def load_btsettl_spectrum(params: Union[ndarray, List[float]], photons=True, air=False):
     """Load a BT-Settl spectrum from the CIFIST2011 library using STARFISH.
 
     Parameters

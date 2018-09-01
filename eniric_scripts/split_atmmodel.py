@@ -127,7 +127,10 @@ def main(
        Telluric line depth cutoff. Default = 2%.
     """
     if (bands is None) or ("ALL" in bands):
-        bands = eniric.bands["all"]
+        bands_ = eniric.bands["all"]
+    else:
+        bands_ = bands
+
     if new_name is None:
         new_name = model.split(".")[0]
     if data_dir is None:
@@ -151,9 +154,9 @@ def main(
     atm = Atmosphere.from_file(model_name)
 
     # Return value from saving each band
-    write_status = np.empty_like(bands, dtype=int)
+    write_status = np.empty_like(bands_, dtype=int)
 
-    for i, band in enumerate(bands):
+    for i, band in enumerate(bands_):
         print("Starting {0}".format(band))
         filename_band = "{0}_{1}.txt".format(new_name, band)
         band_min, band_max = band_limits(band)
