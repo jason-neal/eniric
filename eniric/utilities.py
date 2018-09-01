@@ -411,7 +411,7 @@ def load_btsettl_spectrum(params: Union[ndarray, List[float]], photons=True, air
 
 
 #####################################################
-def doppler_shift(wavelength, vel):
+def doppler_shift_wav(wavelength: ndarray, vel: float):
     r"""Doppler shift wavelength by a given velocity (non-relativistic).
 
     Apply Doppler shift to the wavelength values of the spectrum
@@ -420,7 +420,7 @@ def doppler_shift(wavelength, vel):
 
     Parameters
     ----------
-    wavelenght: ndarray
+    wavelength: ndarray
         Wavelength vector
     vel : float
         Velocity to Doppler shift by in km/s.

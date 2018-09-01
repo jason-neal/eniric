@@ -18,7 +18,7 @@ from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import (
     band_middle,
-    doppler_shift,
+    doppler_shift_wav,
     load_aces_spectrum,
     load_btsettl_spectrum,
 )
@@ -199,7 +199,7 @@ def do_analysis(
 
     # Doppler shift
     try:
-        shifted_wav_grid = doppler_shift(wav_grid, rv)
+        shifted_wav_grid = doppler_shift_wav(wav_grid, rv)
         # print(rv)
         if rv != 0:
             assert np.all(shifted_wav_grid != wav_grid)

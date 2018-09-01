@@ -10,7 +10,7 @@ import eniric.utilities as utils
 from eniric.broaden import rotation_kernel, unitary_gaussian
 from eniric.Qcalculator import quality
 from eniric.utilities import (
-    doppler_shift,
+    doppler_shift_wav,
     mask_between,
     moving_average,
     rv_cumulative,
@@ -439,13 +439,13 @@ def test_doppler_shift_at_speed_of_light(wavelength, direction, multiplier):
      but we are checking the math of the equation works
      should result in a shift of \delta \lambda = +/- \lambda"""
     assert np.all(
-        doppler_shift(wavelength, direction * c.value) == (wavelength * multiplier)
+        doppler_shift_wav(wavelength, direction * c.value) == (wavelength * multiplier)
     )
 
 
 def doppler_shift_zero(wavelength):
     """Doppler shift of zero will give no change."""
-    assert np.all(doppler_shift(wavelength, vel=0.0) == wavelength)
+    assert np.all(doppler_shift_wav(wavelength, vel=0.0) == wavelength)
 
 
 def test_band_normalization_is_the_same_under_rv_shift():
@@ -460,7 +460,7 @@ def test_if_doppler_shift_changes_quality(wavelength, rv):
     flux = np.random.randn(len(wavelength))
     q1 = quality(wavelength, flux)
 
-    wav2 = doppler_shift(wavelength, rv)
+    wav2 = doppler_shift_wav(wavelength, rv)
     assert np.all(wavelength != wav2)
     q2 = quality(wav2, flux)
     print(wav2, wavelength)
