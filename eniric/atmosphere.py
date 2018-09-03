@@ -335,9 +335,9 @@ class Atmosphere(object):
             Number of processors to compute the convolution with. Default = total processors - 1
         """
         self.transmission = resolution_convolution(
-            wav_band=self.wl,
-            wav_extended=self.wl,
-            flux_conv_rot=self.transmission,
+            wavelength=self.wl,
+            extended_wav=self.wl,
+            extended_flux=self.transmission,
             R=resolution,
             fwhm_lim=fwhm_lim,
             num_procs=num_procs,
