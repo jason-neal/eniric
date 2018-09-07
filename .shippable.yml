@@ -27,7 +27,7 @@ build:
     - python setup.py install
 
     # Setup config and make test data
-    # This is not the best place to put this but pre_ci didn't work.
+    - export MPLBACKEND="AGG"  # Non-interactive
     - mv tests/config.yaml config.yaml
     # Generate data
     - make_test_data.py
