@@ -15,7 +15,7 @@ resampled_template = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}_res3.0.txt
 
 @pytest.fixture
 def published_data():
-    name = "data/precision/precision_data_paper2015.txt"
+    name = "data/precision/precision_figueira_2016.txt"
     df = pd.read_csv(name, sep="\t")
     return df
 
