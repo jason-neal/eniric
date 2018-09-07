@@ -306,7 +306,7 @@ def test_increment_quality_gives_reasonable_length(real_spec, increment_percent)
     assert len(x) == len_q
 
 
-def test_increments_rv__gives_reasonable_length(real_spec, increment_percent):
+def test_increments_rv_gives_reasonable_length(real_spec, increment_percent):
     """The expected number of steps would be between the
      wavelength difference divided by the
      first and last point * the percent increment.
