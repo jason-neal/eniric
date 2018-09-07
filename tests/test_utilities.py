@@ -12,6 +12,7 @@ from eniric.broaden import rotation_kernel, unitary_gaussian
 from eniric.utilities import (
     doppler_limits,
     doppler_shift_wav,
+    doppler_shift_flux,
     mask_between,
     moving_average,
     rv_cumulative,
@@ -131,7 +132,7 @@ def test_band_midpoint_j():
     assert utils.band_middle("J") == 1.25
 
 
-##################################3
+##################################
 
 
 @settings(max_examples=100)
@@ -422,10 +423,10 @@ def test_weighted_error(input_, expected):
 
 @pytest.fixture(
     params=[
-        np.array([1.1, 1.2, 1.3, 1.4, 1.5]),
-        np.linspace(2.1, 2.2, 1000),
-        np.linspace(0.3, 0.8, 512),
-        np.linspace(300, 800, 100),
+        np.array([1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8]),
+        np.linspace(2.105, 2.115, 50),
+        np.linspace(1100, 1105, 70),
+        np.linspace(300, 305, 100),
     ]
 )
 def wavelength(request):
@@ -440,7 +441,8 @@ def test_doppler_shift_at_speed_of_light(wavelength, direction, multiplier):
      but we are checking the math of the equation works
      should result in a shift of \delta \lambda = +/- \lambda"""
     assert np.all(
-        doppler_shift_wav(wavelength, direction * c.value) == (wavelength * multiplier)
+        doppler_shift_wav(wavelength, direction * c.value / 1000)
+        == (wavelength * multiplier)
     )
 
 
@@ -449,35 +451,38 @@ def doppler_shift_zero(wavelength):
     assert np.all(doppler_shift_wav(wavelength, vel=0.0) == wavelength)
 
 
-def test_band_normalization_is_the_same_under_rv_shift():
-    """Shift target and ref are shifted by same rv.
-    The normalization ratio is the same..."""
+@pytest.mark.parametrize("rv", [-100, 200])
+def test_if_doppler_shift_changes_quality(testing_spectrum, rv):
+    wavelength, flux_ = testing_spectrum[0], testing_spectrum[1]
+    wmin_, wmax_ = 2.1, 2.3
+    m1 = (wavelength < wmax_ + .2) * (wavelength > wmin_ - .2)
+    # shorten spectra
+    wavelength, flux_ = wavelength[m1], flux_[m1]
 
-    assert False
-
-
-@pytest.mark.parametrize("rv", [1000, 100000, -3e8])
-def test_if_doppler_shift_changes_quality(wavelength, rv):
-    flux = np.random.randn(len(wavelength))
-    q1 = quality(wavelength, flux)
+    mask = (wavelength < wmax_) * (wavelength > wmin_)
+    wave = wavelength[mask]
+    flux = flux_[mask]
+    q1 = quality(wave, flux)
 
     wav2 = doppler_shift_wav(wavelength, rv)
-    assert np.all(wavelength != wav2)
-    q2 = quality(wav2, flux)
-    print(wav2, wavelength)
-    print("nans in wav2, ", np.sum(np.isnan(wav2)))
-    print("nans in wavelength, ", np.sum(np.isnan(wavelength)))
-    print("nans in flux, ", np.sum(np.isnan(flux)))
-    print("diff in flux", np.diff(flux))
-    print(q1, q2)
+    mask2 = (wav2 < wmax_) * (wav2 > wmin_)
+    wav2 = wav2[mask2]
+    flux2 = flux_[mask2]
+    q2 = quality(wav2, flux2)
     assert q1 != q2
-    assert False
+
+    flux3 = doppler_shift_flux(wavelength, flux_, rv, new_wav=wave)
+    q3 = quality(wave, flux3)
+    assert len(wave) == len(flux3)
+    assert q1 != q3
+    # There are differences due to interpolation
+    assert q2 != q3
 
 
-@pytest.mark.parametrie("rv", [-10, 50, 1000])
+@pytest.mark.parametrize("rv", [-10, 50, 1000])
 @pytest.mark.parametrize("wmin, wmax", [(2.1, 2.2), (1500, 1700)])
 def test_doppler_limts(rv, wmin, wmax):
-    """Doppler limits widens the wavlenght range"""
+    """Doppler limits widens the wavelenght range"""
     new_min, new_max = doppler_limits(rv, wmin, wmax)
     assert new_min < wmin
     assert new_max > wmax
