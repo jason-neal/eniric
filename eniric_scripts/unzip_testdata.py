@@ -16,6 +16,7 @@ def unzip(dir: str, filename: str, overwrite: bool = False):
     else:
         print("Did not overwrite file: {0}".format(joint_name))
 
+
 if __name__ == "__main__":
     path = eniric.paths["phoenix_raw"]
 
@@ -29,3 +30,9 @@ if __name__ == "__main__":
     ]
     for aces in aces_spec:
         unzip(join(path, "Z-0.0"), aces)
+
+    # Obsolete data from make_test_data.py
+    # Only include results and resampled because they take longer with convolutions.
+    obsolete_data = join(eniric.paths["test_data"], "obsolete")
+    unzip(obsolete_data, "results")
+    unzip(obsolete_data, "resampled")
