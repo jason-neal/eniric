@@ -19,6 +19,7 @@ from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import (
     band_middle,
     doppler_shift_wav,
+    doppler_shift_flux,
     load_aces_spectrum,
     load_btsettl_spectrum,
 )
@@ -199,15 +200,8 @@ def do_analysis(
 
     # Doppler shift
     try:
-        shifted_wav_grid = doppler_shift_wav(wav_grid, rv)
-        # print(rv)
         if rv != 0:
-            assert np.all(shifted_wav_grid != wav_grid)
-
-        # wav_grid = wav_grid_a
-        # interpolate shift flux to old wav
-        sampled_flux = np.interp(wav_grid, shifted_wav_grid, sampled_flux)
-        # assert False  # Issues with doppler shift
+            sampled_flux = doppler_shift_flux(wav_grid, sampled_flux, vel=rv)
     except Exception as e:
         print("Doppler shift was unsuccessful")
         raise e
@@ -219,7 +213,6 @@ def do_analysis(
     wav_ref, sampled_ref = convolve_and_resample(
         wav, flux, vsini, R, ref_band, sampling, **conv_kwargs
     )
-    # TODO: Is there now a precision verse RV dependence due to the SNR normalization.
     snr_normalize = snr_constant_band(wav_ref, sampled_ref, snr=snr, band=ref_band)
     sampled_flux = sampled_flux / snr_normalize
 

@@ -439,3 +439,64 @@ def doppler_shift_wav(wavelength: ndarray, vel: float):
 
     shifted_wavelength = wavelength * (1 + (vel * 1000 / c.value))
     return shifted_wavelength
+
+
+def doppler_shift_flux(
+    wavelength: ndarray, flux: ndarray, vel: float, new_wav: Optional[ndarray] = None
+):
+    r"""Doppler shift flux by a given velocity, return it at the original wavelengths (non-relativistic).
+
+    Apply Doppler shift to the wavelength values of the spectrum
+    using the velocity value provided and the relation
+    \(\Delta\lambda / \lambda = v / c\)
+
+    Then linearly interpolate the flux with the new wavelength to the old wavelengths.
+
+    Parameters
+    ----------
+    wavelength: ndarray
+        Wavelength vector
+    flux: ndarray
+        Flux vector
+    vel : float
+        Velocity to Doppler shift by in km/s.
+    new_wav: Optional[ndarray]
+        New wavelength array to evaluate the doppler shifted flux at.
+        If None then defaults to new_wav=wavelength.
+    Returns
+    -------
+    new_flux: ndarray
+        Doppler-shifted flux evaluated at new_wav.
+    """
+    shifted_wavelength = doppler_shift_wav(wavelength, vel)
+
+    if new_wav is None:
+        new_wav = wavelength
+    new_flux = np.interp(new_wav, shifted_wavelength, flux)
+    return new_flux
+
+
+def doppler_limits(rvmax, wmin, wmax):
+    """Calculate wavelength limits to apply if preforming doppler shift.
+
+    To avoid any edge effects within wmin and wmax after doppler shift.
+
+    Parameters
+    ----------
+    rvmax: float
+        Maxmium absolute RV offset in km/s. Uses np.abs() to constrain as absolute.
+    wmin: float
+        Lower wavelength limit.
+    wmax: float
+        Upper wavelength limit.
+    Returns
+    -------
+    new_wmin: float
+      Lower wavelength bound shifted by -rvmax
+    new_wmax: float
+       Lower wavelength bound shifted by +rvmax
+    """
+    c_km = const.c.value / 1000  # c in km/s
+    doppler_minus, doppler_plus = (1 - np.abs(rvmax) / c_km), (1 + np.abs(rvmax) / c_km)
+
+    return wmin*doppler_minus, wmax*doppler_plus
