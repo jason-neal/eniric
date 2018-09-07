@@ -4,7 +4,7 @@ Auxiliary functions for eniric
 import collections
 import errno
 import os
-from typing import Any, List, Sequence, Tuple, Union, Optional
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import astropy.constants as const
 import numpy as np
@@ -499,4 +499,4 @@ def doppler_limits(rvmax, wmin, wmax):
     c_km = const.c.value / 1000  # c in km/s
     doppler_minus, doppler_plus = (1 - np.abs(rvmax) / c_km), (1 + np.abs(rvmax) / c_km)
 
-    return wmin*doppler_minus, wmax*doppler_plus
+    return wmin * doppler_minus, wmax * doppler_plus

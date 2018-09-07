@@ -7,12 +7,12 @@ from astropy import constants as const
 from hypothesis import given, settings
 
 import eniric.utilities as utils
-from eniric.Qcalculator import quality
 from eniric.broaden import rotation_kernel, unitary_gaussian
+from eniric.Qcalculator import quality
 from eniric.utilities import (
     doppler_limits,
-    doppler_shift_wav,
     doppler_shift_flux,
+    doppler_shift_wav,
     mask_between,
     moving_average,
     rv_cumulative,

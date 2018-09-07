@@ -18,8 +18,8 @@ from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import (
     band_middle,
-    doppler_shift_wav,
     doppler_shift_flux,
+    doppler_shift_wav,
     load_aces_spectrum,
     load_btsettl_spectrum,
 )
