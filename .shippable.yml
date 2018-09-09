@@ -30,6 +30,7 @@ build:
     - export MPLBACKEND="AGG"  # Non-interactive
     - mv tests/config.yaml config.yaml
     # Generate data
+    - unzip_testdata.py
     - make_test_data.py
     # Prepare atmosphere models
     - make atmos
