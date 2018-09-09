@@ -7,12 +7,12 @@ import tarfile
 from os.path import exists, join
 
 
-def unzip(dir: str, filename: str, overwrite: bool = False):
-    joint_name = join(dir, filename)
+def unzip(path: str, filename: str, overwrite: bool = False):
+    joint_name = join(path, filename)
 
     if (not exists(joint_name)) or (overwrite is True):
         with tarfile.open(join(joint_name + ".tar.gz"), "r") as tar:
-            tar.extractall(dir)
+            tar.extractall(path)
     else:
         print("Did not overwrite file: {0}".format(joint_name))
 
