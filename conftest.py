@@ -15,7 +15,7 @@ resampled_template = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}_res3.0.txt
 
 @pytest.fixture
 def published_data():
-    name = "data/precision/precision_data_paper2015.txt"
+    name = "data/precision/precision_figueira_2016.txt"
     df = pd.read_csv(name, sep="\t")
     return df
 
@@ -23,22 +23,9 @@ def published_data():
 @pytest.fixture(
     params=[
         ("M0", "Z", 1, "60k"),
-        ("M0", "Z", 1, "100k"),
-        ("M0", "Z", 10, "60k"),
-        ("M0", "Z", 10, "100k"),
-        ("M0", "H", 1, "60k"),
-        ("M0", "H", 1, "100k"),
-        ("M0", "H", 10, "60k"),
-        ("M0", "H", 10, "100k"),
-        ("M3", "Y", 10, "100k"),
-        ("M3", "K", 10, "100k"),
-        ("M0", "K", 1, "60k"),
-        ("M0", "K", 1, "100k"),
-        ("M0", "K", 5, "60k"),
-        ("M0", "K", 5, "100k"),
-        ("M6", "H", 1, "80k"),
-        ("M6", "K", 1, "80k"),
-        ("M9", "H", 1, "80k"),
+        ("M0", "J", 1, "100k"),
+        ("M3", "Y", 5, "80k"),
+        ("M6", "H", 10, "100k"),
         ("M9", "K", 1, "80k"),
     ]
 )
@@ -50,10 +37,11 @@ def model_parameters(request):
 @pytest.fixture(
     params=[
         ("M0", "Z", 1.0, "60k"),
-        ("M3", "Y", 10.0, "100k"),
-        ("M6", "J", 10.0, "100k"),
-        ("M9", "H", 1.0, "80k"),
         ("M0", "K", 5.0, "60k"),
+        ("M3", "Y", 5.0, "80k"),
+        ("M6", "J", 10.0, "100k"),
+        ("M6", "H", 10.0, "100k"),
+        ("M9", "K", 1.0, "80k"),
     ]
 )
 def resampled_data(request):

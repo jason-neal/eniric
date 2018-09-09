@@ -353,11 +353,11 @@ def test_barycenter_shift_verse_class(short_atmosphere, consec_test):
 def test_read_spectrum():
     """Test reading in a _wave_photon.dat is the same as a _wave.dat."""
     photon = os.path.join(
-        eniric.paths["test_data"],
+        eniric.paths["test_data"], 'obsolete',
         "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat",
     )
     wave = os.path.join(
-        eniric.paths["test_data"],
+        eniric.paths["test_data"], 'obsolete',
         "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat",
     )
     wave_wav, wave_flux = eniric.obsolete.utilities.read_spectrum(wave)
@@ -393,8 +393,7 @@ def test_band_snr_norm_test_data():
     # snr_constant_band
     star, band, vel, res = "M0", "J", 1.0, "100k"
     test_data = os.path.join(
-        eniric.paths["test_data"],
-        "resampled",
+        eniric.paths["resampled"],
         resampled_template.format(star, band, vel, res),
     )
     wav, flux = io.pdread_2col(test_data)
