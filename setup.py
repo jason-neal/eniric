@@ -22,14 +22,25 @@ config = {
     "version": "0.6-beta",
     "license": "MIT",
     "setup_requires": ["pytest-runner"],
-    "install_requires": ["pytest"],
+    "install_requires": [
+        "astropy",
+        "joblib>0.12",
+        "matplotlib",
+        "multiprocess",
+        "numpy",
+        "pandas",
+        "pyyaml",
+        "scipy",
+        "tqdm",
+    ],
     "extras_require": {
         "dev": ["check-manifest"],
         "test": ["coverage", "pytest", "pytest-cov", "python-coveralls", "hypothesis"],
     },  # $ pip install -e .[dev,test]
     "packages": ["eniric", "eniric_scripts", "eniric.obsolete"],
     "scripts": [
-        "eniric_scripts/aces_precision.py",
+        "eniric_scripts/phoenix_precision.py",
+        "eniric_scripts/unzip_testdata.py",
         "eniric_scripts/split_atmmodel.py",
         "eniric_scripts/bary_shift_atmmodel.py",
         "eniric/obsolete/make_test_data.py",

@@ -93,6 +93,7 @@ def test_relation_of_rv_to_sqrtsumwis(test_spec, wav_unit, flux_unit, trans_unit
     mask = test_spec[2]
     if test_spec[2] is not None:
         mask *= trans_unit
+        mask = mask ** 2
     assert np.all(
         Q.rv_precision(wav, flux, mask=mask) == c / Q.sqrt_sum_wis(wav, flux, mask=mask)
     )
@@ -222,35 +223,35 @@ def test_sqrt_sum_wis_with_mask_with_unit_fails(
     transmission = np.random.rand(len(wav)) * trans_unit2
 
     with pytest.raises(TypeError):
-        Q.sqrt_sum_wis(wav, flux, mask=transmission)
+        Q.sqrt_sum_wis(wav, flux, mask=transmission ** 2)
 
     with pytest.raises(TypeError):
-        Q.rv_precision(wav, flux, mask=transmission)
+        Q.rv_precision(wav, flux, mask=transmission ** 2)
 
 
 def test_sqrt_sum_wis_transmission_outofbounds(test_spec, wav_unit, flux_unit):
     """Transmission must be within 0-1."""
     wav = test_spec[0] * wav_unit
     flux = test_spec[1] * flux_unit
-    transmission1 = np.random.randn(len(wav))
-    transmission2 = np.random.rand(len(wav))
+    mask_1 = np.random.randn(len(wav))
+    mask_2 = np.random.rand(len(wav))
 
-    transmission1[0] = 5  # Outside 0-1
-    transmission2[-1] = -2  # Outside 0-1
+    mask_1[0] = 5  # Outside 0-1
+    mask_2[-1] = -2  # Outside 0-1
 
     # Higher value
     with pytest.raises(ValueError):
-        Q.rv_precision(wav, flux, mask=transmission1)
+        Q.rv_precision(wav, flux, mask=mask_1)
 
     with pytest.raises(ValueError):
-        Q.sqrt_sum_wis(wav, flux, mask=transmission1)
+        Q.sqrt_sum_wis(wav, flux, mask=mask_1)
 
         # Lower value
     with pytest.raises(ValueError):
-        Q.sqrt_sum_wis(wav, flux, mask=transmission2)
+        Q.sqrt_sum_wis(wav, flux, mask=mask_2)
 
     with pytest.raises(ValueError):
-        Q.sqrt_sum_wis(wav, flux, mask=transmission2)
+        Q.sqrt_sum_wis(wav, flux, mask=mask_2)
 
 
 def test_sqrtsumwis_warns_nonfinite(grad_flag):
@@ -305,7 +306,7 @@ def test_increment_quality_gives_reasonable_length(real_spec, increment_percent)
     assert len(x) == len_q
 
 
-def test_increments_rv__gives_reasonable_length(real_spec, increment_percent):
+def test_increments_rv_gives_reasonable_length(real_spec, increment_percent):
     """The expected number of steps would be between the
      wavelength difference divided by the
      first and last point * the percent increment.

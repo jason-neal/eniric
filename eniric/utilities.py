@@ -4,13 +4,15 @@ Auxiliary functions for eniric
 import collections
 import errno
 import os
-from typing import Any, List, Sequence, Tuple, Union
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
+import astropy.constants as const
 import numpy as np
 from numpy import ndarray
 
 import eniric
 
+c = const.c
 # Band limits.
 bands_ = {
     "VIS": (0.38, 0.78),
@@ -75,7 +77,7 @@ def band_limits(band: str) -> Tuple[float, float]:
         raise ValueError("The band {0} requested is not a valid option".format(band))
 
 
-def band_middle(band):
+def band_middle(band: str) -> float:
     """Calculate band mid-point.
 
     Input
@@ -130,7 +132,7 @@ def wav_selector(
     return wav_sel, flux_sel
 
 
-def mask_between(x, xmin, xmax):
+def mask_between(x: ndarray, xmin: float, xmax: float) -> ndarray:
     """Create boolean mask of x between xmin and xmax."""
     return (x >= xmin) & (x < xmax)
 
@@ -279,7 +281,7 @@ def moving_average(x: ndarray, window_size: Union[int, float]) -> ndarray:
 
 
 #################################
-def load_aces_spectrum(params, photons=True, air=False):
+def load_aces_spectrum(params: Union[ndarray, List[float]], photons=True, air=False):
     """Load a Phoenix spectrum from the phoenix library using STARFISH.
 
     Parameters
@@ -296,7 +298,7 @@ def load_aces_spectrum(params, photons=True, air=False):
     flux_micron: ndarray
         Photon counts or SED/micron
 
-    Spectra Availalbe from http://phoenix.astro.physik.uni-goettingen.de
+    Spectra available from http://phoenix.astro.physik.uni-goettingen.de
     """
     base = eniric.paths["phoenix_raw"] + os.sep
 
@@ -304,11 +306,13 @@ def load_aces_spectrum(params, photons=True, air=False):
         params = params[:-1]
         assert len(params) == 3
         from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
+
         phoenix_grid = PHOENIXNoAlpha(base=base, air=air, norm=False)
 
     elif len(params) == 4:
         print("USING ALPHA in PHOENIX LOADING")
         from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
+
         phoenix_grid = PHOENIX(base=base, air=air, norm=False)
         # , param_names = ["temp", "logg", "Z", "alpha"])
     else:
@@ -341,7 +345,7 @@ def load_aces_spectrum(params, photons=True, air=False):
     return wav_micron, flux_micron
 
 
-def load_btsettl_spectrum(params, photons=True, air=False):
+def load_btsettl_spectrum(params: Union[ndarray, List[float]], photons=True, air=False):
     """Load a BT-Settl spectrum from the CIFIST2011 library using STARFISH.
 
     Parameters
@@ -404,3 +408,95 @@ def load_btsettl_spectrum(params, photons=True, air=False):
 
         flux_micron = flux_micron * wav_micron
     return wav_micron, flux_micron
+
+
+#####################################################
+def doppler_shift_wav(wavelength: ndarray, vel: float):
+    r"""Doppler shift wavelength by a given velocity (non-relativistic).
+
+    Apply Doppler shift to the wavelength values of the spectrum
+    using the velocity value provided and the relation
+    \(\Delta\lambda / \lambda = v / c\)
+
+    Parameters
+    ----------
+    wavelength: ndarray
+        Wavelength vector
+    vel : float
+        Velocity to Doppler shift by in km/s.
+
+    Notes
+    -----
+    The Doppler shift is calculated using the relation
+       \Delta\lambda / \lambda\] = \[v / c
+    Where RV is the radial velocity (in km/s), \(\lambda_0\)`
+    is the rest wavelength and \(\Delta\lambda\) is the wavelength
+    shift, \(\lambda_{shift} - \lambda_0\)
+    """
+
+    if not np.isfinite(vel):
+        ValueError("The velocity is not finite.")
+
+    shifted_wavelength = wavelength * (1 + (vel * 1000 / c.value))
+    return shifted_wavelength
+
+
+def doppler_shift_flux(
+    wavelength: ndarray, flux: ndarray, vel: float, new_wav: Optional[ndarray] = None
+):
+    r"""Doppler shift flux by a given velocity, return it at the original wavelengths (non-relativistic).
+
+    Apply Doppler shift to the wavelength values of the spectrum
+    using the velocity value provided and the relation
+    \(\Delta\lambda / \lambda = v / c\)
+
+    Then linearly interpolate the flux with the new wavelength to the old wavelengths.
+
+    Parameters
+    ----------
+    wavelength: ndarray
+        Wavelength vector
+    flux: ndarray
+        Flux vector
+    vel : float
+        Velocity to Doppler shift by in km/s.
+    new_wav: Optional[ndarray]
+        New wavelength array to evaluate the doppler shifted flux at.
+        If None then defaults to new_wav=wavelength.
+    Returns
+    -------
+    new_flux: ndarray
+        Doppler-shifted flux evaluated at new_wav.
+    """
+    shifted_wavelength = doppler_shift_wav(wavelength, vel)
+
+    if new_wav is None:
+        new_wav = wavelength
+    new_flux = np.interp(new_wav, shifted_wavelength, flux)
+    return new_flux
+
+
+def doppler_limits(rvmax, wmin, wmax):
+    """Calculate wavelength limits to apply if preforming doppler shift.
+
+    To avoid any edge effects within wmin and wmax after doppler shift.
+
+    Parameters
+    ----------
+    rvmax: float
+        Maximium absolute RV offset in km/s. Uses np.abs() to constrain as absolute.
+    wmin: float
+        Lower wavelength limit.
+    wmax: float
+        Upper wavelength limit.
+    Returns
+    -------
+    new_wmin: float
+      Lower wavelength bound shifted by -rvmax
+    new_wmax: float
+       Lower wavelength bound shifted by +rvmax
+    """
+    c_km = const.c.value / 1000  # c in km/s
+    doppler_minus, doppler_plus = (1 - np.abs(rvmax) / c_km), (1 + np.abs(rvmax) / c_km)
+
+    return wmin * doppler_minus, wmax * doppler_plus

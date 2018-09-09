@@ -5,28 +5,11 @@ python:
     - 3.6
     - 3.7
 
-before_install:
-  # http://conda.pydata.org/docs/travis.html
-  - travis_retry wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  - hash -r
-  - conda config --set always_yes yes --set changeps1 no
-  - conda config --add channels conda-forge
-  - conda update -q conda
-  - conda info -a
-
 cache:
   directories:
     - $HOME/.cache/pip
 
 install:
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
-  - source activate test-environment
-
-  # Install heavy science packages
-  - travis_retry conda install --yes astropy cython emcee h5py matplotlib scikit-learn scipy
-
   # Install eniric requirements
   - travis_retry pip install -r requirements.txt
   - travis_retry pip install -r requirements_dev.txt
@@ -44,9 +27,11 @@ install:
   - python setup.py install
 
 before_script:
+  - export MPLBACKEND="AGG"  # Non-interactive
   - mv tests/config.yaml config.yaml
 
   # Generate data
+  - unzip_testdata.py
   - make_test_data.py
 
   # Prepare atmosphere models
