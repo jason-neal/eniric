@@ -440,10 +440,8 @@ def test_doppler_shift_at_speed_of_light(wavelength, direction, multiplier):
      It is a test of the math but not physical (not valid at this speed)
      but we are checking the math of the equation works
      should result in a shift of \delta \lambda = +/- \lambda"""
-    assert np.all(
-        doppler_shift_wav(wavelength, direction * c.value / 1000)
-        == (wavelength * multiplier)
-    )
+    c_wave = doppler_shift_wav(wavelength, direction * c.value / 1000)
+    assert np.all(c_wave == (wavelength * multiplier))
 
 
 def doppler_shift_zero(wavelength):
@@ -481,15 +479,15 @@ def test_if_doppler_shift_changes_quality(testing_spectrum, rv):
 
 @pytest.mark.parametrize("rv", [-10, 50, 1000])
 @pytest.mark.parametrize("wmin, wmax", [(2.1, 2.2), (1500, 1700)])
-def test_doppler_limts(rv, wmin, wmax):
-    """Doppler limits widens the wavelenght range"""
+def test_doppler_limits(rv, wmin, wmax):
+    """Doppler limits widens the wavelength range"""
     new_min, new_max = doppler_limits(rv, wmin, wmax)
     assert new_min < wmin
     assert new_max > wmax
 
 
 @pytest.mark.parametrize("wmin, wmax", [(2.1, 2.2), (1500, 1700)])
-def test_doppler_limts_rv_0(wmin, wmax):
+def test_doppler_limits_rv_0(wmin, wmax):
     """RV of zero should have no effect to limits."""
     new_min, new_max = doppler_limits(0, wmin, wmax)
     assert new_min == wmin

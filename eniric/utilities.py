@@ -484,7 +484,7 @@ def doppler_limits(rvmax, wmin, wmax):
     Parameters
     ----------
     rvmax: float
-        Maxmium absolute RV offset in km/s. Uses np.abs() to constrain as absolute.
+        Maximium absolute RV offset in km/s. Uses np.abs() to constrain as absolute.
     wmin: float
         Lower wavelength limit.
     wmax: float
