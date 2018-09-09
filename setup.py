@@ -40,6 +40,7 @@ config = {
     "packages": ["eniric", "eniric_scripts", "eniric.obsolete"],
     "scripts": [
         "eniric_scripts/phoenix_precision.py",
+        "eniric_scripts/unzip_testdata.py",
         "eniric_scripts/split_atmmodel.py",
         "eniric_scripts/bary_shift_atmmodel.py",
         "eniric/obsolete/make_test_data.py",
