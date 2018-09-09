@@ -2,7 +2,7 @@ import argparse
 import itertools
 import os
 from os.path import join
-from typing import Tuple
+from typing import List, Tuple
 
 import multiprocess as mprocess
 import numpy as np
@@ -16,7 +16,12 @@ from eniric.corrections import correct_artigau_2018
 from eniric.Qcalculator import quality, rv_precision
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
-from eniric.utilities import band_middle, load_aces_spectrum, load_btsettl_spectrum
+from eniric.utilities import (
+    band_middle,
+    doppler_shift_flux,
+    load_aces_spectrum,
+    load_btsettl_spectrum,
+)
 
 num_procs_minus_1 = mprocess.cpu_count() - 1
 
@@ -120,10 +125,13 @@ def _parser():
         type=str,
     )
     parser.add_argument(
-        "--air", help="Convert wavelengths from vacuum to air", action="store_true"
+        "--rv", help="Radial velocity value.", default=[0.0], type=float, nargs="+"
     )
     parser.add_argument(
-        "--rv", help="Radial velocity shift. (Not Implemented)", default=0.0, type=float
+        "--add_rv", help="Include radial velocity shift.", action="store_true"
+    )
+    parser.add_argument(
+        "--air", help="Convert wavelengths from vacuum to air", action="store_true"
     )
     parser.add_argument("--correct", help="Apply RV corrections", action="store_true")
     return parser.parse_args()
@@ -144,14 +152,24 @@ def do_analysis(
 ):
     """Precision and Quality for specific parameter set.
 
-     Parameters
-     ----------
-
-     air: bool
+    Parameters
+    ----------
+    air: bool
         Get model in air wavelengths.
-     model: str
+    model: str
         Name of synthetic library to use. (phoenix, btsettl).
-        """
+    rv: float
+        Radial velocity.
+
+    Notes:
+        We apply the radial velocity doppler shift after
+           - convolution (rotation and resolution)
+           - resampling
+           - SNR normalization.
+        in this way the RV only effects the precision due to the telluric mask interaction.
+        The RV should maybe come between the rotational and instrumental convolution
+        but we assume this effect is negligible.
+    """
     if conv_kwargs is None:
         conv_kwargs = {
             "epsilon": 0.6,
@@ -178,6 +196,17 @@ def do_analysis(
     wav_grid, sampled_flux = convolve_and_resample(
         wav, flux, vsini, R, band, sampling, **conv_kwargs
     )
+
+    # Doppler shift
+    try:
+        if rv != 0:
+            sampled_flux = doppler_shift_flux(wav_grid, sampled_flux, vel=rv)
+    except Exception as e:
+        print("Doppler shift was unsuccessful")
+        raise e
+
+    # Spectral Quality
+    q = quality(wav_grid, sampled_flux)
 
     # Scale normalization for precision
     wav_ref, sampled_ref = convolve_and_resample(
@@ -212,7 +241,7 @@ def do_analysis(
     prec2 = rv_precision(wav_grid, sampled_flux, mask=atm.mask)
 
     # Precision as given by the third condition: M = T**2
-    prec3 = rv_precision(wav_grid, sampled_flux, mask=atm.transmission**2)
+    prec3 = rv_precision(wav_grid, sampled_flux, mask=atm.transmission ** 2)
 
     # Turn quality back into a Quantity (to give it a .value method)
     q = q * u.dimensionless_unscaled
@@ -252,6 +281,8 @@ def model_format_args(model, pars):
 
     model in [temp, logg, fe/h, alpha]
     pars in order (R, band, vsini, sample).
+
+    Can now also optionally handle a 5th parameter rv.
     """
     temp = int(model[0])
     logg = float(model[1])
@@ -261,7 +292,82 @@ def model_format_args(model, pars):
     res = int(pars[0] / 1000)
     vsini = float(pars[2])
     sample = float(pars[3])
-    return (temp, logg, fe_h, alpha, band, res, vsini, sample)
+    try:
+        rv = float(pars[4])
+        return temp, logg, fe_h, alpha, band, res, vsini, sample, rv
+    except IndexError:
+        return temp, logg, fe_h, alpha, band, res, vsini, sample
+
+
+def header_row(add_rv=False):
+    """Header row for output file."""
+    if add_rv:
+        header = (
+            "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, "
+            "RV, Quality, Cond. 1, Cond. 2, Cond. 3, correct flag\n"
+        )
+    else:
+        header = (
+            "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, "
+            "Quality, Cond. 1, Cond. 2, Cond. 3, correct flag\n"
+        )
+    return header
+
+
+def get_already_computed(filename: str, add_rv: bool = False):
+    """Get the string of already computer model/parameters from the result file."""
+    computed_values = []
+    with open(filename, "r") as f:
+        for line in f:
+            if add_rv:
+                # should be longer
+                computed_values.append(line[:47])
+                computed_values.append(line[:40])
+            else:
+                computed_values.append(line[:41])
+                computed_values.append(line[:34])
+    return computed_values
+
+
+def is_already_computed(computed_values: List[str], model, pars, add_rv: bool = False):
+    """Check if any combinations have already been preformed"""
+    model_par_str_args = model_format_args(model, pars)
+
+    if add_rv:
+        if len(model_par_str_args) != 9:
+            raise ValueError("model_par_str_args is incorrect length")
+
+        params_one = (
+            "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
+            " {6:4.01f}, {7:3.01f}"
+        ).format(*model_par_str_args)
+        # may change output to have less spaces in future
+        params_two = (
+            "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k," "{6:4.01f},{7:3.01f}"
+        ).format(*model_par_str_args)
+
+    else:
+
+        model_par_str_args = model_par_str_args[:8]
+
+        if len(model_par_str_args) != 8:
+            raise ValueError("model_par_str_args is incorrect length")
+
+        params_one = (
+            "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
+            " {6:4.01f}, {7:3.01f}"
+        ).format(*model_par_str_args)
+        # may change output to have less spaces in future
+        params_two = (
+            "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k," "{6:4.01f},{7:3.01f}"
+        ).format(*model_par_str_args)
+
+    result = (params_one in computed_values) or (params_two in computed_values)
+    if result:
+        print(model_par_str_args, "model already computed")
+        print(params_one)
+
+    return result
 
 
 if __name__ == "__main__":
@@ -304,51 +410,31 @@ if __name__ == "__main__":
     else:
         models_list = itertools.product(args.temp, args.logg, [0], [0])
 
-    if args.rv != 0.0:
-        raise NotImplementedError("Still to add doppler option.")
+    if (args.rv != [0.0]) and (not args.add_rv):
+        raise ValueError("Need to include --add_rv flag if a non-zero RV is used.")
 
     if not os.path.exists(args.output):
         with open(args.output, "a") as f:
-            f.write(
-                "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, Quality, Cond. 1, Cond. 2, Cond. 3, correct flag\n"
-            )
+            header = header_row(add_rv=args.add_rv)
+            f.write(header)
 
     # Find all model/parameter combinations already computed.
     # To later skip recalculation.
-    computed_values, computed_values1 = [], []
-    with open(args.output, "r") as f:
-        for line in f:
-            computed_values.append(line[:41])
-            computed_values.append(line[:34])
+    computed_values = get_already_computed(args.output, args.add_rv)
 
     with open(args.output, "a") as f:
 
         for model in models_list:
             # Create generator for params_list
             params_list = itertools.product(
-                args.resolution, args.bands, args.vsini, args.sampling
+                args.resolution, args.bands, args.vsini, args.sampling, args.rv
             )
 
-            for (R, band, vsini, sample) in params_list:
-                pars = (R, band, vsini, sample)
+            for (R, band, vsini, sample, rv) in params_list:
+                pars = (R, band, vsini, sample, rv)
 
-                model_par_str_args = model_format_args(model, pars)
-                if len(model_par_str_args) != 8:
-                    raise ValueError("model_par_str_args is incorrect length")
-
-                print("Doing", model_par_str_args)
-                param_string = (
-                    "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
-                    " {6:4.01f}, {7:3.01f}"
-                ).format(*model_par_str_args)
-                # may change output to have less spaces in future
-                param_string1 = (
-                    "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,"
-                    "{6:4.01f},{7:3.01f}"
-                ).format(*model_par_str_args)
-
-                if (param_string in computed_values) or (
-                    param_string1 in computed_values
+                if is_already_computed(
+                    computed_values, model, pars, add_rv=args.add_rv
                 ):
                     # skipping the recalculation
                     continue
@@ -379,14 +465,23 @@ if __name__ == "__main__":
 
                     result[0] = int(result[0]) if result[0] is not None else None
 
-                    output_template = (
-                        "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
-                        " {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, {11:5.01f}, {12:1d}\n"
-                    )
-
+                    if args.add_rv:
+                        output_template = (
+                            "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
+                            " {6:4.01f}, {7:3.01f}, {8:3.01f}, {9:6d}, {10:5.01f}, "
+                            "{11:5.01f}, {12:5.01f}, {13:1d}\n"
+                        )
+                        output_model_args = model_format_args(model, pars)
+                    else:
+                        output_template = (
+                            "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
+                            " {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, "
+                            "{11:5.01f}, {12:1d}\n"
+                        )
+                        output_model_args = model_format_args(model, pars)[:8]
                     f.write(
                         output_template.format(
-                            *model_par_str_args,
+                            *output_model_args,
                             result[0],
                             result[1],
                             result[2],

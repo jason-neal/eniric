@@ -13,7 +13,7 @@ from astropy import constants as const
 
 import eniric
 from eniric.atmosphere import Atmosphere
-from eniric.utilities import band_limits
+from eniric.utilities import band_limits, doppler_shift_wav
 
 atmmodel = "{0}.txt".format(eniric.atmmodel["base"])
 choices = ["ALL"]
@@ -127,7 +127,10 @@ def main(
        Telluric line depth cutoff. Default = 2%.
     """
     if (bands is None) or ("ALL" in bands):
-        bands = eniric.bands["all"]
+        bands_ = eniric.bands["all"]
+    else:
+        bands_ = bands
+
     if new_name is None:
         new_name = model.split(".")[0]
     if data_dir is None:
@@ -151,16 +154,16 @@ def main(
     atm = Atmosphere.from_file(model_name)
 
     # Return value from saving each band
-    write_status = np.empty_like(bands, dtype=int)
+    write_status = np.empty_like(bands_, dtype=int)
 
-    for i, band in enumerate(bands):
+    for i, band in enumerate(bands_):
         print("Starting {0}".format(band))
         filename_band = "{0}_{1}.txt".format(new_name, band)
         band_min, band_max = band_limits(band)
 
         # * 1000 to convert into km/s
-        band_min = band_min * (1 - rv_extend * 1000 / const.c.value)
-        band_max = band_max * (1 + rv_extend * 1000 / const.c.value)
+        band_min = doppler_shift_wav(band_min, -rv_extend)
+        band_max = doppler_shift_wav(band_max, rv_extend)
 
         split_atm = atm.wave_select(band_min, band_max)
 
