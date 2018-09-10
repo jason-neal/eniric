@@ -10,14 +10,18 @@ to achieve a consistent SNR at a specific location.
 from typing import Optional, Union
 
 import numpy as np
-from numpy import float64, ndarray
+from numpy import ndarray
 
 import eniric.utilities as utils
 
 
 def snr_constant_band(
-    wav: ndarray, flux: ndarray, snr: Union[int, float] = 100, band: str = "J"
-) -> float64:
+    wav: ndarray,
+    flux: ndarray,
+    snr: Union[int, float] = 100,
+    band: str = "J",
+    sampling: Union[int, float] = 3.0,
+) -> float:
     """Determine the normalization constant to achieve a SNR in the middle of a given band.
 
     SNR estimated by the square root of the number of photons in a resolution element.
@@ -32,6 +36,8 @@ def snr_constant_band(
         SNR to normalize to.
     band: str, default = "J"
         Band to use for normalization.
+    sampling: int or float
+       Number of pixels per resolution element.
 
     Returns
     -------
@@ -40,13 +46,18 @@ def snr_constant_band(
         signal-to-noise level of snr within an resolution element
         in the middle of the band.
 
+    Note
+    ----
+    If sampling is a float it will rounded to the nearest integer for indexing.
     """
     band_middle = utils.band_middle(band)
 
     if not (wav[0] < band_middle < wav[-1]):
         raise ValueError("Band center not in wavelength range.")
 
-    norm_constant = snr_constant_wav(wav, flux, wav_ref=band_middle, snr=snr)
+    norm_constant = snr_constant_wav(
+        wav, flux, wav_ref=band_middle, snr=snr, sampling=sampling
+    )
 
     return norm_constant
 
@@ -57,7 +68,7 @@ def snr_constant_wav(
     wav_ref: float,
     snr: Union[int, float] = 100,
     sampling: Union[int, float] = 3.0,
-) -> float64:
+) -> float:
     """Determine the normalization constant to achieve a SNR at given wavelength.
 
     SNR estimated by the square root of the number of photons in a resolution element.
@@ -86,12 +97,15 @@ def snr_constant_wav(
     We want to be consistent for each spectra. If we specify the middle of J band
     as the reference it will need to be used for all bands of that spectra.
 
+    If sampling is a float it will rounded to the nearest integer for indexing.
     """
     if wav_ref < wav[0] or wav_ref > wav[-1]:
         raise ValueError("Reference wavelength is outside of the wavelength bounds")
     index_ref = np.searchsorted(wav, [wav_ref])[0]  # Searching for the closest index
 
-    indexes = sampling_index(index_ref, sampling=sampling, array_length=len(wav))
+    indexes = sampling_index(
+        index_ref, sampling=np.round(sampling), array_length=len(wav)
+    )
 
     snr_estimate = np.sqrt(np.sum(flux[indexes]))
 
@@ -105,7 +119,7 @@ def snr_constant_wav(
 
 
 def sampling_index(
-    index: int, sampling: Union[int, float] = 3, array_length: Optional[int] = None
+    index: int, sampling: int = 3, array_length: Optional[int] = None
 ) -> ndarray:
     """Get a small number of index values around the given index value.
 
@@ -114,7 +128,7 @@ def sampling_index(
     index: int
         The index value which to select values around.
     sampling: int
-        Number of index values to return (sampling per resolution element)
+        Number of index values to return (sampling per resolution element). Must be an integer.
     array_length: int or None, default = None
         Length of array the indexes will be used in. To not exceed array length.
 

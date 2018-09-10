@@ -342,8 +342,13 @@ def calculate_prec(
             # flux_stellar = normalize_flux(flux_stellar, id_string)
             # flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=True)  # snr=100, ref_band="J"
             flux_stellar = eniric.obsolete.snr_norm.normalize_flux(
-                flux_stellar, id_string, new=new, snr=snr, ref_band=ref_band
-            )  # snr=100, ref_band="J"
+                flux_stellar,
+                id_string,
+                new=new,
+                snr=snr,
+                ref_band=ref_band,
+                sampling=smpl,
+            )
 
             if id_string in [
                 "M0-J-1.0-100k",
@@ -403,7 +408,7 @@ def calculate_prec(
 
             # Precision as given by the third_method
             prec_3 = Qcalculator.rv_precision(
-                wav_stellar, flux_stellar, mask=flux_atm_selected**2, grad=grad
+                wav_stellar, flux_stellar, mask=flux_atm_selected ** 2, grad=grad
             )
 
             # Adding Precision results to the dictionary
