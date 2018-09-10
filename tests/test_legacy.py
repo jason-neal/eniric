@@ -76,7 +76,7 @@ def test_legacy_RV_warns_nonfinite(grad_flag):
         )
 
 
-def test_weigths_clumping_grad(resampled_data, grad_flag):
+def test_weights_clumping_grad(resampled_data, grad_flag):
     # Test masked clumping vere weight mask with new gradients
     # Test on an actual spectrum to check sizes of difference
     id_string, wav, flux = resampled_data
