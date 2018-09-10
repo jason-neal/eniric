@@ -44,19 +44,20 @@ def test_snr_normalization_constant(desired_snr, band, testing_spectrum):
     ) == snrnorm.snr_constant_wav(wav, flux, band_mid, snr=desired_snr)
 
 
-def test_band_snr_norm(testing_spectrum):
+@pytest.mark.parametrize("sampling", [3, 4.1])
+def test_band_snr_norm(testing_spectrum, sampling):
     """Compared to wav snr norm."""
     wav, flux = testing_spectrum
     wav, flux = convolve_and_resample(
-        wav, flux, vsini=1, R=100000, band="J", sampling=3
+        wav, flux, vsini=1, R=100000, band="J", sampling=sampling
     )
     assert snrnorm.snr_constant_band(
-        wav, flux, band="J", snr=100
-    ) == snrnorm.snr_constant_wav(wav, flux, wav_ref=1.25, snr=100)
+        wav, flux, band="J", snr=100, sampling=sampling
+    ) == snrnorm.snr_constant_wav(wav, flux, wav_ref=1.25, snr=100, sampling=sampling)
 
     assert snrnorm.snr_constant_band(
-        wav, flux, band="J", snr=100
-    ) != snrnorm.snr_constant_wav(wav, flux, wav_ref=1.24, snr=100)
+        wav, flux, band="J", snr=100, sampling=sampling
+    ) != snrnorm.snr_constant_wav(wav, flux, wav_ref=1.24, snr=100, sampling=sampling)
 
 
 def test_sampling_index():

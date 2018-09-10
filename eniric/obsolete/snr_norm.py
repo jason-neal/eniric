@@ -17,6 +17,7 @@ def normalize_flux(
     new: bool = True,
     snr: Union[int, float] = 100.0,
     ref_band: str = "J",
+    sampling: Union[int, float] = 3.0,
 ) -> ndarray:
     """Normalize flux to have SNR of 100 in middle of reference band.
 
@@ -32,6 +33,8 @@ def normalize_flux(
         SNR to normalize to, .
     ref_band: str default="J"
         References band to normalize to.
+    sampling: int or float
+       Number of pixels per resolution element.
 
     Returns
     -------
@@ -45,7 +48,9 @@ def normalize_flux(
             __, ref_band, __, __ = decompose_id_string(id_string)
 
         wav_ref, flux_ref = get_reference_spectrum(id_string, ref_band)
-        norm_const = snr_constant_band(wav_ref, flux_ref, snr=snr, band=ref_band)
+        norm_const = snr_constant_band(
+            wav_ref, flux_ref, snr=snr, band=ref_band, sampling=sampling
+        )
     else:
         if (ref_band.upper() != "J") or (snr != 100):
             raise ValueError("The old way does not work with these reference values.")
