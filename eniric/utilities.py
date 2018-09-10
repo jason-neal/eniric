@@ -122,8 +122,8 @@ def wav_selector(
     flux_sel: array
         New wavelength array within bounds wav_min, wav_max
         """
-    wav = np.asarray(wav, dtype="float64")
-    flux = np.asarray(flux, dtype="float64")
+    wav = np.asarray(wav, dtype=float)
+    flux = np.asarray(flux, dtype=float)
 
     mask = mask_between(wav, wav_min, wav_max)
     flux_sel = flux[mask]
