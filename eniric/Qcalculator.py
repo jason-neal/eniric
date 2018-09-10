@@ -56,7 +56,7 @@ import astropy.constants as const
 import astropy.units as u
 import numpy as np
 from astropy.units.quantity import Quantity
-from numpy import float64, ndarray
+from numpy import ndarray
 
 from eniric.resample import log_chunks
 
@@ -93,7 +93,7 @@ def rv_precision(
 
 def quality(
     wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray], **kwargs
-) -> Union[float64, Quantity]:
+) -> Union[float, Quantity]:
     """Calculation of the spectral Quality, Q, for a spectrum.
 
     Parameters
@@ -131,7 +131,7 @@ def sqrt_sum_wis(
     flux: Union[Quantity, ndarray],
     mask: Optional[Union[Quantity, ndarray]] = None,
     grad: bool = True,
-) -> Union[float64, Quantity]:
+) -> Union[float, Quantity]:
     """Calculation of the Square root of the sum of the weights(Wis) for a spectrum.
 
     Mask is used to apply a masking function to the weights (to mask out telluric lines for example)
@@ -308,7 +308,7 @@ def incremental_rv(
      Central wavelength value for quality section.
     rv: ndarray
        Spectral RV precision for each section.
-       """
+    """
     positions = log_chunks(wavelength, percent)
     velocities = []
     for pos1, pos2 in zip(positions[:-1], positions[1:]):

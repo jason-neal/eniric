@@ -4,7 +4,6 @@ These are a wrapper around pandas.
 """
 from typing import List, Optional, Tuple
 
-import numpy as np
 import pandas as pd
 from numpy import ndarray
 
@@ -24,9 +23,9 @@ def pdread_2col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray
     Returns
     -------
     col1: ndarray
-        First column as float64.
+        First column as float.
     col2: ndarray
-        Second column as float64.
+        Second column as float.
     """
     try:
         if noheader:
@@ -35,7 +34,7 @@ def pdread_2col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray
                 comment="#",
                 names=["col1", "col2"],
                 header=None,
-                dtype=np.float64,
+                dtype=float,
                 delim_whitespace=True,
             )
         else:
@@ -43,7 +42,7 @@ def pdread_2col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray
                 filename,
                 comment="#",
                 names=["col1", "col2"],
-                dtype=np.float64,
+                dtype=float,
                 delim_whitespace=True,
             )
     except Exception as e:
@@ -68,11 +67,11 @@ def pdread_3col(
     Returns
     -------
     col1: ndarray
-        First column as float64.
+        First column as float.
     col2: ndarray
-        Second column as float64.
+        Second column as float.
     col3: ndarray
-        Third column as float64.
+        Third column as float.
     """
     try:
         if noheader:
@@ -81,7 +80,7 @@ def pdread_3col(
                 comment="#",
                 names=["col1", "col2", "col3"],
                 header=None,
-                dtype=np.float64,
+                dtype=float,
                 delim_whitespace=True,
             )
         else:
@@ -89,7 +88,7 @@ def pdread_3col(
                 filename,
                 comment="#",
                 names=["col1", "col2", "col3"],
-                dtype=np.float64,
+                dtype=float,
                 delim_whitespace=True,
             )
     except Exception as e:
@@ -114,13 +113,13 @@ def pdread_4col(
     Returns
     -------
     col1: ndarray
-        First column as float64.
+        First column as float.
     col2: ndarray
-        Second column as float64.
+        Second column as float.
     col3: ndarray
-        Third column as float64.
+        Third column as float.
     col4: ndarray
-        Fourth column as float64.
+        Fourth column as float.
     """
     try:
         if noheader:
@@ -129,7 +128,7 @@ def pdread_4col(
                 comment="#",
                 names=["col1", "col2", "col3", "col4"],
                 header=None,
-                dtype=np.float64,
+                dtype=float,
                 delim_whitespace=True,
             )
         else:
@@ -137,7 +136,7 @@ def pdread_4col(
                 filename,
                 comment="#",
                 names=["col1", "col2", "col3", "col4"],
-                dtype=np.float64,
+                dtype=float,
                 delim_whitespace=True,
             )
     except Exception as e:

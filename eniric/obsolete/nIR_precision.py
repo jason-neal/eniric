@@ -456,8 +456,8 @@ def compare_output():
     """Function that compares a spectrum prior to convolution, after, and after resampling."""
     pre_convolution = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
     pre_wav, pre_flux = io.pdread_2col(pre_convolution)
-    pre_wav = np.array(pre_wav, dtype="float64") * 1.0e-4  # conversion to microns
-    pre_flux = np.array(pre_flux, dtype="float64") * pre_wav
+    pre_wav = np.array(pre_wav, dtype=float) * 1.0e-4  # conversion to microns
+    pre_flux = np.array(pre_flux, dtype=float) * pre_wav
 
     convolved = "results_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k.txt"
     sampled = "resampled_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt"
