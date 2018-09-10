@@ -281,7 +281,12 @@ def moving_average(x: ndarray, window_size: Union[int, float]) -> ndarray:
 
 
 #################################
-def load_aces_spectrum(params: Union[ndarray, List[float]], photons=True, air=False):
+def load_aces_spectrum(
+    params: Union[ndarray, List[float]],
+    photons: bool = True,
+    air: bool = False,
+    wl_range: List[float] = [3000, 54000],
+):
     """Load a Phoenix spectrum from the phoenix library using STARFISH.
 
     Parameters
@@ -290,6 +295,10 @@ def load_aces_spectrum(params: Union[ndarray, List[float]], photons=True, air=Fa
          [temp, logg, metallicity(, alpha)]
     photons: bool
         Necessary conversions into photons for precisions.
+    air: bool
+       Convert to air wavelengths (default = False).
+    wl_range: [float, float]
+        Min/Max wavelength range to load. Default = [3000, 54000] Angstrom.
 
     Returns
     -------
@@ -337,7 +346,12 @@ def load_aces_spectrum(params: Union[ndarray, List[float]], photons=True, air=Fa
     return wav_micron, flux_micron
 
 
-def load_btsettl_spectrum(params: Union[ndarray, List[float]], photons=True, air=False):
+def load_btsettl_spectrum(
+    params: Union[ndarray, List[float]],
+    photons: bool = True,
+    air: bool = False,
+    wl_range: List[float] = [3000, 30000],
+):
     """Load a BT-Settl spectrum from the CIFIST2011 library using STARFISH.
 
     Parameters
@@ -346,6 +360,10 @@ def load_btsettl_spectrum(params: Union[ndarray, List[float]], photons=True, air
          [temp, logg]. Metallicity = 0, alpha = 0
     photons: bool
         Necessary conversions into photons for precisions.
+    air: bool
+       Convert to air wavelengths (default = False).
+    wl_range: [float, float]
+        Min/Max wavelength range to load. Default = [3000, 30000] Angstrom.
 
     Returns
     -------
@@ -373,7 +391,7 @@ def load_btsettl_spectrum(params: Union[ndarray, List[float]], photons=True, air
 
     base = eniric.paths["btsettl_raw"] + os.sep
 
-    btsettl_grid = BTSETTL(base=base, air=air, norm=False, wl_range=[3000, 24000])
+    btsettl_grid = BTSETTL(base=base, air=air, norm=False, wl_range=wl_range)
 
     wav = btsettl_grid.wl
     # Convert wavelength from Angstrom to micron
