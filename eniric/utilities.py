@@ -296,7 +296,7 @@ def load_aces_spectrum(params: Union[ndarray, List[float]], photons=True, air=Fa
     wav_micron: ndarray
         Wavelength in microns
     flux_micron: ndarray
-        Photon counts or SED/micron
+        Photon counts per (cm**2 s) or SED/micron (within a multiplicative constant 1/(h*c)).
 
     Spectra available from http://phoenix.astro.physik.uni-goettingen.de
     """
@@ -337,9 +337,6 @@ def load_aces_spectrum(params: Union[ndarray, List[float]], photons=True, air=Fa
         # with
         #     Energy_photon = h*c/lambda
         # Flux_photon = Flux_energy * lambda / (h * c)
-        #
-        # Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/micron
-        # Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
 
         flux_micron = flux_micron * wav_micron
     return wav_micron, flux_micron
@@ -360,10 +357,11 @@ def load_btsettl_spectrum(params: Union[ndarray, List[float]], photons=True, air
     wav_micron: ndarray
         Wavelength in microns
     flux_micron: ndarray
-        Photon counts or SED/micron
+        Photon counts per (cm**2 s) or SED/micron. (within a multiplicative constant 1/(h*c))
 
-    Notes:
-    From BT-SETTL readme -
+    Notes
+    -----
+    From BT-SETTL readme:
         CIFIST2011_2015: published version of the BT-Settl grid (Baraffe et al. 2015,
         Allard et al. 2015. This grid will be the most complete
         of the CIFIST2011 grids above, but currently: Teff = 1200 - 7000K, logg = 2.5 - 5.5,
@@ -383,17 +381,19 @@ def load_btsettl_spectrum(params: Union[ndarray, List[float]], photons=True, air
     btsettl_grid = BTSETTL(base=base, air=air, norm=False, wl_range=[3000, 24000])
 
     wav = btsettl_grid.wl
+    # Convert wavelength from Angstrom to micron
+    wav_micron = wav * 10 ** -4
+
+    # CIFIST flux is  W/m**2/um
     flux, hdr = btsettl_grid.load_flux(params)
 
-    # Convert wavelength Angstrom to micron
-    wav_micron = wav * 10 ** -4
-    # Convert SED from /cm  to /micron
-    # TODO check the conversion fraction.
-    flux_micron = flux * 10 ** -4
+    flux_micron = flux * 10 ** -7  # Convert W/m**2/um to ergs/s/m**2/um)
+    flux_micron *= 10 ** -4  # Convert 1/m**2 to 1/cm**2
 
     if photons:
-        # Convert to photon counts
-        # The energy units of CIFIST fits files is erg/s/cm**2/cm
+        # Convert to photon counts:
+        # The energy units of CIFIST fits files is W/m**2/um
+        # We have converted it to ergs/(s cm**2 um)
         # BT-Settl gives the Spectral Energy Density (SED)
         # We transform the SED into photons by
         # multiplying the flux by the wavelength (lambda)
@@ -402,10 +402,6 @@ def load_btsettl_spectrum(params: Union[ndarray, List[float]], photons=True, air
         # with
         #     Energy_photon = h*c/lambda
         # Flux_photon = Flux_energy * lambda / (h * c)
-        #
-        # Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/micron
-        # Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
-
         flux_micron = flux_micron * wav_micron
     return wav_micron, flux_micron
 
