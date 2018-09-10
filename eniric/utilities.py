@@ -302,19 +302,14 @@ def load_aces_spectrum(params: Union[ndarray, List[float]], photons=True, air=Fa
     """
     base = eniric.paths["phoenix_raw"] + os.sep
 
-    if params[3] == 0:  # Alpha value
-        params = params[:-1]
-        assert len(params) == 3
-        from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
+    if len(params) == 3:  # Only 3 parameters given
+        params = [params[0], params[1], params[2], 0]  # Set alpha=0
 
-        phoenix_grid = PHOENIXNoAlpha(base=base, air=air, norm=False)
-
-    elif len(params) == 4:
-        print("USING ALPHA in PHOENIX LOADING")
+    if len(params) == 4:
         from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
 
-        phoenix_grid = PHOENIX(base=base, air=air, norm=False)
-        # , param_names = ["temp", "logg", "Z", "alpha"])
+        phoenix_grid = PHOENIX(base=base, air=air, norm=False, wl_range=wl_range)
+
     else:
         raise ValueError("Number of parameters is incorrect")
 
