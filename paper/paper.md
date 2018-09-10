@@ -81,7 +81,10 @@ This is similar to Figure 1 from [@figueira_radial_2016] but with updated precis
 
 ## Acknowledgements
 
-This work was supported by Fundação para a Ciência e a Tecnologia (FCT) (Portugal) research grants through national funds and from FEDER through COMPETE2020 by the following grants: UID/FIS/04434/2013 & POCI--01--0145-FEDER--007672, PTDC/FIS-AST/1526/2014 & POCI--01--0145-FEDER--016886 & PTDC/FIS-AST/7073/2014 & POCI-01-0145-FEDER-016880.
+This work was supported by Fundação para a Ciência e Tecnologia (FCT) (Portugal) research grants
+through national funds and from FEDER through COMPETE2020 by the following grants:
+POCI--01--0145-FEDER--007672, POCI--01--0145-FEDER--016880, POCI--01--0145-FEDER--016886,
+PTDC/FIS-AST/1526/2014, PTDC/FIS-AST/7073/2014, & UID/FIS/04434/2013.
 J.J.N. acknowledges support from FCT though the PhD::Space fellowship PD/BD/52700/2014.
 
 
