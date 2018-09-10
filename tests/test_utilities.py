@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 from astropy import constants as const
 from hypothesis import given
+from Starfish.constants import GridError
 
 import eniric.utilities as utils
 from eniric.Qcalculator import quality
@@ -12,6 +13,8 @@ from eniric.utilities import (
     doppler_limits,
     doppler_shift_flux,
     doppler_shift_wav,
+    load_aces_spectrum,
+    load_btsettl_spectrum,
     mask_between,
     moving_average,
     rv_cumulative,
@@ -422,3 +425,49 @@ def test_doppler_limits_rv_0(wmin, wmax):
     new_min, new_max = doppler_limits(0, wmin, wmax)
     assert new_min == wmin
     assert new_max == wmax
+
+
+@pytest.mark.parametrize("photons", [True, False])
+def test_load_btsettl_spectrum(photons):
+    wav, flux = load_btsettl_spectrum(
+        [3900, 4.5, 0, 0], photons=photons, air=False, wl_range=[21000, 22000]
+    )
+    assert len(wav) == len(flux)
+
+
+@pytest.mark.parametrize("params", [[8000, 4.5, 0, 0], [3900, 0.5, 0, 0]])
+def test_invalid_load_btsettl_spectrum(params):
+    # Invalid CIFIST parameters
+    with pytest.raises(GridError):
+        load_btsettl_spectrum(params, wl_range=[21000, 22000])
+
+
+@pytest.mark.parametrize("params", [[3900, 4.5, 1, 0], [3900, 4.5, 0, 1]])
+def test_invalid_feh_alpha_load_btsettl_spectrum(params):
+    # Invalid CIFIST parameters
+    with pytest.raises(AssertionError):
+        load_btsettl_spectrum(params, wl_range=[21000, 22000])
+
+
+@pytest.mark.parametrize("photons", [True, False])
+def test_load_aces_spectrum(photons):
+    wav, flux = load_aces_spectrum(
+        [3900, 4.5, 0, 0], photons=photons, air=False, wl_range=[21000, 22000]
+    )
+    assert len(wav) == len(flux)
+
+
+@pytest.mark.parametrize(
+    "params",
+    [
+        [20000, 4.5, 0, 0],
+        [2200, 4.5, 0, 0],
+        [3900, 4.7, 1, 0],
+        [3900, 4.5, 0.2],
+        [3900, 4.5, -1, 3],
+    ],
+)
+def test_invalid_load_aces_spectrum(params):
+    # Invalid CIFIST parameters
+    with pytest.raises(GridError):
+        load_aces_spectrum(params, wl_range=[21000, 22000])
