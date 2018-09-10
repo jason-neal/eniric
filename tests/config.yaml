@@ -2,8 +2,8 @@
 
 # Paths to locations used by eniric
 paths:
-  phoenix_raw: ["data", "test_data","phoenix-raw"]
-  btsettl_raw: ["data", "test_data", "BT-Settl"]
+  phoenix_raw: ["data", "test_data", "phoenix-raw"]
+  btsettl_raw: ["data", "test_data", "btsettl-raw"]
   test_data: ["data","test_data"]
   atmmodel: ["data", "atmmodel"]
   precision: ["precision"]
