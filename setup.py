@@ -22,6 +22,7 @@ config = {
     "version": "1.0rc1",
     "license": "MIT",
     "setup_requires": ["pytest-runner"],
+    "tests_require": ["pytest", "hypothesis"],
     "install_requires": [
         "astropy",
         "joblib>0.12",
