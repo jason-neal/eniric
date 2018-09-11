@@ -5,7 +5,6 @@ import numpy as np
 import pytest
 from astropy import constants as const
 from hypothesis import given
-from Starfish.constants import GridError
 
 import eniric.utilities as utils
 from eniric.Qcalculator import quality
@@ -438,6 +437,7 @@ def test_load_btsettl_spectrum(photons):
 @pytest.mark.parametrize("params", [[8000, 4.5, 0, 0], [3900, 0.5, 0, 0]])
 def test_invalid_load_btsettl_spectrum(params):
     # Invalid CIFIST parameters
+    from Starfish.constants import GridError
     with pytest.raises(GridError):
         load_btsettl_spectrum(params, wl_range=[21000, 22000])
 
@@ -469,5 +469,6 @@ def test_load_aces_spectrum(photons):
 )
 def test_invalid_load_aces_spectrum(params):
     # Invalid CIFIST parameters
+    from Starfish.constants import GridError
     with pytest.raises(GridError):
         load_aces_spectrum(params, wl_range=[21000, 22000])
