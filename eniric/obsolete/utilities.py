@@ -197,9 +197,9 @@ def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
 
     Returns
     -------
-    wav: array-like, float64
+    wav: array-like, float
         Wavelength in microns.
-    flux_photons: array-like, float64
+    flux_photons: array-like, float
         Photon flux.
 
     """
@@ -242,7 +242,9 @@ def resample_allfiles(
 
     for spectrum_file in onlyfiles:
         if spectrum_file.endswith(".txt"):
-            resampler(spectrum_file, results_dir=results_dir, resampled_dir=resampled_dir)
+            resampler(
+                spectrum_file, results_dir=results_dir, resampled_dir=resampled_dir
+            )
 
     return 0
 

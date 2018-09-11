@@ -4,15 +4,17 @@ import hypothesis.strategies as st
 import numpy as np
 import pytest
 from astropy import constants as const
-from hypothesis import given, settings
+from hypothesis import given
+from Starfish.constants import GridError
 
 import eniric.utilities as utils
-from eniric.broaden import rotation_kernel, unitary_gaussian
 from eniric.Qcalculator import quality
 from eniric.utilities import (
     doppler_limits,
     doppler_shift_flux,
     doppler_shift_wav,
+    load_aces_spectrum,
+    load_btsettl_spectrum,
     mask_between,
     moving_average,
     rv_cumulative,
@@ -132,73 +134,6 @@ def test_band_midpoint_j():
     assert utils.band_middle("J") == 1.25
 
 
-##################################
-
-
-@settings(max_examples=100)
-@given(
-    st.lists(
-        st.floats(
-            min_value=1e-7, max_value=1e-5, allow_infinity=False, allow_nan=False
-        ),
-        unique=True,
-        min_size=3,
-        max_size=25,
-    ),
-    st.floats(min_value=1e-2, max_value=200),
-    st.floats(min_value=1e-4, max_value=1),
-)
-def test_rotational_kernel(delta_lambdas, vsini, epsilon):
-    """Test that the new and original code produces the same output."""
-    delta_lambdas = np.sort(np.asarray(delta_lambdas), kind="quicksort")
-    delta_lambdas = np.append(np.flipud(delta_lambdas), np.insert(delta_lambdas, 0, 0))
-    delta_lambda_l = np.max(delta_lambdas) * 2
-
-    new_profile = rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon)
-
-    assert len(new_profile) == len(delta_lambdas)
-    # other properties to test?
-
-
-@given(
-    st.lists(
-        st.floats(min_value=-100, max_value=100, allow_nan=False),
-        min_size=1,
-        unique=True,
-    ),
-    st.floats(min_value=-100, max_value=100, allow_nan=False),
-    st.floats(min_value=0.001, max_value=100, allow_nan=False),
-)
-def test_unitary_gaussian(x, center, fwhm):
-    """Just a quick simple test."""
-    x = np.asarray(x)
-
-    gaussian = unitary_gaussian(x, center, fwhm)
-    print(gaussian)
-    # point at center should be the max
-    assert len(gaussian) == len(x)
-    assert np.allclose(np.max(gaussian), gaussian[np.argmin(abs(x - center))])
-
-
-def test_unitary_gaussian_type_errors():
-    """Testing for type errors."""
-    x = np.arange(-10, 10)
-    center = 0
-    fwhm = 3
-
-    with pytest.raises(TypeError):
-        unitary_gaussian(x, center, "fwhm")
-    with pytest.raises(TypeError):
-        unitary_gaussian(x, "center", fwhm)
-    with pytest.raises(TypeError):
-        unitary_gaussian(range(-10, 10), "center", fwhm)
-    with pytest.raises(TypeError):
-        unitary_gaussian(1, "center", fwhm)
-
-
-################################################
-
-
 def test_silent_remove():
     """Test this doesn't raise and issue.
     Not really a good test."""
@@ -208,8 +143,6 @@ def test_silent_remove():
 
 ####################################################
 # Test Resolution conversions
-
-
 @pytest.mark.parametrize(
     "resolution,result", [("60k", 60000), (80000, 80000), ("2000", 2000)]
 )
@@ -492,3 +425,49 @@ def test_doppler_limits_rv_0(wmin, wmax):
     new_min, new_max = doppler_limits(0, wmin, wmax)
     assert new_min == wmin
     assert new_max == wmax
+
+
+@pytest.mark.parametrize("photons", [True, False])
+def test_load_btsettl_spectrum(photons):
+    wav, flux = load_btsettl_spectrum(
+        [3900, 4.5, 0, 0], photons=photons, air=False, wl_range=[21000, 22000]
+    )
+    assert len(wav) == len(flux)
+
+
+@pytest.mark.parametrize("params", [[8000, 4.5, 0, 0], [3900, 0.5, 0, 0]])
+def test_invalid_load_btsettl_spectrum(params):
+    # Invalid CIFIST parameters
+    with pytest.raises(GridError):
+        load_btsettl_spectrum(params, wl_range=[21000, 22000])
+
+
+@pytest.mark.parametrize("params", [[3900, 4.5, 1, 0], [3900, 4.5, 0, 1]])
+def test_invalid_feh_alpha_load_btsettl_spectrum(params):
+    # Invalid CIFIST parameters
+    with pytest.raises(AssertionError):
+        load_btsettl_spectrum(params, wl_range=[21000, 22000])
+
+
+@pytest.mark.parametrize("photons", [True, False])
+def test_load_aces_spectrum(photons):
+    wav, flux = load_aces_spectrum(
+        [3900, 4.5, 0, 0], photons=photons, air=False, wl_range=[21000, 22000]
+    )
+    assert len(wav) == len(flux)
+
+
+@pytest.mark.parametrize(
+    "params",
+    [
+        [20000, 4.5, 0, 0],
+        [2200, 4.5, 0, 0],
+        [3900, 4.7, 1, 0],
+        [3900, 4.5, 0.2],
+        [3900, 4.5, -1, 3],
+    ],
+)
+def test_invalid_load_aces_spectrum(params):
+    # Invalid CIFIST parameters
+    with pytest.raises(GridError):
+        load_aces_spectrum(params, wl_range=[21000, 22000])

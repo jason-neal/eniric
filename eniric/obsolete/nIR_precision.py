@@ -342,8 +342,13 @@ def calculate_prec(
             # flux_stellar = normalize_flux(flux_stellar, id_string)
             # flux_stellar = snrnorm.normalize_flux(flux_stellar, id_string, new=True)  # snr=100, ref_band="J"
             flux_stellar = eniric.obsolete.snr_norm.normalize_flux(
-                flux_stellar, id_string, new=new, snr=snr, ref_band=ref_band
-            )  # snr=100, ref_band="J"
+                flux_stellar,
+                id_string,
+                new=new,
+                snr=snr,
+                ref_band=ref_band,
+                sampling=smpl,
+            )
 
             if id_string in [
                 "M0-J-1.0-100k",
@@ -403,7 +408,7 @@ def calculate_prec(
 
             # Precision as given by the third_method
             prec_3 = Qcalculator.rv_precision(
-                wav_stellar, flux_stellar, mask=flux_atm_selected**2, grad=grad
+                wav_stellar, flux_stellar, mask=flux_atm_selected ** 2, grad=grad
             )
 
             # Adding Precision results to the dictionary
@@ -451,8 +456,8 @@ def compare_output():
     """Function that compares a spectrum prior to convolution, after, and after resampling."""
     pre_convolution = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
     pre_wav, pre_flux = io.pdread_2col(pre_convolution)
-    pre_wav = np.array(pre_wav, dtype="float64") * 1.0e-4  # conversion to microns
-    pre_flux = np.array(pre_flux, dtype="float64") * pre_wav
+    pre_wav = np.array(pre_wav, dtype=float) * 1.0e-4  # conversion to microns
+    pre_flux = np.array(pre_flux, dtype=float) * pre_wav
 
     convolved = "results_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k.txt"
     sampled = "resampled_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt"

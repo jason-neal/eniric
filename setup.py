@@ -19,7 +19,7 @@ config = {
     "url": "https://github.com/jason-neal/eniric.git",
     "download_url": "https://github.com/jason-neal/eniric.git",
     "author_email": "jason.neal@astro.up.pt",
-    "version": "0.6-beta",
+    "version": "1.0rc1",
     "license": "MIT",
     "setup_requires": ["pytest-runner"],
     "install_requires": [
@@ -60,7 +60,7 @@ config = {
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.6",
-        '"Programming Language :: Python :: 3.7',
+        "Programming Language :: Python :: 3.7",
         "Natural Language :: English",
         "Operating System :: Unix",
         "Operating System :: Microsoft :: Windows",

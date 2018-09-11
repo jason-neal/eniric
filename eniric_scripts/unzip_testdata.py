@@ -2,9 +2,10 @@
 
 May not be needed if Starfish is able to handle .tar.gz files.
 """
-import eniric
 import tarfile
 from os.path import exists, join
+
+import eniric
 
 
 def unzip(path: str, filename: str, overwrite: bool = False):
@@ -30,6 +31,8 @@ if __name__ == "__main__":
     ]
     for aces in aces_spec:
         unzip(join(path, "Z-0.0"), aces)
+
+    unzip(eniric.paths["btsettl_raw"], "lte039.0-4.5-0.0a+0.0.BT-Settl.spec.fits.gz")
 
     # Obsolete data from make_test_data.py
     # Only include results and resampled because they take longer with convolutions.

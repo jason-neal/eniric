@@ -122,8 +122,8 @@ def wav_selector(
     flux_sel: array
         New wavelength array within bounds wav_min, wav_max
         """
-    wav = np.asarray(wav, dtype="float64")
-    flux = np.asarray(flux, dtype="float64")
+    wav = np.asarray(wav, dtype=float)
+    flux = np.asarray(flux, dtype=float)
 
     mask = mask_between(wav, wav_min, wav_max)
     flux_sel = flux[mask]
@@ -281,7 +281,12 @@ def moving_average(x: ndarray, window_size: Union[int, float]) -> ndarray:
 
 
 #################################
-def load_aces_spectrum(params: Union[ndarray, List[float]], photons=True, air=False):
+def load_aces_spectrum(
+    params: Union[ndarray, List[float]],
+    photons: bool = True,
+    air: bool = False,
+    wl_range: List[float] = [3000, 54000],
+):
     """Load a Phoenix spectrum from the phoenix library using STARFISH.
 
     Parameters
@@ -290,31 +295,30 @@ def load_aces_spectrum(params: Union[ndarray, List[float]], photons=True, air=Fa
          [temp, logg, metallicity(, alpha)]
     photons: bool
         Necessary conversions into photons for precisions.
+    air: bool
+       Convert to air wavelengths (default = False).
+    wl_range: [float, float]
+        Min/Max wavelength range to load. Default = [3000, 54000] Angstrom.
 
     Returns
     -------
     wav_micron: ndarray
         Wavelength in microns
     flux_micron: ndarray
-        Photon counts or SED/micron
+        Photon counts per (cm**2 s) or SED/micron (within a multiplicative constant 1/(h*c)).
 
     Spectra available from http://phoenix.astro.physik.uni-goettingen.de
     """
     base = eniric.paths["phoenix_raw"] + os.sep
 
-    if params[3] == 0:  # Alpha value
-        params = params[:-1]
-        assert len(params) == 3
-        from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
+    if len(params) == 3:  # Only 3 parameters given
+        params = [params[0], params[1], params[2], 0]  # Set alpha=0
 
-        phoenix_grid = PHOENIXNoAlpha(base=base, air=air, norm=False)
-
-    elif len(params) == 4:
-        print("USING ALPHA in PHOENIX LOADING")
+    if len(params) == 4:
         from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
 
-        phoenix_grid = PHOENIX(base=base, air=air, norm=False)
-        # , param_names = ["temp", "logg", "Z", "alpha"])
+        phoenix_grid = PHOENIX(base=base, air=air, norm=False, wl_range=wl_range)
+
     else:
         raise ValueError("Number of parameters is incorrect")
 
@@ -337,15 +341,17 @@ def load_aces_spectrum(params: Union[ndarray, List[float]], photons=True, air=Fa
         # with
         #     Energy_photon = h*c/lambda
         # Flux_photon = Flux_energy * lambda / (h * c)
-        #
-        # Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/micron
-        # Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
 
         flux_micron = flux_micron * wav_micron
     return wav_micron, flux_micron
 
 
-def load_btsettl_spectrum(params: Union[ndarray, List[float]], photons=True, air=False):
+def load_btsettl_spectrum(
+    params: Union[ndarray, List[float]],
+    photons: bool = True,
+    air: bool = False,
+    wl_range: List[float] = [3000, 30000],
+):
     """Load a BT-Settl spectrum from the CIFIST2011 library using STARFISH.
 
     Parameters
@@ -354,16 +360,21 @@ def load_btsettl_spectrum(params: Union[ndarray, List[float]], photons=True, air
          [temp, logg]. Metallicity = 0, alpha = 0
     photons: bool
         Necessary conversions into photons for precisions.
+    air: bool
+       Convert to air wavelengths (default = False).
+    wl_range: [float, float]
+        Min/Max wavelength range to load. Default = [3000, 30000] Angstrom.
 
     Returns
     -------
     wav_micron: ndarray
         Wavelength in microns
     flux_micron: ndarray
-        Photon counts or SED/micron
+        Photon counts per (cm**2 s) or SED/micron. (within a multiplicative constant 1/(h*c))
 
-    Notes:
-    From BT-SETTL readme -
+    Notes
+    -----
+    From BT-SETTL readme:
         CIFIST2011_2015: published version of the BT-Settl grid (Baraffe et al. 2015,
         Allard et al. 2015. This grid will be the most complete
         of the CIFIST2011 grids above, but currently: Teff = 1200 - 7000K, logg = 2.5 - 5.5,
@@ -380,20 +391,22 @@ def load_btsettl_spectrum(params: Union[ndarray, List[float]], photons=True, air
 
     base = eniric.paths["btsettl_raw"] + os.sep
 
-    btsettl_grid = BTSETTL(base=base, air=air, norm=False, wl_range=[3000, 24000])
+    btsettl_grid = BTSETTL(base=base, air=air, norm=False, wl_range=wl_range)
 
     wav = btsettl_grid.wl
+    # Convert wavelength from Angstrom to micron
+    wav_micron = wav * 10 ** -4
+
+    # CIFIST flux is  W/m**2/um
     flux, hdr = btsettl_grid.load_flux(params)
 
-    # Convert wavelength Angstrom to micron
-    wav_micron = wav * 10 ** -4
-    # Convert SED from /cm  to /micron
-    # TODO check the conversion fraction.
-    flux_micron = flux * 10 ** -4
+    flux_micron = flux * 10 ** -7  # Convert W/m**2/um to ergs/s/m**2/um)
+    flux_micron *= 10 ** -4  # Convert 1/m**2 to 1/cm**2
 
     if photons:
-        # Convert to photon counts
-        # The energy units of CIFIST fits files is erg/s/cm**2/cm
+        # Convert to photon counts:
+        # The energy units of CIFIST fits files is W/m**2/um
+        # We have converted it to ergs/(s cm**2 um)
         # BT-Settl gives the Spectral Energy Density (SED)
         # We transform the SED into photons by
         # multiplying the flux by the wavelength (lambda)
@@ -402,10 +415,6 @@ def load_btsettl_spectrum(params: Union[ndarray, List[float]], photons=True, air
         # with
         #     Energy_photon = h*c/lambda
         # Flux_photon = Flux_energy * lambda / (h * c)
-        #
-        # Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/micron
-        # Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
-
         flux_micron = flux_micron * wav_micron
     return wav_micron, flux_micron
 

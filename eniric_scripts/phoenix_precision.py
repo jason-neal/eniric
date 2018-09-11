@@ -212,7 +212,9 @@ def do_analysis(
     wav_ref, sampled_ref = convolve_and_resample(
         wav, flux, vsini, R, ref_band, sampling, **conv_kwargs
     )
-    snr_normalize = snr_constant_band(wav_ref, sampled_ref, snr=snr, band=ref_band)
+    snr_normalize = snr_constant_band(
+        wav_ref, sampled_ref, snr=snr, band=ref_band, sampling=sampling
+    )
     sampled_flux = sampled_flux / snr_normalize
 
     if ref_band == band:
