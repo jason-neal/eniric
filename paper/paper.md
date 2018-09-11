@@ -13,7 +13,7 @@ authors:
    orcid: 0000-0003-0390-9896
    affiliation: "1, 2" # (Multiple affiliations must be quoted)
  - name: P. Figueira
-   orcid: 0000
+   orcid: 0000-0001-8504-283X
    affiliation: "3, 1"
 
 affiliations:
