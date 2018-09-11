@@ -1,9 +1,18 @@
+import codecs
+import os
+import sys
+
+if sys.version < "3.6":
+    sys.exit(
+        "Error: Python 3.6 or greater required for Eniric (using {})".format(
+            sys.version
+        )
+    )
+
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
-import codecs
-import os
 
 here = os.path.abspath(os.path.dirname(__file__))
 
