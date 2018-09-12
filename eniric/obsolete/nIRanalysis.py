@@ -102,7 +102,7 @@ def convolve_spectra(
     if output_name is None:
         name_model = name_assignment(spectrum)
 
-        filename = "{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k{5}.txt".format(
+        filename = "{0}Spectrum_{1}_{2}band_vsini{3:3.1f}_R{4:d}k{5}.dat".format(
             results_dir, name_model, band, vsini, R / 1000, norm_
         )
     else:
