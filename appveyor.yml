@@ -11,6 +11,9 @@ install:
   # We need wheel installed to build wheels
   - "%PYTHON%\\python.exe -m pip install wheel"
 
+  - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
+  - "%PYTHON%\\python.exe -m pip install -r requirements_dev.txt"
+
   # Installing Starfish
   # This is likely to fail
   - "%PYTHON%\\python.exe -m pip install https://github.com/iancze/Starfish/archive/master.zip#egg=Starfish"
@@ -23,9 +26,8 @@ install:
   #- "%PYTHON%\\python.exe setup.py develop"
 
   # Installing eniric now
-  - cmd: "cd c:\\projects\\eniric"
-  - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
-  - "%PYTHON%\\python.exe -m pip install -r requirements_dev.txt"
+ # - cmd: "cd c:\\projects\\eniric"
+
   - "%PYTHON%\\python.exe setup.py install"
 
   # Setup config and make data
