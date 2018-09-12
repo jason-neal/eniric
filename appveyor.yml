@@ -16,6 +16,7 @@ install:
 
   # Installing Starfish
   # This is likely to fail
+  - "%PYTHON%\\python.exe -m pip install numpy cython"
   - "%PYTHON%\\python.exe -m pip install https://github.com/iancze/Starfish/archive/master.zip#egg=Starfish"
 
   #- "cd c:\\projects"
