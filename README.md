@@ -58,7 +58,7 @@ The code works in two main stages, "spectral preparation" and "precision calcula
 
 `eniric/nIRanalysis.py`
 
-This stage takes in the raw PHOENIX-ACES spectral models and transforms them, saving the results of this computation as .txt files.
+This stage takes in the raw PHOENIX-ACES spectral models and transforms them, saving the results of this computation as .dat files.
 
 It includes:
 - Conversion from flux to photon counts.

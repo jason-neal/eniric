@@ -122,7 +122,7 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
     if save:
         output_filename = os.path.join(
             eniric.paths["precision"],
-            "precision_results_2017_ref_band-{0}_snr-{1}.txt".format(ref_band, snr),
+            "precision_results_2017_ref_band-{0}_snr-{1}.dat".format(ref_band, snr),
         )
         ids = []
         prec_1s = []
@@ -205,7 +205,7 @@ def calculate_prec(
         if use_unshifted:
             atmmodel = os.path.join(
                 eniric.paths["atmmodel"],
-                "{0}_{1}.txt".format(eniric.atmmodel["base"], band),
+                "{0}_{1}.dat".format(eniric.atmmodel["base"], band),
             )
             print("Reading atmospheric model...")
             atm = Atmosphere.from_file(atmmodel)
@@ -236,7 +236,7 @@ def calculate_prec(
         else:
             shifted_atmmodel = os.path.join(
                 eniric.paths["atmmodel"],
-                "{0}_{1}_bary.txt".format(eniric.atmmodel["base"], band),
+                "{0}_{1}_bary.dat".format(eniric.atmmodel["base"], band),
             )
             print("Reading pre-doppler-shifted atmospheric model...")
             atm = Atmosphere.from_file(shifted_atmmodel)
@@ -269,7 +269,7 @@ def calculate_prec(
         #             for smpl in sampling:
         for (star, vel, res, smpl) in iterations:
             file_to_read = (
-                "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}" "_res{4:2.01f}.txt"
+                "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}" "_res{4:2.01f}.dat"
             ).format(star, band, vel, res, float(smpl))
             # print("Working on "+file_to_read+".")
             try:
@@ -459,8 +459,8 @@ def compare_output():
     pre_wav = np.array(pre_wav, dtype=float) * 1.0e-4  # conversion to microns
     pre_flux = np.array(pre_flux, dtype=float) * pre_wav
 
-    convolved = "results_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k.txt"
-    sampled = "resampled_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.txt"
+    convolved = "results_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k.dat"
+    sampled = "resampled_new/Spectrum_M6-PHOENIX-ACES_Jband_vsini1.0_R100k_res3.dat"
 
     conv_wav, theory_flux, conv_flux = io.pdread_3col(convolved)
     sampled_wav, sampled_flux = io.pdread_2col(sampled)

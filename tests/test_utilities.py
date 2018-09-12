@@ -22,6 +22,7 @@ from eniric.utilities import (
 )
 
 c = const.c
+xfail = pytest.mark.xfail
 
 
 @given(
@@ -381,6 +382,7 @@ def doppler_shift_zero(wavelength):
     assert np.all(doppler_shift_wav(wavelength, vel=0.0) == wavelength)
 
 
+@xfail(raises=ModuleNotFoundError, reason="Starfish is not installled correctly.")
 @pytest.mark.parametrize("rv", [-100, 200])
 def test_if_doppler_shift_changes_quality(testing_spectrum, rv):
     wavelength, flux_ = testing_spectrum[0], testing_spectrum[1]
@@ -426,6 +428,7 @@ def test_doppler_limits_rv_0(wmin, wmax):
     assert new_max == wmax
 
 
+@xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
 @pytest.mark.parametrize("photons", [True, False])
 def test_load_btsettl_spectrum(photons):
     wav, flux = load_btsettl_spectrum(
@@ -434,14 +437,17 @@ def test_load_btsettl_spectrum(photons):
     assert len(wav) == len(flux)
 
 
+@xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
 @pytest.mark.parametrize("params", [[8000, 4.5, 0, 0], [3900, 0.5, 0, 0]])
 def test_invalid_load_btsettl_spectrum(params):
     # Invalid CIFIST parameters
     from Starfish.constants import GridError
+
     with pytest.raises(GridError):
         load_btsettl_spectrum(params, wl_range=[21000, 22000])
 
 
+@xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
 @pytest.mark.parametrize("params", [[3900, 4.5, 1, 0], [3900, 4.5, 0, 1]])
 def test_invalid_feh_alpha_load_btsettl_spectrum(params):
     # Invalid CIFIST parameters
@@ -449,6 +455,7 @@ def test_invalid_feh_alpha_load_btsettl_spectrum(params):
         load_btsettl_spectrum(params, wl_range=[21000, 22000])
 
 
+@xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
 @pytest.mark.parametrize("photons", [True, False])
 def test_load_aces_spectrum(photons):
     wav, flux = load_aces_spectrum(
@@ -457,6 +464,7 @@ def test_load_aces_spectrum(photons):
     assert len(wav) == len(flux)
 
 
+@xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
 @pytest.mark.parametrize(
     "params",
     [
@@ -470,5 +478,6 @@ def test_load_aces_spectrum(photons):
 def test_invalid_load_aces_spectrum(params):
     # Invalid CIFIST parameters
     from Starfish.constants import GridError
+
     with pytest.raises(GridError):
         load_aces_spectrum(params, wl_range=[21000, 22000])
