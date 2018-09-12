@@ -1,9 +1,18 @@
+import codecs
+import os
+import sys
+
+if sys.version < "3.6":
+    sys.exit(
+        "Error: Python 3.6 or greater required for Eniric (using {})".format(
+            sys.version
+        )
+    )
+
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
-import codecs
-import os
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -12,7 +21,8 @@ with codecs.open(os.path.join(here, "README.md")) as f:
     long_description = f.read()
 
 config = {
-    "description": "Extended NIR Information Content",
+    "name": "eniric",
+    "description": "Eniric: Extended NIR Information Content",
     "long_description": long_description,
     "long_description_content_type": "text/markdown",
     "author": "Jason Neal",
@@ -22,6 +32,7 @@ config = {
     "version": "1.0rc1",
     "license": "MIT",
     "setup_requires": ["pytest-runner"],
+    "tests_require": ["pytest", "hypothesis"],
     "install_requires": [
         "astropy",
         "joblib>0.12",
@@ -40,7 +51,6 @@ config = {
     "packages": ["eniric", "eniric_scripts", "eniric.obsolete"],
     "scripts": [
         "eniric_scripts/phoenix_precision.py",
-        "eniric_scripts/unzip_testdata.py",
         "eniric_scripts/split_atmmodel.py",
         "eniric_scripts/bary_shift_atmmodel.py",
         "eniric/obsolete/make_test_data.py",
@@ -48,7 +58,7 @@ config = {
         "eniric/obsolete/nIR_precision.py",
         "eniric/obsolete/prepare_data.py",
     ],
-    "name": "eniric",
+    "include_package_data": True,
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     "classifiers": [
         #   4 - Beta

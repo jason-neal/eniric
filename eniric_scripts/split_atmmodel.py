@@ -15,7 +15,7 @@ import eniric
 from eniric.atmosphere import Atmosphere
 from eniric.utilities import band_limits, doppler_shift_wav
 
-atmmodel = "{0}.txt".format(eniric.atmmodel["base"])
+atmmodel = "{0}.dat".format(eniric.atmmodel["base"])
 choices = ["ALL"]
 choices.extend(eniric.bands["all"])
 
@@ -142,9 +142,9 @@ def main(
 
     # If trying to obtain the provided model extract from and it doesn't yet exist
     # extract from tar.gz file. (Extracted it is 230 MB which is to large for Git)
-    if "Average_TAPAS_2014.txt" == atmmodel:
+    if "Average_TAPAS_2014.dat" == atmmodel:
         if not os.path.exists(model_name):
-            print("Unpacking Average_TAPAS_2014.txt.tar.gz...")
+            print("Unpacking Average_TAPAS_2014.dat.tar.gz...")
             import tarfile
 
             with tarfile.open(str(model_name) + ".tar.gz", "r") as tar:
@@ -158,7 +158,7 @@ def main(
 
     for i, band in enumerate(bands_):
         print("Starting {0}".format(band))
-        filename_band = "{0}_{1}.txt".format(new_name, band)
+        filename_band = "{0}_{1}.dat".format(new_name, band)
         band_min, band_max = band_limits(band)
 
         # * 1000 to convert into km/s
