@@ -36,18 +36,11 @@ def _parser():
         help="Wavelength bands to select. Default=None.",
         nargs="+",
     )
-    parser.add_argument(
-        "-p",
-        "--plot",
-        action="store_true",
-        default=False,
-        help="Plot the atmosphere model with masks.",
-    )
     _args = parser.parse_args()
     return _args
 
 
-def main(bands: Optional[List[str]] = None, plot: bool = False):
+def main(bands: Optional[List[str]] = None):
     """Preform the barycentric shifting of atmosphere masks and saves result.
 
     This saves time in the precision determination code.
@@ -56,8 +49,6 @@ def main(bands: Optional[List[str]] = None, plot: bool = False):
     ----------
     bands: list of str
         Wavelength bands to perform barycenter shifts on. Default is all bands.
-    plot: bool
-        Flag to plot test plots of masks.
     """
     if (bands is None) or ("ALL" in bands):
         bands_ = eniric.bands["all"]
