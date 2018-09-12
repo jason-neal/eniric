@@ -12,7 +12,7 @@ import eniric.utilities as utils
 def test_pdread_2col():
     """Test reading 2cols with pandas."""
     spectrum_1 = "data/test_data/obsolete/Sample_input_phoenix.dat"
-    spectrum_2 = "data/test_data/obsolete/Sample_resampled_spectrum_res3.txt"
+    spectrum_2 = "data/test_data/obsolete/Sample_resampled_spectrum_res3.dat"
 
     wav_1_pd, flux_1_pd = io.pdread_2col(spectrum_1)
     wav_1, flux_1 = eniric.obsolete.IOmodule.read_2col(spectrum_1)
@@ -30,7 +30,7 @@ def test_pdread_3col():
 
     Use small sample file to reduce time for test.
     """
-    filename = "data/test_data/obsolete/Sample_results_spectrum.txt"
+    filename = "data/test_data/obsolete/Sample_results_spectrum.dat"
 
     wav_1_pd, theoretical_1_pd, flux_1_pd = io.pdread_3col(filename, noheader=True)
     wav_1, theoretical_1, flux_1 = eniric.obsolete.IOmodule.read_3col(filename)
@@ -43,10 +43,10 @@ def test_pdwriter():
     """Check pd_writer same write_col with with exponential flag."""
     filedir = "data/test_data/obsolete/"
     data = np.random.randn(3, 100) * 1e7
-    pd2col_name = filedir + "pd2col_test.txt"
-    pd3col_name = filedir + "pd3col_test.txt"
-    twocol_name = filedir + "2col_test.txt"
-    threecol_name = filedir + "3col_test.txt"
+    pd2col_name = filedir + "pd2col_test.dat"
+    pd3col_name = filedir + "pd3col_test.dat"
+    twocol_name = filedir + "2col_test.dat"
+    threecol_name = filedir + "3col_test.dat"
 
     # write files
     io.pdwrite_2col(pd2col_name, data[0], data[1])
@@ -77,7 +77,7 @@ def test_pdwriter():
 def test_pdwrire_cols():
     """Test writer that can take variable column numbers."""
     filedir = "data/test_data"
-    pd_multicol_name = os.path.join(filedir, "pd_multicol_test.txt")
+    pd_multicol_name = os.path.join(filedir, "pd_multicol_test.dat")
 
     data1 = range(5)
     data2 = range(5, 10)
