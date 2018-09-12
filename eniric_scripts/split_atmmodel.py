@@ -62,7 +62,7 @@ def _parser():
         "--cutoff_depth",
         default=2,
         type=float,
-        help=r"Telluric line depth cutoff. Default = 2 precent.",
+        help=r"Telluric line depth cutoff. Default = 2 percent.",
     )
 
     return parser.parse_args()
