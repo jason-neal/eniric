@@ -14,7 +14,7 @@ from eniric import (
 from eniric.obsolete.nIR_run import main as nir_run
 from eniric.obsolete.utilities import barycenter_shift
 
-resampled_template = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}_res3.0.txt"
+resampled_template = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}_res3.0.dat"
 wave_photon_template = (
     "lte0{0}-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
 )
@@ -353,11 +353,13 @@ def test_barycenter_shift_verse_class(short_atmosphere, consec_test):
 def test_read_spectrum():
     """Test reading in a _wave_photon.dat is the same as a _wave.dat."""
     photon = os.path.join(
-        eniric.paths["test_data"], 'obsolete',
+        eniric.paths["test_data"],
+        "obsolete",
         "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat",
     )
     wave = os.path.join(
-        eniric.paths["test_data"], 'obsolete',
+        eniric.paths["test_data"],
+        "obsolete",
         "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat",
     )
     wave_wav, wave_flux = eniric.obsolete.utilities.read_spectrum(wave)
@@ -373,12 +375,12 @@ def test_read_spectrum():
         os.path.join(
             eniric.paths["test_data"],
             "results",
-            "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k.txt",
+            "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k.dat",
         ),
         os.path.join(
             eniric.paths["test_data"],
             "resampled",
-            "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k_res3.0.txt",
+            "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k_res3.0.dat",
         ),
     ],
 )
@@ -393,8 +395,7 @@ def test_band_snr_norm_test_data():
     # snr_constant_band
     star, band, vel, res = "M0", "J", 1.0, "100k"
     test_data = os.path.join(
-        eniric.paths["resampled"],
-        resampled_template.format(star, band, vel, res),
+        eniric.paths["resampled"], resampled_template.format(star, band, vel, res)
     )
     wav, flux = io.pdread_2col(test_data)
 

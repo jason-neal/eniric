@@ -241,7 +241,7 @@ def resample_allfiles(
     onlyfiles = [f for f in os.listdir(results_dir) if isfile(join(results_dir, f))]
 
     for spectrum_file in onlyfiles:
-        if spectrum_file.endswith(".txt"):
+        if spectrum_file.endswith(".dat"):
             resampler(
                 spectrum_file, results_dir=results_dir, resampled_dir=resampled_dir
             )
@@ -250,7 +250,7 @@ def resample_allfiles(
 
 
 def resampler(
-    spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.txt",
+    spectrum_name: str = "Spectrum_M0-PHOENIX-ACES_Yband_vsini1.0_R60k.dat",
     results_dir: str = results_dir,
     resampled_dir: str = resampled_dir,
     sampling: Union[int, float] = 3.0,
@@ -285,7 +285,7 @@ def resampler(
 
     output_path = [
         resampled_dir,
-        "{0}_res{1:3.01f}.txt".format(spectrum_name[:-4], float(sampling)),
+        "{0}_res{1:3.01f}.dat".format(spectrum_name[:-4], float(sampling)),
     ]
     filetowrite = os.path.join(*output_path)
     eniric.obsolete.IOmodule.write_e_2col(

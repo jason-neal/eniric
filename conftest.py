@@ -10,12 +10,12 @@ import eniric.io_module as io
 from eniric import utilities as utils
 from eniric.atmosphere import Atmosphere
 
-resampled_template = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}_res3.0.txt"
+resampled_template = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}_res3.0.dat"
 
 
 @pytest.fixture
 def published_data():
-    name = "data/precision/precision_figueira_2016.txt"
+    name = "data/precision/precision_figueira_2016.dat"
     df = pd.read_csv(name, sep="\t")
     return df
 
@@ -118,9 +118,9 @@ def grad_flag(request):
 
 @pytest.fixture(
     params=[
-        # "Average_TAPAS_2014_H.txt",
-        "Average_TAPAS_2014_K.txt",
-        "Average_TAPAS_2014_J.txt",
+        # "Average_TAPAS_2014_H.dat",
+        "Average_TAPAS_2014_K.dat",
+        "Average_TAPAS_2014_J.dat",
     ]
 )
 def atm_model(request):
