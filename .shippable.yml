@@ -15,15 +15,10 @@ build:
     - travis_retry pip install -r requirements_dev.txt
 
     # Install Starfish
-    - cd $HOME
-    - travis_retry git clone https://github.com/iancze/Starfish.git
-    - cd Starfish
-    - travis_retry pip install -r requirements.txt
-    - python setup.py build_ext --inplace
-    - python setup.py develop
+    - pip install https://github.com/iancze/Starfish/archive/master.zip#egg=Starfish
+
 
     # Now install eniric
-    - cd $SHIPPABLE_BUILD_DIR
     - python setup.py install
 
     # Setup config and make test data
