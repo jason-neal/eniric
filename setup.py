@@ -21,7 +21,8 @@ with codecs.open(os.path.join(here, "README.md")) as f:
     long_description = f.read()
 
 config = {
-    "description": "Extended NIR Information Content",
+    "name": "eniric",
+    "description": "Eniric: Extended NIR Information Content",
     "long_description": long_description,
     "long_description_content_type": "text/markdown",
     "author": "Jason Neal",
@@ -57,7 +58,7 @@ config = {
         "eniric/obsolete/nIR_precision.py",
         "eniric/obsolete/prepare_data.py",
     ],
-    "name": "eniric",
+    "include_package_data": True,
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     "classifiers": [
         #   4 - Beta
