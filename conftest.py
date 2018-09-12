@@ -7,8 +7,8 @@ import pytest
 
 import eniric
 import eniric.io_module as io
-from eniric import utilities as utils
 from eniric.atmosphere import Atmosphere
+from eniric.utilities import load_aces_spectrum
 
 resampled_template = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}_res3.0.dat"
 
@@ -152,5 +152,5 @@ def sliced_atmmodel_default_mask(request, atm_model):
 
 @pytest.fixture(params=[[3900, 4.5, 0, 0], [2600, 4.5, 0, 0]])
 def testing_spectrum(request):
-    wav, flux = utils.load_aces_spectrum(request.param)
+    wav, flux = load_aces_spectrum(request.param)
     return wav, flux
