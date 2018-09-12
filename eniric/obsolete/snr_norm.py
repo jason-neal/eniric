@@ -133,7 +133,7 @@ def get_reference_spectrum(
         ref_band = band
 
     file_to_read = (
-        "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}" "_res{4:3.01f}.txt"
+        "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}" "_res{4:3.01f}.dat"
     ).format(star, ref_band, vel, res, float(smpl))
 
     try:

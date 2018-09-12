@@ -8,10 +8,18 @@ environment:
     - PYTHON: "C:\\Python37-x64"
 
 install:
+  - "%PYTHON%\\python.exe -m pip install --upgrade pip"
   # We need wheel installed to build wheels
   - "%PYTHON%\\python.exe -m pip install wheel"
 
+  - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
+  - "%PYTHON%\\python.exe -m pip install -r requirements_dev.txt"
+
   # Installing Starfish
+  # This does not work due to Starfish compilation on Windows.
+  # - "%PYTHON%\\python.exe -m pip install numpy cython"
+  # - "%PYTHON%\\python.exe -m pip install https://github.com/iancze/Starfish/archive/master.zip#egg=Starfish"
+
   - "cd c:\\projects"
   - "git clone https://github.com/jason-neal/Starfish.git"
   - "cd c:\\projects\\Starfish"
@@ -21,8 +29,6 @@ install:
 
   # Installing eniric now
   - cmd: "cd c:\\projects\\eniric"
-  - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
-  - "%PYTHON%\\python.exe -m pip install -r requirements_dev.txt"
   - "%PYTHON%\\python.exe setup.py install"
 
   # Setup config and make data
@@ -30,7 +36,6 @@ install:
   - cmd: "move tests\\config.yaml config.yaml"
 
   # Generate data
-  - cmd: "%PYTHON%\\python.exe eniric_scripts\\unzip_testdata.py"
   - cmd: "%PYTHON%\\python.exe eniric\\obsolete\\make_test_data.py"
 
   # Prepare atmosphere models

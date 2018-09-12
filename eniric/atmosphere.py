@@ -64,7 +64,7 @@ class Atmosphere(object):
     e.g.
         paths:
             atmmodel: "path/to/atmmodel/directory"
-    The name for the atmosphere model .txt file
+    The name for the atmosphere model .dat file
         atmmodel:
             base: "Average_TAPAS_2014"
     """
@@ -123,7 +123,7 @@ class Atmosphere(object):
             Barycentric shifted mask.
         """
 
-        extension = "_bary.txt" if bary else ".txt"
+        extension = "_bary.dat" if bary else ".dat"
         atmmodel = join(
             eniric.paths["atmmodel"],
             "{0}_{1}{2}".format(eniric.atmmodel["base"], band, extension),
@@ -143,7 +143,7 @@ class Atmosphere(object):
                 )
             )
             full_model = join(
-                eniric.paths["atmmodel"], "{0}.txt".format(eniric.atmmodel["base"])
+                eniric.paths["atmmodel"], "{0}.dat".format(eniric.atmmodel["base"])
             )
             atm = cls.from_file(full_model)
 

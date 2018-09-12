@@ -58,7 +58,7 @@ def main(bands: Optional[List[str]] = None):
     for band in bands_:
         unshifted_atmmodel = join(
             eniric.paths["atmmodel"],
-            "{0}_{1}.txt".format(eniric.atmmodel["base"], band),
+            "{0}_{1}.dat".format(eniric.atmmodel["base"], band),
         )
 
         print("Reading atmospheric model...", unshifted_atmmodel)
@@ -82,7 +82,7 @@ def main(bands: Optional[List[str]] = None):
             )
         )
 
-        shifted_atmmodel = unshifted_atmmodel.replace(".txt", "_bary.txt")
+        shifted_atmmodel = unshifted_atmmodel.replace(".dat", "_bary.dat")
         print("Saving doppler-shifted atmosphere model to {}".format(shifted_atmmodel))
 
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]

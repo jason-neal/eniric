@@ -11,7 +11,7 @@ def test_write_read_2col(tmpdir):
     """Check pd_writer same write_col with with exponential flag."""
     data = np.random.randn(2, 100) * 1e7
 
-    tmp_file = tmpdir.join("file_col2.txt")
+    tmp_file = tmpdir.join("file_col2.dat")
     tmp_file_name = str(tmp_file)
     # write files
     io.pdwrite_2col(tmp_file_name, data[0], data[1])
@@ -31,7 +31,7 @@ def test_write_read_3col(tmpdir):
     """Check pd_writer same write_col with with exponential flag."""
     data = np.random.randn(3, 100) * 1e7
 
-    tmp_file = tmpdir.join("file_col3.txt")
+    tmp_file = tmpdir.join("file_col3.dat")
     tmp_file_name = str(tmp_file)
 
     # write files
@@ -51,7 +51,7 @@ def test_write_read_3col(tmpdir):
 
 def test_pdwrire_cols(tmpdir):
     """Test writer that can take variable column numbers."""
-    tmpfile = tmpdir.join("pd_multicol_test.txt")
+    tmpfile = tmpdir.join("pd_multicol_test.dat")
     pd_multicol_name = str(tmpfile)
 
     data1 = range(5)
@@ -74,7 +74,7 @@ def test_pdwrire_cols(tmpdir):
 
 
 def test_write_col_errors_different_length(tmpdir):
-    tmpfile = tmpdir.join("pd_multicol_test.txt")
+    tmpfile = tmpdir.join("pd_multicol_test.dat")
     pd_multicol_name = str(tmpfile)
 
     data1 = range(5)
@@ -87,7 +87,7 @@ def test_write_col_errors_different_length(tmpdir):
 
 
 def test_write_col_errors(tmpdir):
-    tmpfile = tmpdir.join("pd_multicol_test.txt")
+    tmpfile = tmpdir.join("pd_multicol_test.dat")
     pd_multicol_name = str(tmpfile)
 
     data1 = range(5)
@@ -102,7 +102,7 @@ def test_write_col_errors(tmpdir):
 
 
 def test_write_col_errors_bad_keyword(tmpdir):
-    tmpfile = tmpdir.join("pd_multicol_test.txt")
+    tmpfile = tmpdir.join("pd_multicol_test.dat")
     pd_multicol_name = str(tmpfile)
 
     data1 = range(5)
