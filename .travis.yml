@@ -10,6 +10,7 @@ cache:
     - $HOME/.cache/pip
 
 install:
+  - pip install --upgrade pip
   # Install eniric requirements
   - travis_retry pip install -r requirements.txt
   - travis_retry pip install -r requirements_dev.txt
