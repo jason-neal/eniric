@@ -144,7 +144,7 @@ def main(
                 for R in res:
                     for sample in sample_rate:
                         r = int(float(R) / 1000)
-                        result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2:.01f}_R{3}k{4}.txt".format(
+                        result_name = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2:.01f}_R{3}k{4}.dat".format(
                             star, b, vel, r, norm_
                         )
 
