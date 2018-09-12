@@ -15,7 +15,8 @@ build:
     - travis_retry pip install -r requirements_dev.txt
 
     # Install Starfish
-    - pip install numpy cython
+    - wget -O starfishrequirements.txt https://raw.githubusercontent.com/iancze/Starfish/master/requirements.txt
+    - pip install -r starfishrequirements.txt
     - pip install https://github.com/iancze/Starfish/archive/master.zip#egg=Starfish
 
     # Now install eniric
