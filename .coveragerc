@@ -3,4 +3,8 @@ source=pystart
 branch=True
 omit =
      # Omit large plotting function.
-     eniric/plotting_functions.py
+     eniric/obsolete/plotting_functions.py
+     eniric/obsolete/*
+     data/*
+     plots/*
+     precision/*
