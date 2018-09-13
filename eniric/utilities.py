@@ -1,124 +1,32 @@
 """
-Auxiliary functions for nIRanalysis
-
+Auxiliary functions for eniric
 """
 import collections
 import errno
 import os
-import re
-from typing import Any, List, Optional, Tuple, Union, Sequence
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
+import astropy.constants as const
 import numpy as np
-from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
-from Starfish.grid_tools import PHOENIXGridInterfaceNoAlpha as PHOENIXNoAlpha
 from numpy import ndarray
 
 import eniric
-import eniric.IOmodule as io
 
+c = const.c
+# Band limits.
+bands_ = {
+    "VIS": (0.38, 0.78),
+    "GAP": (0.78, 0.83),
+    "Z": (0.83, 0.93),
+    "Y": (1.0, 1.1),
+    "J": (1.17, 1.33),
+    "H": (1.5, 1.75),
+    "K": (2.07, 2.35),
+    "CONT": (0.45, 1.05),
+    "NIR": (0.83, 2.35),
+}
 
-def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
-    """Function that reads a flux spectra from the database!.
-
-    If a energy flux spectra is read then it converts it to photons.
-
-    Parameters
-    ----------
-    spec_name: str
-        Location and name of model spectrum file.
-
-    Returns
-    -------
-    wav: array-like, float64
-        Wavelength in microns.
-    flux_photons: array-like, float64
-        Photon flux.
-
-    """
-    if "_res" in spec_name or "_vsini" in spec_name:
-        raise ValueError("Using wrong function to load resampled spectrum.")
-
-    if "photon" in spec_name:
-        wav_micron, flux_photons = io.pdread_2col(spec_name)
-    else:
-        wav, flux = io.pdread_2col(spec_name)
-
-        wav_micron = wav * 1.0e-4  # Conversion to microns
-        flux_photons = flux * wav_micron  # Convert to photons
-
-    return wav_micron, flux_photons
-
-
-def get_spectrum_name(
-        startype: str,
-        logg: Union[float, int] = 4.50,
-        feh: Union[float, int] = 0.0,
-        alpha: Optional[Union[int, float]] = None,
-        org: bool = False,
-        flux_type: str = "photon",
-) -> str:
-    """Return correct phoenix spectrum filename for a given spectral type.
-
-    Based off phoenix_utils module.
-
-    Parameters
-    ----------
-    flux_type: str
-        Indicate which file type to try find. e.g. "photon", "wave", ("fits" Not Implemented yet)
-
-    Returns
-    -------
-    spectrum_name: str
-        The name of spectrum with chosen Parameters
-
-
-    Ability to select logg and metallicity (feh) later on.
-    org = original locations (without Z folder option)
-    """
-    if feh == 0:
-        feh = -0.0  # make zero negative to signed integer.
-
-    temps = {"M0": 3900, "M3": 3500, "M6": 2800, "M9": 2600}
-    if (flux_type == "photon") and (not org):
-        base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
-    else:
-        base = "PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-
-    # noinspection SpellCheckingInspection
-    if startype in temps.keys():
-        if org:
-            phoenix_name = "lte{0:05d}-{1}-{2}.{3}".format(
-                temps[startype], "4.50", "0.0", base
-            )
-        elif (alpha is not None) and (alpha != 0.0):
-            if abs(alpha) > 0.2:
-                raise ValueError(
-                    "Warning! Alpha is outside acceptable range -0.2->0.2. (for current science case)"
-                )
-
-            phoenix_name = os.path.join(
-                "Z{0:+4.1f}.Alpha={1:+5.2f}".format(feh, alpha),
-                "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}.{4:s}".format(
-                    temps[startype], logg, feh, alpha, base
-                ),
-            )
-        else:
-            phoenix_name = os.path.join(
-                "Z{0:+4.1f}".format(feh),
-                "lte{0:05d}-{1:4.2f}{2:+4.1f}.{3:s}".format(
-                    temps[startype], logg, feh, base
-                ),
-            )
-
-        spectrum_name = phoenix_name
-    elif re.match(r"^[OBAFGKML][0-9]$", startype):  # Valid spectral types
-        raise NotImplementedError(
-            "The spectral type '{0:s}' is not implemented yet.".format(startype)
-        )
-    else:
-        raise ValueError("'{0:s}' is not a valid spectral type.".format(startype))
-
-    return spectrum_name
+bands_.update(eniric.custom_bands)
 
 
 def band_selector(wav: ndarray, flux: ndarray, band: str) -> Tuple[ndarray, ndarray]:
@@ -136,9 +44,6 @@ def band_selector(wav: ndarray, flux: ndarray, band: str) -> Tuple[ndarray, ndar
     """
     band = band.upper()
 
-    # bands = {"VIS": (0.38, 0.78), "GAP": (0.78, 0.83), "Z": (0.83, 0.93),
-    #         "Y": (1.0, 1.1), "J": (1.17, 1.33), "H": (1.5, 1.75),
-    #         "K": (2.07, 2.35), "CONT": (0.45, 1.05), "NIR": (0.83, 2.35)}
     if band in ["ALL", ""]:
         return wav, flux
     else:
@@ -166,27 +71,13 @@ def band_limits(band: str) -> Tuple[float, float]:
     else:
         band = band.upper()
 
-    bands = {
-        "VIS": (0.38, 0.78),
-        "GAP": (0.78, 0.83),
-        "Z": (0.83, 0.93),
-        "Y": (1.0, 1.1),
-        "J": (1.17, 1.33),
-        "H": (1.5, 1.75),
-        "K": (2.07, 2.35),
-        "CONT": (0.45, 1.05),
-        "NIR": (0.83, 2.35),
-        "CARMENES_NIR": (0.96, 1.71),
-        "CARMENES_VIS": (0.52, 0.96),
-    }
-
-    if band in bands:
-        return bands[band]
+    if band in bands_:
+        return bands_[band]
     else:
         raise ValueError("The band {0} requested is not a valid option".format(band))
 
 
-def band_middle(band):
+def band_middle(band: str) -> float:
     """Calculate band mid-point.
 
     Input
@@ -205,10 +96,10 @@ def band_middle(band):
 
 
 def wav_selector(
-        wav: Union[ndarray, List[float]],
-        flux: Union[ndarray, List[float]],
-        wav_min: float,
-        wav_max: float,
+    wav: Union[ndarray, List[float]],
+    flux: Union[ndarray, List[float]],
+    wav_min: float,
+    wav_max: float,
 ) -> Tuple[ndarray, ndarray]:
     """
     function that returns wavelength and flux within a giving range
@@ -231,8 +122,8 @@ def wav_selector(
     flux_sel: array
         New wavelength array within bounds wav_min, wav_max
         """
-    wav = np.asarray(wav, dtype="float64")
-    flux = np.asarray(flux, dtype="float64")
+    wav = np.asarray(wav, dtype=float)
+    flux = np.asarray(flux, dtype=float)
 
     mask = mask_between(wav, wav_min, wav_max)
     flux_sel = flux[mask]
@@ -241,115 +132,9 @@ def wav_selector(
     return wav_sel, flux_sel
 
 
-def mask_between(x, xmin, xmax):
+def mask_between(x: ndarray, xmin: float, xmax: float) -> ndarray:
     """Create boolean mask of x between xmin and xmax."""
     return (x >= xmin) & (x < xmax)
-
-
-def unitary_gaussian(
-        x: Union[range, int, ndarray],
-        center: Union[float, int, str],
-        fwhm: Union[float, int, str],
-) -> ndarray:
-    """Gaussian function of area = 1.
-
-    Parameters
-    ----------
-    x: array-like
-        Position array
-    center: float
-        Central position of Gaussian
-    fwhm: float
-        Full Width at Half Maximum
-
-    Returns
-    -------
-    result: array-like
-        Result of gaussian function sampled at x values.
-    """
-    if not isinstance(fwhm, (np.float, np.int)):
-        raise TypeError("The fwhm value is not a number, {0}".format(type(fwhm)))
-    if not isinstance(center, (np.float, np.int)):
-        raise TypeError("The center value is not a number, {0}".format(type(center)))
-    if not isinstance(x, np.ndarray):
-        raise TypeError
-
-    sigma = np.abs(fwhm) / (2 * np.sqrt(2 * np.log(2)))
-    amp = 1.0 / (sigma * np.sqrt(2 * np.pi))
-    tau = -((x - center) ** 2) / (2 * (sigma ** 2))
-    result = amp * np.exp(tau)
-
-    return result
-
-
-def rotation_kernel(
-        delta_lambdas: ndarray, delta_lambda_l: float, vsini: float, epsilon: float
-) -> ndarray:
-    """Calculate the rotation kernel for a given wavelength
-
-    Parameters
-    ----------
-    delta_lambdas: array
-        Wavelength values selected within delta_lambda_l around central value. (check)
-    delta_lambda_l: float
-        FWHM of rotational broadening. (check)
-    vsini: float
-        Projected rotational velocity [km/s]
-    epsilon: float
-        Linear limb-darkening coefficient (0-1).
-
-    Returns
-    -------
-        Rotational kernel
-
-    Notes:
-    Equations * from .... book.
-
-    """
-    denominator = np.pi * vsini * (1.0 - epsilon / 3.0)
-    lambda_ratio_sqr = (delta_lambdas / delta_lambda_l) ** 2.0
-
-    c1 = 2.0 * (1.0 - epsilon) / denominator
-    c2 = 0.5 * np.pi * epsilon / denominator
-
-    return c1 * np.sqrt(1.0 - lambda_ratio_sqr) + c2 * (1.0 - lambda_ratio_sqr)
-
-
-def oned_circle_kernel(x, center, fwhm):
-    """Calculate the convolution kernel for a circular fiber.
-
-    Parameters
-    ----------
-    x: array
-        Value to evaluate kernel at.
-    center: float
-        Center of kernel.
-    fwhm: float
-        FWHM of desired kernel.
-
-    Returns
-    -------
-        Collapsed circle kernel
-
-    Notes:
-    Tries to represent the broadening by the fiber of a fiber feed spectrograph.
-
-    Artigau 2018 - stated mathematically equivalent to a cosine between -pi/2 and pi/2. This is what has tried to be created.
-    """
-    fwhm_scale = 2.0943951  # Numerically derived
-
-    A = 1  # Amplitude
-    B = fwhm_scale / fwhm  # Scale to give specific fwhm
-
-    result = A * np.cos(B * (x - center))
-
-    # Limit to main cos lobe only
-    upper_xi = center + np.pi / 2 / B
-    lower_xi = center - np.pi / 2 / B
-    mask = mask_between(x, lower_xi, upper_xi)
-    result[~mask] = 0
-
-    return result
 
 
 def silent_remove(filename: str) -> None:
@@ -374,7 +159,9 @@ def resolutions2ints(resolution: Sequence[Any]) -> List[int]:
     Convert from ["100k", "30000"] to [100000, 30000].
     """
     if not issequenceforme(resolution):
-        raise TypeError("resolution was a {} but needs to be a Sequence".format(type(resolution)))
+        raise TypeError(
+            "resolution was a {} but needs to be a Sequence".format(type(resolution))
+        )
 
     res_list = []
     for res in resolution:
@@ -406,7 +193,9 @@ def resolutions2strs(resolution: Sequence[Any]) -> List[str]:
     Convert from ["100000", 10000] to ["100k", "10k"].
     """
     if not issequenceforme(resolution):
-        raise TypeError("resolution was a {} but needs to be a Sequence".format(type(resolution)))
+        raise TypeError(
+            "resolution was a {} but needs to be a Sequence".format(type(resolution))
+        )
 
     res_list = []
     for res in resolution:
@@ -417,7 +206,9 @@ def resolutions2strs(resolution: Sequence[Any]) -> List[str]:
 def res2str(res: Any) -> str:
     """Convert from "100000" or 100000 to "100k"."""
     if issequenceforme(res):
-        raise TypeError("resolution was a {} but needs to be a non-Sequence".format(type(res)))
+        raise TypeError(
+            "resolution was a {} but needs to be a non-Sequence".format(type(res))
+        )
 
     if isinstance(res, (np.int, np.float)):
         value = res / 1000
@@ -433,8 +224,69 @@ def res2str(res: Any) -> str:
 
 
 #################################
+def rv_cumulative(rv_vector: Union[List, ndarray], single: bool = False) -> List[float]:
+    """Function that calculates the cumulative RV vector weighted_error."""
+    if single:
+        # Include 1st value for reference
+        return [
+            weighted_error(rv_vector[0]),
+            weighted_error(rv_vector[:2]),
+            weighted_error(rv_vector[:3]),
+            weighted_error(rv_vector[:4]),
+            weighted_error(rv_vector),
+        ]
 
-def load_aces_spectrum(params, photons=True):
+    else:
+        return [
+            weighted_error(rv_vector[:2]),
+            weighted_error(rv_vector[:3]),
+            weighted_error(rv_vector[:4]),
+            weighted_error(rv_vector),
+        ]
+
+
+def rv_cumulative_full(rv_vector: Union[List, ndarray]) -> ndarray:
+    """Function that calculates the cumulative RV vector weighted_error. In both directions."""
+    assert len(rv_vector) == 5, "This hardcoded solution only meant for 5 bands."
+
+    cumulation = np.asarray(
+        [
+            weighted_error(rv_vector[0]),  # First
+            weighted_error(rv_vector[:2]),
+            weighted_error(rv_vector[:3]),
+            weighted_error(rv_vector[:4]),
+            weighted_error(rv_vector[:]),  # All
+            weighted_error(rv_vector[1:]),
+            weighted_error(rv_vector[2:]),
+            weighted_error(rv_vector[3:]),
+            weighted_error(rv_vector[4]),  # Last
+        ],
+        dtype=float,
+    )
+    return cumulation
+
+
+def weighted_error(rv_vector: Union[List[float], ndarray]) -> float:
+    """Function that calculates the average weighted error from a vector of errors."""
+    rv_vector = np.asarray(rv_vector)
+    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / rv_vector) ** 2.0)))
+
+    return rv_value
+
+
+def moving_average(x: ndarray, window_size: Union[int, float]) -> ndarray:
+    """Moving average."""
+    window = np.ones(int(window_size)) / float(window_size)
+    return np.convolve(x, window, "same")
+
+
+#################################
+def load_aces_spectrum(
+    params: Union[ndarray, List[float]],
+    photons: bool = True,
+    air: bool = False,
+    wl_range: Union[List[float], Tuple[float,float]]  = (3000, 54000),
+):
     """Load a Phoenix spectrum from the phoenix library using STARFISH.
 
     Parameters
@@ -443,25 +295,30 @@ def load_aces_spectrum(params, photons=True):
          [temp, logg, metallicity(, alpha)]
     photons: bool
         Necessary conversions into photons for precisions.
+    air: bool
+       Convert to air wavelengths (default = False).
+    wl_range: (float, float)
+        Min/Max wavelength range to load. Default = (3000, 54000) Angstrom.
 
     Returns
     -------
     wav_micron: ndarray
         Wavelength in microns
     flux_micron: ndarray
-        Photon counts or SED/micron
+        Photon counts per (cm**2 s) or SED/micron (within a multiplicative constant 1/(h*c)).
+
+    Spectra available from http://phoenix.astro.physik.uni-goettingen.de
     """
     base = eniric.paths["phoenix_raw"] + os.sep
 
-    if params[3] == 0:  # Alpha value
-        params = params[:-1]
-        assert len(params) == 3
-        phoenix_grid = PHOENIXNoAlpha(base=base)
-    elif len(params) == 4:
-        print("USING ALPHA in PHOENIX LOADING")
-        phoenix_grid = PHOENIX(
-            base=base
-        )  # , param_names = ["temp", "logg", "Z", "alpha"])
+    if len(params) == 3:  # Only 3 parameters given
+        params = [params[0], params[1], params[2], 0]  # Set alpha=0
+
+    if len(params) == 4:
+        from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
+
+        phoenix_grid = PHOENIX(base=base, air=air, norm=False, wl_range=wl_range)
+
     else:
         raise ValueError("Number of parameters is incorrect")
 
@@ -475,24 +332,180 @@ def load_aces_spectrum(params, photons=True):
 
     if photons:
         # Convert to photons
-        """The energy units of Phoenix fits files is erg/s/cm**2/cm
-        PHOENIX ACES gives the Spectral Energy Density (SED)
-        We transform the SED into photons by
-        multiplying the flux by the wavelength (lambda)
+        # The energy units of Phoenix fits files is erg/s/cm**2/cm
+        # PHOENIX ACES gives the Spectral Energy Density (SED)
+        # We transform the SED into photons by
+        # multiplying the flux by the wavelength (lambda)
+        #
+        #     Flux_photon = Flux_energy/Energy_photon
+        # with
+        #     Energy_photon = h*c/lambda
+        # Flux_photon = Flux_energy * lambda / (h * c)
 
-            Flux_photon = Flux_energy/Energy_photon
-        with
-            Energy_photon = h*c/lambda
-        Flux_photon = Flux_energy * lambda / (h * c)
-
-        Here we convert the flux into erg/s/cm**2/\mum by multiplying by 10**-4 cm/micron
-        Flux_e(erg/s/cm**2/\mum)  = Flux_e(erg/s/cm**2/cm) * (1 cm) / (10000 \mum)
-        """
-        # Turn into photon counts
         flux_micron = flux_micron * wav_micron
     return wav_micron, flux_micron
 
 
-# TODO: Use BT-Settl also
-def load_btsettl_spectrum(params, photons=True):
-    raise NotImplementedError("Need to include BT-SETTL")
+def load_btsettl_spectrum(
+    params: Union[ndarray, List[float]],
+    photons: bool = True,
+    air: bool = False,
+    wl_range: Union[List[int], Tuple[int,int]] = (3000, 30000),
+):
+    """Load a BT-Settl spectrum from the CIFIST2011 library using STARFISH.
+
+    Parameters
+    ----------
+    params: ndarray
+         [temp, logg]. Metallicity = 0, alpha = 0
+    photons: bool
+        Necessary conversions into photons for precisions.
+    air: bool
+       Convert to air wavelengths (default = False).
+    wl_range: (float, float)
+        Min/Max wavelength range to load. Default = (3000, 30000) Angstrom.
+
+    Returns
+    -------
+    wav_micron: ndarray
+        Wavelength in microns
+    flux_micron: ndarray
+        Photon counts per (cm**2 s) or SED/micron. (within a multiplicative constant 1/(h*c))
+
+    Notes
+    -----
+    From BT-SETTL readme:
+        CIFIST2011_2015: published version of the BT-Settl grid (Baraffe et al. 2015,
+        Allard et al. 2015. This grid will be the most complete
+        of the CIFIST2011 grids above, but currently: Teff = 1200 - 7000K, logg = 2.5 - 5.5,
+        [M/H] = 0.0.
+
+        Available from https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/
+    """
+    from Starfish.grid_tools import CIFISTGridInterface as BTSETTL
+
+    if (2 < len(params)) and (len(params) <= 4):
+        assert params[2] == 0
+        assert params[-1] == 0  # Checks index 3 when present.
+        params = params[0:2]  # Only allow 2 params
+
+    base = eniric.paths["btsettl_raw"] + os.sep
+
+    btsettl_grid = BTSETTL(base=base, air=air, norm=False, wl_range=wl_range)
+
+    wav = btsettl_grid.wl
+    # Convert wavelength from Angstrom to micron
+    wav_micron = wav * 10 ** -4
+
+    # CIFIST flux is  W/m**2/um
+    flux, hdr = btsettl_grid.load_flux(params)
+
+    flux_micron = flux * 10 ** -7  # Convert W/m**2/um to ergs/s/m**2/um)
+    flux_micron *= 10 ** -4  # Convert 1/m**2 to 1/cm**2
+
+    if photons:
+        # Convert to photon counts:
+        # The energy units of CIFIST fits files is W/m**2/um
+        # We have converted it to ergs/(s cm**2 um)
+        # BT-Settl gives the Spectral Energy Density (SED)
+        # We transform the SED into photons by
+        # multiplying the flux by the wavelength (lambda)
+        #
+        #     Flux_photon = Flux_energy/Energy_photon
+        # with
+        #     Energy_photon = h*c/lambda
+        # Flux_photon = Flux_energy * lambda / (h * c)
+        flux_micron = flux_micron * wav_micron
+    return wav_micron, flux_micron
+
+
+#####################################################
+def doppler_shift_wav(wavelength: ndarray, vel: float):
+    r"""Doppler shift wavelength by a given velocity (non-relativistic).
+
+    Apply Doppler shift to the wavelength values of the spectrum
+    using the velocity value provided and the relation
+    \(\Delta\lambda / \lambda = v / c\)
+
+    Parameters
+    ----------
+    wavelength: ndarray
+        Wavelength vector
+    vel : float
+        Velocity to Doppler shift by in km/s.
+
+    Notes
+    -----
+    The Doppler shift is calculated using the relation
+       \Delta\lambda / \lambda\] = \[v / c
+    Where RV is the radial velocity (in km/s), \(\lambda_0\)`
+    is the rest wavelength and \(\Delta\lambda\) is the wavelength
+    shift, \(\lambda_{shift} - \lambda_0\)
+    """
+
+    if not np.isfinite(vel):
+        ValueError("The velocity is not finite.")
+
+    shifted_wavelength = wavelength * (1 + (vel * 1000 / c.value))
+    return shifted_wavelength
+
+
+def doppler_shift_flux(
+    wavelength: ndarray, flux: ndarray, vel: float, new_wav: Optional[ndarray] = None
+):
+    r"""Doppler shift flux by a given velocity, return it at the original wavelengths (non-relativistic).
+
+    Apply Doppler shift to the wavelength values of the spectrum
+    using the velocity value provided and the relation
+    \(\Delta\lambda / \lambda = v / c\)
+
+    Then linearly interpolate the flux with the new wavelength to the old wavelengths.
+
+    Parameters
+    ----------
+    wavelength: ndarray
+        Wavelength vector
+    flux: ndarray
+        Flux vector
+    vel : float
+        Velocity to Doppler shift by in km/s.
+    new_wav: Optional[ndarray]
+        New wavelength array to evaluate the doppler shifted flux at.
+        If None then defaults to new_wav=wavelength.
+    Returns
+    -------
+    new_flux: ndarray
+        Doppler-shifted flux evaluated at new_wav.
+    """
+    shifted_wavelength = doppler_shift_wav(wavelength, vel)
+
+    if new_wav is None:
+        new_wav = wavelength
+    new_flux = np.interp(new_wav, shifted_wavelength, flux)
+    return new_flux
+
+
+def doppler_limits(rvmax, wmin, wmax):
+    """Calculate wavelength limits to apply if preforming doppler shift.
+
+    To avoid any edge effects within wmin and wmax after doppler shift.
+
+    Parameters
+    ----------
+    rvmax: float
+        Maximium absolute RV offset in km/s. Uses np.abs() to constrain as absolute.
+    wmin: float
+        Lower wavelength limit.
+    wmax: float
+        Upper wavelength limit.
+    Returns
+    -------
+    new_wmin: float
+      Lower wavelength bound shifted by -rvmax
+    new_wmax: float
+       Lower wavelength bound shifted by +rvmax
+    """
+    c_km = const.c.value / 1000  # c in km/s
+    doppler_minus, doppler_plus = (1 - np.abs(rvmax) / c_km), (1 + np.abs(rvmax) / c_km)
+
+    return wmin * doppler_minus, wmax * doppler_plus

@@ -1,47 +1,66 @@
 """To test if the new code produces the same precision values on the published results."""
 
 import numpy as np
-import pandas as pd
 import pytest
 
-from eniric_scripts.nIR_precision import calculate_prec
+from eniric.obsolete.nIR_precision import calculate_prec
 
 
-@pytest.fixture
-def published_data():
-    name = "data/precision/precision_data_paper2015.txt"
-    df = pd.read_csv(name, sep="\t")
-    return df
-
-
-@pytest.mark.parametrize("SpType,band,vsini,R,expected", [
-    ("M3", "K", 10.0, "100k", [26.1, 29.6, 27.9]),
-    ("M6", "H", 1.0, "80k", [4.1, 4.4, 4.2]),
-    ("M0", "K", 5.0, "60k", [20.7, 23.9, 22.1]),
-])
+@pytest.mark.parametrize(
+    "SpType,band,vsini,R,expected",
+    [
+        ("M3", "K", 10.0, "100k", [26.1, 29.6, 27.9]),
+        ("M6", "H", 1.0, "80k", [4.1, 4.4, 4.2]),
+        ("M0", "K", 5.0, "60k", [20.7, 23.9, 22.1]),
+    ],
+)
 def test_old_calc_precision(SpType, band, vsini, R, expected):
     """Testing some direct examples from Figueira et al. 2016"""
     id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(SpType, band, float(vsini), R)
-    results = calculate_prec([SpType], [band], [float(vsini)], [R], [3],
-                             plot_atm=False, plot_ste=False,
-                             plot_flux=False, paper_plots=False, rv_offset=0.0,
-                             use_unshifted=False, snr=100, ref_band="J", new=False)
+    results = calculate_prec(
+        [SpType],
+        [band],
+        [float(vsini)],
+        [R],
+        [3],
+        plot_atm=False,
+        plot_ste=False,
+        plot_flux=False,
+        paper_plots=False,
+        rv_offset=0.0,
+        use_unshifted=False,
+        snr=100,
+        ref_band="J",
+        new=False,
+        grad=False,  # Old values without new gradient
+    )
 
-    # precision 1
-    assert expected[0] == round(results[id_string][0].value, 1)
-
-    # precision 3
-    assert expected[2] == round(results[id_string][2].value, 1)
+    for ii in [0, 2]:  # Condition 1 # Condition 3
+        print("Condition # {}".format(ii + 1))
+        assert expected[ii] == round(results[id_string][ii].value, 1)
 
 
 def test_published_precision_with_old_normalization(model_parameters, published_data):
     # Testing calculate_prec with old normalization values are exactly the published values."""
     SpType, band, vsini, R = model_parameters
     id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(SpType, band, float(vsini), R)
-    results = calculate_prec([SpType], [band], [float(vsini)], [R], [3],
-                             plot_atm=False, plot_ste=False,
-                             plot_flux=False, paper_plots=False, rv_offset=0.0,
-                             use_unshifted=False, snr=100, ref_band="J", new=False)
+    results = calculate_prec(
+        [SpType],
+        [band],
+        [float(vsini)],
+        [R],
+        [3],
+        plot_atm=False,
+        plot_ste=False,
+        plot_flux=False,
+        paper_plots=False,
+        rv_offset=0.0,
+        use_unshifted=False,
+        snr=100,
+        ref_band="J",
+        new=False,
+        grad=False,  # Old values without new gradient
+    )
     print(published_data.head())
 
     # Precision 1
@@ -49,20 +68,34 @@ def test_published_precision_with_old_normalization(model_parameters, published_
     assert published["RV_Cond_1[m/s]"].values == round(results[id_string][0].value, 1)
 
     # precision 2 has changed
-    assert published["RV_Cond_1[m/s]"].values != round(results[id_string][2].value, 1)
+    assert published["RV_Cond_2[m/s]"].values != round(results[id_string][1].value, 1)
 
-    # precision 3
-    assert published["RV_Cond_3[m/s]"].values == round(results[id_string][2].value, 1)
+    # precision 3  # Accounting for Rounding errors
+    assert published["RV_Cond_3[m/s]"].values - 0.08 <= round(results[id_string][2].value, 2)
+    assert published["RV_Cond_3[m/s]"].values + 0.08 >= round(results[id_string][2].value, 2)
 
 
 def test_published_precision_with_new_normalization(model_parameters, published_data):
     # Testing calculate_prec with new normalization values are similar."""
     SpType, band, vsini, R = model_parameters
     id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(SpType, band, float(vsini), R)
-    results = calculate_prec([SpType], [band], [float(vsini)], [R], [3],
-                             plot_atm=False, plot_ste=False,
-                             plot_flux=False, paper_plots=False, rv_offset=0.0,
-                             use_unshifted=False, snr=100, ref_band="J", new=True)
+    results = calculate_prec(
+        [SpType],
+        [band],
+        [float(vsini)],
+        [R],
+        [3],
+        plot_atm=False,
+        plot_ste=False,
+        plot_flux=False,
+        paper_plots=False,
+        rv_offset=0.0,
+        use_unshifted=False,
+        snr=100,
+        ref_band="J",
+        new=True,
+        grad=False,  # Old values without new gradient
+    )
     published = published_data[published_data.Simulation == id_string]
     print(published.head())
 
@@ -81,28 +114,3 @@ def test_published_precision_with_new_normalization(model_parameters, published_
     published_prec_3 = published["RV_Cond_3[m/s]"].values
     result_3 = round(results[id_string][2].value, 1)
     assert (np.abs(result_3 - published_prec_3) / published_prec_3) < 0.05
-
-
-@pytest.fixture(params=[
-    ("M0", "Z", 1, "60k"),
-    ("M0", "Z", 1, "100k"),
-    ("M0", "Z", 10, "60k"),
-    ("M0", "Z", 10, "100k"),
-    ("M0", "H", 1, "60k"),
-    ("M0", "H", 1, "100k"),
-    ("M0", "H", 10, "60k"),
-    ("M0", "H", 10, "100k"),
-    ("M3", "Y", 10, "100k"),
-    ("M3", "K", 10, "100k"),
-    ("M0", "K", 1, "60k"),
-    ("M0", "K", 1, "100k"),
-    ("M0", "K", 5, "60k"),
-    ("M0", "K", 5, "100k"),
-    ("M6", "H", 1, "80k"),
-    ("M6", "K", 1, "80k"),
-    ("M9", "H", 1, "80k"),
-    ("M9", "K", 1, "80k"),
-])
-def model_parameters(request):
-    # Tuple of "SpType,band,vsini,R"
-    return request.param

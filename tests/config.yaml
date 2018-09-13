@@ -1,38 +1,58 @@
-# YAML configuration script
+# YAML configuration script for Eniric
 
-name: eniric_default
-
-# The parameters defining the spectral libraries live here.
+# Paths to locations used by eniric
 paths:
-  phoenix_raw: ["data", "test_data","PHOENIX-raw"]
-  phoenix_dat: ["data", "test_data","PHOENIX-ACES_spectra"]
-  results: ["data","test_data","results"]
-  resampled: ["data","test_data","resampled"]
+  phoenix_raw: ["data", "test_data", "phoenix-raw"]
+  btsettl_raw: ["data", "test_data", "btsettl-raw"]
   test_data: ["data","test_data"]
   atmmodel: ["data", "atmmodel"]
   precision: ["precision"]
+  # Obsolete paths for testing only
+  phoenix_dat: ["data", "test_data","obsolete","PHOENIX-ACES_spectra"]
+  results:  ["data","test_data","obsolete","results"]
+  resampled: ["data","test_data","obsolete", "resampled"]
 
+cache:
+  # location: None  # Disables cache
+  location: [".joblib"]
+
+atmmodel:
+  # Base name of telluric model
+  base: "Average_TAPAS_2014"
+
+# Wavelength bands.
 bands:
-  all: ["VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP"]
+  all: ["K", "H", "J", "Y", "Z", "TEST"]
+
+# Add your custom band limits here
+custom_bands:
+  TEST: [2.1, 2.2]
 
 
-# Keywords needed for Starfish to be used
-outdir : results/
 
-plotdir : plots/
-
-# Starfish parameters defining your raw spectral library live here.
+## Starfish Keywords
+# These keywords are necessary to exist in the config.yaml (to enable Starfish to run)
+# but are not used by and have no affect on Eniric and the loading of the phoenix spectral libraries.
+# As such they are all set to nothing.
+#
+# To configure the path to the phoenix libraries use
+#    paths:
+#        phoenix_raw:
+#        btsettl_raw:
+# above.
+# If you are wanting to use "Eniric" with the other features "Starfish" good luck!
+# (or open an issue github issue).
+name: ""
+outdir: ""
+plotdir: ""
 grid:
-    raw_path: "../../data/PHOENIX-ALL/PHOENIX"
-    parname: ["temp", "logg", "Z"]
-    hdf5_path: ""
-    # raw_path: "../libraries/raw/CIFIST/"
-    key_name: "t{0:.0f}g{1:.1f}" # Specifies how the params are stored
-    parname: ["temp", "logg", "Z"]
-    parrange: [[2300, 3700], [4.0, 5.5], [-1.5, 1.5]]
-    wl_range: [6300, 6360]
-    buffer: 50. # AA
-
+  raw_path: ""
+  hdf5_path: ""
+  key_name: ""
+  parname: []
+  parrange: []
+  wl_range: []
+  buffer: 0
 data:
-    grid_name: "Eniric"
-    instruments: []
+  grid_name: ""
+  instruments: []

@@ -1,41 +1,139 @@
 # ENIRIC - Extended Near InfraRed Information Content
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/24d3d525a79d4ae493de8c527540edef)](https://www.codacy.com/app/jason-neal/eniric?utm_source=github.com&utm_medium=referral&utm_content=jason-neal/eniric&utm_campaign=badger)[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/24d3d525a79d4ae493de8c527540edef)](https://www.codacy.com/app/jason-neal/eniric?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jason-neal/eniric&amp;utm_campaign=Badge_Coverage)
-[![Build Status](https://travis-ci.org/jason-neal/eniric.svg?branch=master)](https://travis-ci.org/jason-neal/eniric)[![Coverage Status](https://coveralls.io/repos/github/jason-neal/eniric/badge.svg?branch=master)](https://coveralls.io/github/jason-neal/eniric?branch=master)[![Updates](https://pyup.io/repos/github/jason-neal/eniric/shield.svg)](https://pyup.io/repos/github/jason-neal/eniric/)[![Code Climate](https://codeclimate.com/github/jason-neal/eniric/badges/gpa.svg)](https://codeclimate.com/github/jason-neal/eniric)[![Issue Count](https://codeclimate.com/github/jason-neal/eniric/badges/issue_count.svg)](https://codeclimate.com/github/jason-neal/eniric)[![Test Coverage](https://codeclimate.com/github/jason-neal/eniric/badges/coverage.svg)](https://codeclimate.com/github/jason-neal/eniric/coverage)[![Python 3](https://pyup.io/repos/github/jason-neal/eniric/python-3-shield.svg)](https://pyup.io/repos/github/jason-neal/eniric/)
+[![Python 3.6+](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/release/python-360/)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/24d3d525a79d4ae493de8c527540edef)](https://www.codacy.com/app/jason-neal/eniric?utm_source=github.com&utm_medium=referral&utm_content=jason-neal/eniric&utm_campaign=badger)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/24d3d525a79d4ae493de8c527540edef)](https://www.codacy.com/app/jason-neal/eniric?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jason-neal/eniric&amp;utm_campaign=Badge_Coverage)
+[![Build Status](https://travis-ci.org/jason-neal/eniric.svg?branch=master)](https://travis-ci.org/jason-neal/eniric)
+[![Coverage Status](https://coveralls.io/repos/github/jason-neal/eniric/badge.svg?branch=master)](https://coveralls.io/github/jason-neal/eniric?branch=master)
+[![Updates](https://pyup.io/repos/github/jason-neal/eniric/shield.svg)](https://pyup.io/repos/github/jason-neal/eniric/)
+[![Python 3](https://pyup.io/repos/github/jason-neal/eniric/python-3-shield.svg)](https://pyup.io/repos/github/jason-neal/eniric/)
+[![PyPI version](https://badge.fury.io/py/eniric.svg)](https://badge.fury.io/py/eniric)
 
-Eniric is a Python 3 software written to access the Radial Velocity precision of Near-InfraRed (NIR) Spectra. 
-Ensiric is built apon the code initilly used in [Figueria et al. 2016]() to analysis the precision of M-dwarf stars, extending the ability to use any synethic spectra from the PHOENIX-ACES library and making it easier to use.
+`Eniric` is a Python 3 software to compute the theoretical Radial Velocity (RV) precision of stellar spectra.
+`Eniric` is an overhaul and extension to the code used in [Figueria et al. 2016](http://dx.doi.org/10.1051/0004-6361/201526900) to analysis the precision of M-dwarf stars. 
+Extending the performance and usability, it is able to be used on any synthetic spectra from the [PHOENIX-ACES](http://phoenix.astro.physik.uni-goettingen.de) and [BT-Settl](https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/) (CIFIST2001-2015) libraries. 
+
+Checkout the [wiki here](https://github.com/jason-neal/eniric/wiki)!
 
 ## Features:
-- Spectral broadening
-   Allows for Rotational and Insturmental broading of synthic spectra given rotation speed `vsini` and resolution `R`.
-- Atmospheric transmission
- Analysis RV precision atainable under 3 conditions presented in [Figueria et al. 2016]().
-    - No treatment of atmospheric transmission
-    - Masking all regions affected by atmospheric absoption of a given % over the course of the year.
-    - Assuming perfect telluric corretion in which the variance of the measured flux is impacted.
-- Relative RV precision 
-   The RV presicion are present relative to a specified SNR per pixel in the center of a photometric band. The default as usesd in the Figueira et al. 2016 is a SNR of 100 at the center of the J-band.
-- Resampling
-   Allows for resampling of spectra to n pixels per FWHM. Default=3.
+`Eniric` contains a number of features to transform and prepare the spectra (observed and synthetic).
+- [Spectral broadening](https://github.com/jason-neal/eniric/wiki/Broadening)
+   - Rotational
+   - Instrumental
+- [Atmospheric transmission masking](https://github.com/jason-neal/eniric/wiki/Atmospheric-Transmission)
+- Relative RV precision
+  - The RV precision can be calculated relative to a specified SNR per pixel in the center of a spectroscopic band.
+    The default as used in the Figueira et al. 2016 is a SNR of 100 at the center of the J-band.
+- Spectral re-sampling
+   - n pixels per FWHM
 - Band selection
-  Analysis the RV precision attainable by the individual photometric bands `Z`, `Y`, `J`, `H`, `K` in the NIR.   
-- Incremental quality/precision
-    As well as the photometric band precision you can determine the incremental spectral quality or RV precision on narrow wavelenght slices across the entire spectrum, similar to that present in Figure 1 of [Artigau et al. 2018](http://adsabs.harvard.edu/abs/2018AJ....155..198A).
+  - Analysis in individual spectroscopic bands.
+- Incremental quality & precision
+- Synthetic libraries available
+    - Available through [Starfish]'s() grid_tools.
+       - PHOENIX-ACES
+       - BT-Settl
 
-# Usage
+
+# [Installation](https://github.com/jason-neal/eniric/wiki/Installation)
+Currently to install `Eniric` you need to clone the repo:
+```
+git clone https://github.com/jason-neal/eniric
+cd eniric
+pip install -r requirements.txt
+python setup.py develop
+```
+
+A pip installable version is in the works...
+
+You also need to manually install [Starfish](https://github.com/iancze/Starfish)
+
+```
+git clone git@github.com:iancze/Starfish.git
+cd Starfish
+python setup.py build_ext --inplace
+python setup.py develop
+cd ..
+```
+see [here](https://github.com/iancze/Starfish) for more information about installing Starfish.
+
+##### Requirements for `Eniric` :
+The latest versions are pinned in `requirements.txt`
+- astropy
+- joblib>=0.12.3
+- matplotlib
+- multiprocess
+- numpy
+- pandas
+- pyyaml
+- scipy
+- tqdm
+
+##### Extra requirements for Starfish:
+- corner
+- cython
+- h5py
+- scikit-learn
+
+If you are not going to use `Eniric` to analyze synthetic spectra (PHOENIX-ACES/BT-Settl) then you may 
+get away with not installing it (some tests with xfail).
+
+## Preparation
+### Configuration
+`Eniric` uses a `config.yaml` file which is required in the current directory 
+to specify some paths, such as the location the the synthetic spectral library.
+
+You can use the `config.yaml` to specify custom wavelength ranges to use
+```
+bands: 
+  all: [..., myband]  # add myband to all list
+
+custom_bands:
+    myband: [1.5, 1.6] # micron
+```
+
+You can then pass `myband` to the band arguments in `Eniric` scripts/functions.
+
+This based off `Starfish` and although many keywords are needed to be present 
+for `Starfish` to run they are not used for `Eniric`'s usage of `Starfish` and are fine left blank.
+
+
+#### Atmospheric data:
+To perform telluric masking and account for the transmission of Earth's atmosphere a telluric spectra is required. 
+`Eniric` includes the telluric spectra uses in Figueira et al. 2016, averaged over 2014.
+To automatically prepare the telluric masks, splitting into bands and applying the barycentric expansion run the following scripts:
+- `split_atmmodel.py`
+- `bary_shift_atmmodel.py`
+
+These will split the large telluirc spectra into the bands specified in the `config.yaml` so that the
+ opening and slicing of the large telluric spectrum is not performed continually.
+
+To change the telluric line cutoff depth you to 4% can pass (default = 2%) you can pass it like this
+
+    `split_atmmodel.py --cutoff-depth 4`
+
+You can specify your own telluric mask instead. 
+By keeping it in the same format and setting atmmodel parameters in `config.yaml` you can make use of the 
+`Atmosphere` class which can perform the mask cutoff and doppler shifting.
+
+Or you can manually apply your own masking function as the mask parameter to the `rv_precision` function.
+
+
+## Usage
 You can now calculate the theoretical RV precision for any PHOENIX-ACES model.
 You will need to configure the path to the phoenix models in ´config.yaml´
 
 e.g.
 
-    aces_precision.py -t 3900 -l 4.5, -m 0.5 -r 100000 -v 1.0 -b J K
-    
-Will calculate the RV precision in the J- and K-band of the PHOENIX-ACES spectra with parameters \[Teff=3900K, logg=4.5, \[Fe/H\]=0.5\] observed at a resolution of 100,000 and rotating with 1.0 km/s.  
-For more details on the command line arguments to use see the wiki or type
+    phoenix_precision.py -t 3900 -l 4.5, -m 0.5 -r 100000 -v 1.0 -b J K
 
-    aces_precision.py -h 
-   
+Will calculate the RV precision in the `J` and `K`-band of the PHOENIX-ACES spectra with parameters \[Teff=3900K, logg=4.5, \[Fe/H\]=0.5\] observed at a resolution of 100,000 and rotating with 1.0 km/s.
+For more details on the command line arguments to use see the [wiki](https://github.com/jason-neal/eniric/wiki) or type
+
+    phoenix_precision.py -h
+
+
+# The Readme below this point needs amended....
 
 ## Outline
 
@@ -45,7 +143,7 @@ The code works in two main stages, "spectral preparation" and "precision calcula
 
 `eniric/nIRanalysis.py`
 
-This stage takes in the raw PHOENIX-ACES spectral models and transforms them, saving the results of this computation as .txt files.
+This stage takes in the raw PHOENIX-ACES spectral models and transforms them, saving the results of this computation as .dat files.
 
 It includes:
 - Conversion from flux to photon counts.
@@ -83,28 +181,22 @@ Copy config.yaml and adjust the paths relative to what you created and to the ra
 
 eniric_scripts/prepare_spectra.py - This opens the phoenix flux spectra, add wavelength axis in microns and converts flux to photon counts. It saves this in the phoenix_dat dir. (The copy of wavelengths does waste space.)
 
-eniric_scripts/nIR_run.py  - Perform the resolution and rotational convolution on the prepared spectra.
+eniric_scripts/nIR_run.py - Perform the resolution and rotational convolution on the prepared spectra.
 
-This also does the resampling.
+This also does the re-sampling.
 
 e.g. python ../Codes/eniric/eniric_scripts/nIR_run.py -s M0 M3 M6 M9 -b Y J H K -v 1.0 5.0 10.0 -R 60000 80000 100000 --sample_rate 3
 
 
 ## Background
-The origin of this code was used in [Figueira et al. 2016](https://arxiv.org/abs/1511.07468).
+The origin of this code was used in [Figueira et al. 2016](http://dx.doi.org/10.1051/0004-6361/201526900).
 
     P. Figueira, V. Zh. Adibekyan, M. Oshagh, J. J. Neal, B. Rojas-Ayala, C. Lovis, C. Melo, F. Pepe, N. C. Santos, M. Tsantaki, 2016,
     Radial velocity information content of M dwarf spectra in the near-infrared,
     Astronomy and Astrophysics, 586, A101
 
-It had a number of efficiency issues with convolution which were improved upo
+It had a number of efficiency issues with convolution which were improved upon
 
-## Bugs:
-A number of bugs were found when adapting this code. Manily affecting the condition invovling telluric line masking. This alters the RV in this column, sometimes significantly. This, however, does **NOT** alter the conclusions in the published paper. A corrected table will be included in an upcomming publication Neal et. al. 2018 (in prep.).
+To reproduce the updated results for [Figueira et al. 2016](http://dx.doi.org/10.1051/0004-6361/201526900) run
 
-n. The largest were
-    1) Use numpy mapping slicing instead of comprehension lists.  (~>250 times faster)
-    2) Use Joblib to parallelize the convolutions.
-    3) Caching results to avoid repeating the same convolutions.
-
-In addressing 1) the convolution speed for a particular test case went from `1hour 22 minutes` down to `27 seconds`.
+    phoenix_precision.py -t 3900 3500 2800 2600 -l 4.5, -m 0.5 -r 60000 80000 100000 -v 1.0 5.0 10.0 -b Z Y J H K

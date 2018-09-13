@@ -12,6 +12,8 @@ help:
 	@echo "		Remove test data."
 	@echo "	data"
 	@echo "		Create test data."
+	@echo "	atmos"
+	@echo "		Prepare atmosphere model data."
 	@echo "	isort"
 	@echo "		Sort import statements."
 	@echo "	lint"
@@ -19,13 +21,16 @@ help:
 	@echo "	test"
 	@echo "		Run py.test"
 	@echo "	init"
-	@echo "		Initalize by installing requirements"
+	@echo "		Initialise by installing requirements"
 	@echo "	init-dev"
-	@echo "		Initalize by installing normal and dev requirements"
+	@echo "		Initialise by installing normal and dev requirements"
 	@echo "	cov"
 	@echo "		Produce coverage report"
 	@echo "	mypy"
 	@echo "		Run type checking with mypy"
+	@echo "	pdf"
+	@echo "		Make pdf from paper.md"
+
 
 clean-pyc:
 	find . -name '*.pyc' -exec rm --force {} +
@@ -37,8 +42,12 @@ clean-data:
 	rm --force --recursive data/test_data/results
 	rm --force --recursive data/test_data/resampled
 
-data: 
+data:
 	python eniric_scripts/make_test_data.py
+
+atmos:
+	split_atmmodel.py -b ALL
+	bary_shift_atmmodel.py -b ALL
 
 clean-build:
 	rm --force --recursive build/
@@ -62,10 +71,12 @@ init-dev:
 	pip install -r requirements_dev.txt
 
 cov: $(module)/*
-	py.test --cov=$(module) 
+	py.test --cov=$(module)
 	coverage html
 
 mypy:
 	# py.test --mypy
 	mypy --ignore-missing-imports .
 
+pdf:
+	(cd paper && pandoc --filter pandoc-citeproc --bibliography=paper.bib --variable classoption=onecolumn --variable papersize=a4paper -s paper.md -o paper.pdf)

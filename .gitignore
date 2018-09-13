@@ -1,6 +1,3 @@
-# Ignore sync file
-.sync/
-
 .mypy_cache
 .pytest_cache/
 .idea/
@@ -9,20 +6,13 @@
 images/*
 docs/*.py
 docs/*.html
-data/original_code/*
-data/resampled/*
-data/results/*
-data/PHOENIX-ACES_spectra/Z*
-data/atmmodel/Average_TAPAS_2014_visible.txt
-data/atmmodel/Average_TAPAS_2014.txt
-data/test_data/*
+data/atmmodel/Average_TAPAS_2014*.dat
+data/test_data/obsolete/*
+data/test_data/phoenix-raw/*.fits
+data/test_data/phoenix-raw/*/*.fits
 
-# updated_files data
-eniric/updated_code/resampled_cont/*
-# White list one file
-!eniric/updated_code/resampled_cont/Spectrum_M0-PHOENIX-ACES_Hband_vsini1.0_R100k_res3.txt
-
-
+.joblib
+docs/Notebooks/.joblib
 
 
 # Byte-compiled / optimized / DLL files

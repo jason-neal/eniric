@@ -1,6 +1,29 @@
-#ENIRIC CHANGELOG
+# ENIRIC CHANGELOG
+
 To get a list of commit messages since last version to help write change log try
     `git log YOUR_LAST_VERSION_TAG..HEAD --no-merges --format=%B`
+
+### Upcoming
+### v1.0.0
+----------
+- Add JOSS paper
+- User configurable wavelength bands in `config.yaml`.
+- Refactor atmospheric transmission into `Atmosphere` class.
+- Updated `split_atmmodel.py` and `bary_shift_atmmodel.py` scripts for atmmodel preparation.
+- Add precision of `BT-Settl` library models in `phoenix_precision.py`.
+- Functions for incremental quality and RV.
+- Updated plotting script, cumulative rv.
+- Doppler shift in `phoenix_precision.py`.
+- Example Notebooks.
+- Add `Contributing.md` and `Contributors.md`.
+- Zip required testing data, Delete unneeded data.
+
+Other:
+- `Blacken` source code.
+- Add `pre-commit` hooks.
+- Add `Python 3.7` testing.
+- Drop `Python 3.5` support.
+- Refactoring for 1.0 release.
 
 
 ### v0.5.1
@@ -17,16 +40,15 @@ Modified for the NIRPS ETC calculations
     - Adds Starfish dependency with GridTools
 - Calculate spectral quality Q.
 - Drop python 2.7 compatibility and remove some support code.
--
--
+
 
 ### v0.4
-----
+--------
 - Upgrades for SPIRou ETC calculations
 - Relative SNR in any band
--
--
 
-### v0.3
-----
 ...
+
+### v0.0.0
+----------
+- Aquire Figueira et al. 2016 original code base.

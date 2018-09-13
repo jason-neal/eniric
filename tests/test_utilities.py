@@ -1,94 +1,28 @@
 """Test utilities for eniric."""
 
-import os
-
 import hypothesis.strategies as st
 import numpy as np
 import pytest
-from hypothesis import given, settings
+from astropy import constants as const
+from hypothesis import given
 
-import eniric
 import eniric.utilities as utils
-from eniric.utilities import mask_between
+from eniric.Qcalculator import quality
+from eniric.utilities import (
+    doppler_limits,
+    doppler_shift_flux,
+    doppler_shift_wav,
+    load_aces_spectrum,
+    load_btsettl_spectrum,
+    mask_between,
+    moving_average,
+    rv_cumulative,
+    rv_cumulative_full,
+    weighted_error,
+)
 
-
-# @pytest.mark.xfail(raises=FileNotFoundError)
-def test_read_spectrum():
-    """Test reading in a _wave_photon.dat is the same as a _wave.dat."""
-    photon = os.path.join(
-        eniric.paths["test_data"],
-        "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat",
-    )
-    wave = os.path.join(
-        eniric.paths["test_data"],
-        "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat",
-    )
-    wave_wav, wave_flux = utils.read_spectrum(wave)
-    photon_wav, photon_flux = utils.read_spectrum(photon)
-
-    assert np.allclose(photon_wav, wave_wav)
-    assert np.allclose(photon_flux, wave_flux)
-
-
-# @pytest.mark.xfail(raises=FileNotFoundError)
-def test_get_spectrum_name():
-    """Test specifying file names with stellar parameters."""
-    test = os.path.join("Z-0.0", "lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat")
-
-    assert utils.get_spectrum_name("M6", flux_type="wave") == test
-
-    test_alpha = os.path.join(
-        "Z-0.0.Alpha=+0.20",
-        "lte02600-6.00-0.0.Alpha=+0.20.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat",
-    )
-    assert utils.get_spectrum_name("M9", logg=6, alpha=0.2) == test_alpha
-
-    test_pos_feh = os.path.join(
-        "Z+0.5", "lte03500-0.00+0.5.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
-    )
-    assert utils.get_spectrum_name("M3", logg=0, feh=0.5, alpha=0.0) == test_pos_feh
-
-    test_photon = os.path.join(
-        "Z-0.0", "lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat"
-    )
-    assert utils.get_spectrum_name("M6") == test_photon
-
-
-# noinspection SpellCheckingInspection
-@pytest.mark.parametrize("spec_type", ["MO", "ME", "M11", "X10", "Z3"])
-def test_spectrum_name_value_error(spec_type):
-    """Not valid spectral type in [OBAFGKML] or misspelled"""
-    with pytest.raises(ValueError):
-        utils.get_spectrum_name(spec_type)
-
-
-@pytest.mark.parametrize("spec_type", ["O1", "B2", "A3", "F4", "G5", "K6", "M7", "L8"])
-def test_notimplemented_spectrum_name(spec_type):
-    with pytest.raises(NotImplementedError):
-        utils.get_spectrum_name(spec_type)  # Stellar type not added (only M atm)
-
-
-@pytest.mark.parametrize("bad_alpha", [-0.3, 0.3, 1])
-def test_spectrum_name_with_bad_alpha(bad_alpha):
-    """Bad_alpha is outside range -0.2-0.2 for M-dwarf science case."""
-    with pytest.raises(ValueError):
-        utils.get_spectrum_name("M0", alpha=bad_alpha)
-
-
-@pytest.mark.parametrize("alpha", [-0.2, 0.1, 0.2])
-def test_spectrum_name_with_ok_alpha(alpha):
-    name = utils.get_spectrum_name("M0", alpha=alpha)
-
-    assert isinstance(name, str)
-    assert str(alpha) in name
-    assert "Alpha=" in name
-
-
-# @pytest.mark.xfail(raises=FileNotFoundError)
-def test_org_name():
-    """Test org flag of utils.get_spectrum_name, supposed to be temporary."""
-    test_org = "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
-    assert utils.get_spectrum_name("M0", org=True) == test_org
+c = const.c
+xfail = pytest.mark.xfail
 
 
 @given(
@@ -200,72 +134,6 @@ def test_band_midpoint_j():
     assert utils.band_middle("J") == 1.25
 
 
-##################################3
-
-
-@settings(max_examples=100)
-@given(
-    st.lists(
-        st.floats(
-            min_value=1e-7, max_value=1e-5, allow_infinity=False, allow_nan=False
-        ),
-        unique=True,
-        min_size=3,
-        max_size=25,
-    ),
-    st.floats(min_value=1e-2, max_value=200),
-    st.floats(min_value=1e-4, max_value=1),
-)
-def test_rotational_kernel(delta_lambdas, vsini, epsilon):
-    """Test that the new and original code produces the same output."""
-    delta_lambdas = np.sort(np.asarray(delta_lambdas), kind="quicksort")
-    delta_lambdas = np.append(np.flipud(delta_lambdas), np.insert(delta_lambdas, 0, 0))
-    delta_lambda_l = np.max(delta_lambdas) * 2
-
-    new_profile = utils.rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon)
-
-    assert len(new_profile) == len(delta_lambdas)
-    # other properties to test?
-
-
-@given(
-    st.lists(
-        st.floats(min_value=-100, max_value=100, allow_nan=False),
-        min_size=1,
-        unique=True,
-    ),
-    st.floats(min_value=-100, max_value=100, allow_nan=False),
-    st.floats(min_value=0.001, max_value=100, allow_nan=False),
-)
-def test_unitary_gaussian(x, center, fwhm):
-    """Just a quick simple test."""
-    x = np.asarray(x)
-
-    gaussian = utils.unitary_gaussian(x, center, fwhm)
-    print(gaussian)
-    # point at center should be the max
-    assert len(gaussian) == len(x)
-    assert np.allclose(np.max(gaussian), gaussian[np.argmin(abs(x - center))])
-
-
-def test_unitary_gaussian_type_errors():
-    """Testing for type errors."""
-    x = np.arange(-10, 10)
-    center = 0
-    fwhm = 3
-
-    with pytest.raises(TypeError):
-        utils.unitary_gaussian(x, center, "fwhm")
-    with pytest.raises(TypeError):
-        utils.unitary_gaussian(x, "center", fwhm)
-    with pytest.raises(TypeError):
-        utils.unitary_gaussian(range(-10, 10), "center", fwhm)
-    with pytest.raises(TypeError):
-        utils.unitary_gaussian(1, "center", fwhm)
-
-
-################################################
-
 def test_silent_remove():
     """Test this doesn't raise and issue.
     Not really a good test."""
@@ -275,26 +143,23 @@ def test_silent_remove():
 
 ####################################################
 # Test Resolution conversions
-
 @pytest.mark.parametrize(
-    "resolution,result",
-    [
-        ("60k", 60000),
-        (80000, 80000),
-        ("2000", 2000),
-    ],
+    "resolution,result", [("60k", 60000), (80000, 80000), ("2000", 2000)]
 )
 def test_res2int(resolution, result):
     assert result == utils.res2int(resolution)
 
 
 @pytest.mark.parametrize(
-    "resolution,result", [(60000, "60k"),
-                          ("20000", "20k"),
-                          (np.float("20000"), "20k"),
-                          ("60k", "60k"),
-                          (80000, "80k"),
-                          (3000, "3k")]
+    "resolution,result",
+    [
+        (60000, "60k"),
+        ("20000", "20k"),
+        (np.float("20000"), "20k"),
+        ("60k", "60k"),
+        (80000, "80k"),
+        (3000, "3k"),
+    ],
 )
 def test_res2str(resolution, result):
     """Test single values in res2str"""
@@ -355,7 +220,13 @@ def test_compatibility_res2int_res2str(resolution):
 
 @pytest.mark.parametrize(
     "resolution",
-    [[1000, 10000, 50000], [100000, 2000000], ["1k"], ["10k", "20k"], ["100k", "2000k"]]
+    [
+        [1000, 10000, 50000],
+        [100000, 2000000],
+        ["1k"],
+        ["10k", "20k"],
+        ["100k", "2000k"],
+    ],
 )
 def test_compatibility_resolutions2ints_resolutions2strs(resolution):
     """Test resolutions2ints and resolutions2strs reversible and do not change when operated twice.
@@ -373,72 +244,44 @@ def test_compatibility_resolutions2ints_resolutions2strs(resolution):
     assert res2int(resolution) == res2int(res2int(resolution))
 
 
-@pytest.mark.parametrize("resolutions", [
-    [60000, "20000"],
-    ["50k", "10k"],
-    ["100000", "10000"],
-    ["100000", "10000"],
-])
+@pytest.mark.parametrize(
+    "resolutions",
+    [[60000, "20000"], ["50k", "10k"], ["100000", "10000"], ["100000", "10000"]],
+)
 def test_res2int_fails_on_list(resolutions):
     with pytest.raises(TypeError):
         utils.res2int(resolutions)
 
 
-@pytest.mark.parametrize("resolutions", [
-    60000,
-    "10k"
-    "100000",
-])
+@pytest.mark.parametrize("resolutions", [60000, "10k" "100000"])
 def test_resolutions2ints_fails_on_single(resolutions):
     with pytest.raises(TypeError):
         utils.resolutions2ints(resolutions)
 
 
-@pytest.mark.parametrize("resolutions", [
-    [60000, "20000"],
-    ["50k", "10k"],
-    ["100000", "10000"],
-    ["100000", "10000"],
-])
+@pytest.mark.parametrize(
+    "resolutions",
+    [[60000, "20000"], ["50k", "10k"], ["100000", "10000"], ["100000", "10000"]],
+)
 def test_res2str_fails_on_list(resolutions):
     with pytest.raises(TypeError):
         utils.res2str(resolutions)
 
 
-@pytest.mark.parametrize("resolutions", [
-    60000,
-    "10k"
-    "100000",
-])
+@pytest.mark.parametrize("resolutions", [60000, "10k" "100000"])
 def test_resolutions2strs_fails_on_single(resolutions):
     with pytest.raises(TypeError):
         utils.resolutions2strs(resolutions)
 
 
 ###############################################
-@pytest.mark.parametrize(
-    "filename",
-    [
-        os.path.join(
-            eniric.paths["test_data"],
-            "results",
-            "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k.txt",
-        ),
-        os.path.join(
-            eniric.paths["test_data"],
-            "resampled",
-            "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k_res3.0.txt",
-        ),
-    ],
+
+
+@given(
+    st.lists(st.floats(allow_infinity=False, allow_nan=False), max_size=50),
+    st.floats(1, 100),
+    st.floats(1, 100),
 )
-def test_resampled_spectra_isnot_read_by_read_spectrum(filename):
-    """Doesn't allow names with _vsini or _res in them."""
-    with pytest.raises(ValueError, match="Using wrong function"):
-        utils.read_spectrum(filename)
-
-
-@given(st.lists(st.floats(allow_infinity=False, allow_nan=False), max_size=50), st.floats(1, 100),
-       st.floats(1, 100))
 def test_mask_between(x, x1, x2):
     """Correctly masks out values."""
     x = np.array(x)
@@ -450,3 +293,191 @@ def test_mask_between(x, x1, x2):
     assert np.all(x[mask] < xmax)
     # Dropped values are all outside range.
     assert np.all((x[~mask] >= xmax) | (x[~mask] < xmin))
+
+
+@pytest.mark.parametrize(
+    "input_, flag",
+    [
+        ([1, 2, 3, 4.5, 5], False),
+        ([1, 2, 3, 4, 5], True),
+        ([10, 2.5, 12, 4.5, 0.1], False),
+        ([10, 2.5, 12.5, 4, 0.05], True),
+    ],
+)
+def test_rv_cumulative(input_, flag):
+    """Test it works on well formed input."""
+    result = rv_cumulative(input_, single=flag)
+    assert result[-2] == weighted_error(input_[:-1])
+    assert result[-1] == weighted_error(input_)
+    if flag:
+        assert result[0] == input_[0]
+
+
+@pytest.mark.parametrize(
+    "input_", [[1, 2, 3, 4, 5], [10, 3, 12, 4, 50], [10, 66, 10.5, 4.5, 1]]
+)
+def test_rv_cumulative_full(input_):
+    result = rv_cumulative_full(input_)
+    assert len(result) == 9
+    assert result[4] == weighted_error(input_)
+    assert result[0] == input_[0]
+    assert result[-1] == input_[-1]
+    assert isinstance(result, np.ndarray)
+
+
+@pytest.mark.parametrize("input_", [[1, 5], [3, 4, 5], [1, 1, 3, 7, 11, 16], []])
+def test_rv_cumulative_full_errors_on_size(input_):
+    """Test it errors when not given 5 values."""
+    with pytest.raises(AssertionError):
+        rv_cumulative_full(input_)
+
+
+@pytest.mark.parametrize("window_size", [1, 5, 100])
+def test_moving_average_size(window_size):
+    x = np.arange(300)
+    result = moving_average(x, window_size)
+    assert isinstance(result, np.ndarray)
+    assert len(result) == len(x)
+
+
+@pytest.mark.parametrize(
+    "input_, expected",
+    [
+        ([1, 1, 1], 1 / np.sqrt(3)),
+        ([2, 2, 2], np.sqrt(4.0 / 3)),
+        ([1], 1),
+        ([1, 2, 3, 4, 5], 60 / np.sqrt(5269)),
+    ],
+)
+def test_weighted_error(input_, expected):
+    result = weighted_error(input_)
+    assert np.allclose(result, expected)
+
+
+@pytest.fixture(
+    params=[
+        np.array([1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8]),
+        np.linspace(2.105, 2.115, 50),
+        np.linspace(1100, 1105, 70),
+        np.linspace(300, 305, 100),
+    ]
+)
+def wavelength(request):
+    wave = request.param
+    return wave
+
+
+@pytest.mark.parametrize("direction,multiplier", [(-1, 0), (1, 2)])
+def test_doppler_shift_at_speed_of_light(wavelength, direction, multiplier):
+    """It is test is only valid for the non-relativistic doppler shift.
+     It is a test of the math but not physical (not valid at this speed)
+     but we are checking the math of the equation works
+     should result in a shift of \delta \lambda = +/- \lambda"""
+    c_wave = doppler_shift_wav(wavelength, direction * c.value / 1000)
+    assert np.all(c_wave == (wavelength * multiplier))
+
+
+def doppler_shift_zero(wavelength):
+    """Doppler shift of zero will give no change."""
+    assert np.all(doppler_shift_wav(wavelength, vel=0.0) == wavelength)
+
+
+@xfail(raises=ModuleNotFoundError, reason="Starfish is not installled correctly.")
+@pytest.mark.parametrize("rv", [-100, 200])
+def test_if_doppler_shift_changes_quality(testing_spectrum, rv):
+    wavelength, flux_ = testing_spectrum[0], testing_spectrum[1]
+    wmin_, wmax_ = 2.1, 2.3
+    m1 = (wavelength < wmax_ + .2) * (wavelength > wmin_ - .2)
+    # shorten spectra
+    wavelength, flux_ = wavelength[m1], flux_[m1]
+
+    mask = (wavelength < wmax_) * (wavelength > wmin_)
+    wave = wavelength[mask]
+    flux = flux_[mask]
+    q1 = quality(wave, flux)
+
+    wav2 = doppler_shift_wav(wavelength, rv)
+    mask2 = (wav2 < wmax_) * (wav2 > wmin_)
+    wav2 = wav2[mask2]
+    flux2 = flux_[mask2]
+    q2 = quality(wav2, flux2)
+    assert q1 != q2
+
+    flux3 = doppler_shift_flux(wavelength, flux_, rv, new_wav=wave)
+    q3 = quality(wave, flux3)
+    assert len(wave) == len(flux3)
+    assert q1 != q3
+    # There are differences due to interpolation
+    assert q2 != q3
+
+
+@pytest.mark.parametrize("rv", [-10, 50, 1000])
+@pytest.mark.parametrize("wmin, wmax", [(2.1, 2.2), (1500, 1700)])
+def test_doppler_limits(rv, wmin, wmax):
+    """Doppler limits widens the wavelength range"""
+    new_min, new_max = doppler_limits(rv, wmin, wmax)
+    assert new_min < wmin
+    assert new_max > wmax
+
+
+@pytest.mark.parametrize("wmin, wmax", [(2.1, 2.2), (1500, 1700)])
+def test_doppler_limits_rv_0(wmin, wmax):
+    """RV of zero should have no effect to limits."""
+    new_min, new_max = doppler_limits(0, wmin, wmax)
+    assert new_min == wmin
+    assert new_max == wmax
+
+
+@xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
+@pytest.mark.parametrize("photons", [True, False])
+def test_load_btsettl_spectrum(photons):
+    wav, flux = load_btsettl_spectrum(
+        [3900, 4.5, 0, 0], photons=photons, air=False, wl_range=[21000, 22000]
+    )
+    assert len(wav) == len(flux)
+
+
+@xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
+@pytest.mark.parametrize("params", [[8000, 4.5, 0, 0], [3900, 0.5, 0, 0]])
+def test_invalid_load_btsettl_spectrum(params):
+    # Invalid CIFIST parameters
+    from Starfish.constants import GridError
+
+    with pytest.raises(GridError):
+        load_btsettl_spectrum(params, wl_range=[21000, 22000])
+
+
+@xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
+@pytest.mark.parametrize("params", [[3900, 4.5, 1, 0], [3900, 4.5, 0, 1]])
+def test_invalid_feh_alpha_load_btsettl_spectrum(params):
+    # Invalid CIFIST parameters
+    with pytest.raises(AssertionError):
+        load_btsettl_spectrum(params, wl_range=[21000, 22000])
+
+
+@xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
+@pytest.mark.parametrize("photons", [True, False])
+def test_load_aces_spectrum(photons):
+    wav, flux = load_aces_spectrum(
+        [3900, 4.5, 0, 0], photons=photons, air=False, wl_range=[21000, 22000]
+    )
+    assert len(wav) == len(flux)
+
+
+@xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
+@pytest.mark.parametrize(
+    "params",
+    [
+        [20000, 4.5, 0, 0],
+        [2200, 4.5, 0, 0],
+        [3900, 4.7, 1, 0],
+        [3900, 4.5, 0.2],
+        [3900, 4.5, -1, 3],
+    ],
+)
+def test_invalid_load_aces_spectrum(params):
+    # Invalid CIFIST parameters
+    from Starfish.constants import GridError
+
+    with pytest.raises(GridError):
+        load_aces_spectrum(params, wl_range=[21000, 22000])
