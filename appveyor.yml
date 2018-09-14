@@ -74,4 +74,4 @@ artifacts:
 #  access your wheels from the Appveyor "artifacts" tab for your build.
 
 matrix:
-   - fast_finish: true
+  fast_finish: true
