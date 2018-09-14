@@ -40,7 +40,9 @@ install:
   # This is not the best place to put this but before_test didn't work.
   - cmd: "move tests\\config.yaml config.yaml"
 
-  # Generate data
+  # Downloading Eniric data with powershell script for windows
+  - ps: ".\\eniric_scripts\\ps_download_eniric_data.ps1"
+  # Generate data  # Should not do much as data already downloaded.
   - cmd: "%PYTHON%\\python.exe eniric\\obsolete\\make_test_data.py"
 
   # Prepare atmosphere models
@@ -75,3 +77,6 @@ artifacts:
 #  You can use this step to upload your artifacts to a public website.
 #  See Appveyor's documentation for more details. Or you can simply
 #  access your wheels from the Appveyor "artifacts" tab for your build.
+
+matrix:
+  fast_finish: true
