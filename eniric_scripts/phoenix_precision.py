@@ -113,7 +113,7 @@ def _parser():
     )
     parser.add_argument(
         "--num_procs",
-        help="Number of processors to use. Default = number of cpus -1",
+        help="Number of processors to use. Default = (Total cores - 1)",
         default=num_procs_minus_1,
         type=int,
     )
@@ -174,7 +174,7 @@ def do_analysis(
         conv_kwargs = {
             "epsilon": 0.6,
             "fwhm_lim": 5.0,
-            "num_procs": 1,
+            "num_procs": num_procs_minus_1,
             "normalize": True,
         }
 

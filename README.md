@@ -31,8 +31,8 @@ Checkout the [wiki here](https://github.com/jason-neal/eniric/wiki)!
 - Incremental quality & precision
 - Synthetic libraries available
     - Available through [Starfish]'s() grid_tools.
-       - PHOENIX-ACES
-       - BT-Settl
+       - [PHOENIX-ACES](http://phoenix.astro.physik.uni-goettingen.de)
+       - [BT-Settl](https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/)
 
 
 # [Installation](https://github.com/jason-neal/eniric/wiki/Installation)
@@ -79,9 +79,29 @@ If you are not going to use `Eniric` to analyze synthetic spectra (PHOENIX-ACES/
 get away with not installing it (some tests with xfail).
 
 ## Preparation
+#### Data download
+To download the data for eniric, an atmopsheric transmission spectra and some test Spectra run the 
+following from the main repo directory
+
+Linux:
+`download_eniric_data.sh`
+
+Windows:
+`... ` 
+
+This should place the data in `data/atmmodel` and `data/testdata` where it can be found for testing.
+
 ### Configuration
-`Eniric` uses a `config.yaml` file which is required in the current directory 
+`Eniric` uses a `config.yaml` file which is required in directory where you are running `Eniric`. (i.e. the current directory) 
 to specify some paths, such as the location the the synthetic spectral library.
+
+```
+paths:
+   phoenix-raw: path/to/phoenix/aces/spectra
+   btsettl-raw: ["path", "to", "btsettl" ,"spectra"]
+   ...
+```
+The paths can either be a string or a list of strings to pass to `os.path.join` (os independant).
 
 You can use the `config.yaml` to specify custom wavelength ranges to use
 ```
@@ -92,7 +112,7 @@ custom_bands:
     myband: [1.5, 1.6] # micron
 ```
 
-You can then pass `myband` to the band arguments in `Eniric` scripts/functions.
+You can then pass `myband` to the `band` arguments in `Eniric` scripts/functions.
 
 This based off `Starfish` and although many keywords are needed to be present 
 for `Starfish` to run they are not used for `Eniric`'s usage of `Starfish` and are fine left blank.
@@ -114,10 +134,21 @@ To change the telluric line cutoff depth you to 4% can pass (default = 2%) you c
 
 You can specify your own telluric mask instead. 
 By keeping it in the same format and setting atmmodel parameters in `config.yaml` you can make use of the 
-`Atmosphere` class which can perform the mask cutoff and doppler shifting.
+these scripts and the`Atmosphere` class which can perform the mask cutoff and doppler shifting.
 
 Or you can manually apply your own masking function as the mask parameter to the `rv_precision` function.
 
+### Convolutions
+The most computational component in `Eniric` is the convolutions. To help with this we use parallel prcessing and caching.
+
+- *Caching*: 
+The convolution results are cached using Joblib to avoid repeating the convoutions. This can be disabled by
+setting the `location: None` in the `config.yaml`.
+ 
+- *Parallel Processing*:
+The default number of processors used is one less then the total number of cores (N-1). 
+You can change this by specifying the `num_procs`.
+Setting `num_procs = 0` or `1` disables parallel processing.
 
 ## Usage
 You can now calculate the theoretical RV precision for any PHOENIX-ACES model.
