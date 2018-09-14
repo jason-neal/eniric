@@ -15,7 +15,7 @@ if [ ! -d "$DIRECTORY" ]; then
 fi
 (cd $DIRECTORY
     wget "https://www.dropbox.com/s/uab283lmkaptsib/Average_TAPAS_2014.dat.tar.gz"
-    untar_here.py Average_TAPAS_2014.dat.tar.gz
+    ../../eniric_scripts/untar_here.py Average_TAPAS_2014.dat.tar.gz
 )
 
 
@@ -28,7 +28,7 @@ fi
 
 (cd $DIRECTORY2
     wget "https://www.dropbox.com/s/oq2x7dsjeuxrf7t/obsolete.tar.gz"
-    untar_here.py obsolete.tar.gz
+    ../../eniric_scripts/untar_here.py obsolete.tar.gz
     rm obsolete.tar.gz
 )
 
@@ -44,7 +44,7 @@ fi
 
 (cd $DIRECTORY3
     wget "https://www.dropbox.com/s/i4cxjrhcbx6e37x/precision.tar.gz"
-    untar_here.py precision.tar.gz
+   ../eniric_scripts/untar_here.py precision.tar.gz
     rm precision.tar.gz
 )
 
