@@ -285,7 +285,7 @@ def load_aces_spectrum(
     params: Union[ndarray, List[float]],
     photons: bool = True,
     air: bool = False,
-    wl_range: Union[List[float], Tuple[float,float]]  = (3000, 54000),
+    wl_range: Union[List[float], Tuple[float, float]] = (3000, 54000),
 ):
     """Load a Phoenix spectrum from the phoenix library using STARFISH.
 
@@ -350,7 +350,7 @@ def load_btsettl_spectrum(
     params: Union[ndarray, List[float]],
     photons: bool = True,
     air: bool = False,
-    wl_range: Union[List[int], Tuple[int,int]] = (3000, 30000),
+    wl_range: Union[List[float], Tuple[float, float]] = (3000, 30000),
 ):
     """Load a BT-Settl spectrum from the CIFIST2011 library using STARFISH.
 
