@@ -35,7 +35,7 @@ and RV precision (i.e., information content) of synthetic and/or observed stella
 
 Written in *Python 3*, *Eniric* calculates the fundamental photon noise RV precision as formulated in @connes_absolute_1985 and @bouchy_fundamental_2001.
 It is an improved version of the software used in @figueira_radial_2016 for calculating the RV precision of synthetic M-dwarf spectra in the near-infrared (NIR) bands.
-The code was refactored, and hard-coded constraints were removed, making it faster and simpler to explore a larger combination of parameters (e.g. not limited to M-dwarfs and NIR wavelengths).
+The code was refactored, with hard-coded constraints removed, making it faster and simpler to explore a larger combination of parameters (e.g. not limited to M-dwarfs and NIR wavelengths).
 
 *Eniric* contains several independent functions to transform observed and synthetic spectra, such as wavelength selection,
 broadening, SNR normalization and to compute RV precisions.
@@ -52,7 +52,7 @@ The precision calculations are not limited to the large spectroscopic bands, but
 This allows one to explore the RV precision across the entire spectrum and perform comparision between observations and synthetic libraries [e.g. @artigau_optical_2018].
 
 Extraneous information not included in the spectra (i.e., not photon noise, or line content information)
-can be included in the precision calculation through the use of a spectral mask. This mask be use to can
+can be included in the precision calculation through the use of a spectral mask. This mask can be used to
 indicate which spectral lines are to be included/excluded or if some sections should receive more
 statistical weight for an external reason.
 For example, masks derived from an atmospheric absorption spectrum can be used to explore the treatment
@@ -61,7 +61,7 @@ and correction the atmospheric absorption on the RV precision [@figueira_radial_
 The script [`phoenix_precision.py`](https://github.com/jason-neal/eniric/blob/develop/eniric_scripts/phoenix_precision.py) is provided to compute relative RV precisions of any synthetic spectra in the
  [*PHOENIX-ACES*](http://phoenix.astro.physik.uni-goettingen.de) [@husser_new_2013] and
  [*BT-Settl* (CIFIST2011-2015)](https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/) [@baraffe_new_2015] synthetic libraries,
- given the identifying spectral parameters using *Starfish*'s
+ given the identifying spectral parameters, making use of *Starfish*'s
  [Grid Tools](https://iancze.github.io/Starfish/current/grid_tools.html) [@czekala_constructing_2015].
 The RV precision is computed under the three separate conditions of @figueira_radial_2016 and tabulated for all combinations of
 the spectral parameters, SNR, instrument resolutions, rotational velocities, pixel sampling, and
