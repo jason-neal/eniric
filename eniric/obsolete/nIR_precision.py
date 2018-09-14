@@ -454,7 +454,9 @@ def calculate_prec(
 ###############################################################################
 def compare_output():
     """Function that compares a spectrum prior to convolution, after, and after resampling."""
-    pre_convolution = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
+    pre_convolution = (
+        "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
+    )
     pre_wav, pre_flux = io.pdread_2col(pre_convolution)
     pre_wav = np.array(pre_wav, dtype=float) * 1.0e-4  # conversion to microns
     pre_flux = np.array(pre_flux, dtype=float) * pre_wav
