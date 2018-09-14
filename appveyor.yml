@@ -36,7 +36,7 @@ install:
   - cmd: "move tests\\config.yaml config.yaml"
 
   # Downloading Eniric data with powershell script for windows
-  - ps: ".\eniric_scripts\\ps_download_eniric_data.ps1"
+  - ps: ".\\eniric_scripts\\ps_download_eniric_data.ps1"
   # Generate data  # Should not do much as data already downloaded.
   - cmd: "%PYTHON%\\python.exe eniric\\obsolete\\make_test_data.py"
 
