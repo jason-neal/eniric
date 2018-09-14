@@ -54,7 +54,7 @@ def rotational_convolution(
     num_procs: int, None
         Number of processes to use with multiprocess.
         If None it is assigned to 1 less then total number of cores.
-        If num_procs = 0, then multiprocess is not used.
+        If num_procs = 0 or 1, then multiprocess is not used.
 
     Returns
     -------
@@ -108,7 +108,7 @@ def rotational_convolution(
 
     tqdm_wav = tqdm(wavelength)
 
-    if num_procs != 0:
+    if (num_procs != 0) or (num_procs != 1):
         if num_procs is None:
             num_procs = mprocess.cpu_count() - 1
 
@@ -118,7 +118,7 @@ def rotational_convolution(
 
         mproc_pool.close()
 
-    else:  # num_procs == 0
+    else:  # num_procs == 0  or num_procs == 1
         convolved_flux = np.empty_like(wavelength)  # Memory assignment
         for ii, single_wav in enumerate(tqdm_wav):
             convolved_flux[ii] = element_rot_convolution(single_wav)
@@ -155,7 +155,7 @@ def resolution_convolution(
     num_procs: int, None
         Number of processes to use with multiprocess.
         If None it is assigned to 1 less then total number of cores.
-        If num_procs = 0, then multiprocess is not used.
+        If num_procs = 0 or 1, then multiprocess is not used.
 
     Returns
     -------
@@ -204,7 +204,7 @@ def resolution_convolution(
 
     tqdm_wav = tqdm(wavelength)
 
-    if num_procs != 0:
+    if (num_procs != 0) or (num_procs != 1):
         if num_procs is None:
             num_procs = mprocess.cpu_count() - 1
 
@@ -213,7 +213,7 @@ def resolution_convolution(
         convolved_flux = np.array(mproc_pool.map(element_res_convolution, tqdm_wav))
         mproc_pool.close()
 
-    else:  # num_procs == 0
+    else:  # num_procs == 0 or num_procs == 1
         convolved_flux = np.empty_like(wavelength)  # Memory assignment
         for jj, single_wav in enumerate(tqdm_wav):
             convolved_flux[jj] = element_res_convolution(single_wav)
