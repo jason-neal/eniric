@@ -36,7 +36,7 @@ install:
   - cmd: "move tests\\config.yaml config.yaml"
 
   # Downloading Eniric data with bash script
-  - sh: download_eniric_data.sh
+  - bash download_eniric_data.sh
   # Generate data  # Should not do much as data already downloaded.
   - cmd: "%PYTHON%\\python.exe eniric\\obsolete\\make_test_data.py"
 
@@ -72,3 +72,6 @@ artifacts:
 #  You can use this step to upload your artifacts to a public website.
 #  See Appveyor's documentation for more details. Or you can simply
 #  access your wheels from the Appveyor "artifacts" tab for your build.
+
+matrix:
+   - fast_finish: true
