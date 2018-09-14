@@ -36,7 +36,7 @@ install:
   - cmd: "move tests\\config.yaml config.yaml"
 
   # Downloading Eniric data with bash script
-  - bash download_eniric_data.sh
+  - bash "eniric_scripts\\download_eniric_data.sh"
   # Generate data  # Should not do much as data already downloaded.
   - cmd: "%PYTHON%\\python.exe eniric\\obsolete\\make_test_data.py"
 
