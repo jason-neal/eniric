@@ -71,8 +71,12 @@ def test_published_precision_with_old_normalization(model_parameters, published_
     assert published["RV_Cond_2[m/s]"].values != round(results[id_string][1].value, 1)
 
     # precision 3  # Accounting for Rounding errors
-    assert published["RV_Cond_3[m/s]"].values - 0.08 <= round(results[id_string][2].value, 2)
-    assert published["RV_Cond_3[m/s]"].values + 0.08 >= round(results[id_string][2].value, 2)
+    assert published["RV_Cond_3[m/s]"].values - 0.08 <= round(
+        results[id_string][2].value, 2
+    )
+    assert published["RV_Cond_3[m/s]"].values + 0.08 >= round(
+        results[id_string][2].value, 2
+    )
 
 
 def test_published_precision_with_new_normalization(model_parameters, published_data):

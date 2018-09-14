@@ -27,6 +27,8 @@ before_script:
   - export MPLBACKEND="AGG"  # Non-interactive
   - mv tests/config.yaml config.yaml
 
+  # Download the Data for eniric and testing
+  - download_eniric_data.sh  # Some files from Dropbox
   # Generate data
   - make_test_data.py
 
