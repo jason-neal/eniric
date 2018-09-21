@@ -121,8 +121,8 @@ def test_snr_constant_band_returns_mid_value_const(band):
 
 
 @pytest.mark.parametrize("band", ["VIS", "K", "H"])
-@pytest.mark.parametrize("verbose", [True, False]])
-def test_snr_normalization_logic(band):
+@pytest.mark.parametrize("verbose", [True, False])
+def test_snr_normalization_logic(band, verbose):
     """Testing direct value.
 
     snr = sqrt(sum(3 pixels))
