@@ -66,9 +66,7 @@ def plot_precision(
         df_ii_100k = df_ii[df_ii["Resolution"].str.strip() == "100k"]
 
         df_ii_60k = df_ii_60k.set_index("Band")
-        print("new index\n", df_ii_60k)
         df_ii_60k = df_ii_60k.reindex(["Z", "Y", "J", "H", "K"])
-        print("reindexed\n", df_ii_60k)
 
         df_ii_80k = df_ii_80k.set_index("Band")
         df_ii_80k = df_ii_80k.reindex(["Z", "Y", "J", "H", "K"])
@@ -284,9 +282,7 @@ def cumulative_plot(
         df_ii_100k = df_ii[df_ii["Resolution"].str.strip() == "100k"]
 
         df_ii_60k = df_ii_60k.set_index("Band")
-        print("new index\n", df_ii_60k)
         df_ii_60k = df_ii_60k.reindex(["Z", "Y", "J", "H", "K"])
-        print("reindexed\n", df_ii_60k)
 
         df_ii_80k = df_ii_80k.set_index("Band")
         df_ii_80k = df_ii_80k.reindex(["Z", "Y", "J", "H", "K"])

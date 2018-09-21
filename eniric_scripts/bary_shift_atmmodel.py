@@ -36,11 +36,11 @@ def _parser():
         help="Wavelength bands to select. Default=None.",
         nargs="+",
     )
-    _args = parser.parse_args()
-    return _args
+    parser.add_argument("-v", "--verbose", help="Turn on verbose.", action="store_true")
+    return parser.parse_args()
 
 
-def main(bands: Optional[List[str]] = None):
+def main(bands: Optional[List[str]] = None, verbose: bool = False):
     """Preform the barycentric shifting of atmosphere masks and saves result.
 
     This saves time in the precision determination code.
@@ -60,34 +60,41 @@ def main(bands: Optional[List[str]] = None):
             eniric.paths["atmmodel"],
             "{0}_{1}.dat".format(eniric.atmmodel["base"], band),
         )
-
-        print("Reading atmospheric model...", unshifted_atmmodel)
+        if verbose:
+            print("Reading atmospheric model...", unshifted_atmmodel)
 
         atm = Atmosphere.from_file(unshifted_atmmodel)
 
-        print("Calculating impact of Barycentric movement on mask...")
+        if verbose:
+            print("Calculating impact of Barycentric movement on mask...")
         org_mask = atm.mask
         masked_before = np.sum(org_mask)
         atm.bary_shift_mask(consecutive_test=True)
 
         masked_after = np.sum(atm.mask)
-        print(
-            "Masked fraction before = {0:0.03f}".format(
-                (len(org_mask) - masked_before) / len(org_mask)
+        if verbose:
+            print(
+                "Masked fraction before = {0:0.03f}".format(
+                    (len(org_mask) - masked_before) / len(org_mask)
+                )
             )
-        )
-        print(
-            "Masked fraction after = {0:0.03f}".format(
-                (len(atm.mask) - masked_after) / len(atm.mask)
+            print(
+                "Masked fraction after = {0:0.03f}".format(
+                    (len(atm.mask) - masked_after) / len(atm.mask)
+                )
             )
-        )
 
         shifted_atmmodel = unshifted_atmmodel.replace(".dat", "_bary.dat")
-        print("Saving doppler-shifted atmosphere model to {}".format(shifted_atmmodel))
+        if verbose:
+            print(
+                "Saving doppler-shifted atmosphere model to {}".format(shifted_atmmodel)
+            )
 
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
         atm.to_file(fname=shifted_atmmodel, header=header, fmt="%11.8f")
-    print("Done")
+
+    if verbose:
+        print("Finished barycentric shifting of atmosphere masks")
 
 
 if __name__ == "__main__":
