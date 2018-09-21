@@ -64,7 +64,7 @@ def _parser():
         type=float,
         help=r"Telluric line depth cutoff. Default = 2 percent.",
     )
-
+    parser.add_argument("-v", "--verbose", help="Turn on verbose.", action="store_true")
     return parser.parse_args()
 
 
@@ -106,6 +106,7 @@ def main(
     data_dir: Optional[str] = None,
     rv_extend: float = 100,
     cutoff_depth: float = 2.0,
+    verbose: bool = False,
 ):
     """Split the large atmospheric model transmission spectra into the separate bands.
 
@@ -144,20 +145,24 @@ def main(
     # extract from tar.gz file. (Extracted it is 230 MB which is to large for Git)
     if "Average_TAPAS_2014.dat" == atmmodel:
         if not os.path.exists(model_name):
-            print("Unpacking Average_TAPAS_2014.dat.tar.gz...")
+            if verbose:
+                print("Unpacking Average_TAPAS_2014.dat.tar.gz...")
             import tarfile
 
             with tarfile.open(str(model_name) + ".tar.gz", "r") as tar:
                 tar.extractall(data_dir_)
-            print("Unpacked")
-    print("Loading from_file {0}".format(model_name))
+            if verbose:
+                print("Unpacked")
+    if verbose:
+        print("Loading from_file {0}".format(model_name))
     atm = Atmosphere.from_file(model_name)
 
     # Return value from saving each band
     write_status = np.empty_like(bands_, dtype=int)
 
     for i, band in enumerate(bands_):
-        print("Starting {0}".format(band))
+        if verbose:
+            print("Starting {0}".format(band))
         filename_band = "{0}_{1}.dat".format(new_name, band)
         band_min, band_max = band_limits(band)
 
@@ -173,16 +178,15 @@ def main(
         # Save the result to file
         filename = join(data_dir_, filename_band)
         header = ["# atm_wav(nm)", "atm_flux", "atm_std_flux", "atm_mask"]
-        print("Saving to_file {}".format(filename))
+        if verbose:
+            print("Saving to_file {}".format(filename))
         write_status[i] = split_atm.to_file(filename, header=header, fmt="%11.8f")
-    print("Done Splitting")
-
-    return np.sum(write_status)  # If any extracts fail they will turn up here.
+    if args.verbose:
+        print("Finished telluric model splitting")
+    return int(np.sum(write_status))  # If any extracts fail they will turn up here.
 
 
 if __name__ == "__main__":
     args = vars(_parser())
     opts = {k: args[k] for k in args}
-    exit_status = int(main(**opts))
-    print("exit_status", exit_status)
-    sys.exit(exit_status)
+    sys.exit(main(**opts))
