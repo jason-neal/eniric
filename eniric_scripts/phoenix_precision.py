@@ -314,13 +314,13 @@ def header_row(add_rv=False):
     """Header row for output file."""
     if add_rv:
         header = (
-            "Temp,logg,[Fe/H],Alpha,Band,Resolution,vsini,Sampling,"
-            "RV,correct_flag,Quality,Cond._1,Cond._2,Cond._3\n"
+            "temp,logg,feh,alpha,band,resolution,vsini,sampling,"
+            "rv,correctflag,quality,cond1,cond2,cond3\n"
         )
     else:
         header = (
-            "Temp,logg,[Fe/H],Alpha,Band,Resolution,vsini,Sampling,"
-            "correct_flag,Quality,Cond._1,Cond._2,Cond._3\n"
+            "temp,logg,feh,alpha,band,resolution,vsini,sampling,"
+            "correctflag,quality,cond1,cond2,cond3\n"
         )
     return header
 
