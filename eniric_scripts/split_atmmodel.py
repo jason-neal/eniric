@@ -181,7 +181,7 @@ def main(
         if verbose:
             print("Saving to_file {}".format(filename))
         write_status[i] = split_atm.to_file(filename, header=header, fmt="%11.8f")
-    if args.verbose:
+    if verbose:
         print("Finished telluric model splitting")
     return int(np.sum(write_status))  # If any extracts fail they will turn up here.
 
