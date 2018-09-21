@@ -205,9 +205,6 @@ def do_analysis(
         print("Doppler shift was unsuccessful")
         raise e
 
-    # Spectral Quality
-    q = quality(wav_grid, sampled_flux)
-
     # Scale normalization for precision
     wav_ref, sampled_ref = convolve_and_resample(
         wav, flux, vsini, R, ref_band, sampling, **conv_kwargs
@@ -298,7 +295,7 @@ def model_format_args(model, pars):
         rv = float(pars[4])
         return temp, logg, fe_h, alpha, band, res, vsini, sample, rv
     except IndexError:
-        return temp, logg, fe_h, alpha, band, res, vsini, sample
+        return temp, logg, fe_h, alpha, band, res, vsini, sample, 0.0
 
 
 def header_row(add_rv=False):
@@ -322,41 +319,51 @@ def get_already_computed(filename: str, add_rv: bool = False):
     with open(filename, "r") as f:
         for line in f:
             if add_rv:
-                # First 9 columns (not including args.correct atm)
-                param_lines.append(select_csv_columns(line, ncols=9))
+                # First 10 columns
+                param_lines.append(select_csv_columns(line, ncols=10))
             else:
                 # First 9 columns
-                param_lines.append(select_csv_columns(line, ncols=8))
+                param_lines.append(select_csv_columns(line, ncols=9))
         # Strip any spaces
         param_lines = [strip_whitespace(value) for value in param_lines]
     return param_lines
 
 
-def is_already_computed(computed_values: List[str], model, pars, add_rv: bool = False):
-    """Check if any combinations have already been preformed"""
+def is_already_computed(
+    computed_values: List[str],
+    model,
+    pars,
+    add_rv: bool = False,
+    correct: bool = False,
+):
+    """Check if any combinations have already been preformed.
+    Correct is boolean for applied Artigau correction."""
     model_par_str_args = model_format_args(model, pars)
     rv_template = (
-        "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,{6:4.01f},{7:3.01f},{8:3.01f}"
+        "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,{6:4.01f},{7:3.01f},{8:3.01f},{9:1d}"
     )
-    norv_template = (
-        "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,{6:4.01f},{7:3.01f}"
+    no_rv_template = (
+        "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,{6:4.01f},{7:3.01f},{8:1d}"
     )
     if add_rv:
         if len(model_par_str_args) != 9:
             raise ValueError("model_par_str_args is incorrect length")
 
-        idenifying_line = strip_whitespace(rv_template.format(*model_par_str_args))
+        idenifying_line = strip_whitespace(
+            rv_template.format(*model_par_str_args, int(correct))
+        )
     else:
         model_par_str_args = model_par_str_args[:8]
         if len(model_par_str_args) != 8:
             raise ValueError("model_par_str_args is incorrect length")
 
-        idenifying_line = strip_whitespace(norv_template.format(*model_par_str_args))
+        idenifying_line = strip_whitespace(
+            no_rv_template.format(*model_par_str_args, int(correct))
+        )
 
     result = idenifying_line in computed_values
     if result:
         print(model_par_str_args, "model already computed")
-        print(idenifying_line)
 
     return result
 
@@ -437,7 +444,11 @@ if __name__ == "__main__":
                 pars = (R, band, vsini, sample, rv)
 
                 if is_already_computed(
-                    computed_values, model, pars, add_rv=args.add_rv
+                    computed_values,
+                    model,
+                    pars,
+                    add_rv=args.add_rv,
+                    correct=args.correct,
                 ):
                     # skipping the recalculation
                     continue
@@ -471,27 +482,25 @@ if __name__ == "__main__":
                     if args.add_rv:
                         output_template = (
                             "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,"
-                            " {6:4.01f},{7:3.01f},{8:3.01f},{13:1d},{9:6d},{10:5.01f}, "
-                            "{11:5.01f},{12:5.01f}\n"
+                            "{6:4.01f},{7:3.01f},{8:3.01f},{9:1d},{10:6d},{11:5.01f},"
+                            "{12:5.01f},{13:5.01f}\n"
                         )
                         output_model_args = model_format_args(model, pars)
                     else:
                         output_template = (
                             "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,"
-                            " {6:4.01f},{7:3.01f},{12:1d},{8:6d},{9:5.01f},{10:5.01f}, "
-                            "{11:5.01f}\n"
+                            "{6:4.01f},{7:3.01f},{8:1d},{9:6d},{10:5.01f},{11:5.01f},"
+                            "{12:5.01f}\n"
                         )
                         output_model_args = model_format_args(model, pars)[:8]
 
                     linetowite = output_template.format(
                         *output_model_args,
+                        int(args.correct),
                         result[0],
                         result[1],
                         result[2],
                         result[3],
-                        int(
-                            args.correct
-                        ),  # Moved correct to before quality in template
                     )
                     f.write(strip_whitespace(linetowite) + "\n")  # Make csv only
     print("Done")
