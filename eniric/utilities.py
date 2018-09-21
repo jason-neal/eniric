@@ -381,6 +381,10 @@ def load_btsettl_spectrum(
         [M/H] = 0.0.
 
         Available from https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/
+
+    The BT-Settl models are Sampled at a higher rate than PHOENIX-ACES (>10 X).
+    Therefore we cut it by factor of 10 during loading to give them similar number of points.
+    This makes the convolutions go 10X faster.
     """
     from Starfish.grid_tools import CIFISTGridInterface as BTSETTL
 
@@ -394,11 +398,14 @@ def load_btsettl_spectrum(
     btsettl_grid = BTSETTL(base=base, air=air, norm=False, wl_range=wl_range)
 
     wav = btsettl_grid.wl
-    # Convert wavelength from Angstrom to micron
-    wav_micron = wav * 10 ** -4
-
     # CIFIST flux is  W/m**2/um
     flux, hdr = btsettl_grid.load_flux(params)
+
+    # [::10] down samples only every 10th point from BT-Settl CIFIST spectrum.
+    wav, flux = wav[::10], flux[::10]
+
+    # Convert wavelength from Angstrom to micron
+    wav_micron = wav * 10 ** -4
 
     flux_micron = flux * 10 ** -7  # Convert W/m**2/um to ergs/s/m**2/um)
     flux_micron *= 10 ** -4  # Convert 1/m**2 to 1/cm**2
