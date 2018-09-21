@@ -99,9 +99,6 @@ def _parser():
         help="Spectral models to use. Default=phoenix.",
     )
     parser.add_argument(
-        "--save", default=False, action="store_true", help="Save results to file."
-    )
-    parser.add_argument(
         "--snr", help="Mid-band SNR scaling. (Default=100)", default=100, type=float
     )
     parser.add_argument(
