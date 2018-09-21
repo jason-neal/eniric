@@ -305,71 +305,72 @@ def header_row(add_rv=False):
     """Header row for output file."""
     if add_rv:
         header = (
-            "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, "
-            "RV, Quality, Cond. 1, Cond. 2, Cond. 3, correct flag\n"
+            "Temp,logg,[Fe/H],Alpha,Band,Resolution,vsini,Sampling,"
+            "RV,correct_flag,Quality,Cond._1,Cond._2,Cond._3\n"
         )
     else:
         header = (
-            "Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, "
-            "Quality, Cond. 1, Cond. 2, Cond. 3, correct flag\n"
+            "Temp,logg,[Fe/H],Alpha,Band,Resolution,vsini,Sampling,"
+            "correct_flag,Quality,Cond._1,Cond._2,Cond._3\n"
         )
     return header
 
 
 def get_already_computed(filename: str, add_rv: bool = False):
-    """Get the string of already computer model/parameters from the result file."""
-    computed_values = []
+    """Get the string of already computed model/parameters from the result file."""
+    param_lines = []
     with open(filename, "r") as f:
         for line in f:
             if add_rv:
-                # should be longer
-                computed_values.append(line[:47])
-                computed_values.append(line[:40])
+                # First 9 columns (not including args.correct atm)
+                param_lines.append(select_csv_columns(line, ncols=9))
             else:
-                computed_values.append(line[:41])
-                computed_values.append(line[:34])
-    return computed_values
+                # First 9 columns
+                param_lines.append(select_csv_columns(line, ncols=8))
+        # Strip any spaces
+        param_lines = [strip_whitespace(value) for value in param_lines]
+    return param_lines
 
 
 def is_already_computed(computed_values: List[str], model, pars, add_rv: bool = False):
     """Check if any combinations have already been preformed"""
     model_par_str_args = model_format_args(model, pars)
-
+    rv_template = (
+        "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,{6:4.01f},{7:3.01f},{8:3.01f}"
+    )
+    norv_template = (
+        "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,{6:4.01f},{7:3.01f}"
+    )
     if add_rv:
         if len(model_par_str_args) != 9:
             raise ValueError("model_par_str_args is incorrect length")
 
-        params_one = (
-            "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
-            " {6:4.01f}, {7:3.01f}"
-        ).format(*model_par_str_args)
-        # may change output to have less spaces in future
-        params_two = (
-            "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k," "{6:4.01f},{7:3.01f}"
-        ).format(*model_par_str_args)
-
+        idenifying_line = strip_whitespace(rv_template.format(*model_par_str_args))
     else:
-
         model_par_str_args = model_par_str_args[:8]
-
         if len(model_par_str_args) != 8:
             raise ValueError("model_par_str_args is incorrect length")
 
-        params_one = (
-            "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
-            " {6:4.01f}, {7:3.01f}"
-        ).format(*model_par_str_args)
-        # may change output to have less spaces in future
-        params_two = (
-            "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k," "{6:4.01f},{7:3.01f}"
-        ).format(*model_par_str_args)
+        idenifying_line = strip_whitespace(norv_template.format(*model_par_str_args))
 
-    result = (params_one in computed_values) or (params_two in computed_values)
+    result = idenifying_line in computed_values
     if result:
         print(model_par_str_args, "model already computed")
-        print(params_one)
+        print(idenifying_line)
 
     return result
+
+
+def strip_whitespace(line: str) -> str:
+    return "".join(line.split())
+
+
+def select_csv_columns(line: str, ncols: int = 8) -> str:
+    """Select first ncols in a line from a csv.
+    ncols: int
+        Number of column to select.
+    """
+    return ",".join(line.split(",")[:ncols])
 
 
 if __name__ == "__main__":
@@ -469,26 +470,28 @@ if __name__ == "__main__":
 
                     if args.add_rv:
                         output_template = (
-                            "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
-                            " {6:4.01f}, {7:3.01f}, {8:3.01f}, {9:6d}, {10:5.01f}, "
-                            "{11:5.01f}, {12:5.01f}, {13:1d}\n"
+                            "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,"
+                            " {6:4.01f},{7:3.01f},{8:3.01f},{13:1d},{9:6d},{10:5.01f}, "
+                            "{11:5.01f},{12:5.01f}\n"
                         )
                         output_model_args = model_format_args(model, pars)
                     else:
                         output_template = (
-                            "{0:5d}, {1:3.01f}, {2:4.01f}, {3:3.01f}, {4:s}, {5:3d}k,"
-                            " {6:4.01f}, {7:3.01f}, {8:6d}, {9:5.01f}, {10:5.01f}, "
-                            "{11:5.01f}, {12:1d}\n"
+                            "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,"
+                            " {6:4.01f},{7:3.01f},{12:1d},{8:6d},{9:5.01f},{10:5.01f}, "
+                            "{11:5.01f}\n"
                         )
                         output_model_args = model_format_args(model, pars)[:8]
-                    f.write(
-                        output_template.format(
-                            *output_model_args,
-                            result[0],
-                            result[1],
-                            result[2],
-                            result[3],
-                            int(args.correct),
-                        )
+
+                    linetowite = output_template.format(
+                        *output_model_args,
+                        result[0],
+                        result[1],
+                        result[2],
+                        result[3],
+                        int(
+                            args.correct
+                        ),  # Moved correct to before quality in template
                     )
+                    f.write(strip_whitespace(linetowite) + "\n")  # Make csv only
     print("Done")
