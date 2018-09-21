@@ -121,7 +121,7 @@ def _parser():
         "-o",
         "--output",
         help="Filename for results",
-        default="quality_results.csv",
+        default="precisions.csv",
         type=str,
     )
     parser.add_argument(
