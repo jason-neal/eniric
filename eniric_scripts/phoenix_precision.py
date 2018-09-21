@@ -7,6 +7,7 @@ from typing import List, Tuple
 import multiprocess as mprocess
 import numpy as np
 from astropy import units as u
+from astropy.units import Quantity
 from numpy import ndarray
 
 import eniric
@@ -134,6 +135,8 @@ def _parser():
         "--air", help="Convert wavelengths from vacuum to air", action="store_true"
     )
     parser.add_argument("--correct", help="Apply RV corrections", action="store_true")
+
+    parser.add_argument("--verbose", help="Turn on verbose.", action="store_true")
     return parser.parse_args()
 
 
@@ -148,8 +151,9 @@ def do_analysis(
     ref_band: str = "J",
     rv: float = 0.0,
     air: bool = False,
-    model="phoenix",
-):
+    model: str = "phoenix",
+    verbose: bool = False,
+) -> List[Quantity]:
     """Precision and Quality for specific parameter set.
 
     Parameters
@@ -214,7 +218,7 @@ def do_analysis(
     )
     sampled_flux = sampled_flux / snr_normalize
 
-    if ref_band == band:
+    if (ref_band == band) and verbose:
         mid_point = band_middle(ref_band)
         index_ref = np.searchsorted(
             wav_grid, mid_point
@@ -335,6 +339,7 @@ def is_already_computed(
     pars,
     add_rv: bool = False,
     correct: bool = False,
+    verbose=False,
 ):
     """Check if any combinations have already been preformed.
     Correct is boolean for applied Artigau correction."""
@@ -362,9 +367,9 @@ def is_already_computed(
         )
 
     result = idenifying_line in computed_values
-    if result:
-        print(model_par_str_args, "model already computed")
 
+    if result and verbose:
+        print(model_par_str_args, "already computed")
     return result
 
 
@@ -449,6 +454,7 @@ if __name__ == "__main__":
                     pars,
                     add_rv=args.add_rv,
                     correct=args.correct,
+                    verbose=args.verbose,
                 ):
                     # skipping the recalculation
                     continue
@@ -503,4 +509,11 @@ if __name__ == "__main__":
                         result[3],
                     )
                     f.write(strip_whitespace(linetowite) + "\n")  # Make csv only
-    print("Done")
+
+    if args.verbose:
+        print(
+            "`{1}` completed successfully:\n"
+            "\tYou shall find you results in '{0}'.".format(
+                args.output, os.path.basename(__file__)
+            )
+        )
