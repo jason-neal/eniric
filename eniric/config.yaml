@@ -4,8 +4,8 @@
 # Paths can either be strings of list of strings which will be passed
 # to os.path.join() [os independent]
 paths:
-  phoenix_raw: [] # Path to Phoenix-ACES spectra
-  btsettl_raw: [] # Path to BT-Settl spectra
+  phoenix_raw: ["..","data","phoenix_raw"] # Path to Phoenix-ACES spectra
+  btsettl_raw: ["..","data","btsettl_raw"] # Path to BT-Settl spectra
   test_data: ["..","data","test_data"]
   atmmodel: ["..","data", "atmmodel"]
   precision: ["precision"]  # A place to put precision results
