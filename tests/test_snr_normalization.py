@@ -61,8 +61,8 @@ def test_band_snr_norm(testing_spectrum, sampling):
     ) == snrnorm.snr_constant_wav(wav, flux, wav_ref=1.25, snr=100, sampling=sampling)
 
     assert snrnorm.snr_constant_band(
-        wav, flux, band="J", snr=100, sampling=sampling
-    ) != snrnorm.snr_constant_wav(wav, flux, wav_ref=1.24, snr=100, sampling=sampling)
+        wav, flux, band="J", snr=100, sampling=sampling, verbose=True
+    ) != snrnorm.snr_constant_wav(wav, flux, wav_ref=1.24, snr=100, sampling=sampling, verbose=True)
 
 
 def test_sampling_index():
@@ -121,6 +121,7 @@ def test_snr_constant_band_returns_mid_value_const(band):
 
 
 @pytest.mark.parametrize("band", ["VIS", "K", "H"])
+@pytest.mark.parametrize("verbose", [True, False]])
 def test_snr_normalization_logic(band):
     """Testing direct value.
 
@@ -133,9 +134,9 @@ def test_snr_normalization_logic(band):
     lim = utils.band_limits(band)
     wav = np.linspace(lim[0], lim[1], size)
     flux = 3 * np.ones(size)
-    band_const = snrnorm.snr_constant_band(wav, flux, snr=3, band=band)
+    band_const = snrnorm.snr_constant_band(wav, flux, snr=3, band=band, verbose=verbose)
     wav_const = snrnorm.snr_constant_wav(
-        wav, flux, snr=3, wav_ref=(lim[0] + lim[1]) / 2
+        wav, flux, snr=3, wav_ref=(lim[0] + lim[1]) / 2, verbose=verbose,
     )
     assert band_const == 1
     assert wav_const == 1

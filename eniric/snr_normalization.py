@@ -21,6 +21,7 @@ def snr_constant_band(
     snr: Union[int, float] = 100,
     band: str = "J",
     sampling: Union[int, float] = 3.0,
+    verbose: bool=False,
 ) -> float:
     """Determine the normalization constant to achieve a SNR in the middle of a given band.
 
@@ -38,6 +39,8 @@ def snr_constant_band(
         Band to use for normalization.
     sampling: int or float
        Number of pixels per resolution element.
+    verbose:
+        Enable verbose (default=False)
 
     Returns
     -------
@@ -56,7 +59,7 @@ def snr_constant_band(
         raise ValueError("Band center not in wavelength range.")
 
     norm_constant = snr_constant_wav(
-        wav, flux, wav_ref=band_middle, snr=snr, sampling=sampling
+        wav, flux, wav_ref=band_middle, snr=snr, sampling=sampling, verbose=verbose,
     )
 
     return norm_constant
@@ -68,6 +71,7 @@ def snr_constant_wav(
     wav_ref: float,
     snr: Union[int, float] = 100,
     sampling: Union[int, float] = 3.0,
+    verbose:bool =False,
 ) -> float:
     """Determine the normalization constant to achieve a SNR at given wavelength.
 
@@ -85,6 +89,8 @@ def snr_constant_wav(
         SNR to set.
     sampling: int or float
        Number of pixels per resolution element.
+    verbose:
+        Enable verbose (default=False).
 
     Returns
     -------
@@ -109,11 +115,12 @@ def snr_constant_wav(
 
     snr_estimate = np.sqrt(np.sum(flux[indexes]))
 
-    print(
-        "\tSanity Check: The reference S/N at {1:3.02f} was of {0:4.2f}.".format(
-            snr_estimate, wav_ref
+    if verbose:
+        print(
+            "\tSanity Check: The reference S/N at {1:3.02f} was of {0:4.2f}.".format(
+                snr_estimate, wav_ref
+            )
         )
-    )
     norm_value = (snr_estimate / snr) ** 2
     return norm_value
 

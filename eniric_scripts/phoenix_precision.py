@@ -155,12 +155,22 @@ def do_analysis(
 
     Parameters
     ----------
-    air: bool
-        Get model in air wavelengths.
-    model: str
-        Name of synthetic library to use. (phoenix, btsettl).
+    star_param:
+    vsini: float
+    R: float
+    band: str 
+    sampling: float (default=False)
+    conv_kwargs: Dict (default=None)
+    snr: float (default=100)
+    ref_band: str (default="J")
     rv: float
-        Radial velocity.
+        Radial velocity in km/s (default = 0.0).
+    air: bool
+        Get model in air wavelengths (default=False).
+    model: str
+        Name of synthetic library (phoenix, btsettl) to use. Default = 'phoenix'.
+    verbose:
+        Enable verbose (default=False).
 
     Notes:
         We apply the radial velocity doppler shift after
@@ -177,6 +187,7 @@ def do_analysis(
             "fwhm_lim": 5.0,
             "num_procs": num_procs_minus_1,
             "normalize": True,
+            "verbose": verbose,
         }
 
     if ref_band.upper() == "SELF":
@@ -211,7 +222,7 @@ def do_analysis(
         wav, flux, vsini, R, ref_band, sampling, **conv_kwargs
     )
     snr_normalize = snr_constant_band(
-        wav_ref, sampled_ref, snr=snr, band=ref_band, sampling=sampling
+        wav_ref, sampled_ref, snr=snr, band=ref_band, sampling=sampling, verbose=verbose,
     )
     sampled_flux = sampled_flux / snr_normalize
 
@@ -235,17 +246,17 @@ def do_analysis(
     q = quality(wav_grid, sampled_flux)
 
     # Precision given by the first condition:
-    prec1 = rv_precision(wav_grid, sampled_flux, mask=None)
+    result_1 = rv_precision(wav_grid, sampled_flux, mask=None)
 
     # Precision as given by the second condition
-    prec2 = rv_precision(wav_grid, sampled_flux, mask=atm.mask)
+    result_2 = rv_precision(wav_grid, sampled_flux, mask=atm.mask)
 
     # Precision as given by the third condition: M = T**2
-    prec3 = rv_precision(wav_grid, sampled_flux, mask=atm.transmission ** 2)
+    result_3 = rv_precision(wav_grid, sampled_flux, mask=atm.transmission ** 2)
 
     # Turn quality back into a Quantity (to give it a .value method)
     q = q * u.dimensionless_unscaled
-    return [q, prec1, prec2, prec3]
+    return [q, result_1, result_2, result_3]
 
 
 def convolve_and_resample(

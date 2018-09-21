@@ -20,6 +20,7 @@ def test_Atmosphere_funtional_test(short_atmosphere):
     Check masks are still ok.
     """
     atm = short_atmosphere
+    atm.verbose = True
     atm.mask = np.ones_like(atm.wl, dtype=bool)  # reset mask
     assert not np.all(atm.transmission[atm.mask] >= 0.98)
     atm.broaden(100000)
