@@ -30,6 +30,8 @@ class Atmosphere(object):
         Transmission mask (1's are kept)
     shifted: bool
         Indicate shifted mask
+    verbose:
+        Enable verbose (default=False).
 
     Constructors
     ----------
@@ -69,7 +71,7 @@ class Atmosphere(object):
             base: "Average_TAPAS_2014"
     """
 
-    def __init__(self, wavelength, transmission, mask=None, std=None, shifted=False):
+    def __init__(self, wavelength, transmission, mask=None, std=None, shifted=False, verbose=False):
         assert len(wavelength) == len(
             transmission
         ), "Wavelength and transmission do not match length."
@@ -84,6 +86,7 @@ class Atmosphere(object):
         else:
             self.mask = np.asarray(mask, dtype=bool)
         self.shifted = shifted
+        self.verbose = verbose
 
     @classmethod
     def from_file(cls, atmmodel: str):
@@ -298,12 +301,13 @@ class Atmosphere(object):
                     else:
                         this_mask_value = True
                         if np.sum(~mask_slice) > 3:
-                            print(
-                                (
-                                    "There were {0}/{1} zeros in this "
-                                    "barycentric shift but None were 3 consecutive!"
-                                ).format(np.sum(~mask_slice), len(mask_slice))
-                            )
+                            if self.verbose:
+                                print(
+                                    (
+                                        "There were {0}/{1} zeros in this "
+                                        "barycentric shift but None were 3 consecutive!"
+                                    ).format(np.sum(~mask_slice), len(mask_slice))
+                                )
 
                 else:
                     this_mask_value = np.bool(

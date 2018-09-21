@@ -36,4 +36,4 @@ if __name__ == "__main__":
         # subprocess.call(["python eniric_scripts/nIR_run.py
         #       -s {0} -b {1} -R {2} -v {3}".format(sptype, band, res, vel)], shell=True)
 
-        nir_run(startype=sptype, vsini=vel, resolution=res, band=band)
+        nir_run(startype=sptype, vsini=vel, resolution=res, band=band, verbose=False)

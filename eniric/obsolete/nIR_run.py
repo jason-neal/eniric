@@ -68,6 +68,12 @@ def _parser():
         action="store_true",
         help="Replace data files if already created.",
     )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Turn on Verbose",
+    )
     return parser.parse_args()
 
 
@@ -81,6 +87,7 @@ def main(
     unnormalized: bool = False,
     org: bool = False,
     replace: bool = False,
+    verbose: bool=False,
 ):
     """Run convolutions of NIR spectra for the range of given parameters.
 
@@ -152,14 +159,15 @@ def main(
                             os.path.exists(os.path.join(results_dir, result_name))
                             and not replace
                         ):
-                            print(
-                                "Skipping convolution as {} already exists".format(
-                                    result_name
+                            if verbose:
+                                print(
+                                    "Skipping convolution as {} already exists".format(
+                                        result_name
+                                    )
                                 )
-                            )
                             continue
-
-                        print("Name to be the result file", result_name)
+                        if verbose:
+                            print("Name to be the result file", result_name)
                         convolve_spectra(
                             spectrum_name,
                             b,
@@ -182,12 +190,12 @@ def main(
                                 sampling=sample,
                             )
                         counter += 1
-
-    print(
-        "Time to convolve {0:d} combinations = {1}".format(
+    if verbose:
+        print(
+            "Time to convolve {0:d} combinations = {1}".format(
             counter, dt.now() - start_time
+            )
         )
-    )
     return 0
 
 

@@ -24,7 +24,7 @@ memory = Memory(location=eniric.cache["location"], verbose=0)
 c_kmps = c.value / 1000
 
 
-@memory.cache(ignore=["num_procs"])
+@memory.cache(ignore=["num_procs", "verbose"])
 def rotational_convolution(
     wavelength: ndarray,
     extended_wav: ndarray,
@@ -34,6 +34,7 @@ def rotational_convolution(
     epsilon: float = 0.6,
     normalize: bool = True,
     num_procs: Optional[int] = None,
+    verbose: bool = True,
 ) -> ndarray:
     """Perform Rotational convolution.
 
@@ -55,6 +56,8 @@ def rotational_convolution(
         Number of processes to use with multiprocess.
         If None it is assigned to 1 less then total number of cores.
         If num_procs = 0 or 1, then multiprocess is not used.
+    verbose: bool
+        Show the tqdm progress bar (default = True).
 
     Returns
     -------
@@ -106,7 +109,7 @@ def rotational_convolution(
         else:
             return sum_val
 
-    tqdm_wav = tqdm(wavelength)
+    tqdm_wav = tqdm(wavelength, disable=not verbose)
 
     if (num_procs != 0) or (num_procs != 1):
         if num_procs is None:
@@ -125,7 +128,7 @@ def rotational_convolution(
     return convolved_flux
 
 
-@memory.cache(ignore=["num_procs"])
+@memory.cache(ignore=["num_procs", "verbose"])
 def resolution_convolution(
     wavelength: ndarray,
     extended_wav: ndarray,
@@ -135,6 +138,7 @@ def resolution_convolution(
     fwhm_lim: float = 5.0,
     normalize: bool = True,
     num_procs: Optional[int] = 1,
+    verbose: bool = True,
 ) -> ndarray:
     """Perform Resolution convolution.
 
@@ -156,6 +160,8 @@ def resolution_convolution(
         Number of processes to use with multiprocess.
         If None it is assigned to 1 less then total number of cores.
         If num_procs = 0 or 1, then multiprocess is not used.
+    verbose: bool
+        Show the tqdm progress bar (default = True).
 
     Returns
     -------
@@ -202,7 +208,7 @@ def resolution_convolution(
         else:
             return sum_val
 
-    tqdm_wav = tqdm(wavelength)
+    tqdm_wav = tqdm(wavelength, disable=not verbose)
 
     if (num_procs != 0) or (num_procs != 1):
         if num_procs is None:
@@ -220,7 +226,7 @@ def resolution_convolution(
     return convolved_flux
 
 
-@memory.cache(ignore=["num_procs"])
+@memory.cache(ignore=["num_procs", "verbose"])
 def convolution(
     wav: ndarray,
     flux: ndarray,
@@ -232,6 +238,7 @@ def convolution(
     fwhm_lim: float = 5.0,
     num_procs: Optional[int] = None,
     normalize: bool = True,
+    verbose: bool = True,
 ):
     """Perform convolution of spectrum.
 
@@ -260,6 +267,9 @@ def convolution(
         If None it is assigned to 1 less then total number of cores.
         If num_procs = 0, then multiprocess is not used.
 
+    verbose: bool
+        Show the twdm progress bars (default = True).
+
     Returns
     -------
     wav_band: ndarray
@@ -277,7 +287,8 @@ def convolution(
     fwhm_max = wav_band[-1] / R
 
     # performing convolution with rotation kernel
-    print("Starting the Rotation convolution for vsini={0:.2f}...".format(vsini))
+    if verbose:
+        print("Starting the Rotation convolution for vsini={0:.2f}...".format(vsini))
 
     delta_lambda_min = wav_band[0] * vsini / c_kmps
     delta_lambda_max = wav_band[-1] * vsini / c_kmps
@@ -301,9 +312,10 @@ def convolution(
         epsilon=epsilon,
         num_procs=num_procs,
         normalize=normalize,
+        verbose=verbose,
     )
-
-    print("Starting the Resolution convolution...")
+    if verbose:
+        print("Starting the Resolution convolution...")
 
     flux_conv_res = resolution_convolution(
         wav_band,
@@ -313,6 +325,7 @@ def convolution(
         fwhm_lim=fwhm_lim,
         num_procs=num_procs,
         normalize=normalize,
+        verbose=verbose,
     )
 
     return wav_band, flux_band, flux_conv_res
