@@ -444,7 +444,7 @@ def doppler_shift_wav(wavelength: ndarray, vel: float):
     Notes
     -----
     The Doppler shift is calculated using the relation
-       \Delta\lambda / \lambda\] = \[v / c
+      \[ \Delta\lambda / \lambda = v / c \]
     Where RV is the radial velocity (in km/s), \(\lambda_0\)`
     is the rest wavelength and \(\Delta\lambda\) is the wavelength
     shift, \(\lambda_{shift} - \lambda_0\)
