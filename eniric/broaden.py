@@ -115,11 +115,8 @@ def rotational_convolution(
         if num_procs is None:
             num_procs = mprocess.cpu_count() - 1
 
-        mproc_pool = mprocess.Pool(processes=num_procs)
-
-        convolved_flux = np.array(mproc_pool.map(element_rot_convolution, tqdm_wav))
-
-        mproc_pool.close()
+        with mprocess.Pool(processes=num_procs) as mproc_pool:
+            convolved_flux = np.array(mproc_pool.map(element_rot_convolution, tqdm_wav))
 
     else:  # num_procs == 0  or num_procs == 1
         convolved_flux = np.empty_like(wavelength)  # Memory assignment
@@ -214,10 +211,8 @@ def resolution_convolution(
         if num_procs is None:
             num_procs = mprocess.cpu_count() - 1
 
-        mproc_pool = mprocess.Pool(processes=num_procs)
-
-        convolved_flux = np.array(mproc_pool.map(element_res_convolution, tqdm_wav))
-        mproc_pool.close()
+        with mprocess.Pool(processes=num_procs) as mproc_pool:
+            convolved_flux = np.array(mproc_pool.map(element_res_convolution, tqdm_wav))
 
     else:  # num_procs == 0 or num_procs == 1
         convolved_flux = np.empty_like(wavelength)  # Memory assignment
