@@ -7,13 +7,15 @@ Used to convolve the spectra for
 Uses joblib.Memory to cache convolution results to skip repeated computation.
 """
 from typing import Optional, Union
+import os
 
-import multiprocess as mprocess
 import numpy as np
+import multiprocess as mprocess
 from astropy.constants import c
 from joblib import Memory
 from numpy.core.multiarray import ndarray
 from tqdm import tqdm
+from multiprocess import pool
 
 import eniric
 from eniric.utilities import band_selector, mask_between, wav_selector
@@ -22,6 +24,7 @@ from eniric.utilities import band_selector, mask_between, wav_selector
 memory = Memory(location=eniric.cache["location"], verbose=0)
 
 c_kmps = c.value / 1000
+num_procs_minus_1 = os.cpu_count() - 1
 
 
 @memory.cache(ignore=["num_procs", "verbose"])
@@ -33,7 +36,7 @@ def rotational_convolution(
     *,
     epsilon: float = 0.6,
     normalize: bool = True,
-    num_procs: Optional[int] = None,
+    num_procs: Optional[Union[int, pool.Pool]] = None,
     verbose: bool = True,
 ) -> ndarray:
     """Perform Rotational convolution.
@@ -52,10 +55,11 @@ def rotational_convolution(
         Limb darkening coefficient
     normalize: bool (default = True)
         Area normalize the broadening kernel (corrects for unequal sampling of position).
-    num_procs: int, None
+    num_procs: int, None or multiprocess.pool.Pool.
         Number of processes to use with multiprocess.
         If None it is assigned to 1 less then total number of cores.
         If num_procs = 0 or 1, then multiprocess is not used.
+        Can also be a multiprocess.pool.Pool instance.
     verbose: bool
         Show the tqdm progress bar (default = True).
 
@@ -111,20 +115,31 @@ def rotational_convolution(
 
     tqdm_wav = tqdm(wavelength, disable=not verbose)
 
-    if (num_procs != 0) or (num_procs != 1):
-        if num_procs is None:
-            num_procs = mprocess.cpu_count() - 1
+    if num_procs is None:
+        num_procs = num_procs_minus_1
 
-        mproc_pool = mprocess.Pool(processes=num_procs)
+    if isinstance(num_procs, int):
+        if (num_procs != 0) or (num_procs != 1):
+            with mprocess.Pool(processes=num_procs) as mproc_pool:
+                convolved_flux = np.array(
+                    mproc_pool.map(element_rot_convolution, tqdm_wav)
+                )
 
-        convolved_flux = np.array(mproc_pool.map(element_rot_convolution, tqdm_wav))
+        else:  # num_procs == 0  or num_procs == 1
+            convolved_flux = np.empty_like(wavelength)  # Memory assignment
+            for ii, single_wav in enumerate(tqdm_wav):
+                convolved_flux[ii] = element_rot_convolution(single_wav)
+    else:
+        try:
+            # Assume num_procs was a multiprocess.pool.Pool
+            convolved_flux = np.array(num_procs.map(element_rot_convolution, tqdm_wav))
+        except AttributeError:
+            raise TypeError(
+                "num_proc must be an int or a multiprocess Pool. Not '{}'".format(
+                    type(num_procs)
+                )
+            )
 
-        mproc_pool.close()
-
-    else:  # num_procs == 0  or num_procs == 1
-        convolved_flux = np.empty_like(wavelength)  # Memory assignment
-        for ii, single_wav in enumerate(tqdm_wav):
-            convolved_flux[ii] = element_rot_convolution(single_wav)
     return convolved_flux
 
 
@@ -137,7 +152,7 @@ def resolution_convolution(
     *,
     fwhm_lim: float = 5.0,
     normalize: bool = True,
-    num_procs: Optional[int] = 1,
+    num_procs: Optional[Union[int, pool.Pool]] = None,
     verbose: bool = True,
 ) -> ndarray:
     """Perform Resolution convolution.
@@ -156,10 +171,11 @@ def resolution_convolution(
         FWHM limit for instrument broadening.
     normalize: bool (default = True)
         Area normalize the broadening kernels (corrects for unequal sampling of position).
-    num_procs: int, None
+    num_procs: int, None or multiprocess.pool.Pool.
         Number of processes to use with multiprocess.
         If None it is assigned to 1 less then total number of cores.
         If num_procs = 0 or 1, then multiprocess is not used.
+        Can also be a multiprocess.pool.Pool instance.
     verbose: bool
         Show the tqdm progress bar (default = True).
 
@@ -210,19 +226,30 @@ def resolution_convolution(
 
     tqdm_wav = tqdm(wavelength, disable=not verbose)
 
-    if (num_procs != 0) or (num_procs != 1):
-        if num_procs is None:
-            num_procs = mprocess.cpu_count() - 1
+    if num_procs is None:
+        num_procs = num_procs_minus_1
 
-        mproc_pool = mprocess.Pool(processes=num_procs)
+    if isinstance(num_procs, int):
+        if (num_procs != 0) or (num_procs != 1):
+            with mprocess.Pool(processes=num_procs) as mproc_pool:
+                convolved_flux = np.array(
+                    mproc_pool.map(element_res_convolution, tqdm_wav)
+                )
 
-        convolved_flux = np.array(mproc_pool.map(element_res_convolution, tqdm_wav))
-        mproc_pool.close()
-
-    else:  # num_procs == 0 or num_procs == 1
-        convolved_flux = np.empty_like(wavelength)  # Memory assignment
-        for jj, single_wav in enumerate(tqdm_wav):
-            convolved_flux[jj] = element_res_convolution(single_wav)
+        else:  # num_procs == 0 or num_procs == 1
+            convolved_flux = np.empty_like(wavelength)  # Memory assignment
+            for jj, single_wav in enumerate(tqdm_wav):
+                convolved_flux[jj] = element_res_convolution(single_wav)
+    else:
+        # Assume num_procs was a multiprocess.pool.Pool
+        try:
+            convolved_flux = np.array(num_procs.map(element_res_convolution, tqdm_wav))
+        except AttributeError:
+            raise TypeError(
+                "num_proc must be an int or a multiprocess Pool. Not '{}'".format(
+                    type(num_procs)
+                )
+            )
     return convolved_flux
 
 
@@ -236,7 +263,7 @@ def convolution(
     *,
     epsilon: float = 0.6,
     fwhm_lim: float = 5.0,
-    num_procs: Optional[int] = None,
+    num_procs: Optional[Union[int, mprocess.pool.Pool]] = None,
     normalize: bool = True,
     verbose: bool = True,
 ):
@@ -262,11 +289,11 @@ def convolution(
         FWHM limit for instrument broadening.
     normalize: bool (default = True)
         Area normalize the broadening kernels (corrects for unequal sampling of position).
-    num_procs: int, None
+    num_procs: int, None or multiprocess.pool.Pool.
         Number of processes to use with multiprocess.
         If None it is assigned to 1 less then total number of cores.
-        If num_procs = 0, then multiprocess is not used.
-
+        If num_procs = 0 or 1, then multiprocess is not used.
+        Can also be a multiprocess.pool.Pool instance.
     verbose: bool
         Show the twdm progress bars (default = True).
 

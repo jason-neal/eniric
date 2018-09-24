@@ -1,11 +1,11 @@
 import argparse
 import itertools
 import os
-from os.path import join
 from typing import List, Tuple
 
-import multiprocess as mprocess
+
 import numpy as np
+import multiprocess as mprocess
 from astropy import units as u
 from astropy.units import Quantity
 from numpy import ndarray
@@ -24,7 +24,7 @@ from eniric.utilities import (
     load_btsettl_spectrum,
 )
 
-num_procs_minus_1 = mprocess.cpu_count() - 1
+num_procs_minus_1 = os.cpu_count() - 1
 
 ref_choices = ["SELF"]
 ref_choices.extend(eniric.bands["all"])
@@ -156,13 +156,22 @@ def do_analysis(
     Parameters
     ----------
     star_param:
+        Stellar parameters [temp, logg, feh, alpha] for phoenix model libraries.
     vsini: float
+       Stellar equatorial rotation.
     R: float
-    band: str 
+        Instrumental resolution.
+    band: str
+        Spectral band.
     sampling: float (default=False)
+        Per pixel sampling (after convolutions)
     conv_kwargs: Dict (default=None)
+        Arguments specific for the convolutions,
+        'epsilon', 'fwhm_lim', 'num_procs', 'normalize', 'verbose'.
     snr: float (default=100)
+        SNR normalization level. SNR per pixel and the center of the ref_band.
     ref_band: str (default="J")
+        Reference band for SNR normalization.
     rv: float
         Radial velocity in km/s (default = 0.0).
     air: bool
@@ -402,6 +411,10 @@ if __name__ == "__main__":
             raise ValueError(
                 "You cannot vary metallicity and alpha for BT-Settl, remove these flags."
             )
+    try:
+        normalize = args.normalzie
+    except AttributeError:
+        normalize = True
 
     try:
         num_procs = args.num_procs
@@ -409,23 +422,31 @@ if __name__ == "__main__":
         num_procs = num_procs_minus_1
 
     try:
-        normalize = args.normalzie
-    except AttributeError:
-        normalize = True
-
+        # Initalize a multiprocessor pool to pass to each convolution.
+        mproc_pool = mprocess.Pool(processors=num_procs, maxtasksperchild=500000)  # Refresh worker after 1/2 million pixels processed each.
+        conv_kwargs = {
+            "epsilon": 0.6,
+            "fwhm_lim": 5.0,
+            "num_procs": mproc_pool,
+            "normalize": normalize,
+            "verbose": args.verbose,
+        }
+        mproc_pool_flag = True
+    except:
+        conv_kwargs = {
+            "epsilon": 0.6,
+            "fwhm_lim": 5.0,
+            "num_procs": num_procs,
+            "normalize": normalize,
+            "verbose": args.verbose,
+        }
+        mproc_pool_flag = False
     snr = args.snr
     air = args.air
     if "ALL" in args.bands:
         args.bands.extend(eniric.bands["all"])
         args.bands = set(args.bands)  # Unique
     ref_band = args.ref_band
-
-    conv_kwargs = {
-        "epsilon": 0.6,
-        "fwhm_lim": 5.0,
-        "num_procs": num_procs,
-        "normalize": normalize,
-    }
 
     # Load the relevant spectra
     if args.model == "phoenix":
@@ -518,6 +539,9 @@ if __name__ == "__main__":
                     )
                     f.write(strip_whitespace(linetowite) + "\n")  # Make csv only
 
+    if mproc_pool_flag:
+        # Close multiprocessing pool now.
+        mproc_pool.close()
     if args.verbose:
         print(
             "`{1}` completed successfully:\n"
