@@ -117,7 +117,6 @@ def rotational_convolution(
 
     if isinstance(num_procs, int):
         if (num_procs != 0) or (num_procs != 1):
-            print(type(num_procs), num_procs)
             if num_procs is None:
                 num_procs = num_procs_minus_1
 
