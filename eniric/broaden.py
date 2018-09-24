@@ -15,6 +15,7 @@ from astropy.constants import c
 from joblib import Memory
 from numpy.core.multiarray import ndarray
 from tqdm import tqdm
+from multiprocess import pool
 
 import eniric
 from eniric.utilities import band_selector, mask_between, wav_selector
@@ -35,7 +36,7 @@ def rotational_convolution(
     *,
     epsilon: float = 0.6,
     normalize: bool = True,
-    num_procs: Optional[Union[int, mprocess.pool.Pool]] = None,
+    num_procs: Optional[Union[int, pool.Pool]] = None,
     verbose: bool = True,
 ) -> ndarray:
     """Perform Rotational convolution.
@@ -152,7 +153,7 @@ def resolution_convolution(
     *,
     fwhm_lim: float = 5.0,
     normalize: bool = True,
-    num_procs: Optional[Union[int, mprocess.pool.Pool]] = None,
+    num_procs: Optional[Union[int, pool.Pool]] = None,
     verbose: bool = True,
 ) -> ndarray:
     """Perform Resolution convolution.
