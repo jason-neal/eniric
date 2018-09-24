@@ -1,11 +1,11 @@
 import argparse
 import itertools
 import os
-from os.path import join
 from typing import List, Tuple
 
-import multiprocess as mprocess
+
 import numpy as np
+import multiprocess as mprocess
 from astropy import units as u
 from astropy.units import Quantity
 from numpy import ndarray
@@ -24,7 +24,7 @@ from eniric.utilities import (
     load_btsettl_spectrum,
 )
 
-num_procs_minus_1 = mprocess.cpu_count() - 1
+num_procs_minus_1 = os.cpu_count() - 1
 
 ref_choices = ["SELF"]
 ref_choices.extend(eniric.bands["all"])
