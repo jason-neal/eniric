@@ -429,6 +429,7 @@ if __name__ == "__main__":
             "fwhm_lim": 5.0,
             "num_procs": mproc_pool,
             "normalize": normalize,
+            "verbose": args.verbose,
         }
         mproc_pool_flag = True
     except:
@@ -437,6 +438,7 @@ if __name__ == "__main__":
             "fwhm_lim": 5.0,
             "num_procs": num_procs,
             "normalize": normalize,
+            "verbose": args.verbose,
         }
         mproc_pool_flag = False
     snr = args.snr
