@@ -4,15 +4,15 @@
 # Paths can either be strings of list of strings which will be passed
 # to os.path.join() [os independent]
 paths:
-  phoenix_raw: [] # Path to Phoenix-ACES spectra
-  btsettl_raw: [] # Path to BT-Settl spectra
-  test_data: ["..","data","test_data"]
-  atmmodel: ["..","data", "atmmodel"]
+  phoenix_raw: ["..", "data", "pheonix-raw"] # Path to Phoenix-ACES spectra
+  btsettl_raw: ["..", "data", "btsettl-raw"] # Path to BT-Settl spectra
+  test_data: ["..", "data", "test_data"]
+  atmmodel: ["..", "data", "atmmodel"]
   precision: ["precision"]  # A place to put precision results
   # Obsolete paths for testing only
-  phoenix_dat: ["data", "test_data","obsolete","PHOENIX-ACES_spectra"]
-  results:  ["..","data","test_data","obsolete","results"]
-  resampled: ["..","data","test_data","obsolete", "resampled"]
+  phoenix_dat: ["data", "test_data", "obsolete", "PHOENIX-ACES_spectra"]
+  results:  ["..", "data", "test_data", "obsolete", "results"]
+  resampled: ["..", "data", "test_data", "obsolete", "resampled"]
 
 # Wavelength bands.
 bands:
