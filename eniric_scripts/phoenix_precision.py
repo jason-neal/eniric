@@ -156,13 +156,22 @@ def do_analysis(
     Parameters
     ----------
     star_param:
+        Stellar parameters [temp, logg, feh, alpha] for phoenix model libraries.
     vsini: float
+       Stellar equatorial rotation.
     R: float
-    band: str 
+        Instrumental resolution.
+    band: str
+        Spectral band.
     sampling: float (default=False)
+        Per pixel sampling (after convolutions)
     conv_kwargs: Dict (default=None)
+        Arguments specific for the convolutions,
+        'epsilon', 'fwhm_lim', 'num_procs', 'normalize', 'verbose'.
     snr: float (default=100)
+        SNR normalization level. SNR per pixel and the center of the ref_band.
     ref_band: str (default="J")
+        Reference band for SNR normalization.
     rv: float
         Radial velocity in km/s (default = 0.0).
     air: bool
