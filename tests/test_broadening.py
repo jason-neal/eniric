@@ -1,8 +1,15 @@
 import numpy as np
 import pytest
 from hypothesis import given, settings, strategies as st
+from multiprocess import Pool
 
-from eniric.broaden import rotation_kernel, unitary_gaussian
+from eniric.broaden import (
+    convolution,
+    resolution_convolution,
+    rotational_convolution,
+    rotation_kernel,
+    unitary_gaussian,
+)
 
 
 @settings(max_examples=100)
@@ -64,3 +71,97 @@ def test_unitary_gaussian_type_errors():
         unitary_gaussian(range(-10, 10), "center", fwhm)
     with pytest.raises(TypeError):
         unitary_gaussian(1, "center", fwhm)
+
+
+@pytest.mark.parametrize("num_proc", [1, 2])
+def test_convolution_can_accept_int(num_proc):
+    n = 20
+    x = np.linspace(2.0, 2.3, n)
+    y = np.random.randn(n)
+    convolution(x, y, vsini=1, R=100000, band="K", num_procs=num_proc)
+
+
+@pytest.mark.parametrize("num_proc", [1, 2])
+def test_rot_convolution_can_accept_int(num_proc):
+    n = 20
+    x = np.linspace(2.0, 2.3, n)
+    y = np.random.randn(n)
+    rotational_convolution(x, x, y, vsini=1, num_procs=num_proc)
+
+
+@pytest.mark.parametrize("num_proc", [1, 2])
+def test_res_convolution_can_accept_int(num_proc):
+    n = 20
+    x = np.linspace(2.0, 2.3, n)
+    y = np.random.randn(n)
+    resolution_convolution(x, x, y, R=100000, num_procs=num_proc)
+
+
+@pytest.mark.parametrize("num_proc", [1, 2])
+def test_convolution_can_accept_worker_pool(num_proc):
+    n = 20
+    x = np.linspace(2.0, 2.3, n)
+    y = np.random.randn(n)
+    with Pool(num_proc) as mproc:
+        convolution(x, y, vsini=1, R=100000, band="K", num_procs=mproc, verbose=False)
+
+
+@pytest.mark.parametrize("num_proc", [1, 2])
+def test_rot_convolution_can_accept_worker_pool(num_proc):
+    n = 20
+    x = np.linspace(2.0, 2.3, n)
+    y = np.random.randn(n)
+    with Pool(num_proc) as mproc:
+        rotational_convolution(x, x, y, vsini=1, num_procs=mproc, verbose=False)
+
+
+@pytest.mark.parametrize("num_proc", [1, 2])
+def test_res_convolution_can_accept_worker_pool(num_proc):
+    n = 20
+    x = np.linspace(2.0, 2.3, n)
+    y = np.random.randn(n)
+    with Pool(num_proc) as mproc:
+        resolution_convolution(x, x, y, R=100000, num_procs=mproc, verbose=False)
+
+
+@pytest.mark.parametrize("num_proc", [3.14, "str"])
+def test_rot_convolution_with_bad_num_proc(num_proc):
+    n = 20
+    x = np.linspace(2.0, 2.3, n)
+    y = np.random.randn(n)
+    with pytest.raises(
+        TypeError, message="num_proc must be an int or a multiprocess Pool"
+    ):
+        rotational_convolution(x, x, y, vsini=1, num_procs=num_proc, verbose=False)
+
+
+@pytest.mark.parametrize("num_proc", [3.14, "str"])
+def test_res_convolution_with_bad_num_proc(num_proc):
+    n = 20
+    x = np.linspace(2.0, 2.3, n)
+    y = np.random.randn(n)
+    with pytest.raises(
+        TypeError, message="num_proc must be an int or a multiprocess Pool"
+    ):
+        resolution_convolution(x, x, y, R=100000, num_procs=num_proc, verbose=False)
+
+
+def test_convolution_can_accept_None():
+    n = 20
+    x = np.linspace(2.0, 2.3, n)
+    y = np.random.randn(n)
+    convolution(x, y, vsini=1, R=100000, band="K", num_procs=None)
+
+
+def test_rot_convolution_can_accept_None():
+    n = 20
+    x = np.linspace(2.0, 2.3, n)
+    y = np.random.randn(n)
+    rotational_convolution(x, x, y, vsini=1, num_procs=None)
+
+
+def test_res_convolution_can_accept_None():
+    n = 20
+    x = np.linspace(2.0, 2.3, n)
+    y = np.random.randn(n)
+    resolution_convolution(x, x, y, R=100000, num_procs=None)
