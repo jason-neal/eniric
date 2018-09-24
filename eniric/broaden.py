@@ -9,10 +9,12 @@ Uses joblib.Memory to cache convolution results to skip repeated computation.
 from typing import Optional, Union
 
 import multiprocess as mprocess
+
 import numpy as np
 from astropy.constants import c
 from joblib import Memory
 from numpy.core.multiarray import ndarray
+from multiprocess import Pool
 from tqdm import tqdm
 
 import eniric
@@ -33,7 +35,7 @@ def rotational_convolution(
     *,
     epsilon: float = 0.6,
     normalize: bool = True,
-    num_procs: Optional[int] = None,
+    num_procs: Optional[Union[int, Pool]] = None,
     verbose: bool = True,
 ) -> ndarray:
     """Perform Rotational convolution.
@@ -52,10 +54,11 @@ def rotational_convolution(
         Limb darkening coefficient
     normalize: bool (default = True)
         Area normalize the broadening kernel (corrects for unequal sampling of position).
-    num_procs: int, None
+    num_procs: int, None or multiprocess.Pool().
         Number of processes to use with multiprocess.
         If None it is assigned to 1 less then total number of cores.
         If num_procs = 0 or 1, then multiprocess is not used.
+        Can also be a multiprocess.Pool instance.
     verbose: bool
         Show the tqdm progress bar (default = True).
 
@@ -111,7 +114,11 @@ def rotational_convolution(
 
     tqdm_wav = tqdm(wavelength, disable=not verbose)
 
-    if (num_procs != 0) or (num_procs != 1):
+    if isinstance(num_procs, mprocess.Pool):
+        # num_procs was a multiprocess.Pool()
+        convolved_flux = np.array(num_procs.map(element_rot_convolution, tqdm_wav))
+
+    elif (num_procs != 0) or (num_procs != 1):
         if num_procs is None:
             num_procs = mprocess.cpu_count() - 1
 
@@ -134,7 +141,7 @@ def resolution_convolution(
     *,
     fwhm_lim: float = 5.0,
     normalize: bool = True,
-    num_procs: Optional[int] = 1,
+    num_procs: Optional[Union[int, Pool]] = None,
     verbose: bool = True,
 ) -> ndarray:
     """Perform Resolution convolution.
@@ -153,10 +160,11 @@ def resolution_convolution(
         FWHM limit for instrument broadening.
     normalize: bool (default = True)
         Area normalize the broadening kernels (corrects for unequal sampling of position).
-    num_procs: int, None
+    num_procs: int, None or multiprocess.Pool().
         Number of processes to use with multiprocess.
         If None it is assigned to 1 less then total number of cores.
         If num_procs = 0 or 1, then multiprocess is not used.
+        Can also be a multiprocess.Pool() instance.
     verbose: bool
         Show the tqdm progress bar (default = True).
 
@@ -207,7 +215,11 @@ def resolution_convolution(
 
     tqdm_wav = tqdm(wavelength, disable=not verbose)
 
-    if (num_procs != 0) or (num_procs != 1):
+    if isinstance(num_procs, mprocess.Pool):
+        # num_procs was a multiprocess.Pool()
+        convolved_flux = np.array(num_procs.map(element_res_convolution, tqdm_wav))
+
+    elif (num_procs != 0) or (num_procs != 1):
         if num_procs is None:
             num_procs = mprocess.cpu_count() - 1
 
@@ -231,7 +243,7 @@ def convolution(
     *,
     epsilon: float = 0.6,
     fwhm_lim: float = 5.0,
-    num_procs: Optional[int] = None,
+    num_procs: Optional[Union[int, Pool]] = None,
     normalize: bool = True,
     verbose: bool = True,
 ):
@@ -257,11 +269,11 @@ def convolution(
         FWHM limit for instrument broadening.
     normalize: bool (default = True)
         Area normalize the broadening kernels (corrects for unequal sampling of position).
-    num_procs: int, None
+    num_procs: int, None or multiprocess.Pool().
         Number of processes to use with multiprocess.
         If None it is assigned to 1 less then total number of cores.
-        If num_procs = 0, then multiprocess is not used.
-
+        If num_procs = 0 or 1, then multiprocess is not used.
+        Can also be a multiprocess.Pool() instance.
     verbose: bool
         Show the twdm progress bars (default = True).
 

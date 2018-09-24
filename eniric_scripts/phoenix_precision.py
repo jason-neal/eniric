@@ -411,6 +411,10 @@ if __name__ == "__main__":
             raise ValueError(
                 "You cannot vary metallicity and alpha for BT-Settl, remove these flags."
             )
+    try:
+        normalize = args.normalzie
+    except AttributeError:
+        normalize = True
 
     try:
         num_procs = args.num_procs
@@ -418,23 +422,29 @@ if __name__ == "__main__":
         num_procs = num_procs_minus_1
 
     try:
-        normalize = args.normalzie
-    except AttributeError:
-        normalize = True
-
+        # Initalize a multiprocessor pool to pass to each convolution.
+        mproc_pool = mprocess.Pool(processors=num_procs)
+        conv_kwargs = {
+            "epsilon": 0.6,
+            "fwhm_lim": 5.0,
+            "num_procs": mproc_pool,
+            "normalize": normalize,
+        }
+        mproc_pool_flag = True
+    except:
+        conv_kwargs = {
+            "epsilon": 0.6,
+            "fwhm_lim": 5.0,
+            "num_procs": num_procs,
+            "normalize": normalize,
+        }
+        mproc_pool_flag = False
     snr = args.snr
     air = args.air
     if "ALL" in args.bands:
         args.bands.extend(eniric.bands["all"])
         args.bands = set(args.bands)  # Unique
     ref_band = args.ref_band
-
-    conv_kwargs = {
-        "epsilon": 0.6,
-        "fwhm_lim": 5.0,
-        "num_procs": num_procs,
-        "normalize": normalize,
-    }
 
     # Load the relevant spectra
     if args.model == "phoenix":
@@ -527,6 +537,9 @@ if __name__ == "__main__":
                     )
                     f.write(strip_whitespace(linetowite) + "\n")  # Make csv only
 
+    if mproc_pool_flag:
+        # Close multiprocessing pool now.
+        mproc_pool.close()
     if args.verbose:
         print(
             "`{1}` completed successfully:\n"
