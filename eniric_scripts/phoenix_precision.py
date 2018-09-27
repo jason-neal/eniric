@@ -137,6 +137,9 @@ def _parser():
     parser.add_argument(
         "--disable_normalization", help="Turn off convolution normalization.", action="store_true"
     )
+    parser.add_argument(
+        "--global_pool", help="Enable global multiprocess worker Pool", action="store_true"
+    )
     return parser.parse_args()
 
 
@@ -426,7 +429,7 @@ if __name__ == "__main__":
 
     try:
         # Initalize a multiprocessor pool to pass to each convolution.
-        if int(num_procs) in [0, 1]:
+        if (int(num_procs) in [0, 1]) or (not args.global_pool):
             assert False
         mproc_pool = mprocess.Pool(processes=num_procs, maxtasksperchild=500000)  # Refresh worker after 1/2 million pixels processed each.
         conv_kwargs = {
