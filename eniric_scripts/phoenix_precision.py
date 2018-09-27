@@ -473,8 +473,8 @@ if __name__ == "__main__":
             params_list = itertools.product(
                 args.resolution, args.bands, args.vsini, args.sampling, args.rv
             )
-
-            for (R, band, vsini, sample, rv) in params_list:
+            total_iters = np.product([len(par) for par in [args.resolution, args.bands, args.vsini, args.sampling, args.rv]])
+            for iter_num, (R, band, vsini, sample, rv) in enumerate(params_list):
                 pars = (R, band, vsini, sample, rv)
 
                 if is_already_computed(
@@ -538,6 +538,11 @@ if __name__ == "__main__":
                         result[3],
                     )
                     f.write(strip_whitespace(linetowite) + "\n")  # Make csv only
+
+                if (iter_num % 100 == 0) or (iter_num == (total_iters - 1)):
+                    # For Every 100th model flush data to disk or at end of params list
+                    f.flush()
+                    os.fsync(f.fileno())
 
     if mproc_pool_flag:
         # Close multiprocessing pool now.
