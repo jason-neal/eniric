@@ -426,7 +426,7 @@ if __name__ == "__main__":
 
     try:
         # Initalize a multiprocessor pool to pass to each convolution.
-        mproc_pool = mprocess.Pool(processors=num_procs, maxtasksperchild=500000)  # Refresh worker after 1/2 million pixels processed each.
+        mproc_pool = mprocess.Pool(processes=num_procs, maxtasksperchild=500000)  # Refresh worker after 1/2 million pixels processed each.
         conv_kwargs = {
             "epsilon": 0.6,
             "fwhm_lim": 5.0,
