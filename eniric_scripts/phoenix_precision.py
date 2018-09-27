@@ -3,9 +3,8 @@ import itertools
 import os
 from typing import List, Tuple
 
-
-import numpy as np
 import multiprocess as mprocess
+import numpy as np
 from astropy import units as u
 from astropy.units import Quantity
 from numpy import ndarray
@@ -135,10 +134,14 @@ def _parser():
 
     parser.add_argument("--verbose", help="Turn on verbose.", action="store_true")
     parser.add_argument(
-        "--disable_normalization", help="Turn off convolution normalization.", action="store_true"
+        "--disable_normalization",
+        help="Turn off convolution normalization.",
+        action="store_true",
     )
     parser.add_argument(
-        "--global_pool", help="Enable global multiprocess worker Pool", action="store_true"
+        "--global_pool",
+        help="Enable global multiprocess worker Pool",
+        action="store_true",
     )
     return parser.parse_args()
 
@@ -237,7 +240,7 @@ def do_analysis(
         wav, flux, vsini, R, ref_band, sampling, **conv_kwargs
     )
     snr_normalize = snr_constant_band(
-        wav_ref, sampled_ref, snr=snr, band=ref_band, sampling=sampling, verbose=verbose,
+        wav_ref, sampled_ref, snr=snr, band=ref_band, sampling=sampling, verbose=verbose
     )
     sampled_flux = sampled_flux / snr_normalize
 
@@ -367,9 +370,7 @@ def is_already_computed(
     """Check if any combinations have already been preformed.
     Correct is boolean for applied Artigau correction."""
     model_par_str_args = model_format_args(model, pars)
-    rv_template = (
-        "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,{6:4.01f},{7:3.01f},{8:3.01f},{9:1d}"
-    )
+    rv_template = "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,{6:4.01f},{7:3.01f},{8:3.01f},{9:1d}"
     no_rv_template = (
         "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,{6:4.01f},{7:3.01f},{8:1d}"
     )
@@ -475,83 +476,76 @@ if __name__ == "__main__":
     # To later skip recalculation.
     computed_values = get_already_computed(args.output, args.add_rv)
 
-    with open(args.output, "a") as f:
+    for model in models_list:
+        # Create generator for params_list
+        params_list = itertools.product(
+            args.resolution, args.bands, args.vsini, args.sampling, args.rv
+        )
 
-        for model in models_list:
-            # Create generator for params_list
-            params_list = itertools.product(
-                args.resolution, args.bands, args.vsini, args.sampling, args.rv
-            )
-            total_iters = np.product([len(par) for par in [args.resolution, args.bands, args.vsini, args.sampling, args.rv]])
-            for iter_num, (R, band, vsini, sample, rv) in enumerate(params_list):
-                pars = (R, band, vsini, sample, rv)
+        for iter_num, (R, band, vsini, sample, rv) in enumerate(params_list):
+            pars = (R, band, vsini, sample, rv)
 
-                if is_already_computed(
-                    computed_values,
+            if is_already_computed(
+                computed_values,
+                model,
+                pars,
+                add_rv=args.add_rv,
+                correct=args.correct,
+                verbose=args.verbose,
+            ):
+                # skipping the recalculation
+                continue
+            else:
+                result = do_analysis(
                     model,
-                    pars,
-                    add_rv=args.add_rv,
-                    correct=args.correct,
-                    verbose=args.verbose,
-                ):
-                    # skipping the recalculation
-                    continue
+                    vsini=vsini,
+                    R=R,
+                    band=band,
+                    conv_kwargs=conv_kwargs,
+                    snr=snr,
+                    ref_band=ref_band,
+                    sampling=sample,
+                    air=air,
+                    model=args.model,
+                )
+                result = [
+                    round(res.value, 1) if res is not None else None for res in result
+                ]
+
+                if args.correct:
+                    # Apply Artigau 2018 Corrections
+                    corr_value = correct_artigau_2018(band)
+                    for ii, res in enumerate(result):
+                        if ii > 0:  # Not the quality
+                            result[ii] = res * corr_value
+
+                result[0] = int(result[0]) if result[0] is not None else None
+
+                if args.add_rv:
+                    output_template = (
+                        "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,"
+                        "{6:4.01f},{7:3.01f},{8:3.01f},{9:1d},{10:6d},{11:5.01f},"
+                        "{12:5.01f},{13:5.01f}\n"
+                    )
+                    output_model_args = model_format_args(model, pars)
                 else:
-                    result = do_analysis(
-                        model,
-                        vsini=vsini,
-                        R=R,
-                        band=band,
-                        conv_kwargs=conv_kwargs,
-                        snr=snr,
-                        ref_band=ref_band,
-                        sampling=sample,
-                        air=air,
-                        model=args.model,
+                    output_template = (
+                        "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,"
+                        "{6:4.01f},{7:3.01f},{8:1d},{9:6d},{10:5.01f},{11:5.01f},"
+                        "{12:5.01f}\n"
                     )
-                    result = [
-                        round(res.value, 1) if res is not None else None
-                        for res in result
-                    ]
+                    output_model_args = model_format_args(model, pars)[:8]
 
-                    if args.correct:
-                        # Apply Artigau 2018 Corrections
-                        corr_value = correct_artigau_2018(band)
-                        for ii, res in enumerate(result):
-                            if ii > 0:  # Not the quality
-                                result[ii] = res * corr_value
-
-                    result[0] = int(result[0]) if result[0] is not None else None
-
-                    if args.add_rv:
-                        output_template = (
-                            "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,"
-                            "{6:4.01f},{7:3.01f},{8:3.01f},{9:1d},{10:6d},{11:5.01f},"
-                            "{12:5.01f},{13:5.01f}\n"
-                        )
-                        output_model_args = model_format_args(model, pars)
-                    else:
-                        output_template = (
-                            "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,"
-                            "{6:4.01f},{7:3.01f},{8:1d},{9:6d},{10:5.01f},{11:5.01f},"
-                            "{12:5.01f}\n"
-                        )
-                        output_model_args = model_format_args(model, pars)[:8]
-
-                    linetowite = output_template.format(
-                        *output_model_args,
-                        int(args.correct),
-                        result[0],
-                        result[1],
-                        result[2],
-                        result[3],
-                    )
+                linetowite = output_template.format(
+                    *output_model_args,
+                    int(args.correct),
+                    result[0],
+                    result[1],
+                    result[2],
+                    result[3],
+                )
+                with open(args.output, "a") as f:
                     f.write(strip_whitespace(linetowite) + "\n")  # Make csv only
-
-                if (iter_num % 100 == 0) or (iter_num == (total_iters - 1)):
-                    # For Every 100th model flush data to disk or at end of params list
-                    f.flush()
-                    os.fsync(f.fileno())
 
     if mproc_pool_flag:
         # Close multiprocessing pool now.
