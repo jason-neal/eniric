@@ -134,6 +134,9 @@ def _parser():
     parser.add_argument("--correct", help="Apply RV corrections", action="store_true")
 
     parser.add_argument("--verbose", help="Turn on verbose.", action="store_true")
+    parser.add_argument(
+        "--disable_normalization", help="Turn off convolution normalization.", action="store_true"
+    )
     return parser.parse_args()
 
 
@@ -412,7 +415,7 @@ if __name__ == "__main__":
                 "You cannot vary metallicity and alpha for BT-Settl, remove these flags."
             )
     try:
-        normalize = args.normalzie
+        normalize = not args.disable_normalization
     except AttributeError:
         normalize = True
 
