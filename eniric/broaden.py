@@ -230,7 +230,7 @@ def resolution_convolution(
         num_procs = num_procs_minus_1
 
     if isinstance(num_procs, int):
-        if num_procs in [0, 1]:
+        if num_procs not in [0, 1]:
             with mprocess.Pool(processes=num_procs) as mproc_pool:
                 convolved_flux = np.array(
                     mproc_pool.map(element_res_convolution, tqdm_wav, chunksize=1023)
