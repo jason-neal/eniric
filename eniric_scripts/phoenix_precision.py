@@ -426,6 +426,8 @@ if __name__ == "__main__":
 
     try:
         # Initalize a multiprocessor pool to pass to each convolution.
+        if int(num_procs) in [0, 1]:
+            assert False
         mproc_pool = mprocess.Pool(processes=num_procs, maxtasksperchild=500000)  # Refresh worker after 1/2 million pixels processed each.
         conv_kwargs = {
             "epsilon": 0.6,
@@ -444,6 +446,7 @@ if __name__ == "__main__":
             "verbose": args.verbose,
         }
         mproc_pool_flag = False
+
     snr = args.snr
     air = args.air
     if "ALL" in args.bands:
