@@ -122,7 +122,7 @@ def rotational_convolution(
         if num_procs not in [0, 1]:
             with mprocess.Pool(processes=num_procs) as mproc_pool:
                 convolved_flux = np.array(
-                    mproc_pool.map(element_rot_convolution, tqdm_wav)
+                    mproc_pool.map(element_rot_convolution, tqdm_wav, chunksize=1023)
                 )
 
         else:  # num_procs == 0  or num_procs == 1
@@ -132,7 +132,7 @@ def rotational_convolution(
     else:
         try:
             # Assume num_procs was a multiprocess.pool.Pool
-            convolved_flux = np.array(num_procs.map(element_rot_convolution, tqdm_wav))
+            convolved_flux = np.array(num_procs.map(element_rot_convolution, tqdm_wav, chunksize=1023))
         except AttributeError:
             raise TypeError(
                 "num_proc must be an int or a multiprocess Pool. Not '{}'".format(
@@ -233,7 +233,7 @@ def resolution_convolution(
         if num_procs in [0, 1]:
             with mprocess.Pool(processes=num_procs) as mproc_pool:
                 convolved_flux = np.array(
-                    mproc_pool.map(element_res_convolution, tqdm_wav)
+                    mproc_pool.map(element_res_convolution, tqdm_wav, chunksize=1023)
                 )
 
         else:  # num_procs == 0 or num_procs == 1
@@ -243,7 +243,7 @@ def resolution_convolution(
     else:
         # Assume num_procs was a multiprocess.pool.Pool
         try:
-            convolved_flux = np.array(num_procs.map(element_res_convolution, tqdm_wav))
+            convolved_flux = np.array(num_procs.map(element_res_convolution, tqdm_wav, chunksize=1023))
         except AttributeError:
             raise TypeError(
                 "num_proc must be an int or a multiprocess Pool. Not '{}'".format(

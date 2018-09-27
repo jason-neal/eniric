@@ -431,7 +431,7 @@ if __name__ == "__main__":
         # Initalize a multiprocessor pool to pass to each convolution.
         if (int(num_procs) in [0, 1]) or (not args.global_pool):
             assert False
-        mproc_pool = mprocess.Pool(processes=num_procs, maxtasksperchild=500000)  # Refresh worker after 1/2 million pixels processed each.
+        mproc_pool = mprocess.Pool(processes=num_procs, maxtasksperchild=50)
         conv_kwargs = {
             "epsilon": 0.6,
             "fwhm_lim": 5.0,
