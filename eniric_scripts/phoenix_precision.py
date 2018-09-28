@@ -3,7 +3,6 @@ import itertools
 import os
 from typing import List, Tuple
 
-import multiprocess as mprocess
 import numpy as np
 from astropy import units as u
 from astropy.units import Quantity
@@ -136,11 +135,6 @@ def _parser():
     parser.add_argument(
         "--disable_normalization",
         help="Turn off convolution normalization.",
-        action="store_true",
-    )
-    parser.add_argument(
-        "--global_pool",
-        help="Enable global multiprocess worker Pool",
         action="store_true",
     )
     return parser.parse_args()
@@ -428,28 +422,13 @@ if __name__ == "__main__":
     except AttributeError:
         num_procs = num_procs_minus_1
 
-    try:
-        # Initalize a multiprocessor pool to pass to each convolution.
-        if (int(num_procs) in [0, 1]) or (not args.global_pool):
-            assert False
-        mproc_pool = mprocess.Pool(processes=num_procs, maxtasksperchild=50)
-        conv_kwargs = {
-            "epsilon": 0.6,
-            "fwhm_lim": 5.0,
-            "num_procs": mproc_pool,
-            "normalize": normalize,
-            "verbose": args.verbose,
-        }
-        mproc_pool_flag = True
-    except:
-        conv_kwargs = {
-            "epsilon": 0.6,
-            "fwhm_lim": 5.0,
-            "num_procs": num_procs,
-            "normalize": normalize,
-            "verbose": args.verbose,
-        }
-        mproc_pool_flag = False
+    conv_kwargs = {
+        "epsilon": 0.6,
+        "fwhm_lim": 5.0,
+        "num_procs": num_procs,
+        "normalize": normalize,
+        "verbose": args.verbose,
+    }
 
     snr = args.snr
     air = args.air
@@ -547,9 +526,6 @@ if __name__ == "__main__":
                 with open(args.output, "a") as f:
                     f.write(strip_whitespace(linetowite) + "\n")  # Make csv only
 
-    if mproc_pool_flag:
-        # Close multiprocessing pool now.
-        mproc_pool.close()
     if args.verbose:
         print(
             "`{1}` completed successfully:\n"
