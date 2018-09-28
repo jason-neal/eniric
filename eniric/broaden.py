@@ -6,16 +6,16 @@ Used to convolve the spectra for
 
 Uses joblib.Memory to cache convolution results to skip repeated computation.
 """
-from typing import Optional, Union
 import os
+from typing import Optional, Union
 
+import joblib
 import numpy as np
-import multiprocess as mprocess
 from astropy.constants import c
-from joblib import Memory
+from joblib import Memory, Parallel, delayed
+from multiprocess import pool
 from numpy.core.multiarray import ndarray
 from tqdm import tqdm
-from multiprocess import pool
 
 import eniric
 from eniric.utilities import band_selector, mask_between, wav_selector
@@ -120,9 +120,10 @@ def rotational_convolution(
 
     if isinstance(num_procs, int):
         if num_procs not in [0, 1]:
-            with mprocess.Pool(processes=num_procs) as mproc_pool:
+
+            with Parallel(n_jobs=num_procs) as parallel:
                 convolved_flux = np.array(
-                    mproc_pool.map(element_rot_convolution, tqdm_wav, chunksize=1023)
+                    parallel(delayed(element_rot_convolution)(wav) for wav in tqdm_wav)
                 )
 
         else:  # num_procs == 0  or num_procs == 1
@@ -231,11 +232,10 @@ def resolution_convolution(
 
     if isinstance(num_procs, int):
         if num_procs not in [0, 1]:
-            with mprocess.Pool(processes=num_procs) as mproc_pool:
+            with Parallel(n_jobs=num_procs) as parallel:
                 convolved_flux = np.array(
-                    mproc_pool.map(element_res_convolution, tqdm_wav, chunksize=1023)
+                    parallel(delayed(element_res_convolution)(wav) for wav in tqdm_wav)
                 )
-
         else:  # num_procs == 0 or num_procs == 1
             convolved_flux = np.empty_like(wavelength)  # Memory assignment
             for jj, single_wav in enumerate(tqdm_wav):
@@ -263,7 +263,7 @@ def convolution(
     *,
     epsilon: float = 0.6,
     fwhm_lim: float = 5.0,
-    num_procs: Optional[Union[int, mprocess.pool.Pool]] = None,
+    num_procs: Optional[Union[int, pool.Pool]] = None,
     normalize: bool = True,
     verbose: bool = True,
 ):
