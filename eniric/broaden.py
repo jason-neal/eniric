@@ -105,10 +105,10 @@ def rotational_convolution(
 
         if normalize:
             # Correct for the effect of non-equidistant sampling
-            unitary_rot_val = np.sum(rotation_profile)  # Affects precision
-            return sum_val / unitary_rot_val
-        else:
-            return sum_val
+            unitary_rot_val = np.sum(rotation_profile)
+            sum_val /= unitary_rot_val
+
+        return sum_val
 
     tqdm_wav = tqdm(wavelength, disable=not verbose)
 
@@ -210,10 +210,10 @@ def resolution_convolution(
         sum_val = np.sum(instrument_profile * flux_2convolve)
         if normalize:
             # Correct for the effect of convolution with non-equidistant positions
-            unitary_val = np.sum(instrument_profile)  # Affects precision
-            return sum_val / unitary_val
-        else:
-            return sum_val
+            unitary_val = np.sum(instrument_profile)
+            sum_val /= unitary_val
+
+        return sum_val
 
     tqdm_wav = tqdm(wavelength, disable=not verbose)
 
