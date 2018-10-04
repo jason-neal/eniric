@@ -37,7 +37,6 @@ config = {
         "astropy",
         "joblib>0.12",
         "matplotlib",
-        "multiprocess",
         "numpy",
         "pandas",
         "pyyaml",

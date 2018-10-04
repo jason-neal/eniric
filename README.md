@@ -10,8 +10,8 @@
 [![PyPI version](https://badge.fury.io/py/eniric.svg)](https://badge.fury.io/py/eniric)
 
 `Eniric` is a Python 3 software to compute the theoretical Radial Velocity (RV) precision of stellar spectra.
-`Eniric` is an overhaul and extension to the code used in [Figueria et al. 2016](http://dx.doi.org/10.1051/0004-6361/201526900) to analysis the precision of M-dwarf stars. 
-Extending the performance and usability, it is able to be used on any synthetic spectra from the [PHOENIX-ACES](http://phoenix.astro.physik.uni-goettingen.de) and [BT-Settl](https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/) (CIFIST2001-2015) libraries. 
+`Eniric` is an overhaul and extension to the code used in [Figueria et al. 2016](http://dx.doi.org/10.1051/0004-6361/201526900) to analysis the precision of M-dwarf stars.
+Extending the performance and usability, it is able to be used on any synthetic spectra from the [PHOENIX-ACES](http://phoenix.astro.physik.uni-goettingen.de) and [BT-Settl](https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/) (CIFIST2001-2015) libraries.
 
 Checkout the [wiki here](https://github.com/jason-neal/eniric/wiki)!
 
@@ -62,7 +62,6 @@ The latest versions are pinned in `requirements.txt`
 - astropy
 - joblib>=0.12.3
 - matplotlib
-- multiprocess
 - numpy
 - pandas
 - pyyaml
@@ -75,24 +74,24 @@ The latest versions are pinned in `requirements.txt`
 - h5py
 - scikit-learn
 
-If you are not going to use `Eniric` to analyze synthetic spectra (PHOENIX-ACES/BT-Settl) then you may 
+If you are not going to use `Eniric` to analyze synthetic spectra (PHOENIX-ACES/BT-Settl) then you may
 get away with not installing it (some tests with xfail).
 
 ## Preparation
 #### Data download
-To download the data for eniric, an atmopsheric transmission spectra and some test Spectra run the 
+To download the data for eniric, an atmopsheric transmission spectra and some test Spectra run the
 following from the main repo directory
 
 Linux:
 `download_eniric_data.sh`
 
 Windows:
-`... ` 
+`... `
 
 This should place the data in `data/atmmodel` and `data/testdata` where it can be found for testing.
 
 ### Configuration
-`Eniric` uses a `config.yaml` file which is required in directory where you are running `Eniric`. (i.e. the current directory) 
+`Eniric` uses a `config.yaml` file which is required in directory where you are running `Eniric`. (i.e. the current directory)
 to specify some paths, such as the location the the synthetic spectral library.
 
 ```
@@ -105,7 +104,7 @@ The paths can either be a string or a list of strings to pass to `os.path.join` 
 
 You can use the `config.yaml` to specify custom wavelength ranges to use
 ```
-bands: 
+bands:
   all: [..., myband]  # add myband to all list
 
 custom_bands:
@@ -114,12 +113,12 @@ custom_bands:
 
 You can then pass `myband` to the `band` arguments in `Eniric` scripts/functions.
 
-This based off `Starfish` and although many keywords are needed to be present 
+This based off `Starfish` and although many keywords are needed to be present
 for `Starfish` to run they are not used for `Eniric`'s usage of `Starfish` and are fine left blank.
 
 
 #### Atmospheric data:
-To perform telluric masking and account for the transmission of Earth's atmosphere a telluric spectra is required. 
+To perform telluric masking and account for the transmission of Earth's atmosphere a telluric spectra is required.
 `Eniric` includes the telluric spectra uses in Figueira et al. 2016, averaged over 2014.
 To automatically prepare the telluric masks, splitting into bands and applying the barycentric expansion run the following scripts:
 - `split_atmmodel.py`
@@ -132,8 +131,8 @@ To change the telluric line cutoff depth you to 4% can pass (default = 2%) you c
 
     `split_atmmodel.py --cutoff-depth 4`
 
-You can specify your own telluric mask instead. 
-By keeping it in the same format and setting atmmodel parameters in `config.yaml` you can make use of the 
+You can specify your own telluric mask instead.
+By keeping it in the same format and setting atmmodel parameters in `config.yaml` you can make use of the
 these scripts and the`Atmosphere` class which can perform the mask cutoff and doppler shifting.
 
 Or you can manually apply your own masking function as the mask parameter to the `rv_precision` function.
@@ -141,14 +140,14 @@ Or you can manually apply your own masking function as the mask parameter to the
 ### Convolutions
 The most computational component in `Eniric` is the convolutions. To help with this we use parallel prcessing and caching.
 
-- *Caching*: 
+- *Caching*:
 The convolution results are cached using Joblib to avoid repeating the convoutions. This can be disabled by
 setting the `location: None` in the `config.yaml`.
- 
+
 - *Parallel Processing*:
-The default number of processors used is one less then the total number of cores (N-1). 
+The default number of processors used is one less then the total number of cores (N-1).
 You can change this by specifying the `num_procs`.
-Setting `num_procs = 0` or `1` disables parallel processing.
+Setting `num_procs = 1` disables parallel processing.
 
 ## Usage
 You can now calculate the theoretical RV precision for any PHOENIX-ACES model.
