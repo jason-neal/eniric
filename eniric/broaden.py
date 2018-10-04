@@ -122,22 +122,21 @@ def rotational_convolution(
         if num_procs not in [0, 1]:
 
             with Parallel(n_jobs=num_procs) as parallel:
-                convolved_flux = np.array(
+                convolved_flux = np.asarray(
                     parallel(delayed(element_rot_convolution)(wav) for wav in tqdm_wav)
                 )
-
         else:  # num_procs == 0  or num_procs == 1
             convolved_flux = np.empty_like(wavelength)  # Memory assignment
             for ii, single_wav in enumerate(tqdm_wav):
                 convolved_flux[ii] = element_rot_convolution(single_wav)
     elif isinstance(num_procs, joblib.parallel.Parallel):
-        convolved_flux = np.array(
+        convolved_flux = np.asarray(
             num_procs(delayed(element_rot_convolution)(wav) for wav in tqdm_wav)
         )
     else:
         try:
             # Assume num_procs was a multiprocess.pool.Pool
-            convolved_flux = np.array(
+            convolved_flux = np.asarray(
                 num_procs.map(element_rot_convolution, tqdm_wav, chunksize=1023)
             )
         except AttributeError:
@@ -239,7 +238,7 @@ def resolution_convolution(
     if isinstance(num_procs, int):
         if num_procs not in [0, 1]:
             with Parallel(n_jobs=num_procs) as parallel:
-                convolved_flux = np.array(
+                convolved_flux = np.asarray(
                     parallel(delayed(element_res_convolution)(wav) for wav in tqdm_wav)
                 )
         else:  # num_procs == 0 or num_procs == 1
@@ -248,13 +247,13 @@ def resolution_convolution(
                 convolved_flux[jj] = element_res_convolution(single_wav)
 
     elif isinstance(num_procs, joblib.parallel.Parallel):
-        convolved_flux = np.array(
+        convolved_flux = np.asarray(
             num_procs(delayed(element_res_convolution)(wav) for wav in tqdm_wav)
         )
     else:
         # Assume num_procs was a multiprocess.pool.Pool
         try:
-            convolved_flux = np.array(
+            convolved_flux = np.asarray(
                 num_procs.map(element_res_convolution, tqdm_wav, chunksize=1023)
             )
         except AttributeError:
