@@ -1,6 +1,5 @@
 language: python
 python:
-    - 3.6
 
 matrix:
   fast_finish: true
