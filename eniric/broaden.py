@@ -6,16 +6,16 @@ Used to convolve the spectra for
 
 Uses joblib.Memory to cache convolution results to skip repeated computation.
 """
-from typing import Optional, Union
 import os
+from typing import Optional, Union
 
-import numpy as np
 import multiprocess as mprocess
+import numpy as np
 from astropy.constants import c
 from joblib import Memory
+from multiprocess import pool
 from numpy.core.multiarray import ndarray
 from tqdm import tqdm
-from multiprocess import pool
 
 import eniric
 from eniric.utilities import band_selector, mask_between, wav_selector
@@ -113,33 +113,42 @@ def rotational_convolution(
 
         return sum_val
 
-    tqdm_wav = tqdm(wavelength, disable=not verbose)
+    if vsini != 0:
+        tqdm_wav = tqdm(wavelength, disable=not verbose)
 
-    if num_procs is None:
-        num_procs = num_procs_minus_1
+        if num_procs is None:
+            num_procs = num_procs_minus_1
 
-    if isinstance(num_procs, int):
-        if num_procs not in [0, 1]:
-            with mprocess.Pool(processes=num_procs) as mproc_pool:
+        if isinstance(num_procs, int):
+            if num_procs not in [0, 1]:
+                with mprocess.Pool(processes=num_procs) as mproc_pool:
+                    convolved_flux = np.array(
+                        mproc_pool.map(element_rot_convolution, tqdm_wav)
+                    )
+
+            else:  # num_procs == 0  or num_procs == 1
+                convolved_flux = np.empty_like(wavelength)  # Memory assignment
+                for ii, single_wav in enumerate(tqdm_wav):
+                    convolved_flux[ii] = element_rot_convolution(single_wav)
+        else:
+            try:
+                # Assume num_procs was a multiprocess.pool.Pool
                 convolved_flux = np.array(
-                    mproc_pool.map(element_rot_convolution, tqdm_wav)
+                    num_procs.map(element_rot_convolution, tqdm_wav)
                 )
-
-        else:  # num_procs == 0  or num_procs == 1
-            convolved_flux = np.empty_like(wavelength)  # Memory assignment
-            for ii, single_wav in enumerate(tqdm_wav):
-                convolved_flux[ii] = element_rot_convolution(single_wav)
+            except AttributeError:
+                raise TypeError(
+                    "num_proc must be an int or a multiprocess Pool. Not '{}'".format(
+                        type(num_procs)
+                    )
+                )
     else:
-        try:
-            # Assume num_procs was a multiprocess.pool.Pool
-            convolved_flux = np.array(num_procs.map(element_rot_convolution, tqdm_wav))
-        except AttributeError:
-            raise TypeError(
-                "num_proc must be an int or a multiprocess Pool. Not '{}'".format(
-                    type(num_procs)
-                )
-            )
-
+        # Skip convolution for vsini=0
+        if wavelength is extended_wav:
+            convolved_flux = extended_flux  # No change
+        else:
+            # Interpolate to the new wavelength vector.
+            convolved_flux = np.interp(wavelength, extended_wav, extended_flux)
     return convolved_flux
 
 

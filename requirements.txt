@@ -1,5 +1,5 @@
 astropy>=3.0.0
-joblib>=0.12.3  # >=0.12.3
+joblib>=0.12.5  # >=0.12.3
 matplotlib
 multiprocess
 numpy
