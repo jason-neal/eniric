@@ -110,29 +110,36 @@ def rotational_convolution(
 
         return sum_val
 
-    tqdm_wav = tqdm(wavelength, disable=not verbose)
-
     if num_procs is None:
         num_procs = num_procs_minus_1
 
-    if isinstance(num_procs, int):
-        with Parallel(n_jobs=num_procs) as parallel:
-            convolved_flux = np.asarray(
-                parallel(delayed(element_rot_convolution)(wav) for wav in tqdm_wav)
-            )
-    else:
-        try:
-            # Assume num_procs is a joblib.parallel.Parallel.
-            convolved_flux = np.asarray(
-                num_procs(delayed(element_rot_convolution)(wav) for wav in tqdm_wav)
-            )
-        except AttributeError:
-            raise TypeError(
-                "num_proc must be an int, joblib.parallel.Parallel. Not '{}'".format(
-                    type(num_procs)
-                )
-            )
+    if vsini != 0:
+        tqdm_wav = tqdm(wavelength, disable=not verbose)
 
+        if isinstance(num_procs, int):
+            with Parallel(n_jobs=num_procs) as parallel:
+                convolved_flux = np.asarray(
+                    parallel(delayed(element_rot_convolution)(wav) for wav in tqdm_wav)
+                )
+        else:
+            try:
+                # Assume num_procs is a joblib.parallel.Parallel.
+                convolved_flux = np.asarray(
+                    num_procs(delayed(element_rot_convolution)(wav) for wav in tqdm_wav)
+                )
+            except AttributeError:
+                raise TypeError(
+                    "num_proc must be an int, joblib.parallel.Parallel. Not '{}'".format(
+                        type(num_procs)
+                    )
+                )
+    else:
+        # Skip convolution for vsini=0
+        if wavelength is extended_wav:
+            convolved_flux = extended_flux  # No change
+        else:
+            # Interpolate to the new wavelength vector.
+            convolved_flux = np.interp(wavelength, extended_wav, extended_flux)
     return convolved_flux
 
 

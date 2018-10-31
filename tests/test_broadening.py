@@ -166,3 +166,23 @@ def test_res_convolution_can_accept_None():
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
     resolution_convolution(x, x, y, R=100000, num_procs=None)
+
+
+@pytest.mark.parametrize("zero_vsini", [0, 0.00, np.int(0.0), np.float64(0.0)])
+def test_zero_rotation(zero_vsini):
+    n = 20
+    x = np.linspace(2.0, 2.3, n)
+    y = np.random.randn(n)
+    z = rotational_convolution(x, x, y, vsini=zero_vsini, num_procs=1)
+
+    assert np.all(y == z)
+
+
+@pytest.mark.parametrize("zero_vsini", [0, 0.00, np.int(0.0), np.float64(0.0)])
+def test_zero_rotation_with_different_x(zero_vsini):
+    n = 20
+    x = np.linspace(1000, 2300, n)
+    y = np.random.randn(n)
+    z = rotational_convolution(x[4:16], x, y, vsini=zero_vsini, num_procs=1)
+
+    assert np.all(y[4:16] == z)

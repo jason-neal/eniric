@@ -1,4 +1,4 @@
-# ENIRIC - Extended Near InfraRed Information Content
+# [ENIRIC](https://github.com/jason-neal/eniric) - Extended Near InfraRed Information Content
 
 [![Python 3.6+](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/24d3d525a79d4ae493de8c527540edef)](https://www.codacy.com/app/jason-neal/eniric?utm_source=github.com&utm_medium=referral&utm_content=jason-neal/eniric&utm_campaign=badger)
