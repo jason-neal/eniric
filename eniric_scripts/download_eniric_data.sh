@@ -58,3 +58,4 @@ fi
     wget "https://www.dropbox.com/s/raw/skg8zwi7vnxgesj/data_raw.tar.gz"
     ../../eniric_scripts/untar_here.py data_raw.tar.gz
     rm data_raw.tar.gz
+)
