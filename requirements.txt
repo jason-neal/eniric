@@ -4,7 +4,7 @@ matplotlib==3.0.1
 multiprocess==0.70.6.1
 numpy==1.15.3
 pandas==0.23.4
-pyyaml
+pyyaml==3.13
 scipy
 tqdm
 # Starfish install- currently needs numpy and cython pre-installed
