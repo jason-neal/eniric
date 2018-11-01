@@ -24,6 +24,8 @@ Other:
 - Add `Python 3.7` testing.
 - Drop `Python 3.5` support.
 - Refactoring for 1.0 release.
+- Relax pining in `requirements.txt`.
+- Use `requirements.txt` in `setup.py`
 
 
 ### v0.5.1

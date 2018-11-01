@@ -56,9 +56,10 @@ python setup.py develop
 cd ..
 ```
 see [here](https://github.com/iancze/Starfish) for more information about installing Starfish.
+For **windows** installation of `Starfish` also see [starfish#87](see https://github.com/iancze/Starfish/issues/87).
 
 ##### Requirements for `Eniric` :
-The latest versions are pinned in `requirements.txt`
+These should be automatically installed (if not present) when installing `eniric`. 
 - astropy
 - joblib>=0.12.3
 - matplotlib
@@ -69,14 +70,18 @@ The latest versions are pinned in `requirements.txt`
 - scipy
 - tqdm
 
+If want to use known working pinned versions they can be found in `requirements_dev.txt`. 
+To install these run `pip install -r requirements_dev.txt`.
+
 ##### Extra requirements for Starfish:
 - corner
 - cython
 - h5py
 - scikit-learn
 
-If you are not going to use `Eniric` to analyze synthetic spectra (PHOENIX-ACES/BT-Settl) then you may 
-get away with not installing it (some tests with xfail).
+If you are not going to use `eniric` to analyze PHOENIX-ACES or BT-Settl synthetic spectral models then you may 
+get away with not installing it (some tests will just xfail).
+
 
 ## Preparation
 #### Data download
