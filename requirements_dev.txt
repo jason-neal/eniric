@@ -5,7 +5,7 @@ coverage==4.5.1
 hypothesis==3.82.1
 joblib==0.12.5  # >=0.12.3
 matplotlib==3.0.1
-multiprocess==0.70.6
+multiprocess==0.70.6.1
 mypy==0.641
 numpy==1.15.2
 pandas==0.23.4
