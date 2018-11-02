@@ -43,7 +43,7 @@ clean-data:
 	rm --force --recursive data/test_data/resampled
 
 data:
-	python eniric_scripts/make_test_data.py
+	python scripts/make_test_data.py
 
 atmos:
 	split_atmmodel.py -b ALL

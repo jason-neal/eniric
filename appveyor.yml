@@ -41,13 +41,13 @@ install:
   - cmd: "move tests\\config.yaml config.yaml"
 
   # Downloading Eniric data with powershell script for windows
-  - ps: ".\\eniric_scripts\\ps_download_eniric_data.ps1"
+  - ps: ".\\scripts\\ps_download_eniric_data.ps1"
   # Generate data  # Should not do much as data already downloaded.
   - cmd: "%PYTHON%\\python.exe eniric\\obsolete\\make_test_data.py"
 
   # Prepare atmosphere models
-  - cmd: "%PYTHON%\\python.exe eniric_scripts\\split_atmmodel.py -b ALL"
-  - cmd: "%PYTHON%\\python.exe eniric_scripts\\bary_shift_atmmodel.py -b ALL"
+  - cmd: "%PYTHON%\\python.exe scripts\\split_atmmodel.py -b ALL"
+  - cmd: "%PYTHON%\\python.exe scripts\\bary_shift_atmmodel.py -b ALL"
 
 build: off
 
