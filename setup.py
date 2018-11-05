@@ -20,6 +20,11 @@ here = os.path.abspath(os.path.dirname(__file__))
 with codecs.open(os.path.join(here, "README.md")) as f:
     long_description = f.read()
 
+
+with codecs.open(os.path.join(here, "requirements.txt")) as f:
+    requirements = f.read().splitlines()
+
+
 config = {
     "name": "eniric",
     "description": "Eniric: Extended NIR Information Content",
@@ -30,20 +35,10 @@ config = {
     "download_url": "https://github.com/jason-neal/eniric.git",
     "author_email": "jason.neal@astro.up.pt",
     "version": "1.0rc1",
-    "license": "MIT",
+    "license": "MIT Licence",
     "setup_requires": ["pytest-runner"],
     "tests_require": ["pytest", "hypothesis"],
-    "install_requires": [
-        "astropy",
-        "joblib>0.12",
-        "matplotlib",
-        "multiprocess",
-        "numpy",
-        "pandas",
-        "pyyaml",
-        "scipy",
-        "tqdm",
-    ],
+    "install_requires": requirements,
     "extras_require": {
         "dev": ["check-manifest"],
         "test": ["coverage", "pytest", "pytest-cov", "python-coveralls", "hypothesis"],

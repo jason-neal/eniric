@@ -1,6 +1,6 @@
 # Eniric MANIFEST.in
 include *.md
-include LICENCE
+include LICENSE
 include requirements*.txt
 #recursive-include data/ *
 inlcude pyproject.toml
