@@ -10,8 +10,8 @@
 [![PyPI version](https://badge.fury.io/py/eniric.svg)](https://badge.fury.io/py/eniric)
 
 `Eniric` is a Python 3 software to compute the theoretical Radial Velocity (RV) precision of stellar spectra.
-`Eniric` is an overhaul and extension to the code used in [Figueria et al. 2016](http://dx.doi.org/10.1051/0004-6361/201526900) to analysis the precision of M-dwarf stars. 
-Extending the performance and usability, it is able to be used on any synthetic spectra from the [PHOENIX-ACES](http://phoenix.astro.physik.uni-goettingen.de) and [BT-Settl](https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/) (CIFIST2001-2015) libraries. 
+`Eniric` is an overhaul and extension to the code used in [Figueria et al. 2016](http://dx.doi.org/10.1051/0004-6361/201526900) to analysis the precision of M-dwarf stars.
+Extending the performance and usability, it is able to be used on any synthetic spectra from the [PHOENIX-ACES](http://phoenix.astro.physik.uni-goettingen.de) and [BT-Settl](https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/) (CIFIST2001-2015) libraries.
 
 Checkout the [wiki here](https://github.com/jason-neal/eniric/wiki)!
 
@@ -59,7 +59,7 @@ see [here](https://github.com/iancze/Starfish) for more information about instal
 For **windows** installation of `Starfish` also see [starfish#87](see https://github.com/iancze/Starfish/issues/87).
 
 ##### Requirements for `Eniric` :
-These should be automatically installed (if not present) when installing `eniric`. 
+These should be automatically installed (if not present) when installing `eniric`.
 - astropy
 - joblib>=0.12.3
 - matplotlib
@@ -70,7 +70,7 @@ These should be automatically installed (if not present) when installing `eniric
 - scipy
 - tqdm
 
-If want to use known working pinned versions they can be found in `requirements_dev.txt`. 
+If want to use known working pinned versions they can be found in `requirements_dev.txt`.
 To install these run `pip install -r requirements_dev.txt`.
 
 ##### Extra requirements for Starfish:
@@ -79,25 +79,25 @@ To install these run `pip install -r requirements_dev.txt`.
 - h5py
 - scikit-learn
 
-If you are not going to use `eniric` to analyze PHOENIX-ACES or BT-Settl synthetic spectral models then you may 
+If you are not going to use `eniric` to analyze PHOENIX-ACES or BT-Settl synthetic spectral models then you may
 get away with not installing it (some tests will just xfail).
 
 
 ## Preparation
 #### Data download
-To download the data for eniric, an atmopsheric transmission spectra and some test Spectra run the 
+To download the data for eniric, an atmopsheric transmission spectra and some test Spectra run the
 following from the main repo directory
 
 Linux:
 `download_eniric_data.sh`
 
 Windows:
-`... ` 
+`... `
 
 This should place the data in `data/atmmodel` and `data/testdata` where it can be found for testing.
 
 ### Configuration
-`Eniric` uses a `config.yaml` file which is required in directory where you are running `Eniric`. (i.e. the current directory) 
+`Eniric` uses a `config.yaml` file which is required in directory where you are running `Eniric`. (i.e. the current directory)
 to specify some paths, such as the location the the synthetic spectral library.
 
 ```
@@ -110,7 +110,7 @@ The paths can either be a string or a list of strings to pass to `os.path.join` 
 
 You can use the `config.yaml` to specify custom wavelength ranges to use
 ```
-bands: 
+bands:
   all: [..., myband]  # add myband to all list
 
 custom_bands:
@@ -119,12 +119,12 @@ custom_bands:
 
 You can then pass `myband` to the `band` arguments in `Eniric` scripts/functions.
 
-This based off `Starfish` and although many keywords are needed to be present 
+This based off `Starfish` and although many keywords are needed to be present
 for `Starfish` to run they are not used for `Eniric`'s usage of `Starfish` and are fine left blank.
 
 
 #### Atmospheric data:
-To perform telluric masking and account for the transmission of Earth's atmosphere a telluric spectra is required. 
+To perform telluric masking and account for the transmission of Earth's atmosphere a telluric spectra is required.
 `Eniric` includes the telluric spectra uses in Figueira et al. 2016, averaged over 2014.
 To automatically prepare the telluric masks, splitting into bands and applying the barycentric expansion run the following scripts:
 - `split_atmmodel.py`
@@ -137,8 +137,8 @@ To change the telluric line cutoff depth you to 4% can pass (default = 2%) you c
 
     `split_atmmodel.py --cutoff-depth 4`
 
-You can specify your own telluric mask instead. 
-By keeping it in the same format and setting atmmodel parameters in `config.yaml` you can make use of the 
+You can specify your own telluric mask instead.
+By keeping it in the same format and setting atmmodel parameters in `config.yaml` you can make use of the
 these scripts and the`Atmosphere` class which can perform the mask cutoff and doppler shifting.
 
 Or you can manually apply your own masking function as the mask parameter to the `rv_precision` function.
@@ -146,12 +146,12 @@ Or you can manually apply your own masking function as the mask parameter to the
 ### Convolutions
 The most computational component in `Eniric` is the convolutions. To help with this we use parallel prcessing and caching.
 
-- *Caching*: 
+- *Caching*:
 The convolution results are cached using Joblib to avoid repeating the convoutions. This can be disabled by
 setting the `location: None` in the `config.yaml`.
- 
+
 - *Parallel Processing*:
-The default number of processors used is one less then the total number of cores (N-1). 
+The default number of processors used is one less then the total number of cores (N-1).
 You can change this by specifying the `num_procs`.
 Setting `num_procs = 0` or `1` disables parallel processing.
 
@@ -186,12 +186,12 @@ It includes:
 - Resolution convolution
 - Re-sampling
 
-Some scripts are given in `eniric_scripts` to run this preparation over all desired parameters automatically. You will have to modify the paths to things.
+Some scripts are given in `scripts` to run this preparation over all desired parameters automatically. You will have to modify the paths to things.
 
 
 #### Precision Calculations
 
-`python eniric_scripts/nIR_precision.py`
+`python scripts/nIR_precision.py`
 
 This takes in the processed spectra and performs the precision calculations for all 3 conditions outlined in the original paper.
 - Cond1. Total information
@@ -215,13 +215,13 @@ Create an empty dir to hold your analysis.
 Create data dir with re-sampled, results, phoenix_dat
 Copy config.yaml and adjust the paths relative to what you created and to the raw phoenix spectra.
 
-eniric_scripts/prepare_spectra.py - This opens the phoenix flux spectra, add wavelength axis in microns and converts flux to photon counts. It saves this in the phoenix_dat dir. (The copy of wavelengths does waste space.)
+scripts/prepare_spectra.py - This opens the phoenix flux spectra, add wavelength axis in microns and converts flux to photon counts. It saves this in the phoenix_dat dir. (The copy of wavelengths does waste space.)
 
-eniric_scripts/nIR_run.py - Perform the resolution and rotational convolution on the prepared spectra.
+scripts/nIR_run.py - Perform the resolution and rotational convolution on the prepared spectra.
 
 This also does the re-sampling.
 
-e.g. python ../Codes/eniric/eniric_scripts/nIR_run.py -s M0 M3 M6 M9 -b Y J H K -v 1.0 5.0 10.0 -R 60000 80000 100000 --sample_rate 3
+e.g. python ../Codes/eniric/scripts/nIR_run.py -s M0 M3 M6 M9 -b Y J H K -v 1.0 5.0 10.0 -R 60000 80000 100000 --sample_rate 3
 
 
 ## Background

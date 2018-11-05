@@ -10,6 +10,6 @@ include eniric/config.yaml
 include tests/config.yaml
 include docs/Notebooks/*.ipynb
 include docs/Notebooks/config.yaml
-include eniric_scripts *
+include scripts *
 include Makefile
 include paper/*

@@ -1,10 +1,10 @@
-"""Tests for functions and bits of code from the scripts in eniric_scripts."""
+"""Tests for functions and bits of code from the scripts in 'scripts'."""
 
 import argparse
 
 import pytest
 
-from eniric_scripts.split_atmmodel import check_positive
+from scripts.split_atmmodel import check_positive
 
 
 def test_check_positive():
