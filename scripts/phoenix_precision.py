@@ -4,9 +4,8 @@ import itertools
 import os
 from typing import List, Tuple
 
-
-import numpy as np
 import multiprocess as mprocess
+import numpy as np
 from astropy import units as u
 from astropy.units import Quantity
 from numpy import ndarray
@@ -235,7 +234,7 @@ def do_analysis(
         wav, flux, vsini, R, ref_band, sampling, **conv_kwargs
     )
     snr_normalize = snr_constant_band(
-        wav_ref, sampled_ref, snr=snr, band=ref_band, sampling=sampling, verbose=verbose,
+        wav_ref, sampled_ref, snr=snr, band=ref_band, sampling=sampling, verbose=verbose
     )
     sampled_flux = sampled_flux / snr_normalize
 
@@ -365,9 +364,7 @@ def is_already_computed(
     """Check if any combinations have already been preformed.
     Correct is boolean for applied Artigau correction."""
     model_par_str_args = model_format_args(model, pars)
-    rv_template = (
-        "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,{6:4.01f},{7:3.01f},{8:3.01f},{9:1d}"
-    )
+    rv_template = "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,{6:4.01f},{7:3.01f},{8:3.01f},{9:1d}"
     no_rv_template = (
         "{0:5d},{1:3.01f},{2:4.01f},{3:3.01f},{4:s},{5:3d}k,{6:4.01f},{7:3.01f},{8:1d}"
     )

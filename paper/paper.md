@@ -58,7 +58,7 @@ statistical weight for an external reason.
 For example, masks derived from an atmospheric absorption spectrum can be used to explore the treatment
 and correction the atmospheric absorption on the RV precision [@figueira_radial_2016].
 
-The script [`phoenix_precision.py`](https://github.com/jason-neal/eniric/blob/develop/eniric_scripts/phoenix_precision.py) is provided to compute relative RV precisions of any synthetic spectra in the
+The script [`phoenix_precision.py`](https://github.com/jason-neal/eniric/blob/develop/scripts/phoenix_precision.py) is provided to compute relative RV precisions of any synthetic spectra in the
  [*PHOENIX-ACES*](http://phoenix.astro.physik.uni-goettingen.de) [@husser_new_2013] and
  [*BT-Settl* (CIFIST2011-2015)](https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/) [@baraffe_new_2015] synthetic libraries,
  given the identifying spectral parameters, making use of *Starfish*'s
