@@ -42,7 +42,8 @@ config = {
     "extras_require": {
         "dev": ["check-manifest"],
         "test": ["coverage", "pytest", "pytest-cov", "python-coveralls", "hypothesis"],
-    },  # $ pip install -e .[dev,test]
+        "docs": ["sphinx"]
+    },  # $ pip install -e .[dev,test, docs]
     "packages": ["eniric", "scripts", "eniric.obsolete"],
     "scripts": [
         "scripts/phoenix_precision.py",
