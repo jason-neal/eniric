@@ -42,7 +42,8 @@ config = {
     "extras_require": {
         "dev": ["check-manifest"],
         "test": ["coverage", "pytest", "pytest-cov", "python-coveralls", "hypothesis"],
-        "docs": ["sphinx"]
+        "docs": ["sphinx >= 1.4",
+                 "sphinx_rtd_theme"]
     },  # $ pip install -e .[dev,test, docs]
     "packages": ["eniric", "scripts", "eniric.obsolete"],
     "scripts": [
