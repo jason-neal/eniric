@@ -12,6 +12,18 @@ Welcome to Eniric's documentation!
 
 
 
+
+Support
+-------
+
+If you are having issues, please let us know.
+Submit an issue on `Github <https://github.com/jason-neal/eniric/issues>`_.
+
+License
+-------
+
+The project is licensed under the MIT License.
+
 Indices and tables
 ==================
 
