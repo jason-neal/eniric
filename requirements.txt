@@ -1,5 +1,4 @@
 astropy>=3.0.0
-https://github.com/iancze/Starfish/archive/develop.zip#egg=Starfish
 # git+https://github.com/iancze/Starfish.git#egg=Starfish
 joblib>=0.12.3  # >=0.12.3
 matplotlib
