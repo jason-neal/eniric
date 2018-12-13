@@ -166,7 +166,6 @@ def main(
         filename_band = "{0}_{1}.dat".format(new_name, band)
         band_min, band_max = band_limits(band)
 
-        # * 1000 to convert into km/s
         band_min = doppler_shift_wav(band_min, -rv_extend)
         band_max = doppler_shift_wav(band_max, rv_extend)
 

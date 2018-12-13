@@ -6,13 +6,12 @@ import errno
 import os
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
-import astropy.constants as const
+from astropy import constants as const
 import numpy as np
 from numpy import ndarray
 
 import eniric
 
-c = const.c
 # Band limits.
 bands_ = {
     "VIS": (0.38, 0.78),
@@ -453,7 +452,7 @@ def doppler_shift_wav(wavelength: ndarray, vel: float):
     if not np.isfinite(vel):
         ValueError("The velocity is not finite.")
 
-    shifted_wavelength = wavelength * (1 + (vel * 1000 / c.value))
+    shifted_wavelength = wavelength * (1 + (vel / const.c.to("km/s").value))
     return shifted_wavelength
 
 
@@ -512,7 +511,7 @@ def doppler_limits(rvmax, wmin, wmax):
     new_wmax: float
        Lower wavelength bound shifted by +rvmax
     """
-    c_km = const.c.value / 1000  # c in km/s
+    c_km = const.c.to('km/s').value  # c in km/s
     doppler_minus, doppler_plus = (1 - np.abs(rvmax) / c_km), (1 + np.abs(rvmax) / c_km)
 
     return wmin * doppler_minus, wmax * doppler_plus
