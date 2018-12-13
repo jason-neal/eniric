@@ -1,4 +1,5 @@
 astropy>=3.0.0
+git+https://github.com/iancze/Starfish.git#egg=Starfish
 joblib>=0.12.3  # >=0.12.3
 matplotlib
 multiprocess
@@ -7,5 +8,3 @@ pandas
 pyyaml
 scipy
 tqdm
-# Starfish install- currently needs numpy and cython pre-installed
-# https://github.com/iancze/Starfish/archive/master.zip#egg=Starfish
