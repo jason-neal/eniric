@@ -1,13 +1,4 @@
-__version__ = "0.6-beta"
-__all__ = [
-    "atmosphere",
-    "io_module",
-    "Qcalculator",
-    "resample",
-    "snr_normalization",
-    "utilities",
-]
-
+__version__ = "1.0rc1"
 
 import os
 import warnings
@@ -27,3 +18,15 @@ else:
     )
     config = Config(default)
 
+__all__ = [
+    "atmosphere",
+    "broaden",
+    "config",
+    "corrections",
+    "legacy",
+    "io_module",
+    "Qcalculator",
+    "resample",
+    "snr_normalization",
+    "utilities",
+]
