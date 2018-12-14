@@ -25,7 +25,7 @@ bands_ = {
     "NIR": (0.83, 2.35),
 }
 
-bands_.update(eniric.custom_bands)
+bands_.update(eniric.config.custom_bands)
 
 
 def band_selector(wav: ndarray, flux: ndarray, band: str) -> Tuple[ndarray, ndarray]:
@@ -308,7 +308,7 @@ def load_aces_spectrum(
 
     Spectra available from http://phoenix.astro.physik.uni-goettingen.de
     """
-    base = eniric.paths["phoenix_raw"] + os.sep
+    base = eniric.config.paths["phoenix_raw"] + os.sep
 
     if len(params) == 3:  # Only 3 parameters given
         params = [params[0], params[1], params[2], 0]  # Set alpha=0
@@ -392,7 +392,7 @@ def load_btsettl_spectrum(
         assert params[-1] == 0  # Checks index 3 when present.
         params = params[0:2]  # Only allow 2 params
 
-    base = eniric.paths["btsettl_raw"] + os.sep
+    base = eniric.config.paths["btsettl_raw"] + os.sep
 
     btsettl_grid = BTSETTL(base=base, air=air, norm=False, wl_range=wl_range)
 

@@ -21,7 +21,7 @@ import eniric
 from eniric.utilities import band_selector, mask_between, wav_selector
 
 # Cache convolution results.
-memory = Memory(location=eniric.cache["location"], verbose=0)
+memory = Memory(location=eniric.config.cache["location"], verbose=0)
 
 c_kmps = const.c.to('km/s').value
 num_procs_minus_1 = os.cpu_count() - 1
