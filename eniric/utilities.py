@@ -316,13 +316,13 @@ def load_aces_spectrum(
     if len(params) == 4:
         from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
 
-        phoenix_grid = PHOENIX(base=base, air=air, norm=False, wl_range=wl_range)
+        phoenix_grid = PHOENIX(base=base, air=air, wl_range=wl_range)
 
     else:
         raise ValueError("Number of parameters is incorrect")
 
     wav = phoenix_grid.wl
-    flux, hdr = phoenix_grid.load_flux(params)
+    flux, hdr = phoenix_grid.load_flux(params, norm=False)
 
     # Convert wavelength Angstrom to micron
     wav_micron = wav * 10 ** -4
@@ -394,11 +394,11 @@ def load_btsettl_spectrum(
 
     base = eniric.config.paths["btsettl_raw"] + os.sep
 
-    btsettl_grid = BTSETTL(base=base, air=air, norm=False, wl_range=wl_range)
+    btsettl_grid = BTSETTL(base=base, air=air, wl_range=wl_range)
 
     wav = btsettl_grid.wl
     # CIFIST flux is  W/m**2/um
-    flux, hdr = btsettl_grid.load_flux(params)
+    flux, hdr = btsettl_grid.load_flux(params, norm=False)
 
     # [::10] down samples only every 10th point from BT-Settl CIFIST spectrum.
     wav, flux = wav[::10], flux[::10]
