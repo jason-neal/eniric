@@ -41,7 +41,8 @@ class Config:
                 if (cache["location"] is None) or (cache["location"] == "None"):
                     cache["location"] = None  # Disables caching
                 else:
-                    cache["location"] = os.path.join(*cache["location"])
+                    if isinstance(cache["location"], list):
+                        cache["location"] = os.path.join(*cache["location"])
                 return cache
             else:
                 return super().__getattribute__(item)

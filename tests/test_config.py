@@ -46,7 +46,6 @@ class TestConfig:
         for value in config.custom_bands.values():
             assert isinstance(value, list)
 
-    @pytest.mark.xfail()  # Something wrong with dumping/loading.
     def test_lazy_load(self):
         previous = config.cache["location"]
         with open(config.filename, 'r+') as f:
