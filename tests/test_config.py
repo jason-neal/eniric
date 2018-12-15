@@ -56,5 +56,5 @@ class TestConfig:
         assert config.cache["location"] == 'test_output'
         with open(config.filename, 'r+') as f:
             base = yaml.safe_load(f)
-            base['cache'].update({"location" : previous})
+            base['cache'].update({"location": previous})
             yaml.dump(base, f)
