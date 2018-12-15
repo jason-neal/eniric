@@ -11,7 +11,7 @@ from eniric.obsolete.nIR_run import main as nir_run
 from eniric.obsolete.prepare_data import main as prepare_data
 
 if __name__ == "__main__":
-    print("Eniric paths: {}".format(eniric.paths))
+    print("Eniric paths: {}".format(eniric.config.paths))
 
     # subprocess.call("python scripts/prepare_data.py -s M0 M3 M6 M9 -l 4.50 -m 0.0", shell=True)
     prepare_data(

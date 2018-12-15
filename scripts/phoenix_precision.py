@@ -27,7 +27,7 @@ from eniric.utilities import (
 num_procs_minus_1 = os.cpu_count() - 1
 
 ref_choices = ["SELF"]
-ref_choices.extend(eniric.bands["all"])
+ref_choices.extend(eniric.config.bands["all"])
 
 
 def _parser():
@@ -87,7 +87,7 @@ def _parser():
         "--bands",
         type=str,
         default="J",
-        choices=eniric.bands["all"],
+        choices=eniric.config.bands["all"],
         help="Wavelength bands to select. Default=J.",
         nargs="+",
     )
@@ -448,7 +448,7 @@ if __name__ == "__main__":
     snr = args.snr
     air = args.air
     if "ALL" in args.bands:
-        args.bands.extend(eniric.bands["all"])
+        args.bands.extend(eniric.config.bands["all"])
         args.bands = set(args.bands)  # Unique
     ref_band = args.ref_band
 

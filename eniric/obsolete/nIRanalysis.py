@@ -16,9 +16,9 @@ from eniric.obsolete.utilities import read_spectrum
 # set stuff for latex usage
 rc("text", usetex=True)
 
-data_rep = eniric.paths["phoenix_dat"]
-results_dir = eniric.paths["results"]
-resampled_dir = eniric.paths["resampled"]
+data_rep = eniric.config.paths["phoenix_dat"]
+results_dir = eniric.config.paths["results"]
+resampled_dir = eniric.config.paths["resampled"]
 
 # models form PHOENIX-ACES
 M0_ACES = data_rep + "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
