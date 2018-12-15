@@ -39,7 +39,7 @@ def _parser():
         "--band",
         type=str,
         default="ALL",
-        choices=eniric.bands["all"],
+        choices=eniric.config.bands["all"],
         help="Wavelength band to select",
         nargs="+",
     )
@@ -94,7 +94,7 @@ def main(
     Multiple values of startype, vsini, resolution, band, and sample_rate can
     be provided.
 
-    Read files from eniric.paths["phoenix_dat"]"
+    Read files from eniric.config.paths["phoenix_dat"]"
 
     Parameters
     ----------
@@ -129,12 +129,12 @@ def main(
 
     start_time = dt.now()
 
-    phoenix_path = eniric.paths["phoenix_dat"]
+    phoenix_path = eniric.config.paths["phoenix_dat"]
 
-    results_dir = eniric.paths["results"]
+    results_dir = eniric.config.paths["results"]
     os.makedirs(results_dir, exist_ok=True)
 
-    resampled_dir = eniric.paths["resampled"]
+    resampled_dir = eniric.config.paths["resampled"]
     os.makedirs(resampled_dir, exist_ok=True)
 
     if not normalize:
