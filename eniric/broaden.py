@@ -11,7 +11,7 @@ from typing import Optional, Union
 
 import multiprocess as mprocess
 import numpy as np
-from astropy.constants import c
+from astropy import constants as const
 from joblib import Memory
 from multiprocess import pool
 from numpy.core.multiarray import ndarray
@@ -21,9 +21,9 @@ import eniric
 from eniric.utilities import band_selector, mask_between, wav_selector
 
 # Cache convolution results.
-memory = Memory(location=eniric.cache["location"], verbose=0)
+memory = Memory(location=eniric.config.cache["location"], verbose=0)
 
-c_kmps = c.value / 1000
+c_kmps = const.c.to('km/s').value
 num_procs_minus_1 = os.cpu_count() - 1
 
 
