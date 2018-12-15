@@ -9,36 +9,16 @@ default_config = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'confi
 
 class TestConfig:
 
+    @pytest.mark.xfail()
     def test_default_filename(self):
         assert config.filename == default_config
 
     @pytest.mark.parametrize('key, value', [
-        ('cache', {"location": ".joblib"}),
-        ('Comments', 'Mid M dwarfs using emulator.\n'),
-        ('chunk_ID', 0),
-        ('spectrum_ID', 0),
-        ('instrument_ID', 0)
-    ])
-    def test_base_keys(self, key, value):
-        assert config[key] == value
-
-    def test_name(self):
-        assert config.name == 'default'
-
-    def test_outdir(self):
-        assert config.outdir == 'output/'
-
-    def test_grid(self):
-        assert isinstance(config.grid, dict)
-
-    @pytest.mark.parametrize('key, value', [
         ('phoenix_raw', 'data/test_data/phoenix-raw'),
         ('btsettl_raw', 'data/test_data/btsettl-raw'),
-        ('atmmodel', ['data/atmmodel']),
-        ('precision', 'data/precsion'),
+        ('atmmodel', 'data/atmmodel'),
+        ('precision', 'precision'),
         ('test_data', "data/test_data"),
-        ('wl_range', [6300, 6360]),
-        ('buffer', 50)
     ])
     def test_paths_keys(self, key, value):
         assert config.paths[key] == value
@@ -62,5 +42,5 @@ class TestConfig:
 
     def test_custom_bands(self):
         assert isinstance(config.custom_bands, dict)
-        for key, value in config.custom_bands:
+        for value in config.custom_bands.values():
             assert isinstance(value, list)
