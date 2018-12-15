@@ -52,7 +52,7 @@
 import warnings
 from typing import Optional, Tuple, Union
 
-import astropy.constants as const
+from astropy import constants as const
 import astropy.units as u
 import numpy as np
 from astropy.units.quantity import Quantity

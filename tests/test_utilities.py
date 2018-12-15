@@ -21,7 +21,6 @@ from eniric.utilities import (
     weighted_error,
 )
 
-c = const.c
 xfail = pytest.mark.xfail
 
 
@@ -373,7 +372,7 @@ def test_doppler_shift_at_speed_of_light(wavelength, direction, multiplier):
      It is a test of the math but not physical (not valid at this speed)
      but we are checking the math of the equation works
      should result in a shift of \delta \lambda = +/- \lambda"""
-    c_wave = doppler_shift_wav(wavelength, direction * c.value / 1000)
+    c_wave = doppler_shift_wav(wavelength, direction * const.c.to('km/s').value)
     assert np.all(c_wave == (wavelength * multiplier))
 
 

@@ -126,11 +126,11 @@ def main(
 
     """
     if data_dir is None:
-        data_dir = eniric.paths["phoenix_dat"]
+        data_dir = eniric.config.paths["phoenix_dat"]
     os.makedirs(data_dir, exist_ok=True)
 
     if phoenix_dir is None:
-        phoenix_dir = eniric.paths["phoenix_raw"]
+        phoenix_dir = eniric.config.paths["phoenix_raw"]
 
     # Get Phoenix wavelength data
     wavelength_file = "WAVE_PHOENIX-ACES-AGSS-COND-2011.fits"
