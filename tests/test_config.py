@@ -1,6 +1,7 @@
 import os
 
 import pytest
+import yaml
 
 from eniric import config
 
@@ -44,3 +45,17 @@ class TestConfig:
         assert isinstance(config.custom_bands, dict)
         for value in config.custom_bands.values():
             assert isinstance(value, list)
+
+    @pytest.mark.xfail()  # Something wrong with dumping/loading.
+    def test_lazy_load(self):
+        previous = config.cache["location"]
+        with open(config.filename, 'r+') as f:
+            base = yaml.safe_load(f)
+            base['cache'].update({'location': 'test_output'})
+            yaml.dump(base, f)
+        assert config.cache["location"] != previous
+        assert config.cache["location"] == 'test_output'
+        with open(config.filename, 'r+') as f:
+            base = yaml.safe_load(f)
+            base['cache'].update({"location" : previous})
+            yaml.dump(base, f)
