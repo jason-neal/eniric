@@ -1,5 +1,6 @@
 # [ENIRIC](https://github.com/jason-neal/eniric) - Extended Near InfraRed Information Content
 
+[![Documentation Status](https://readthedocs.org/projects/eniric/badge/?version=latest)](https://eniric.readthedocs.io/en/latest/?badge=latest)
 [![Python 3.6+](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/24d3d525a79d4ae493de8c527540edef)](https://www.codacy.com/app/jason-neal/eniric?utm_source=github.com&utm_medium=referral&utm_content=jason-neal/eniric&utm_campaign=badger)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/24d3d525a79d4ae493de8c527540edef)](https://www.codacy.com/app/jason-neal/eniric?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jason-neal/eniric&amp;utm_campaign=Badge_Coverage)
@@ -13,7 +14,7 @@
 `Eniric` is an overhaul and extension to the code used in [Figueria et al. 2016](http://dx.doi.org/10.1051/0004-6361/201526900) to analysis the precision of M-dwarf stars.
 Extending the performance and usability, it is able to be used on any synthetic spectra from the [PHOENIX-ACES](http://phoenix.astro.physik.uni-goettingen.de) and [BT-Settl](https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/) (CIFIST2001-2015) libraries.
 
-Checkout the [wiki here](https://github.com/jason-neal/eniric/wiki)!
+Checkout the documentation on [Read the Docs](https://eniric.readthedocs.io/en/latest/)!
 
 ## Features:
 `Eniric` contains a number of features to transform and prepare the spectra (observed and synthetic).
