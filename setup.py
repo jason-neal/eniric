@@ -24,6 +24,9 @@ with codecs.open(os.path.join(here, "README.md")) as f:
 with codecs.open(os.path.join(here, "requirements.txt")) as f:
     requirements = f.read().splitlines()
 
+# Conditional pytest-runner install
+needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
+pytest_runner = ['pytest-runner>=4'] if needs_pytest else []
 
 config = {
     "name": "eniric",
@@ -36,7 +39,7 @@ config = {
     "author_email": "jason.neal@astro.up.pt",
     "version": "1.0rc1",
     "license": "MIT Licence",
-    "setup_requires": ["pytest-runner"],
+    "setup_requires": [] + pytest_runner,
     "tests_require": ["pytest", "hypothesis"],
     "install_requires": requirements,
     "extras_require": {
