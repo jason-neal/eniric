@@ -44,9 +44,18 @@ config = {
     "install_requires": requirements,
     "extras_require": {
         "dev": ["check-manifest"],
-        "test": ["coverage", "pytest", "pytest-cov", "python-coveralls", "hypothesis"],
+        "test": ["coverage",
+                 "pytest",
+                 "pytest-cov",
+                 "python-coveralls",
+                 "hypothesis",
+                 ],
         "docs": ["sphinx >= 1.4",
-                 "sphinx_rtd_theme"]
+                 "sphinx_rtd_theme"],
+        "ci": ["codacy-coverage==1.3.11",
+               "codeclimate-test-reporter>=0.2.3",
+               "python-coveralls>=2.9.1",
+               ]
     },  # $ pip install -e .[dev,test, docs]
     "packages": ["eniric", "scripts", "eniric.obsolete"],
     "scripts": [
