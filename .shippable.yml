@@ -23,7 +23,7 @@ build:
     - pip install -e git+https://github.com/iancze/Starfish.git#egg=Starfish  # Editable install that includes build_ext
 
     # Now install eniric
-    - python setup.py install
+    - pip install .[dev,test,docs,ci]
 
     # Setup config and make test data
     - export MPLBACKEND="AGG"  # Non-interactive
