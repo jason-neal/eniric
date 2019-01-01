@@ -32,7 +32,7 @@ Welcome to Eniric's documentation!
 ==================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    Installation
@@ -53,7 +53,7 @@ To get started see the `installation instructions <https://github.com/jason-neal
 Features
 --------
 
-`Eniric` contains a number of features to transform and prepare the spectra (observed and synthetic).
+`Eniric` contains a number of features to transform and prepare the spectra; both observed and synthetic.
 
 * `Spectral broadening <https://github.com/jason-neal/eniric/wiki/Broadening>`_\ :
    Allows for Rotational and Instrumental broadening of synthetic spectra given rotation speed ``vsini`` and resolution ``R``.
@@ -82,17 +82,15 @@ Features
        - `BT-Settl <https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/>`_
 
 
-.. image:: https://github.com/jason-neal/eniric/blob/paper/paper/precisions.png
-   :target: https://github.com/jason-neal/eniric/blob/paper/paper/precisions.png
-   :alt: Example relative precision
+.. figure:: _static/precisions.png
+   :target: https://github.com/jason-neal/eniric/blob/master/paper/precisions.png
+   :alt: Example relative precisions
+   :align: center
 
-
-.. code-block::
-
-   Figure 1: Precision achieved with *eniric* as a function of spectral band for stars with a rotational velocity of vsini=1.0\ kms$^{-1}$ and temperatures 3900 K, 3500 K, 2800 K, 2600 K, corresponding to spectral types M0, M3, M6, and M9 respectively.
+   Precision achieved with *eniric* as a function of spectral band for stars with a rotational velocity of vsini=1.0\ kms$^{-1}$ and temperatures 3900 K, 3500 K, 2800 K, 2600 K, corresponding to spectral types M0, M3, M6, and M9 respectively.
    The dashed line represents the theoretical limits imposed by condition 1, and the filled area represents the values within the limits set by conditions 2 (circles) and 3 (triangles); blue, green, and red represent the results obtained for resolutions of 60000, 80000, and 100000, respectively.
    The spectra were normalized to have a SNR of 100 per resolution element as measured at the center of the J-band.
-   This is similar to Figure 1 from [@figueira_radial_2016] but with updated precision values.
+   This is similar to Figure 1 from `Figueria et al. 2016 <http://dx.doi.org/10.1051/0004-6361/201526900>`_ but with updated precision values.
 
 
 Support
