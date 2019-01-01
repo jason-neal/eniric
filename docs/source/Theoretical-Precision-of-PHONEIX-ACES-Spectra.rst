@@ -5,7 +5,7 @@
 Theoretical Precision of PHONEIX-ACES Spectra
 ---------------------------------------------
 
-Eniric provides a script ``aces_precision.py`` to generate RV precision values for any spectra in the PHOENIX-ACES spectral library (Available at `http://phoenix.astro.physik.uni-goettingen.de/ <http://phoenix.astro.physik.uni-goettingen.de/>`_\ ). The precision of a spectra can be obtained by providing its library parameters Teff, logg, Fe/H and, alpha. This has been mainly used on M-dwarf spectra (< 4000K), but it higher temperatures should work to.
+Eniric provides a script ``phoenix_precision.py`` to generate RV precision values for any spectra in the PHOENIX-ACES spectral library (Available at `http://phoenix.astro.physik.uni-goettingen.de/ <http://phoenix.astro.physik.uni-goettingen.de/>`_\ ). The precision of a spectra can be obtained by providing its library parameters Teff, logg, Fe/H and, alpha. This has been mainly used on M-dwarf spectra (< 4000K), but it higher temperatures should work to.
 
 For the library selection and loading of the spectra we use `Starfish's Grid Tools <https://iancze.github.io/Starfish/current/grid_tools.html>`_. You need to have the PHOENIX-ACES spectra downloaded, and the ``raw_path`` configured in the ``config.yaml`` file in the working directory. For more information see the Starfish documentation `here <https://iancze.github.io/Starfish/current/grid_tools.html#downloading-model-spectra>`_.
 

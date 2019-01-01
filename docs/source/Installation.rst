@@ -15,22 +15,40 @@ To use the most up-to-date packages install requirements from the ``requirements
    python setup.py develop
 
 
-Hopefully there will be a pip installable version soon...
+
+Requirements
+~~~~~~~~~~~~
+
+The requirements for ``eniric`` are:
+
+* astropy
+* joblib
+* matplotlib
+* multiprocess
+* numpy
+* pandas
+* pyyaml
+* scipy
+* `Starfish <https://github.com/iancze/Starfish.git>`_
+* tqdm
+
+There are some specific version requirements given in ``requirements.txt`` but the most recent versions are pinned in ``requirements_dev.txt``
+to install these you will need to run
+     ``pip install -r requirements_dev.txt``
+from the cloned ``eniric`` repo.
+
 
 Starfish
 ~~~~~~~~
 
-Eniric makes use of ``Starfish``\ s' ``GridTools`` to load the synthetic library PHOENIX-ACES/BT-Settl models.
+Eniric makes use of Starfish's ``GridTools`` module to load the synthetic libraries: PHOENIX-ACES and BT-Settl models.
 ``Starfish`` is only a requirement if using the ``eniric.utilities.load_aces_spectrum``\ , ``eniric.utilities.load_btsettl_spectrum`` functions or the ``phoenix_precision.py`` script.
 
-``Starfish`` can be downloaded and installed using the following commands, more info can be found `here <https://github.com/iancze/Starfish>`_\ :
+``Starfish`` should be automatically installed during installation of ``eniric``. If issues arise regarding ``Starfish`` see `github.com/iance/Starfish <https://github.com/iancze/Starfish>`_\ :
 
 .. code-block::
 
-   git clone https://github.com/iancze/Starfish.git
-   cd Starfish
-   python setup.py build_ext --inplace
-   python setup.py develop
+    pip install https://github.com/iancze/Starfish/archive/develop.zip#egg=Starfish
 
 
 If are using Windows you will need to clone a fork of ``Starfish`` and checkout the ``windows`` branch
@@ -46,37 +64,9 @@ If are using Windows you will need to clone a fork of ``Starfish`` and checkout 
 
 This is due to compiling the extensions on Windows.
 
-Requirements
-~~~~~~~~~~~~
+.. note::
 
-The requirements for ``eniric`` are:
-
-
-* astropy
-* joblib
-* matplotlib
-* multiprocess
-* numpy
-* pandas
-* pyyaml
-* scipy
-* Starfish*
-* tqdm
-
-Other requirements required for Starfish are:
-
-
-* corner
-* cython
-* emcee
-* h5py
-* scikit-learn
-
-There are no specific version requirements but the most recent version are pinned in ``requirements.txt``
-to install these you will need to run
-     ``pip install -r requirements.txt`` 
-from the cloned ``eniric`` repo.
-
+   This information on Windows is out of date.
 
 OS
 ~~
