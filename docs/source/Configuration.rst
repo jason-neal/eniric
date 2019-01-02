@@ -7,7 +7,7 @@ It configures the path locations to the spectral libraries, as well as user spec
 
 config.yaml
 
-.. code-block::
+::
 
    # YAML configuration script
 

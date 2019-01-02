@@ -4,7 +4,7 @@ Atmospheric Transmission
 
 For ground-based observations it is important to understand the how the atmospheric absorption affects the Radial Velocity precision. ``Eniric`` does this in two scenarios; masking out all wavelength regions affected by telluric lines over adjusting for barycentric motion, or assuming perfect atmospheric correction, in which the variance of the photon noise is adjusted.   
 
-For this ``eniric`` contains a average telluric transmission model. It is an average model was created from weekly transmission spectra in 2014 simulated with the `TAPAS <https://cds-espri.ipsl.upmc.fr/tapas/>`_ software (\ `Bertaux et al 2014 <http://adsabs.harvard.edu/abs/2014A%26A...564A..46B>`_\ ) as detailed in (Figueria et al. 2016).
+For this ``eniric`` contains a average telluric transmission model. It is an average model was created from weekly transmission spectra in 2014 simulated with the `TAPAS`_ software (\ `Bertaux et al 2014`_\) as detailed in (`Figueira et al. 2016`_).
 The main parmeters are
 
 
@@ -21,7 +21,7 @@ To make individual precision calculations faster this model can be split into th
 e.g. 
 Use ``split_atmmodels.py -h`` to get the description of flags to use.
 
-.. code-block::
+.. code-block:: bash
 
    split_atmmodels.py My_telluric_model.txt -b H K
 
@@ -35,13 +35,13 @@ Barycentric Motion
 
 To exclude wavelength regions that will be affected by telluric lines at some point during the year you can extend out the telluric maskk.
 
-.. code-block::
+.. code-block:: python
 
    new_mask = barycentric_shift(wav, transmission, mask)
 
 This extends the regions that are masked out, you can check that the mask continues to mask out deep lines like so...
 
-.. code-block::
+.. code-block:: python
 
    assert np.all(transmission[mask] > 0.98)     # check old mask works
    assert np.all(transmission[new_mask] > 0.98) # Check new mask
@@ -49,3 +49,7 @@ This extends the regions that are masked out, you can check that the mask contin
    assert np.sum(new_mask) < np.sum(mask)
 
 The fraction ``(np.sum(new_mask) - np.sum(mask)) /np.sum(mask)`` can also indicate the increase in masked out wavelengths. 
+
+.. _TAPAS: https://cds-espri.ipsl.upmc.fr/tapas/
+.. _`Bertaux et al 2014`: http://adsabs.harvard.edu/abs/2014A%26A...564A..46B
+.. _`Figueira et al. 2016`: http://dx.doi.org/10.1051/0004-6361/201526900
