@@ -53,11 +53,11 @@ To use the default telluric line model to apply masking:
 The presence of absorption lines in Earth's atmosphere affects the spectral precision.
 There are two options to handle this. Complete masking of telluric lines within 30 km/s, reduction in spectral variance by the transmission spectrum.
 
+
 Weight Masking
 ~~~~~~~~~~~~~~
 
 Three cases:
-
 
 * all 1's
 * 1s and 0s
@@ -66,3 +66,38 @@ Three cases:
 
 
 Explanation of output file
+==========================
+
+``phoenix_precision.py`` saves the results to a output file.
+The different columns of the output file are given in the table below.
+
++--------+--------------+---------------------------------------------------------------------+
+| Col.   | Name         | Description                                                         |
++========+==============+=====================================================================+
+| 1      | Temp         | Library stellar effective temperature (K)                           |
++--------+--------------+---------------------------------------------------------------------+
+| 2      | logg         | Library stellar surface gravity                                     |
++--------+--------------+---------------------------------------------------------------------+
+| 3      | [Fe/H]       | Library stellar metallicity                                         |
++--------+--------------+---------------------------------------------------------------------+
+| 4      | Band         | Wavelength band used                                                |
++--------+--------------+---------------------------------------------------------------------+
+| 5      | Resolution   | Instrumental resolution                                             |
++--------+--------------+---------------------------------------------------------------------+
+| 6      | vsini        | Stellar rotation (km/s)                                             |
++--------+--------------+---------------------------------------------------------------------+
+| 7      | sampling     | Spectral sampling - N points per resolution element.                |
++--------+--------------+---------------------------------------------------------------------+
+| 8      | Quality      | Theoretical spectral quality                                        |
++--------+--------------+---------------------------------------------------------------------+
+| 9      | Cond. 1      | RV precision with no masking.                                       |
++--------+--------------+---------------------------------------------------------------------+
+| 10     | Cond. 2      | RV precision with binary masking.                                   |
++--------+--------------+---------------------------------------------------------------------+
+| 11     | Cond. 3      | RV precision with transmission masking.                             |
++--------+--------------+---------------------------------------------------------------------+
+| 12     | correct flag | Indicate if `Artigau et al. 2018`_ precision correction is applied. |
++--------+--------------+---------------------------------------------------------------------+
+
+
+.. _`Artigau et al. 2018`: http://adsabs.harvard.edu/abs/2018AJ....155..
