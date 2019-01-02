@@ -37,27 +37,29 @@ Checkout the documentation on [Read the Docs](https://eniric.readthedocs.io/en/l
 
 
 # [Installation](https://github.com/jason-neal/eniric/wiki/Installation)
-Currently to install `Eniric` you need to clone the repo:
-```
-git clone https://github.com/jason-neal/eniric
-cd eniric
-pip install -r requirements.txt
-python setup.py develop
+
+You can install ``Eniric`` by cloning the current ``master`` branch.
+
+It is recommended to use a ``conda`` or ``virtualenv`` environment.
+To use the most up-to-date packages install the pinned requirements from the ``requirements_dev.txt`` file
+
+    git clone https://github.com/jason-neal/eniric
+    cd eniric
+    pip install -r requirements_dev.txt
+    python setup.py develop
+
+
+Installation from the github repository should also be possible with `pip`.
+
+``` 
+  pip install https://github.com/jason-neal/eniric/archive/develop.zip#egg=eniric
 ```
 
-A pip installable version is in the works...
 
-You also need to manually install [Starfish](https://github.com/iancze/Starfish)
+If there are issues with installing Starfish see [https://github.com/iancze/Starfish](https://github.com/iancze/Starfish)
 
-```
-git clone git@github.com:iancze/Starfish.git
-cd Starfish
-python setup.py build_ext --inplace
-python setup.py develop
-cd ..
-```
-see [here](https://github.com/iancze/Starfish) for more information about installing Starfish.
-For **windows** installation of `Starfish` also see [starfish#87](see https://github.com/iancze/Starfish/issues/87).
+If you are not going to use `eniric` to analyze PHOENIX-ACES or BT-Settl synthetic spectral models then you may
+get away with not installing it (some tests will just xfail).
 
 ##### Requirements for `Eniric` :
 These should be automatically installed (if not present) when installing `eniric`.
@@ -65,24 +67,12 @@ These should be automatically installed (if not present) when installing `eniric
 - joblib>=0.12.3
 - matplotlib
 - multiprocess
-- numpy
+- numpy>=0.15.4
 - pandas
 - pyyaml
 - scipy
+- Starfish
 - tqdm
-
-If want to use known working pinned versions they can be found in `requirements_dev.txt`.
-To install these run `pip install -r requirements_dev.txt`.
-
-##### Extra requirements for Starfish:
-- corner
-- cython
-- h5py
-- scikit-learn
-
-If you are not going to use `eniric` to analyze PHOENIX-ACES or BT-Settl synthetic spectral models then you may
-get away with not installing it (some tests will just xfail).
-
 
 ## Preparation
 #### Data download
