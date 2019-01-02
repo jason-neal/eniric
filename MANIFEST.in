@@ -3,7 +3,7 @@ include *.md
 include LICENSE
 include requirements*.txt
 #recursive-include data/ *
-inlcude pyproject.toml
+include pyproject.toml
 include tests/test_*.py
 include config.yaml
 include eniric/config.yaml
