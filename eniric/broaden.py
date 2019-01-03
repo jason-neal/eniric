@@ -23,7 +23,7 @@ from eniric.utilities import band_selector, mask_between, wav_selector
 # Cache convolution results.
 memory = Memory(location=eniric.config.cache["location"], verbose=0)
 
-c_kmps = const.c.to('km/s').value
+c_kmps = const.c.to("km/s").value
 num_procs_minus_1 = os.cpu_count() - 1
 
 
@@ -457,7 +457,7 @@ def oned_circle_kernel(x: ndarray, center: float, fwhm: float):
 
     Artigau 2018 - stated mathematically equivalent to a cosine between -pi/2 and pi/2. This is what has tried to be created.
     """
-    fwhm_scale = 2.0943951  # Numerically derived
+    fwhm_scale = 2.094_395_1  # Numerically derived
 
     A = 1  # Amplitude
     B = fwhm_scale / fwhm  # Scale to give specific fwhm

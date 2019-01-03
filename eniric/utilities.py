@@ -511,7 +511,7 @@ def doppler_limits(rvmax, wmin, wmax):
     new_wmax: float
        Lower wavelength bound shifted by +rvmax
     """
-    c_km = const.c.to('km/s').value  # c in km/s
+    c_km = const.c.to("km/s").value  # c in km/s
     doppler_minus, doppler_plus = (1 - np.abs(rvmax) / c_km), (1 + np.abs(rvmax) / c_km)
 
     return wmin * doppler_minus, wmax * doppler_plus
