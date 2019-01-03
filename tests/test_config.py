@@ -15,11 +15,11 @@ class TestConfig:
         assert config.filename == default_config
 
     @pytest.mark.parametrize('key, value', [
-        ('phoenix_raw', 'data/test_data/phoenix-raw'),
-        ('btsettl_raw', 'data/test_data/btsettl-raw'),
-        ('atmmodel', 'data/atmmodel'),
+        ('phoenix_raw', os.path.join(['data','test_data','phoenix-raw'])),
+        ('btsettl_raw', os.path.join(['data','test_data','btsettl-raw'])),
+        ('atmmodel', os.path.join(['data', 'atmmodel'])),
         ('precision', 'precision'),
-        ('test_data', "data/test_data"),
+        ('test_data', os.path.join(['data', 'test_data'])),
     ])
     def test_paths_keys(self, key, value):
         assert config.paths[key] == value
