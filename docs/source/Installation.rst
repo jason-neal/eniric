@@ -16,7 +16,7 @@ To use the most up-to-date packages install the pinned requirements from the ``r
 
 Installation from the github repository should also be possible.
 
-.. code-block: bash
+.. code-block:: bash
 
     pip install https://github.com/jason-neal/eniric/archive/develop.zip#egg=eniric
 
@@ -57,6 +57,7 @@ Eniric makes use of Starfish's ``GridTools`` module to load the synthetic librar
 ``Starfish`` should be automatically installed during installation of ``eniric`` with this custom fixed branch which is suitable for both Windows and Linux installation.
 
 .. code-block:: bash
+
     pip install https://github.com/jason-neal/Starfish/archive/eniric_suitable.zip#egg=Starfish
 
 If issues arise regarding ``Starfish`` see `github.com/iancze/Starfish <Starfishgithub_>`_:,
