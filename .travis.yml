@@ -36,7 +36,7 @@ script:
     - pytest --cov=eniric --cov-report term-missing --durations 5
     - coverage xml -i
 
-    - rstcheck -r docs
+    - rstcheck -r docs --report error
 
 after_success:
   - coveralls
