@@ -1,5 +1,5 @@
 astropy>=3.0.0
-https://github.com/jason-neal/Starfish/archive/eniric_suitable.zip#egg=Starfish
+astrostarfish
 joblib>=0.12.3  # >=0.12.3
 matplotlib
 multiprocess
