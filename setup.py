@@ -43,7 +43,7 @@ config = {
         "dev": ["check-manifest"],
         "test": ["coverage", "pytest", "pytest-cov", "python-coveralls", "hypothesis"],
     },  # $ pip install -e .[dev,test]
-    "packages": ["eniric", "scripts", "eniric.obsolete"],
+    "packages": ["eniric", "scripts",],
     "scripts": [
         "scripts/phoenix_precision.py",
         "scripts/split_atmmodel.py",
@@ -51,10 +51,6 @@ config = {
         "scripts/untar_here.py",
         "scripts/download_eniric_data.sh",
         "tests/download_test_PHOENIX_spec.sh",
-        "eniric/obsolete/make_test_data.py",
-        "eniric/obsolete/nIR_run.py",
-        "eniric/obsolete/nIR_precision.py",
-        "eniric/obsolete/prepare_data.py",
     ],
     "include_package_data": True,
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
