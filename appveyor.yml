@@ -15,25 +15,7 @@ install:
   - "%PYTHON%\\python.exe -m pip install -r requirements_dev.txt"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
 
-  # Installing Starfish
-  - "cd c:\\projects"
-  - "mkdir Starfish"
-  - "cd Starfish"
-  # This does not work due to Starfish compilation on Windows.
-  # - "%PYTHON%\\python.exe -m pip install numpy cython"
-  # - "%PYTHON%\\python.exe -m pip install https://github.com/iancze/Starfish/archive/master.zip#egg=Starfish"
-  - ps: "wget https://raw.githubusercontent.com/iancze/Starfish/master/requirements.txt -OutFile starfish_requirements.txt"
-  - "%PYTHON%\\python.exe -m pip install -r starfish_requirements.txt"
-  - "%PYTHON%\\python.exe -m pip install -e git+https://github.com/jason-neal/Starfish.git@windows#egg=Starfish"
-
-  # - "git clone https://github.com/jason-neal/Starfish.git"
-  # - "cd c:\\projects\\Starfish"
-  # - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
-  # - "git checkout windows"   # Especially configured to build on windows
-  # - "%PYTHON%\\python.exe setup.py develop"
-
   # Installing eniric now
-  - cmd: "cd c:\\projects\\eniric"
   - "%PYTHON%\\python.exe setup.py install"
 
   # Setup config and make data

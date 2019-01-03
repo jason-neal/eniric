@@ -54,7 +54,7 @@ def test_band_snr_norm(testing_spectrum, sampling):
     """Compared to wav snr norm."""
     wav, flux = testing_spectrum
     wav, flux = convolve_and_resample(
-        wav, flux, vsini=1, R=100000, band="J", sampling=sampling
+        wav, flux, vsini=1, R=100_000, band="J", sampling=sampling
     )
     assert snrnorm.snr_constant_band(
         wav, flux, band="J", snr=100, sampling=sampling
