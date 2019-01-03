@@ -353,12 +353,12 @@ def test_barycenter_shift_verse_class(short_atmosphere, consec_test):
 def test_read_spectrum():
     """Test reading in a _wave_photon.dat is the same as a _wave.dat."""
     photon = os.path.join(
-        eniric.paths["test_data"],
+        eniric.config.paths["test_data"],
         "obsolete",
         "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_photon.dat",
     )
     wave = os.path.join(
-        eniric.paths["test_data"],
+        eniric.config.paths["test_data"],
         "obsolete",
         "sample_lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat",
     )
@@ -373,12 +373,12 @@ def test_read_spectrum():
     "filename",
     [
         os.path.join(
-            eniric.paths["test_data"],
+            eniric.config.paths["test_data"],
             "results",
             "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k.dat",
         ),
         os.path.join(
-            eniric.paths["test_data"],
+            eniric.config.paths["test_data"],
             "resampled",
             "Spectrum_M0-PHOENIX-ACES_Kband_vsini1.0_R100k_res3.0.dat",
         ),
@@ -395,7 +395,7 @@ def test_band_snr_norm_test_data():
     # snr_constant_band
     star, band, vel, res = "M0", "J", 1.0, "100k"
     test_data = os.path.join(
-        eniric.paths["resampled"], resampled_template.format(star, band, vel, res)
+        eniric.config.paths["resampled"], resampled_template.format(star, band, vel, res)
     )
     wav, flux = io.pdread_2col(test_data)
 
