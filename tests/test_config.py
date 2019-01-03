@@ -5,22 +5,24 @@ import yaml
 
 from eniric import config
 
-default_config = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.yaml')
+default_config = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config.yaml")
 
 
 class TestConfig:
-
     @pytest.mark.xfail()
     def test_default_filename(self):
         assert config.filename == default_config
 
-    @pytest.mark.parametrize('key, value', [
-        ('phoenix_raw', os.path.join(['data','test_data','phoenix-raw'])),
-        ('btsettl_raw', os.path.join(['data','test_data','btsettl-raw'])),
-        ('atmmodel', os.path.join(['data', 'atmmodel'])),
-        ('precision', 'precision'),
-        ('test_data', os.path.join(['data', 'test_data'])),
-    ])
+    @pytest.mark.parametrize(
+        "key, value",
+        [
+            ("phoenix_raw", os.path.join(["data", "test_data", "phoenix-raw"])),
+            ("btsettl_raw", os.path.join(["data", "test_data", "btsettl-raw"])),
+            ("atmmodel", os.path.join(["data", "atmmodel"])),
+            ("precision", "precision"),
+            ("test_data", os.path.join(["data", "test_data"])),
+        ],
+    )
     def test_paths_keys(self, key, value):
         assert config.paths[key] == value
 
@@ -48,13 +50,13 @@ class TestConfig:
 
     def test_lazy_load(self):
         previous = config.cache["location"]
-        with open(config.filename, 'r+') as f:
+        with open(config.filename, "r+") as f:
             base = yaml.safe_load(f)
-            base['cache'].update({'location': 'test_output'})
+            base["cache"].update({"location": "test_output"})
             yaml.dump(base, f)
         assert config.cache["location"] != previous
-        assert config.cache["location"] == 'test_output'
-        with open(config.filename, 'r+') as f:
+        assert config.cache["location"] == "test_output"
+        with open(config.filename, "r+") as f:
             base = yaml.safe_load(f)
-            base['cache'].update({"location": previous})
+            base["cache"].update({"location": previous})
             yaml.dump(base, f)
