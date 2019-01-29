@@ -30,7 +30,7 @@ before_script:
   # Prepare atmosphere models
   - make atmos V=1
   # - python scripts/split_atmmodel.py -b K H J Y Z TEST
-  # - python scripts/bary_shift_atmmodel.py -b K H J Y Z TEST
+  # - python scripts/barycenter_broaden_atmmodel.py -b K H J Y Z TEST
 
 script:
     - pytest --cov=eniric --cov-report term-missing --durations 5

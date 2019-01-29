@@ -37,7 +37,7 @@ To exclude wavelength regions that will be affected by telluric lines at some po
 
 .. code-block:: python
 
-   new_mask = barycentric_shift(wav, transmission, mask)
+   new_mask = barycentric_broaden(wav, transmission, mask)
 
 This extends the regions that are masked out, you can check that the mask continues to mask out deep lines like so...
 

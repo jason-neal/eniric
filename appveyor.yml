@@ -29,7 +29,7 @@ install:
 
   # Prepare atmosphere models
   - cmd: "%PYTHON%\\python.exe scripts\\split_atmmodel.py -b ALL"
-  - cmd: "%PYTHON%\\python.exe scripts\\bary_shift_atmmodel.py -b ALL"
+  - cmd: "%PYTHON%\\python.exe scripts\\barycenter_broaden_atmmodel.py -b ALL"
 
 build: off
 

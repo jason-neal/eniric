@@ -20,7 +20,6 @@ here = os.path.abspath(os.path.dirname(__file__))
 with codecs.open(os.path.join(here, "README.md")) as f:
     long_description = f.read()
 
-
 with codecs.open(os.path.join(here, "requirements.txt")) as f:
     requirements = f.read().splitlines()
 
@@ -62,7 +61,7 @@ config = {
     "scripts": [
         "scripts/phoenix_precision.py",
         "scripts/split_atmmodel.py",
-        "scripts/bary_shift_atmmodel.py",
+        "scripts/barycenter_broaden_atmmodel.py",
         "scripts/untar_here.py",
         "scripts/download_eniric_data.sh",
         "tests/download_test_PHOENIX_spec.sh",
