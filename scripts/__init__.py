@@ -1,5 +1,5 @@
 __all__ = [
-    "bary_shift_atmmodel",
+    "barycenter_broaden_atmmodel.py",
     "phoenix_precision",
     "precision_four_panel",
     "split_atmmodel",

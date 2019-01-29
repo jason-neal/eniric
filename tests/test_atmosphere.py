@@ -26,7 +26,7 @@ def test_Atmosphere_funtional_test(short_atmosphere):
     atm.broaden(100_000)
     atm.mask_transmission(2)
     assert np.all(atm.transmission[atm.mask] >= 0.98)
-    atm.bary_shift_mask(consecutive_test=True)
+    atm.barycenter_broaden(consecutive_test=True)
     assert np.all(atm.transmission[atm.mask] >= 0.98)
 
 

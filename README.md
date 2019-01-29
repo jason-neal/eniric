@@ -119,7 +119,7 @@ To perform telluric masking and account for the transmission of Earth's atmosphe
 `Eniric` includes the telluric spectra uses in Figueira et al. 2016, averaged over 2014.
 To automatically prepare the telluric masks, splitting into bands and applying the barycentric expansion run the following scripts:
 - `split_atmmodel.py`
-- `bary_shift_atmmodel.py`
+- `barycenter_broaden_atmmodel.py`
 
 These will split the large telluirc spectra into the bands specified in the `config.yaml` so that the
  opening and slicing of the large telluric spectrum is not performed continually.

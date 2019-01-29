@@ -54,7 +54,7 @@ class Atmosphere(object):
         Make a copy of atmosphere object.
     mask_transmission(depth)
         Mask the transmission below given depth. e.g. 2%
-    bary_shift_mask(rv, consecutive_test)
+    barycenter_broaden(rv, consecutive_test)
         Sweep telluric mask symmetrically by rv.
     broaden(resolution, *kwargs)
         Instrument broadening of the atmospheric transmission profile.
@@ -131,7 +131,7 @@ class Atmosphere(object):
         band: str
             Name of atmosphere file.
         bary: bool
-            Barycentric shifted mask.
+            Barycentric shift the mask.
         """
 
         extension = "_bary.dat" if bary else ".dat"
@@ -148,7 +148,7 @@ class Atmosphere(object):
                 """Could not find band file for band {0}.
              It is recommend to create this using
                 `split_atmosphere.py -b {0}`
-                `bary_shift_atmmodel.py -b {0}`
+                `barycenter_broaden_atmmodel.py -b {0}`
              Trying to load main atmosphere file for now. (will be slower).""".format(
                     band
                 )
@@ -162,7 +162,7 @@ class Atmosphere(object):
             # Shorten to band
             atm = atm.wave_select(*band_limits(band))
             if bary:
-                atm.bary_shift_mask(consecutive_test=True)
+                atm.barycenter_broaden(consecutive_test=True)
         return atm
 
     def to_file(
@@ -260,13 +260,13 @@ class Atmosphere(object):
         cutoff = 1 - depth / 100.0
         self.mask = self.transmission >= cutoff
 
-    def bary_shift_mask(self, rv: float = 30.0, consecutive_test: bool = False):
+    def barycenter_broaden(self, rv: float = 30.0, consecutive_test: bool = False):
         """Sweep telluric mask symmetrically by rv.
 
         Parameters
         ----------
         rv: float (default=30 km/s)
-            Barycentric RV to extend masks in km/s. (Default=30 km/s)
+            Velocity to extend masks in km/s. (Default=30 km/s)
         consecutive_test: bool (default False)
             Checks for 3 consecutive zeros to mask out transmission.
 

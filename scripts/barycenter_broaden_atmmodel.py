@@ -69,7 +69,7 @@ def main(bands: Optional[List[str]] = None, verbose: bool = False):
             print("Calculating impact of Barycentric movement on mask...")
         org_mask = atm.mask
         masked_before = np.sum(org_mask)
-        atm.bary_shift_mask(consecutive_test=True)
+        atm.barycenter_broaden(consecutive_test=True)
 
         masked_after = np.sum(atm.mask)
         if verbose:
