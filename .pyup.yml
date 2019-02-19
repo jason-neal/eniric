@@ -31,7 +31,6 @@ requirements:
       pin: True
 
   - requirements.txt:
-      update: insecure
       pin: False
 
 # add a label to pull requests, default is not set
