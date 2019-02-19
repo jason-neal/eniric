@@ -8,7 +8,7 @@ import eniric
 try:
     from Starfish.grid_tools import download_PHOENIX_models
 except ImportError:
-    print("You need to install Starfish.")
+    raise ImportError("You need to install Starfish.")
 
 models = np.array(list(product(
     (2600, 2800, 3500, 3900),
