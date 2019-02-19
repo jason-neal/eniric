@@ -8,13 +8,13 @@ python:
 cache:
   directories:
     - $HOME/.cache/pip
+    - $HOME/data/test_data
 
 install:
   - pip install --upgrade pip
   # Install eniric requirements
   - travis_retry pip install -r requirements_dev.txt
   - travis_retry pip install -r requirements.txt
-
 
   # Now install eniric
   - python setup.py install

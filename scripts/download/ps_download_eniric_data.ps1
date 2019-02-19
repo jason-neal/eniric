@@ -46,10 +46,11 @@ python ..\..\scripts\untar_here.py ".\obsolete.tar.gz"
 del "obsolete.tar.gz"
 
 # Phoenix-raw data  and BT-settl raw data
-wget "https://www.dropbox.com/s/raw/skg8zwi7vnxgesj/data_raw.tar.gz" -UseBasicParsing -OutFile "data_raw.tar.gz"
-dir
-python ..\..\scripts\untar_here.py ".\data_raw.tar.gz"
-del "data_raw.tar.gz"
+#wget "https://www.dropbox.com/s/raw/skg8zwi7vnxgesj/data_raw.tar.gz" -UseBasicParsing -OutFile "data_raw.tar.gz"
+#dir
+#python ..\..\scripts\untar_here.py ".\data_raw.tar.gz"
+#del "data_raw.tar.gz"
+python ..\..\scripts\download\download_test_aces.py
 
 cd $HOMEDIR
 
@@ -60,18 +61,18 @@ cd $HOMEDIR
 # del "phoenix-raw.tar.gz"
 #
 # cd $HOMEDIR
-#
+
+
 # # BTsettl
-#
-# $DIRECTORY = ".\data\test_data\btsettl-raw\"
-#
-# Write-Host $DIRECTORY
-#
-# if ( -not (Test-Path $DIRECTORY -PathType Container))
-# {
-# Write-Host "$DIRECTORY is not present. Creating"
-# mkdir $DIRECTORY
-# }
-# cd $DIRECTORY
-# wget https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/lte039.0-4.5-0.0a+0.0.BT-Settl.spec.fits.gz -UseBasicParsing -OutFile "lte039.0-4.5-0.0a+0.0.BT-Settl.spec.fits.gz"
-# cd $HOMEDIR
+$DIRECTORY = ".\data\test_data\btsettl-raw\"
+
+Write-Host $DIRECTORY
+
+if ( -not (Test-Path $DIRECTORY -PathType Container))
+{
+Write-Host "$DIRECTORY is not present. Creating"
+mkdir $DIRECTORY
+}
+cd $DIRECTORY
+wget https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/lte039.0-4.5-0.0a+0.0.BT-Settl.spec.fits.gz -UseBasicParsing -OutFile "lte039.0-4.5-0.0a+0.0.BT-Settl.spec.fits.gz"
+cd $HOMEDIR

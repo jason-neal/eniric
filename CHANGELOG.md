@@ -26,7 +26,7 @@ Other:
 - Refactoring for 1.0 release.
 - Relax pining in `requirements.txt`.
 - Use `requirements.txt` in `setup.py`
-
+- move download scripts in scripts/download.
 
 ### v0.5.1
 ---------
