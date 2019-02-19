@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Ispired by Starfish
+# Inspired by Starfish
 # Invoke this script from the top directory.
 
 DIRECTORY="data/test_data/phoenix-raw/"
@@ -27,10 +27,10 @@ fi
 
   mkdir $Z0
   cd $Z0
-  wget ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/Z-0.0/lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits
-  wget ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/Z-0.0/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits
-  wget ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/Z-0.0/lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits
-  wget ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/Z-0.0/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits
+  wget http://phoenix.astro.physik.uni-goettingen.de/data/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/Z-0.0/lte02600-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits
+  wget http://phoenix.astro.physik.uni-goettingen.de/data/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/Z-0.0/lte02800-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits
+  wget http://phoenix.astro.physik.uni-goettingen.de/data/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/Z-0.0/lte03500-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits
+  wget http://phoenix.astro.physik.uni-goettingen.de/data/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/Z-0.0/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits
 )
 
 ( 
