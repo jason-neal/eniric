@@ -28,8 +28,7 @@ date: September 2018
 bibliography: paper.bib
 ---
 
-With recent high-precision spectrographs targeting radial velocity (RV) precision at the 10\ cms$^{-1}$ level\ [e.g. @pepe_espresso_2014]
- in the quest to find smallest planets, it is important to understand the theoretical precision attainable in stellar spectra.
+With recent high-precision spectrographs targeting radial velocity (RV) precision at the 10\ cms$^{-1}$ level\ [e.g. @pepe_espresso_2014] in the quest to find smallest planets, it is important to understand the theoretical precision attainable in stellar spectra.
 *Eniric* provides a simple way to calculate the theoretical spectral quality
 and RV precision (i.e., information content) of synthetic and/or observed stellar spectra given vectors of wavelength and photon flux.
 
@@ -78,7 +77,8 @@ The dashed line represents the theoretical limits imposed by the full spectrum, 
 The spectra were normalized to have a SNR of 100 per resolution element as measured at the center of the J-band.
 This is similar to Figure 1 from [@figueira_radial_2016] but with updated precision values.](./precisions.png)
 
-[*Eniric*](https://github.com/jason-neal/eniric) is available on [*Github*](https://github.com/jason-neal/eniric) with documentation found in `README.md` and on the [wiki](https://github.com/jason-neal/eniric/wiki) page with usage examples provided as [Jupyter notebooks](https://github.com/jason-neal/eniric/tree/master/docs/Notebooks).
+[*Eniric*](https://github.com/jason-neal/eniric) is available on [*Github*](https://github.com/jason-neal/eniric) with documentation found in the `README.md` and at [ReadtheDocs](https://eniric.readthedocs.io/en/latest/) with usage examples provided as [Jupyter notebooks](https://github.com/jason-neal/eniric/tree/master/docs/Notebooks).
+It utilizes packages from the scientific Python stack including [NumPy](http://www.numpy.org/) [@oliphant_guide_2015] and [SciPy](https://www.scipy.org/) [@scipy_scipy.org_2019], [Matplotlib](https://matplotlib.org/) [@hunter_matplotlib_2007], [Pandas](http://pandas.pydata.org/) [@mckinney_data_2010], and [Astropy](http://docs.astropy.org/en/stable/) [@astropy_collaboration_astropy_2013,@astropy_collaboration_astropy_2018]. It also uses [Joblib](https://joblib.readthedocs.io/en/latest/)[@joblib_joblib_2019], [Starfish](https://starfish.readthedocs.io/en/latest/) [@czekala_constructing_2015], and [tqdm](https://tqdm.github.io/) [@tqdm/tqdm].
 
 [Comment]: # ([*PyPI*](https://pypi.org/project/eniric/) and is installable with *pip*.)
 
