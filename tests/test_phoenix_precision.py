@@ -43,7 +43,7 @@ def test_check_model(model_in, expected_model):
 
 
 def test_model_depreciation():
-    with pytest.warns(DeprecationWarning):
+    with pytest.deprecated_call():
         check_model("phoenix")
 
 
