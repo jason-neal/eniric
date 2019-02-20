@@ -157,7 +157,11 @@ def test_quality_independent_of_units(test_spec, wav_unit, flux_unit):
     "wave, flux, expected",
     [
         ([1, 2, 3], [1, 2, 3], [1, 2, 3]),
-        ([2.2, 2.3, 2.4], [.99, 0.97, 0.7], [0.195555556, 11.46621134, 59.9868571]),
+        (
+            [2.2, 2.3, 2.4],
+            [0.99, 0.97, 0.7],
+            [0.195_555_556, 11.466_211_34, 59.986_857_1],
+        ),
     ],
 )
 def test_pixel_weights_gradient_with_fixed_values(
@@ -182,7 +186,7 @@ def test_pixel_weights_gradient_with_fixed_values(
     "wave, flux, expected",
     [
         ([1, 2, 3], [1, 2, 3], [1, 2]),
-        ([2.2, 2.3, 2.4], [.99, 0.97, 0.7], [0.195555556, 39.75680412]),
+        ([2.2, 2.3, 2.4], [0.99, 0.97, 0.7], [0.195_555_556, 39.756_804_12]),
     ],
 )
 def test_pixel_weights(wave, flux, expected, wav_unit2, flux_unit2, quantity):
@@ -208,7 +212,7 @@ def test_mask_check(mask):
 
 
 @pytest.mark.parametrize(
-    "mask", [np.array([1, 0, 1, 0, .2, 1, .4]) * u.m, np.array([1, 0, 1]) * u.s]
+    "mask", [np.array([1, 0, 1, 0, 0.2, 1, 0.4]) * u.m, np.array([1, 0, 1]) * u.s]
 )
 def test_mask_check_type_error(mask):
     with pytest.raises(TypeError):

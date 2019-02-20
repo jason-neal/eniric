@@ -21,7 +21,7 @@ def snr_constant_band(
     snr: Union[int, float] = 100,
     band: str = "J",
     sampling: Union[int, float] = 3.0,
-    verbose: bool=False,
+    verbose: bool = False,
 ) -> float:
     """Determine the normalization constant to achieve a SNR in the middle of a given band.
 
@@ -59,7 +59,7 @@ def snr_constant_band(
         raise ValueError("Band center not in wavelength range.")
 
     norm_constant = snr_constant_wav(
-        wav, flux, wav_ref=band_middle, snr=snr, sampling=sampling, verbose=verbose,
+        wav, flux, wav_ref=band_middle, snr=snr, sampling=sampling, verbose=verbose
     )
 
     return norm_constant
@@ -71,7 +71,7 @@ def snr_constant_wav(
     wav_ref: float,
     snr: Union[int, float] = 100,
     sampling: Union[int, float] = 3.0,
-    verbose:bool =False,
+    verbose: bool = False,
 ) -> float:
     """Determine the normalization constant to achieve a SNR at given wavelength.
 
