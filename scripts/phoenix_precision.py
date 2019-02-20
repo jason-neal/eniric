@@ -27,7 +27,7 @@ from eniric.utilities import (
 num_procs_minus_1 = os.cpu_count() - 1
 
 ref_choices = ["SELF"]
-ref_choices.extend(eniric.bands["all"])
+ref_choices.extend(eniric.config.bands["all"])
 
 
 def _parser():
@@ -87,7 +87,7 @@ def _parser():
         "--bands",
         type=str,
         default="J",
-        choices=eniric.bands["all"],
+        choices=eniric.config.bands["all"],
         help="Wavelength bands to select. Default=J.",
         nargs="+",
     )
@@ -135,7 +135,9 @@ def _parser():
 
     parser.add_argument("--verbose", help="Turn on verbose.", action="store_true")
     parser.add_argument(
-        "--disable_normalization", help="Turn off convolution normalization.", action="store_true"
+        "--disable_normalization",
+        help="Turn off convolution normalization.",
+        action="store_true",
     )
     return parser.parse_args()
 
@@ -426,7 +428,9 @@ if __name__ == "__main__":
         # Initalize a multiprocessor pool to pass to each convolution.
         if int(num_procs) in [0, 1]:
             assert False
-        mproc_pool = mprocess.Pool(processes=num_procs, maxtasksperchild=500000)  # Refresh worker after 1/2 million pixels processed each.
+        mproc_pool = mprocess.Pool(
+            processes=num_procs, maxtasksperchild=500_000
+        )  # Refresh worker after 1/2 million pixels processed each.
         conv_kwargs = {
             "epsilon": 0.6,
             "fwhm_lim": 5.0,
@@ -448,7 +452,7 @@ if __name__ == "__main__":
     snr = args.snr
     air = args.air
     if "ALL" in args.bands:
-        args.bands.extend(eniric.bands["all"])
+        args.bands.extend(eniric.config.bands["all"])
         args.bands = set(args.bands)  # Unique
     ref_band = args.ref_band
 
@@ -477,7 +481,18 @@ if __name__ == "__main__":
             params_list = itertools.product(
                 args.resolution, args.bands, args.vsini, args.sampling, args.rv
             )
-            total_iters = np.product([len(par) for par in [args.resolution, args.bands, args.vsini, args.sampling, args.rv]])
+            total_iters = np.product(
+                [
+                    len(par)
+                    for par in [
+                        args.resolution,
+                        args.bands,
+                        args.vsini,
+                        args.sampling,
+                        args.rv,
+                    ]
+                ]
+            )
             for iter_num, (R, band, vsini, sample, rv) in enumerate(params_list):
                 pars = (R, band, vsini, sample, rv)
 

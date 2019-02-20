@@ -71,7 +71,15 @@ class Atmosphere(object):
             base: "Average_TAPAS_2014"
     """
 
-    def __init__(self, wavelength, transmission, mask=None, std=None, shifted=False, verbose=False):
+    def __init__(
+        self,
+        wavelength,
+        transmission,
+        mask=None,
+        std=None,
+        shifted=False,
+        verbose=False,
+    ):
         assert len(wavelength) == len(
             transmission
         ), "Wavelength and transmission do not match length."
@@ -128,8 +136,8 @@ class Atmosphere(object):
 
         extension = "_bary.dat" if bary else ".dat"
         atmmodel = join(
-            eniric.paths["atmmodel"],
-            "{0}_{1}{2}".format(eniric.atmmodel["base"], band, extension),
+            eniric.config.paths["atmmodel"],
+            "{0}_{1}{2}".format(eniric.config.atmmodel["base"], band, extension),
         )
 
         try:
@@ -146,7 +154,8 @@ class Atmosphere(object):
                 )
             )
             full_model = join(
-                eniric.paths["atmmodel"], "{0}.dat".format(eniric.atmmodel["base"])
+                eniric.config.paths["atmmodel"],
+                "{0}.dat".format(eniric.config.atmmodel["base"]),
             )
             atm = cls.from_file(full_model)
 

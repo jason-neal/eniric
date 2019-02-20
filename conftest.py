@@ -55,7 +55,8 @@ def resampled_data(request):
     id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
 
     test_data = os.path.join(
-        eniric.paths["resampled"], resampled_template.format(star, band, vel, res)
+        eniric.config.paths["resampled"],
+        resampled_template.format(star, band, vel, res),
     )
     wav, flux = io.pdread_2col(test_data)
     return id_string, wav, flux
@@ -125,7 +126,7 @@ def grad_flag(request):
 )
 def atm_model(request):
     """Get atmospheric model name to load."""
-    return os.path.join(eniric.paths["atmmodel"], request.param)
+    return os.path.join(eniric.config.paths["atmmodel"], request.param)
 
 
 @pytest.fixture(params=[2.5, 4])

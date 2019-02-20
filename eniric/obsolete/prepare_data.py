@@ -126,11 +126,11 @@ def main(
 
     """
     if data_dir is None:
-        data_dir = eniric.paths["phoenix_dat"]
+        data_dir = eniric.config.paths["phoenix_dat"]
     os.makedirs(data_dir, exist_ok=True)
 
     if phoenix_dir is None:
-        phoenix_dir = eniric.paths["phoenix_raw"]
+        phoenix_dir = eniric.config.paths["phoenix_raw"]
 
     # Get Phoenix wavelength data
     wavelength_file = "WAVE_PHOENIX-ACES-AGSS-COND-2011.fits"
@@ -205,7 +205,7 @@ def main(
             spectra = fits.getdata(os.path.join(path, phoenix_file))
 
             # Need to add conversions pedro preformed to flux!
-            """The energy units of Phoenix fits files is erg/s/cm**2/cm
+            r"""The energy units of Phoenix fits files is erg/s/cm**2/cm
             We transform the flux into photons in the read_spectrum()
             function by multiplying the flux result by the wavelength (lambda)
 

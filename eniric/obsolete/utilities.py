@@ -217,8 +217,8 @@ def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
     return wav_micron, flux_photons
 
 
-results_dir = eniric.paths["results"]
-resampled_dir = eniric.paths["resampled"]
+results_dir = eniric.config.paths["results"]
+resampled_dir = eniric.config.paths["resampled"]
 
 
 def resample_allfiles(
@@ -234,9 +234,9 @@ def resample_allfiles(
         Directory to save resampled results.
     """
     if results_dir is None:
-        results_dir = eniric.paths["results"]  # type: ignore
+        results_dir = eniric.config.paths["results"]  # type: ignore
     if resampled_dir is None:
-        resampled_dir = eniric.paths["resampled"]  # type: ignore
+        resampled_dir = eniric.config.paths["resampled"]  # type: ignore
     # Getting a list of all the files
     onlyfiles = [f for f in os.listdir(results_dir) if isfile(join(results_dir, f))]
 
@@ -272,7 +272,7 @@ def resampler(
     os.makedirs(resampled_dir, exist_ok=True)
     read_name = os.path.join(results_dir, spectrum_name)
 
-    match = re.search("_R(\d{2,3})k", spectrum_name)
+    match = re.search(r"_R(\d{2,3})k", spectrum_name)
     if match:
         resolution = int(match.group(1)) * 1000  # type: int
     else:

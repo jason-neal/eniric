@@ -24,7 +24,7 @@ def plot_atmosphere_model(wav_atm, flux_atm, mask_atm):
     # identify non-masked pixels
     selected_transmission = wav_atm[mask_atm]
     dummy_vector = np.ones_like(selected_transmission)
-    """
+    r"""
     plt.figure(1)
     plt.xlabel(r"wavelength [$\mu$m])")
     plt.ylabel(r"Transmission [ ] ")

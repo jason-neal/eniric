@@ -21,7 +21,6 @@ from eniric.utilities import (
     weighted_error,
 )
 
-c = const.c
 xfail = pytest.mark.xfail
 
 
@@ -169,10 +168,10 @@ def test_res2str(resolution, result):
 @pytest.mark.parametrize(
     "resolutions,results",
     [
-        ([60000, 80000, 100000], [60000, 80000, 100000]),
-        (["60k", "80k", "100k"], [60000, 80000, 100000]),
-        (["6000", "8000", "100000"], [6000, 8000, 100000]),
-        (["10000", "20k", "300K"], [10000, 20000, 300000]),
+        ([60000, 80000, 100_000], [60000, 80000, 100_000]),
+        (["60k", "80k", "100k"], [60000, 80000, 100_000]),
+        (["6000", "8000", "100000"], [6000, 8000, 100_000]),
+        (["10000", "20k", "300K"], [10000, 20000, 300_000]),
     ],
 )
 def test_resolutions2ints_lists(resolutions, results):
@@ -184,7 +183,7 @@ def test_resolutions2ints_lists(resolutions, results):
     "resolutions,results",
     [
         (["60k", "80k", "100k"], ["60k", "80k", "100k"]),
-        ([60000, 80000, 100000], ["60k", "80k", "100k"]),
+        ([60000, 80000, 100_000], ["60k", "80k", "100k"]),
         (["60000", "80K", "100k"], ["60k", "80k", "100k"]),
         ([np.float("60000"), np.int("2000")], ["60k", "2k"]),
     ],
@@ -194,13 +193,13 @@ def test_resolutions2strs_list(resolutions, results):
     assert results == utils.resolutions2strs(resolutions)
 
 
-@given(st.integers(min_value=1, max_value=1000000))
+@given(st.integers(min_value=1, max_value=1_000_000))
 def test_res2int_doesnt_change_int(resolution):
     assert resolution == utils.res2int(resolution)
 
 
 @pytest.mark.parametrize(
-    "resolution", [1000, 10000, 200000, "1k", "10k", "100k", "2000k"]
+    "resolution", [1000, 10000, 200_000, "1k", "10k", "100k", "2000k"]
 )
 def test_compatibility_res2int_res2str(resolution):
     """Test res2int and rest2str reversible and do not change when operated twice.
@@ -222,7 +221,7 @@ def test_compatibility_res2int_res2str(resolution):
     "resolution",
     [
         [1000, 10000, 50000],
-        [100000, 2000000],
+        [100_000, 2_000_000],
         ["1k"],
         ["10k", "20k"],
         ["100k", "2000k"],
@@ -369,11 +368,11 @@ def wavelength(request):
 
 @pytest.mark.parametrize("direction,multiplier", [(-1, 0), (1, 2)])
 def test_doppler_shift_at_speed_of_light(wavelength, direction, multiplier):
-    """It is test is only valid for the non-relativistic doppler shift.
+    r"""It is test is only valid for the non-relativistic doppler shift.
      It is a test of the math but not physical (not valid at this speed)
      but we are checking the math of the equation works
      should result in a shift of \delta \lambda = +/- \lambda"""
-    c_wave = doppler_shift_wav(wavelength, direction * c.value / 1000)
+    c_wave = doppler_shift_wav(wavelength, direction * const.c.to("km/s").value)
     assert np.all(c_wave == (wavelength * multiplier))
 
 
@@ -387,7 +386,7 @@ def doppler_shift_zero(wavelength):
 def test_if_doppler_shift_changes_quality(testing_spectrum, rv):
     wavelength, flux_ = testing_spectrum[0], testing_spectrum[1]
     wmin_, wmax_ = 2.1, 2.3
-    m1 = (wavelength < wmax_ + .2) * (wavelength > wmin_ - .2)
+    m1 = (wavelength < wmax_ + 0.2) * (wavelength > wmin_ - 0.2)
     # shorten spectra
     wavelength, flux_ = wavelength[m1], flux_[m1]
 
