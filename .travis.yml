@@ -15,9 +15,8 @@ install:
   - travis_retry pip install -r requirements_dev.txt
   - travis_retry pip install -r requirements.txt
 
-
   # Now install eniric
-  - python setup.py install
+  - pip install .[dev,test,docs,ci]
 
 before_script:
   - export MPLBACKEND="AGG"  # Non-interactive

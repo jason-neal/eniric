@@ -16,7 +16,7 @@ build:
     - travis_retry pip install -r requirements.txt
 
     # Now install eniric
-    - python setup.py install
+    - pip install .[dev,test,docs,ci]
 
     # Setup config and make test data
     - export MPLBACKEND="AGG"  # Non-interactive
