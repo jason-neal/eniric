@@ -29,18 +29,20 @@ def pdread_2col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray
     """
     try:
         if noheader:
-            data = pd.read_table(
+            data = pd.read_csv(
                 filename,
                 comment="#",
+                sep="\t",
                 names=["col1", "col2"],
                 header=None,
                 dtype=float,
                 delim_whitespace=True,
             )
         else:
-            data = pd.read_table(
+            data = pd.read_csv(
                 filename,
                 comment="#",
+                sep="\t",
                 names=["col1", "col2"],
                 dtype=float,
                 delim_whitespace=True,
@@ -75,18 +77,20 @@ def pdread_3col(
     """
     try:
         if noheader:
-            data = pd.read_table(
+            data = pd.read_csv(
                 filename,
                 comment="#",
+                sep="\t",
                 names=["col1", "col2", "col3"],
                 header=None,
                 dtype=float,
                 delim_whitespace=True,
             )
         else:
-            data = pd.read_table(
+            data = pd.read_csv(
                 filename,
                 comment="#",
+                sep="\t",
                 names=["col1", "col2", "col3"],
                 dtype=float,
                 delim_whitespace=True,
@@ -123,18 +127,20 @@ def pdread_4col(
     """
     try:
         if noheader:
-            data = pd.read_table(
+            data = pd.read_csv(
                 filename,
                 comment="#",
+                sep="\t",
                 names=["col1", "col2", "col3", "col4"],
                 header=None,
                 dtype=float,
                 delim_whitespace=True,
             )
         else:
-            data = pd.read_table(
+            data = pd.read_csv(
                 filename,
                 comment="#",
+                sep="\t",
                 names=["col1", "col2", "col3", "col4"],
                 dtype=float,
                 delim_whitespace=True,
