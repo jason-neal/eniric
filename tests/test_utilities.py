@@ -368,7 +368,7 @@ def wavelength(request):
 
 @pytest.mark.parametrize("direction,multiplier", [(-1, 0), (1, 2)])
 def test_doppler_shift_at_speed_of_light(wavelength, direction, multiplier):
-    """It is test is only valid for the non-relativistic doppler shift.
+    r"""It is test is only valid for the non-relativistic doppler shift.
      It is a test of the math but not physical (not valid at this speed)
      but we are checking the math of the equation works
      should result in a shift of \delta \lambda = +/- \lambda"""
