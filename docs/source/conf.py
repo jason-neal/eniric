@@ -20,7 +20,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Eniric'
-copyright = '2018, Jason Neal, Pedro Figueira'
+copyright = '2019, Jason Neal, Pedro Figueira'
 author = 'Jason Neal, Pedro Figueira'
 
 # The short X.Y version
