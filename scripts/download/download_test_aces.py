@@ -16,6 +16,6 @@ models = np.array(list(product(
     (0.0,)
 )))
 
-for model in models:
-    outdir = eniric.config.paths["phoenix_raw"] + os.sep
-    download_PHOENIX_models(model, outdir)
+outdir = eniric.config.paths["phoenix_raw"]
+
+download_PHOENIX_models(models, outdir)
