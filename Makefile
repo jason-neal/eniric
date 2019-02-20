@@ -79,4 +79,5 @@ mypy:
 	mypy --ignore-missing-imports .
 
 pdf:
+	pip install pandoc>=1.0.2
 	(cd paper && pandoc --filter pandoc-citeproc --bibliography=paper.bib --variable classoption=onecolumn --variable papersize=a4paper -s paper.md -o paper.pdf)

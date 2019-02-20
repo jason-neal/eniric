@@ -130,7 +130,7 @@ def test_rot_convolution_with_bad_num_proc(num_proc):
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
     with pytest.raises(
-        TypeError, message="num_proc must be an int or a multiprocess Pool"
+        TypeError, match="num_proc must be an int or a multiprocess Pool"
     ):
         rotational_convolution(x, x, y, vsini=1, num_procs=num_proc, verbose=False)
 
@@ -141,7 +141,7 @@ def test_res_convolution_with_bad_num_proc(num_proc):
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
     with pytest.raises(
-        TypeError, message="num_proc must be an int or a multiprocess Pool"
+        TypeError, match="num_proc must be an int or a multiprocess Pool"
     ):
         resolution_convolution(x, x, y, R=100_000, num_procs=num_proc, verbose=False)
 

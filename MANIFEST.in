@@ -3,13 +3,13 @@ include *.md
 include LICENSE
 include requirements*.txt
 #recursive-include data/ *
-inlcude pyproject.toml
+include pyproject.toml
 include tests/test_*.py
 include config.yaml
 include eniric/config.yaml
 include tests/config.yaml
 include docs/Notebooks/*.ipynb
 include docs/Notebooks/config.yaml
-recursive-include scripts *
+recursive-include scripts/*
 include Makefile
 include paper/*
