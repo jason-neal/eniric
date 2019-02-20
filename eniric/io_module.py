@@ -32,7 +32,6 @@ def pdread_2col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray
             data = pd.read_csv(
                 filename,
                 comment="#",
-                sep="\t",
                 names=["col1", "col2"],
                 header=None,
                 dtype=float,
@@ -42,7 +41,6 @@ def pdread_2col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray
             data = pd.read_csv(
                 filename,
                 comment="#",
-                sep="\t",
                 names=["col1", "col2"],
                 dtype=float,
                 delim_whitespace=True,
@@ -80,7 +78,6 @@ def pdread_3col(
             data = pd.read_csv(
                 filename,
                 comment="#",
-                sep="\t",
                 names=["col1", "col2", "col3"],
                 header=None,
                 dtype=float,
@@ -90,7 +87,6 @@ def pdread_3col(
             data = pd.read_csv(
                 filename,
                 comment="#",
-                sep="\t",
                 names=["col1", "col2", "col3"],
                 dtype=float,
                 delim_whitespace=True,
@@ -130,7 +126,6 @@ def pdread_4col(
             data = pd.read_csv(
                 filename,
                 comment="#",
-                sep="\t",
                 names=["col1", "col2", "col3", "col4"],
                 header=None,
                 dtype=float,
@@ -140,7 +135,6 @@ def pdread_4col(
             data = pd.read_csv(
                 filename,
                 comment="#",
-                sep="\t",
                 names=["col1", "col2", "col3", "col4"],
                 dtype=float,
                 delim_whitespace=True,
