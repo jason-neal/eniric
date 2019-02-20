@@ -345,7 +345,7 @@ def test_barycenter_shift_verse_class(short_atmosphere, consec_test):
     assert not np.allclose(mask30kms, atmos.mask) or (
         len(mask30kms) == np.sum(mask30kms) or np.sum(mask30kms) == 0
     )
-    atmos.bary_shift_mask(consecutive_test=consec_test)
+    atmos.barycenter_broaden(consecutive_test=consec_test)
     # They are now close
     assert np.allclose(mask30kms, atmos.mask)
 

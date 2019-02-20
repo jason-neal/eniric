@@ -109,7 +109,7 @@ def test_values_within_the_rv_of_telluric_lines_are_masked(
     atmos = sliced_atmmodel_default_mask
     org_mask = atmos.mask.copy()
     # RV shift mask
-    atmos.bary_shift_mask(rv=rv, consecutive_test=False)
+    atmos.barycenter_broaden(rv=rv, consecutive_test=False)
 
     for pixel, mask_value, org_val in zip(atmos.wl, atmos.mask, org_mask):
         if mask_value == 0:
@@ -130,7 +130,7 @@ def test_atmos_barycenter_shift_mask(sliced_atmmodel_default_mask, consec_test):
     org_mask = atmos.mask.copy()
     org_number_masked = np.sum(org_mask)
     org_len = len(org_mask)
-    atmos.bary_shift_mask(consecutive_test=consec_test)
+    atmos.barycenter_broaden(consecutive_test=consec_test)
     new_number_masked = np.sum(atmos.mask)
 
     assert (new_number_masked < org_number_masked) or (
