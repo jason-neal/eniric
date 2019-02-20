@@ -205,7 +205,7 @@ def main(
             spectra = fits.getdata(os.path.join(path, phoenix_file))
 
             # Need to add conversions pedro preformed to flux!
-            """The energy units of Phoenix fits files is erg/s/cm**2/cm
+            r"""The energy units of Phoenix fits files is erg/s/cm**2/cm
             We transform the flux into photons in the read_spectrum()
             function by multiplying the flux result by the wavelength (lambda)
 

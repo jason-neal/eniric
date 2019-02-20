@@ -272,7 +272,7 @@ def resampler(
     os.makedirs(resampled_dir, exist_ok=True)
     read_name = os.path.join(results_dir, spectrum_name)
 
-    match = re.search("_R(\d{2,3})k", spectrum_name)
+    match = re.search(r"_R(\d{2,3})k", spectrum_name)
     if match:
         resolution = int(match.group(1)) * 1000  # type: int
     else:
