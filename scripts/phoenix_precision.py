@@ -291,9 +291,7 @@ def convolve_and_resample(
     sampled_flux: ndarray
         Convolved and resampled flux array
     """
-    wav_band, flux_band, convolved_flux = convolution(
-        wav, flux, vsini, R, band, **conv_kwargs
-    )
+    wav_band, __, convolved_flux = convolution(wav, flux, vsini, R, band, **conv_kwargs)
     # Re-sample to sampling per resolution element.
     wav_grid = log_resample(wav_band, sampling, R)
     sampled_flux = np.interp(wav_grid, wav_band, convolved_flux)
@@ -425,29 +423,25 @@ if __name__ == "__main__":
         num_procs = num_procs_minus_1
 
     try:
-        # Initalize a multiprocessor pool to pass to each convolution.
+        # Initialize a multiprocessor pool to pass to each convolution.
         if int(num_procs) in [0, 1]:
             assert False
         mproc_pool = mprocess.Pool(
             processes=num_procs, maxtasksperchild=500_000
         )  # Refresh worker after 1/2 million pixels processed each.
-        conv_kwargs = {
-            "epsilon": 0.6,
-            "fwhm_lim": 5.0,
-            "num_procs": mproc_pool,
-            "normalize": normalize,
-            "verbose": args.verbose,
-        }
+        _num_procs = mproc_pool
         mproc_pool_flag = True
     except:
-        conv_kwargs = {
-            "epsilon": 0.6,
-            "fwhm_lim": 5.0,
-            "num_procs": num_procs,
-            "normalize": normalize,
-            "verbose": args.verbose,
-        }
+        _num_procs = num_procs
         mproc_pool_flag = False
+
+    conv_kwargs = {
+        "epsilon": 0.6,
+        "fwhm_lim": 5.0,
+        "num_procs": _num_procs,
+        "normalize": normalize,
+        "verbose": args.verbose,
+    }
 
     snr = args.snr
     air = args.air

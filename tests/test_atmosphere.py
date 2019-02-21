@@ -112,10 +112,8 @@ def test_values_within_the_rv_of_telluric_lines_are_masked(
     atmos.bary_shift_mask(rv=rv, consecutive_test=False)
 
     for pixel, mask_value, org_val in zip(atmos.wl, atmos.mask, org_mask):
-        if mask_value == 0:
-            # Already masked out
-            pass
-        else:
+        if mask_value != 0:
+            assert org_val != 0
             # Find rv limits to this pixel.
             wl_lower, wl_upper = pixel * (1 - rv / 3e5), pixel * (1 + rv / 3e5)
             wl_mask = (atmos.wl >= wl_lower) * (atmos.wl < wl_upper)
