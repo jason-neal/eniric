@@ -8,8 +8,8 @@ environment:
     - PYTHON: "C:\\Python37-x64"
 
 cache:
-  - "%LOCALAPPDATA%\pip\Cache -> appveyor.yml" # Use cache unless appveyor.yml changes.
-  - "data\test_data -> appveyor.yml"           # Use cache unless appveyor.yml changes.
+  - "%LOCALAPPDATA%\\pip\\Cache -> appveyor.yml" # Use cache unless appveyor.yml changes.
+  - "data\\test_data -> appveyor.yml"           # Use cache unless appveyor.yml changes.
 
 install:
   - "%PYTHON%\\python.exe -m pip install --upgrade pip"
