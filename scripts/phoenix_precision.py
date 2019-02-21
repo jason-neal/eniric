@@ -2,6 +2,7 @@
 import argparse
 import itertools
 import os
+import warnings
 from typing import List, Tuple
 
 import multiprocess as mprocess
@@ -94,9 +95,9 @@ def _parser():
     parser.add_argument(
         "--model",
         type=str,
-        default="phoenix",
-        choices=["phoenix", "btsettl"],
-        help="Spectral models to use. Default=phoenix.",
+        default="aces",
+        choices=["aces", "btsettl", "phoenix"],
+        help="Spectral models to use. Default=aces.",
     )
     parser.add_argument(
         "--snr", help="Mid-band SNR scaling. (Default=100)", default=100, type=float
@@ -153,7 +154,7 @@ def do_analysis(
     ref_band: str = "J",
     rv: float = 0.0,
     air: bool = False,
-    model: str = "phoenix",
+    model: str = "aces",
     verbose: bool = False,
 ) -> List[Quantity]:
     """Precision and Quality for specific parameter set.
@@ -182,7 +183,7 @@ def do_analysis(
     air: bool
         Get model in air wavelengths (default=False).
     model: str
-        Name of synthetic library (phoenix, btsettl) to use. Default = 'phoenix'.
+        Name of synthetic library (aces, btsettl) to use. Default = 'aces'.
     verbose:
         Enable verbose (default=False).
 
@@ -207,17 +208,14 @@ def do_analysis(
     if ref_band.upper() == "SELF":
         ref_band = band
 
-    if model == "phoenix":
-        # Full photon count spectrum
+    model = check_model(model)
+
+    if model == "aces":
         wav, flux = load_aces_spectrum(star_params, photons=True, air=air)
     elif model == "btsettl":
         wav, flux = load_btsettl_spectrum(star_params, photons=True, air=air)
     else:
-        raise ValueError(
-            "Model name error in '{}'. Valid choices are 'phoenix and 'btsettl'".format(
-                model
-            )
-        )
+        raise Exception("Invalid model name reached.")
 
     wav_grid, sampled_flux = convolve_and_resample(
         wav, flux, vsini, R, band, sampling, **conv_kwargs
@@ -403,6 +401,23 @@ def select_csv_columns(line: str, ncols: int = 8) -> str:
     return ",".join(line.split(",")[:ncols])
 
 
+def check_model(model: str) -> str:
+    """Check model is 'aces' or 'btsettl'."""
+    if model == "phoenix":
+        warnings.warn(
+            "The model name 'phoenix' is depreciated, use 'aces' instead.",
+            DeprecationWarning
+        )
+        model = "aces"
+    if model not in ["aces", "btsettl"]:
+        raise ValueError(
+            "Model name error of '{}'. Valid choices are 'aces' and 'btsettl'".format(
+                model
+            )
+        )
+    return model
+
+
 if __name__ == "__main__":
     args = _parser()
 
@@ -451,7 +466,7 @@ if __name__ == "__main__":
     ref_band = args.ref_band
 
     # Load the relevant spectra
-    if args.model == "phoenix":
+    if args.model == "aces":
         models_list = itertools.product(args.temp, args.logg, args.metal, args.alpha)
     else:
         models_list = itertools.product(args.temp, args.logg, [0], [0])

@@ -26,6 +26,7 @@ Other:
 - Refactoring for 1.0 release.
 - Relax pining in `requirements.txt`.
 - Use `requirements.txt` in `setup.py`
+- Depreciate `--model phoenix` from `phoenix_precision.py`.
 
 
 ### v0.5.1
