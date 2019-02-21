@@ -1,13 +1,11 @@
-"""
-Auxiliary functions for eniric
-"""
+"""Collection of utility functions for eniric."""
 import collections
 import errno
 import os
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
-from astropy import constants as const
 import numpy as np
+from astropy import constants as const
 from numpy import ndarray
 
 import eniric
@@ -322,7 +320,7 @@ def load_aces_spectrum(
         raise ValueError("Number of parameters is incorrect")
 
     wav = phoenix_grid.wl
-    flux, hdr = phoenix_grid.load_flux(params, norm=False)
+    flux, __ = phoenix_grid.load_flux(params, norm=False)
 
     # Convert wavelength Angstrom to micron
     wav_micron = wav * 10 ** -4
@@ -398,7 +396,7 @@ def load_btsettl_spectrum(
 
     wav = btsettl_grid.wl
     # CIFIST flux is  W/m**2/um
-    flux, hdr = btsettl_grid.load_flux(params, norm=False)
+    flux, __ = btsettl_grid.load_flux(params, norm=False)
 
     # [::10] down samples only every 10th point from BT-Settl CIFIST spectrum.
     wav, flux = wav[::10], flux[::10]
