@@ -1,6 +1,6 @@
 import pytest
 
-from scripts.phoenix_precision import select_csv_columns, strip_whitespace
+from scripts.phoenix_precision import select_csv_columns, strip_whitespace, check_model
 
 
 @pytest.mark.parametrize(
@@ -27,3 +27,30 @@ def test_select_csv_columns():
 )
 def test_select_csv_columns_with_ncols(initial, ncols, expected):
     assert select_csv_columns(initial, ncols=ncols) == expected
+
+
+@pytest.mark.parametrize(
+    "model_in, expected_model",
+    [
+        ("aces", "aces"),
+        ("phoenix", "aces"),
+        ("btsettl", "btsettl"),
+    ],
+)
+def test_check_model(model_in, expected_model):
+    model_out = check_model(model_in)
+    assert model_out == expected_model
+
+
+def test_model_depreciation():
+    with pytest.deprecated_call():
+        check_model("phoenix")
+
+
+@pytest.mark.parametrize(
+    "invalid_model",
+    ["phoneix-aces", "best", 42],
+)
+def test_check_model_error(invalid_model):
+    with pytest.raises(ValueError):
+        check_model(invalid_model)
