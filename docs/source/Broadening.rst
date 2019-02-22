@@ -1,18 +1,46 @@
-
+==========
 Broadening
 ==========
+
+.. py:module:: eniric.broaden
+    :synopsis: A module to perform spectral brodening.
+
+:mod:`broaden` is a module to perform broadening of the stellar spectra.
+
+.. contents::
+   :depth: 2
 
 Two mechanisms are used to broaden the spectra:
 
 
-* Rotational broadening
-
+Rotational broadening
+---------------------
   * Convolution of the spectra with a rotational broadening function with a given velocity ``vsini`` (in km/s).
     The default limb darkening coefficient is ´epsilon= 0.6´.
 
-* Instrumental broadening
+.. autofunction:: rotational_convolution
 
+
+Rotation kernel
++++++++++++++++
+.. autofunction:: rotation_kernel
+
+
+Instrumental broadening
+-----------------------
   * Convolution by a Gaussian with a FWHM equivalent to the resolving power ``R`` at each wavelength. The convolution is extended either side to a ``fwhm_lim`` of 5 by default.
+
+.. autofunction:: resolution_convolution
+
+
+Gaussian kernel
++++++++++++++++
+.. autofunction:: unitary_gaussian
+
+
+Circular Fibre
+++++++++++++++
+.. autofunction:: oned_circle_kernel
 
 When analyzing the spectral libraries, rotational broadening is preformed first, followed by the instrumental broadening.
 
@@ -24,5 +52,15 @@ Caching of the convolution stages is performed to avoid re-computation of this s
 Caching can be disabled by setting ``location=None``
 
 
-.. automodule:: eniric.broaden
+Combined convolution
+---------------------
+Resolution following rotation
+
+.. autofunction:: convolution
+
+
+Caching
+-------
+
+Convolution results are cached using :mod:`joblib`, see https://joblib.readthedocs.io/en/latest/memory.html
 
