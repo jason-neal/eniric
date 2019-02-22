@@ -21,17 +21,17 @@ class Atmosphere(object):
     Attributes
     ----------
     wl: ndarray
-        Wavelength array
+        Wavelength array.
     transmission: ndarray
-        Atmospheric transmission (between 0 and 1)
+        Atmospheric transmission (between 0 and 1).
     std: ndarray
         Standard deviation of transmission.
     mask: ndarray
-        Transmission mask (1's are kept)
+        Transmission mask (1's are kept).
     shifted: bool
-        Indicate shifted mask
-    verbose:
-        Enable verbose (default=False).
+        Indicate shifted mask. Default is False.
+    verbose: bool
+        Enable verbose. Default is False.
 
     Constructors
     ----------
@@ -61,12 +61,12 @@ class Atmosphere(object):
 
     Configuration
     -------------
-    Two things can be set for the Atmosphere class in the `config.yaml` file
-    The path to atmosphere data
-    e.g.
-        paths:
-            atmmodel: "path/to/atmmodel/directory"
-    The name for the atmosphere model .dat file
+    Two things can be set for the Atmosphere class in the `config.yaml` file.
+    The path to the atmosphere data
+        e.g.
+            paths:
+                atmmodel: "path/to/atmmodel/directory"
+    The name for the atmosphere model *.dat file
         atmmodel:
             base: "Average_TAPAS_2014"
     """
@@ -205,11 +205,10 @@ class Atmosphere(object):
     def at(self, wave):
         """Return the transmission value at the closest points to wave.
 
-        This assumes that the atmosphere model is
-        sampled much higher than the stellar spectra.
+        This assumes that the atmosphere model is sampled at a higher rate
+        than the stellar spectra.
 
-        For instance the default has a sampling if 10 compared to 3.
-        (instead of interpolation)
+        For instance, the default Tapas model has a sampling if 10 compared to 3.
 
         Parameters
         ----------
@@ -251,8 +250,8 @@ class Atmosphere(object):
 
         Parameters
         ----------
-        depth : float (default = 2.0)
-            Telluric line depth percentage to mask out.
+        depth : float
+            Telluric line depth percentage to mask out. Default is 2.0.
             E.g. depth=2 will mask transmission deeper than 2%.
 
         Updates the mask.
@@ -265,16 +264,17 @@ class Atmosphere(object):
 
         Parameters
         ----------
-        rv: float (default=30 km/s)
-            Velocity to extend masks in km/s. (Default=30 km/s)
-        consecutive_test: bool (default False)
-            Checks for 3 consecutive zeros to mask out transmission.
+        rv: float
+            Velocity to extend masks in km/s. Default is 30.
+        consecutive_test: bool
+            Checks for 3 consecutive zeros to mask out transmission. Default is False.
 
+        Updates the mask.
         """
         if self.shifted:
             warnings.warn(
                 "Detected that 'shifted' is already True. "
-                "Check that you want to rv extend masks again."
+                "Check that you want to rv extend the masks again."
             )
         rv_mps = rv * 1e3  # Convert from km/s into m/s
 
@@ -341,11 +341,11 @@ class Atmosphere(object):
         Parameters
         ----------
         resolution: float
-            Instrumental resolution/resolving power
+            Instrumental resolution R.
         fwhm_lim: int/float
-            Number of FWHM to extend convolution.
+            Number of FWHM to extend the wings of the convolution kernel.
         num_procs: Optional[int]
-            Number of processors to compute the convolution with. Default = total processors - 1
+            Number of processors to use. Default = total processors - 1
         """
         self.transmission = resolution_convolution(
             wavelength=self.wl,

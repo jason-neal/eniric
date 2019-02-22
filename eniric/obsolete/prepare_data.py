@@ -79,7 +79,7 @@ def _parser():
         type=str,
         default="photon",
         choices=["photon", "energy"],
-        help="Type of flux to use. Default converts it to photons.",
+        help='Type of flux to use. Default is "photon".',
     )
     parser.add_argument(
         "-d",

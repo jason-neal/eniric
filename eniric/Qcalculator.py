@@ -52,9 +52,9 @@
 import warnings
 from typing import Optional, Tuple, Union
 
-from astropy import constants as const
 import astropy.units as u
 import numpy as np
+from astropy import constants as const
 from astropy.units.quantity import Quantity
 from numpy import ndarray
 
@@ -147,7 +147,9 @@ def sqrt_sum_wis(
     mask: Optional ndarray
         Weighting mask function. Default is all ones.
     grad: bool
-        Flag to use np.gradient. Default=True. Original publication used less precise method.
+        Flag to use np.gradient.
+        The original publication used a less precise method.
+        Default=True.
 
     Returns
     -------

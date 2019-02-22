@@ -67,7 +67,7 @@ Features
    The RV precision are present relative to a specified SNR per pixel in the center of a photometric band.
    The default as used in the `Figueira et al. 2016`_ is a SNR of 100 at the center of the J-band.
 * Spectral Re-sampling
-   Allows for re-sampling of spectra to `N` pixels per FWHM. Default = 3.
+   Allows for re-sampling of spectra to `N` pixels per FWHM. Default is 3.
 * Photometric Band selection
 
   * Analysis the RV precision attainable by individual photometric bands ``Z``\ , ``Y``\ , ``J``\ , ``H``\ , ``K``.
