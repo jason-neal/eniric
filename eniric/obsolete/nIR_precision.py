@@ -56,11 +56,11 @@ def _parser():
         "-s", "--save", default=False, action="store_true", help="Save results to file."
     )
     parser.add_argument(
-        "--snr", help="Mid-band SNR scaling. (Default=100)", default=100, type=float
+        "--snr", help="Mid-band SNR scaling. Default is 100.", default=100, type=float
     )
     parser.add_argument(
         "--ref_band",
-        help="SNR reference band. Default=J. (Default=100). "
+        help="SNR reference band. Default=J. Default is 100. "
         "'self' scales each band relative to the SNR itself.",
         choices=ref_choices,
         default="J",
@@ -454,9 +454,7 @@ def calculate_prec(
 ###############################################################################
 def compare_output():
     """Function that compares a spectrum prior to convolution, after, and after resampling."""
-    pre_convolution = (
-        "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
-    )
+    pre_convolution = "PHOENIX_ACES_spectra/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave_CUT_nIR.dat"
     pre_wav, pre_flux = io.pdread_2col(pre_convolution)
     pre_wav = np.array(pre_wav, dtype=float) * 1.0e-4  # conversion to microns
     pre_flux = np.array(pre_flux, dtype=float) * pre_wav

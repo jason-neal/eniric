@@ -266,8 +266,8 @@ def resampler(
         Directory to find the spectrum to load.
     resample_dir: str
         Directory to save the results.
-    sampling: float (default=3.0)
-        Sampling per pixel.
+    sampling: float
+        Sampling per pixel. Default is 3.0.
     """
     os.makedirs(resampled_dir, exist_ok=True)
     read_name = os.path.join(results_dir, spectrum_name)

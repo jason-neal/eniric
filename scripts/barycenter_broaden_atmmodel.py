@@ -33,7 +33,7 @@ def _parser():
         type=str,
         default="ALL",
         choices=choices,
-        help="Wavelength bands to select. Default=None.",
+        help="Wavelength bands to select. Default is None.",
         nargs="+",
     )
     parser.add_argument("-v", "--verbose", help="Turn on verbose.", action="store_true")

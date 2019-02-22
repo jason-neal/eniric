@@ -27,12 +27,12 @@ def normalize_flux(
         Photon flux.
     id_string: str
         Identifying string for spectra.
-    new: bool default=True
-        Choose between new and old constant for testing.
+    new: bool
+        Choose between new and old constant for testing. Default is True.
     snr: int, float default=100
         SNR to normalize to, .
     ref_band: str default="J"
-        References band to normalize to.
+        References band to normalize to. Default is "J".
     sampling: int or float
        Number of pixels per resolution element.
 

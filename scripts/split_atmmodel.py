@@ -55,14 +55,14 @@ def _parser():
         "--rv_extend",
         default=100,
         type=check_positive,
-        help="Doppler RV (km/s) to extend the wavelength limits of the band. Default=100 km/s",
+        help="RV in km/s to extend the wavelength limits of the band. Default is 100.",
     )
     parser.add_argument(
         "-c",
         "--cutoff_depth",
         default=2,
         type=float,
-        help=r"Telluric line depth cutoff. Default = 2 percent.",
+        help=r"Telluric line depth cutoff percent. Default is 2.0.",
     )
     parser.add_argument("-v", "--verbose", help="Turn on verbose.", action="store_true")
     return parser.parse_args()
@@ -122,10 +122,11 @@ def main(
         New file name base.
     data_dir: Optional[str]
         Directory for results. Can also be given in config.yaml "paths:atmmodel:"...
-    rv_extend: float (positive) (default 100)
-        Rv amount to extend wavelength range of telluric band. To later apply barycenter shifting.
+    rv_extend: float
+        Absolute RV to extend wavelength range of telluric band.
+        To later apply barycenter shifting. Default is 100.
     cutoff_depth: float
-       Telluric line depth cutoff. Default = 2%.
+       Telluric line depth cutoff percent. Default = 2.0.
     """
     if (bands is None) or ("ALL" in bands):
         bands_ = eniric.config.bands["all"]

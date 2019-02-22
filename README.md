@@ -51,7 +51,7 @@ To use the most up-to-date packages install the pinned requirements from the ``r
 
 Installation from the github repository should also be possible with `pip`.
 
-``` 
+```
   pip install https://github.com/jason-neal/eniric/archive/develop.zip#egg=eniric
 ```
 
@@ -124,7 +124,7 @@ To automatically prepare the telluric masks, splitting into bands and applying t
 These will split the large telluirc spectra into the bands specified in the `config.yaml` so that the
  opening and slicing of the large telluric spectrum is not performed continually.
 
-To change the telluric line cutoff depth you to 4% can pass (default = 2%) you can pass it like this
+The default depth is 2%. To change the telluric line cutoff depth to 4% you can pass it like this
 
     `split_atmmodel.py --cutoff-depth 4`
 

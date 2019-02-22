@@ -48,10 +48,13 @@ def _parser():
         default=[3.0],
         type=float,
         nargs="+",
-        help="Resample rate, pixels per FWHM. Default=3.0",
+        help="Resample rate, pixels per FWHM. Default is 3.0",
     )
     parser.add_argument(
-        "--noresample", help="Don't Resample output", default=False, action="store_true"
+        "--noresample",
+        help="Don't Resample output. Default is False.",
+        default=False,
+        action="store_true",
     )
     parser.add_argument(
         "--unnormalized", help="Normalize for wavelength step", action="store_true"
@@ -68,12 +71,7 @@ def _parser():
         action="store_true",
         help="Replace data files if already created.",
     )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="Turn on Verbose",
-    )
+    parser.add_argument("-v", "--verbose", help="Turn on verbose.", action="store_true")
     return parser.parse_args()
 
 
@@ -87,7 +85,7 @@ def main(
     unnormalized: bool = False,
     org: bool = False,
     replace: bool = False,
-    verbose: bool=False,
+    verbose: bool = False,
 ):
     """Run convolutions of NIR spectra for the range of given parameters.
 
@@ -193,7 +191,7 @@ def main(
     if verbose:
         print(
             "Time to convolve {0:d} combinations = {1}".format(
-            counter, dt.now() - start_time
+                counter, dt.now() - start_time
             )
         )
     return 0
