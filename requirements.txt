@@ -6,5 +6,5 @@ multiprocess==0.70.7
 numpy>=1.15.4  # numpy>=1.15.4
 pandas==0.24.1
 pyyaml==3.13
-scipy
+scipy==1.2.1
 tqdm
