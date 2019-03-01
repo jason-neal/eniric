@@ -1,7 +1,7 @@
 astropy>=3.0.0
 astrostarfish
 joblib>=0.12.3  # >=0.12.3
-matplotlib
+matplotlib==3.0.3
 multiprocess
 numpy>=1.15.4  # numpy>=1.15.4
 pandas
