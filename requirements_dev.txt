@@ -11,7 +11,7 @@ mypy==0.670
 numpy==1.16.2
 pandas==0.24.1
 pandoc==1.0.2
-pre-commit==1.14.2
+pre-commit==1.14.4
 pytest==4.2.0
 pytest-cov==2.6.1
 python-coveralls==2.9.1
