@@ -39,13 +39,20 @@ def _parser():
     parser = argparse.ArgumentParser(
         description="Calculate quality for any library spectra."
     )
-    parser.add_argument("-t", "--temp", type=int, help="Temperature", nargs="+")
+    parser.add_argument(
+        "-t",
+        "--temp",
+        type=int,
+        default=[3900],
+        help="Temperature, default=[3900].",
+        nargs="+",
+    )
     parser.add_argument(
         "-l",
         "--logg",
         type=float,
         default=[4.5],
-        help="Logg, default = [4.5]",
+        help="Logg, default = [4.5].",
         nargs="+",
     )
     parser.add_argument(
@@ -53,7 +60,7 @@ def _parser():
         "--metal",
         type=float,
         default=[0.0],
-        help="Metallicity, default=[0.0]",
+        help="Metallicity, default=[0.0].",
         nargs="+",
     )
     parser.add_argument(
@@ -61,11 +68,16 @@ def _parser():
         "--alpha",
         type=float,
         default=[0.0],
-        help="Alpha, default=[0.0]",
+        help="Alpha, default=[0.0].",
         nargs="+",
     )
     parser.add_argument(
-        "-s", "--sampling", type=float, default=[3.0], help="Sampling", nargs="+"
+        "-s",
+        "--sampling",
+        type=float,
+        default=[3.0],
+        help="Sampling, default=[3.0].",
+        nargs="+",
     )
     parser.add_argument(
         "-r",
@@ -80,7 +92,7 @@ def _parser():
         "--vsini",
         type=float,
         default=[1.0],
-        help="Rotational Velocity",
+        help="Rotational Velocity, default = [1.0]",
         nargs="+",
     )
     parser.add_argument(
@@ -134,7 +146,7 @@ def _parser():
     )
     parser.add_argument("--correct", help="Apply RV corrections", action="store_true")
 
-    parser.add_argument("--verbose", help="Turn on verbose.", action="store_true")
+    parser.add_argument("-V", "--verbose", help="Turn on verbose.", action="store_true")
     parser.add_argument(
         "--disable_normalization",
         help="Turn off convolution normalization.",
@@ -406,7 +418,7 @@ def check_model(model: str) -> str:
     if model == "phoenix":
         warnings.warn(
             "The model name 'phoenix' is depreciated, use 'aces' instead.",
-            DeprecationWarning
+            DeprecationWarning,
         )
         model = "aces"
     if model not in ["aces", "btsettl"]:
