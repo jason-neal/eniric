@@ -2,6 +2,7 @@
 import argparse
 import itertools
 import os
+import warnings
 from typing import List, Tuple
 
 import multiprocess as mprocess
@@ -38,13 +39,20 @@ def _parser():
     parser = argparse.ArgumentParser(
         description="Calculate quality for any library spectra."
     )
-    parser.add_argument("-t", "--temp", type=int, help="Temperature", nargs="+")
+    parser.add_argument(
+        "-t",
+        "--temp",
+        type=int,
+        default=[3900],
+        help="Temperature, default=[3900].",
+        nargs="+",
+    )
     parser.add_argument(
         "-l",
         "--logg",
         type=float,
         default=[4.5],
-        help="Logg, default = [4.5]",
+        help="Logg, default = [4.5].",
         nargs="+",
     )
     parser.add_argument(
@@ -52,7 +60,7 @@ def _parser():
         "--metal",
         type=float,
         default=[0.0],
-        help="Metallicity, default=[0.0]",
+        help="Metallicity, default=[0.0].",
         nargs="+",
     )
     parser.add_argument(
@@ -60,11 +68,16 @@ def _parser():
         "--alpha",
         type=float,
         default=[0.0],
-        help="Alpha, default=[0.0]",
+        help="Alpha, default=[0.0].",
         nargs="+",
     )
     parser.add_argument(
-        "-s", "--sampling", type=float, default=[3.0], help="Sampling", nargs="+"
+        "-s",
+        "--sampling",
+        type=float,
+        default=[3.0],
+        help="Sampling, default=[3.0].",
+        nargs="+",
     )
     parser.add_argument(
         "-r",
@@ -79,7 +92,7 @@ def _parser():
         "--vsini",
         type=float,
         default=[1.0],
-        help="Rotational Velocity",
+        help="Rotational Velocity, default = [1.0]",
         nargs="+",
     )
     parser.add_argument(
@@ -94,9 +107,9 @@ def _parser():
     parser.add_argument(
         "--model",
         type=str,
-        default="phoenix",
-        choices=["phoenix", "btsettl"],
-        help="Spectral models to use. Default=phoenix.",
+        default="aces",
+        choices=["aces", "btsettl", "phoenix"],
+        help="Spectral models to use. Default=aces.",
     )
     parser.add_argument(
         "--snr", help="Mid-band SNR scaling. (Default=100)", default=100, type=float
@@ -133,7 +146,7 @@ def _parser():
     )
     parser.add_argument("--correct", help="Apply RV corrections", action="store_true")
 
-    parser.add_argument("--verbose", help="Turn on verbose.", action="store_true")
+    parser.add_argument("-V", "--verbose", help="Turn on verbose.", action="store_true")
     parser.add_argument(
         "--disable_normalization",
         help="Turn off convolution normalization.",
@@ -153,7 +166,7 @@ def do_analysis(
     ref_band: str = "J",
     rv: float = 0.0,
     air: bool = False,
-    model: str = "phoenix",
+    model: str = "aces",
     verbose: bool = False,
 ) -> List[Quantity]:
     """Precision and Quality for specific parameter set.
@@ -182,7 +195,7 @@ def do_analysis(
     air: bool
         Get model in air wavelengths (default=False).
     model: str
-        Name of synthetic library (phoenix, btsettl) to use. Default = 'phoenix'.
+        Name of synthetic library (aces, btsettl) to use. Default = 'aces'.
     verbose:
         Enable verbose (default=False).
 
@@ -207,17 +220,14 @@ def do_analysis(
     if ref_band.upper() == "SELF":
         ref_band = band
 
-    if model == "phoenix":
-        # Full photon count spectrum
+    model = check_model(model)
+
+    if model == "aces":
         wav, flux = load_aces_spectrum(star_params, photons=True, air=air)
     elif model == "btsettl":
         wav, flux = load_btsettl_spectrum(star_params, photons=True, air=air)
     else:
-        raise ValueError(
-            "Model name error in '{}'. Valid choices are 'phoenix and 'btsettl'".format(
-                model
-            )
-        )
+        raise Exception("Invalid model name reached.")
 
     wav_grid, sampled_flux = convolve_and_resample(
         wav, flux, vsini, R, band, sampling, **conv_kwargs
@@ -291,9 +301,7 @@ def convolve_and_resample(
     sampled_flux: ndarray
         Convolved and resampled flux array
     """
-    wav_band, flux_band, convolved_flux = convolution(
-        wav, flux, vsini, R, band, **conv_kwargs
-    )
+    wav_band, __, convolved_flux = convolution(wav, flux, vsini, R, band, **conv_kwargs)
     # Re-sample to sampling per resolution element.
     wav_grid = log_resample(wav_band, sampling, R)
     sampled_flux = np.interp(wav_grid, wav_band, convolved_flux)
@@ -405,6 +413,23 @@ def select_csv_columns(line: str, ncols: int = 8) -> str:
     return ",".join(line.split(",")[:ncols])
 
 
+def check_model(model: str) -> str:
+    """Check model is 'aces' or 'btsettl'."""
+    if model == "phoenix":
+        warnings.warn(
+            "The model name 'phoenix' is depreciated, use 'aces' instead.",
+            DeprecationWarning,
+        )
+        model = "aces"
+    if model not in ["aces", "btsettl"]:
+        raise ValueError(
+            "Model name error of '{}'. Valid choices are 'aces' and 'btsettl'".format(
+                model
+            )
+        )
+    return model
+
+
 if __name__ == "__main__":
     args = _parser()
 
@@ -425,29 +450,25 @@ if __name__ == "__main__":
         num_procs = num_procs_minus_1
 
     try:
-        # Initalize a multiprocessor pool to pass to each convolution.
+        # Initialize a multiprocessor pool to pass to each convolution.
         if int(num_procs) in [0, 1]:
             assert False
         mproc_pool = mprocess.Pool(
             processes=num_procs, maxtasksperchild=500_000
         )  # Refresh worker after 1/2 million pixels processed each.
-        conv_kwargs = {
-            "epsilon": 0.6,
-            "fwhm_lim": 5.0,
-            "num_procs": mproc_pool,
-            "normalize": normalize,
-            "verbose": args.verbose,
-        }
+        _num_procs = mproc_pool
         mproc_pool_flag = True
     except:
-        conv_kwargs = {
-            "epsilon": 0.6,
-            "fwhm_lim": 5.0,
-            "num_procs": num_procs,
-            "normalize": normalize,
-            "verbose": args.verbose,
-        }
+        _num_procs = num_procs
         mproc_pool_flag = False
+
+    conv_kwargs = {
+        "epsilon": 0.6,
+        "fwhm_lim": 5.0,
+        "num_procs": _num_procs,
+        "normalize": normalize,
+        "verbose": args.verbose,
+    }
 
     snr = args.snr
     air = args.air
@@ -457,7 +478,7 @@ if __name__ == "__main__":
     ref_band = args.ref_band
 
     # Load the relevant spectra
-    if args.model == "phoenix":
+    if args.model == "aces":
         models_list = itertools.product(args.temp, args.logg, args.metal, args.alpha)
     else:
         models_list = itertools.product(args.temp, args.logg, [0], [0])

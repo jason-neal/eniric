@@ -29,7 +29,7 @@ def pdread_2col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray
     """
     try:
         if noheader:
-            data = pd.read_table(
+            data = pd.read_csv(
                 filename,
                 comment="#",
                 names=["col1", "col2"],
@@ -38,7 +38,7 @@ def pdread_2col(filename: str, noheader: bool = False) -> Tuple[ndarray, ndarray
                 delim_whitespace=True,
             )
         else:
-            data = pd.read_table(
+            data = pd.read_csv(
                 filename,
                 comment="#",
                 names=["col1", "col2"],
@@ -75,7 +75,7 @@ def pdread_3col(
     """
     try:
         if noheader:
-            data = pd.read_table(
+            data = pd.read_csv(
                 filename,
                 comment="#",
                 names=["col1", "col2", "col3"],
@@ -84,7 +84,7 @@ def pdread_3col(
                 delim_whitespace=True,
             )
         else:
-            data = pd.read_table(
+            data = pd.read_csv(
                 filename,
                 comment="#",
                 names=["col1", "col2", "col3"],
@@ -123,7 +123,7 @@ def pdread_4col(
     """
     try:
         if noheader:
-            data = pd.read_table(
+            data = pd.read_csv(
                 filename,
                 comment="#",
                 names=["col1", "col2", "col3", "col4"],
@@ -132,7 +132,7 @@ def pdread_4col(
                 delim_whitespace=True,
             )
         else:
-            data = pd.read_table(
+            data = pd.read_csv(
                 filename,
                 comment="#",
                 names=["col1", "col2", "col3", "col4"],
