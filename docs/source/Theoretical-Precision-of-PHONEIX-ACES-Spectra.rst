@@ -1,6 +1,6 @@
 
-Theoretical Precision of PHONEIX-ACES Spectra
----------------------------------------------
+Theoretical Precision of Synthetic Spectra
+------------------------------------------
 
 Eniric provides a script ``phoenix_precision.py`` to generate RV precision values for any spectra in the PHOENIX-ACES spectral library (Available at `http://phoenix.astro.physik.uni-goettingen.de/ <http://phoenix.astro.physik.uni-goettingen.de/>`_\ ). The precision of a spectra can be obtained by providing its library parameters Teff, logg, Fe/H and, alpha. This has been mainly used on M-dwarf spectra (< 4000K), but it higher temperatures should work to.
 
@@ -19,11 +19,64 @@ The script returns a table with input parameters and calculated spectral quality
 Example Usage
 ^^^^^^^^^^^^^
 
-You use this script by passing it stellar parameters for the spectral library as well as broadening and wavelength parameters. Multiple parameters can be passed to each flag, separated by a space.
+You use this script by passing it stellar parameters for the spectral library as well as broadening and wavelength parameters.
+Multiple parameters can be passed to each flag, separated by a space.
 To see all the available inputs parameters run:
+
 .. code-block:: bash
 
-     phoenix_precision.py -h
+    $ phoenix_precision.py -h
+    usage: phoenix_precision.py [-h] [-t TEMP [TEMP ...]] [-l LOGG [LOGG ...]]
+                                [-m METAL [METAL ...]] [-a ALPHA [ALPHA ...]]
+                                [-s SAMPLING [SAMPLING ...]]
+                                [-r RESOLUTION [RESOLUTION ...]]
+                                [-v VSINI [VSINI ...]]
+                                [-b {K,H,J,Y,Z,TEST} [{K,H,J,Y,Z,TEST} ...]]
+                                [--model {aces,btsettl,phoenix}] [--snr SNR]
+                                [--ref_band {SELF,K,H,J,Y,Z,TEST}]
+                                [--num_procs NUM_PROCS] [-o OUTPUT]
+                                [--rv RV [RV ...]] [--add_rv] [--air] [--correct]
+                                [-V] [--disable_normalization]
+
+    Calculate Calculate precision and quality for synthetic spectra.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -t TEMP [TEMP ...], --temp TEMP [TEMP ...]
+                            Temperature, default=[3900].
+      -l LOGG [LOGG ...], --logg LOGG [LOGG ...]
+                            Logg, default = [4.5].
+      -m METAL [METAL ...], --metal METAL [METAL ...]
+                            Metallicity, default=[0.0].
+      -a ALPHA [ALPHA ...], --alpha ALPHA [ALPHA ...]
+                            Alpha, default=[0.0].
+      -s SAMPLING [SAMPLING ...], --sampling SAMPLING [SAMPLING ...]
+                            Sampling, default=[3.0].
+      -r RESOLUTION [RESOLUTION ...], --resolution RESOLUTION [RESOLUTION ...]
+                            Instrumental resolution, default=[50000]
+      -v VSINI [VSINI ...], --vsini VSINI [VSINI ...]
+                            Rotational Velocity, default = [1.0]
+      -b {K,H,J,Y,Z,TEST} [{K,H,J,Y,Z,TEST} ...], --bands {K,H,J,Y,Z,TEST} [{K,H,J,Y,Z,TEST} ...]
+                            Wavelength bands to select, default=['J'].
+      --model {aces,btsettl,phoenix}
+                            Spectral models to use, default='aces'.
+      --snr SNR             Mid-band SNR scaling, default=100.
+      --ref_band {SELF,K,H,J,Y,Z,TEST}
+                            SNR reference band, default='J'.
+                            'self' scales each band relative to the SNR itself.
+      --num_procs NUM_PROCS
+                            Number of processors to use,
+                            default = (Total cores - 1)
+      -o OUTPUT, --output OUTPUT
+                            Filename for result file, default='precisions.csv'.
+      --rv RV [RV ...]      Radial velocity value, default=[0.0]
+      --add_rv              Include a radial velocity shift.
+      --air                 Convert to air wavelengths.
+      --correct             Apply Artigau et al. (2018) RV band corrections.
+      -V, --verbose         Enable verbose.
+      --disable_normalization
+                            Disable the convolution normalization.
+
 
 This script has been used to generate nIR RV precision values across the M-dwarf temperature range. These were requested by the NIRPS and SPIRou consortia for use as into their respective Exposure Time Calculators. The commands to use to generate these datasets are provided below. 
 
