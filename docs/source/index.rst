@@ -41,6 +41,7 @@ Welcome to Eniric's documentation!
    Broadening
    Atmospheric-Transmission
    Theoretical-Precision-of-PHONEIX-ACES-Spectra
+   Examples
 
 
 `Eniric` is a Python 3.6+ software written to calculate the theoretical Radial Velocity (RV) precision of Near-InfraRed (NIR) stellar spectra.
