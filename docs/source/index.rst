@@ -46,7 +46,7 @@ Welcome to Eniric's documentation!
 
 `Eniric` is a Python 3.6+ software written to calculate the theoretical Radial Velocity (RV) precision of Near-InfraRed (NIR) stellar spectra.
 `Eniric` is an overhaul and extension to the code initially used in `Figueira et al. 2016`_ to analysis the precision of M-dwarf stars in the NIR, extending its ability to use any synthetic spectra from the PHOENIX-ACES and BT-Settl libraries, or user provided spectra, and making it easier/faster to use.
-Extending the performance and usability, it is able to be used on any synthetic spectra from the `PHOENIX-ACES`_ and `BT-Settl`_ (CIFIST2001-2015) libraries.
+Extending the performance and usability, it is able to be used on any synthetic spectra from the `PHOENIX-ACES`_ and `BT-Settl`_ (CIFIST2011-2015) libraries.
 
 To get started see the :doc:`Installation <./Installation>`, or the :doc:`Basic Usage <./Basic-usage>`.
 
