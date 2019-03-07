@@ -37,7 +37,7 @@ def _parser():
     :returns: the args
     """
     parser = argparse.ArgumentParser(
-        description="Calculate quality for any library spectra."
+        description="Calculate precision and quality for synthetic spectra."
     )
     parser.add_argument(
         "-t",
@@ -84,7 +84,7 @@ def _parser():
         "--resolution",
         type=float,
         default=[50000],
-        help="Instrumental resolution",
+        help="Instrumental resolution, default=[50000]",
         nargs="+",
     )
     parser.add_argument(
@@ -99,9 +99,9 @@ def _parser():
         "-b",
         "--bands",
         type=str,
-        default="J",
+        default=["J"],
         choices=eniric.config.bands["all"],
-        help="Wavelength bands to select. Default=J.",
+        help="Wavelength bands to select, default=['J'].",
         nargs="+",
     )
     parser.add_argument(
@@ -109,14 +109,14 @@ def _parser():
         type=str,
         default="aces",
         choices=["aces", "btsettl", "phoenix"],
-        help="Spectral models to use. Default=aces.",
+        help="Spectral models to use, default='aces'.",
     )
     parser.add_argument(
-        "--snr", help="Mid-band SNR scaling. (Default=100)", default=100, type=float
+        "--snr", help="Mid-band SNR scaling, default=100.", default=100, type=float
     )
     parser.add_argument(
         "--ref_band",
-        help="SNR reference band. Default=J. (Default=100). "
+        help="SNR reference band, default='J'. "
         "'self' scales each band relative to the SNR itself.",
         choices=ref_choices,
         default="J",
@@ -124,32 +124,40 @@ def _parser():
     )
     parser.add_argument(
         "--num_procs",
-        help="Number of processors to use. Default = (Total cores - 1)",
+        help="Number of processors to use, default = (Total cores - 1)",
         default=num_procs_minus_1,
         type=int,
     )
     parser.add_argument(
         "-o",
         "--output",
-        help="Filename for results",
+        help="Filename for result file, default='precisions.csv'.",
         default="precisions.csv",
         type=str,
     )
     parser.add_argument(
-        "--rv", help="Radial velocity value.", default=[0.0], type=float, nargs="+"
+        "--rv",
+        help="Radial velocity value, default=[0.0]",
+        default=[0.0],
+        type=float,
+        nargs="+",
     )
     parser.add_argument(
-        "--add_rv", help="Include radial velocity shift.", action="store_true"
+        "--add_rv", help="Include a radial velocity shift.", action="store_true"
     )
     parser.add_argument(
-        "--air", help="Convert wavelengths from vacuum to air", action="store_true"
+        "--air", help="Convert to air wavelengths.", action="store_true"
     )
-    parser.add_argument("--correct", help="Apply RV corrections", action="store_true")
+    parser.add_argument(
+        "--correct",
+        help="Apply Artigau et al. (2018) RV band corrections.",
+        action="store_true",
+    )
 
-    parser.add_argument("-V", "--verbose", help="Turn on verbose.", action="store_true")
+    parser.add_argument("-V", "--verbose", help="Enable verbose.", action="store_true")
     parser.add_argument(
         "--disable_normalization",
-        help="Turn off convolution normalization.",
+        help="Disable the convolution normalization.",
         action="store_true",
     )
     return parser.parse_args()
