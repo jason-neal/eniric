@@ -1,6 +1,6 @@
-
+************
 Installation
-^^^^^^^^^^^^
+************
 
 You can install ``Eniric`` by cloning the current ``master`` branch.
 
@@ -22,7 +22,7 @@ Installation from the github repository should also be possible.
 
 
 Requirements
-~~~~~~~~~~~~
+------------
 
 The requirements for ``eniric`` are:
 
@@ -38,7 +38,7 @@ The requirements for ``eniric`` are:
 * tqdm
 
 There are some specific version requirements given in ``requirements.txt`` but the most recent versions are pinned in ``requirements_dev.txt``
-to install these you will need to run
+to install these run
 
 .. code-block:: bash
 
@@ -48,24 +48,36 @@ from the cloned ``eniric`` repo.
 
 
 Starfish
-~~~~~~~~~~
+^^^^^^^^
 
 Eniric makes use of Starfish's ``GridTools`` module to load the synthetic libraries: PHOENIX-ACES and BT-Settl models.
-``Starfish`` is only a requirement if using the ``eniric.utilities.load_aces_spectrum``\ , ``eniric.utilities.load_btsettl_spectrum`` functions or the ``phoenix_precision.py`` script.
 
-``Starfish`` is currently going through major changes.
-``Starfish`` should be automatically installed during installation of ``eniric`` with this custom fixed branch which is suitable for both Windows and Linux installation.
+``Starfish`` is currently going through API changes and not yet available on pypi.
+
+A custom fixed branch of Starfish can be used on both Linux and Windows.
+``Starfish`` should be automatically installed during the installation of ``eniric``, but if not you can install it with.
 
 .. code-block:: bash
 
     pip install https://github.com/jason-neal/Starfish/archive/eniric_suitable.zip#egg=Starfish
 
 If issues arise regarding ``Starfish`` see `github.com/iancze/Starfish <Starfishgithub_>`_:,
-If you need to install Starfish manually first you may need to remove the Starfish https link from ``requirements.txt``.
+
+Other requirements required with Starfish are:
+
+*   corner
+*   cycler
+*   cython
+*   emcee
+*   h5py
+*   kiwisolver
+*   pyparsing
+*   python-dateutil
+*   pyyaml
 
 
 OS
-~~
+--
 
 Eniric has been tested to work on both  **Linux** and **Windows**.
 
