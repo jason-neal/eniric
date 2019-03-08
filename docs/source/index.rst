@@ -35,29 +35,29 @@ Welcome to Eniric's documentation!
    :maxdepth: 1
    :caption: Contents:
 
-   Installation
-   Configuration
-   Basic-usage
-   Broadening
-   Atmospheric-Transmission
-   Theoretical-Precision-of-PHONEIX-ACES-Spectra
-   Examples
+   installation
+   configuration
+   basic_usage
+   broadening
+   telluric_correction
+   theoretical_precision
+   examples
 
 
 `Eniric` is a Python 3.6+ software written to calculate the theoretical Radial Velocity (RV) precision of Near-InfraRed (NIR) stellar spectra.
 `Eniric` is an overhaul and extension to the code initially used in `Figueira et al. 2016`_ to analysis the precision of M-dwarf stars in the NIR, extending its ability to use any synthetic spectra from the PHOENIX-ACES and BT-Settl libraries, or user provided spectra, and making it easier/faster to use.
 Extending the performance and usability, it is able to be used on any synthetic spectra from the `PHOENIX-ACES`_ and `BT-Settl`_ (CIFIST2011-2015) libraries.
 
-To get started see the :doc:`Installation <./Installation>`, or the :doc:`Basic Usage <./Basic-usage>`.
+To get started see the :doc:`Installation <./installation>`, or the :doc:`Basic Usage <./basic_usage>`.
 
 Features
 --------
 
 `Eniric` contains a number of features to transform and prepare the spectra; both observed and synthetic.
 
-* `Spectral broadening <https://github.com/jason-neal/eniric/wiki/Broadening>`_\ :
+* :doc:`Spectral broadening <./broadening>`:
    Allows for Rotational and Instrumental broadening of synthetic spectra given rotation speed ``vsini`` and resolution ``R``.
-* `Atmospheric transmission <https://github.com/jason-neal/eniric/wiki/Atmospheric-Transmission>`_ masking:
+* :doc:`Atmospheric transmission <telluric_correction>` masking:
     Analyzing the RV precision attainable under the different masking conditions presented in `Figueira et al. 2016`_.
 
   * No treatment of atmospheric transmission
