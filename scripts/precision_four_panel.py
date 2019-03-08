@@ -446,7 +446,7 @@ if __name__ == "__main__":
     # ToDo: Add an argparse cli
 
     precision_file = os.path.join(
-        eniric.config.paths["precision"], "precision_results.csv"
+        eniric.config.paths["precision_results"], "precision_results.csv"
     )
     plot_precision(precision_file, teffs=[3900, 3500, 2800, 2600])
     # plot_precision(precision_file, teffs=[3900, 3500, 2800, 2600], logg=4, fe_h=1)

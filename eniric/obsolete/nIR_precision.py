@@ -15,10 +15,10 @@ import eniric.io_module as io
 import eniric.legacy
 import eniric.obsolete.plotting_functions as plt_functions
 import eniric.obsolete.snr_norm
-import eniric.Qcalculator as Qcalculator
 import eniric.snr_normalization as snrnorm
 from eniric.atmosphere import Atmosphere
 from eniric.obsolete.utilities import barycenter_shift
+from eniric.precision import rv_precision
 from eniric.utilities import band_selector, moving_average
 
 rc("text", usetex=True)  # set stuff for latex usage
@@ -82,7 +82,7 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
         Save results to file.
 
     """
-    os.makedirs(eniric.config.paths["precision"], exist_ok=True)
+    os.makedirs(eniric.config.paths["precision_results"], exist_ok=True)
 
     spectral_types = ["M0", "M3", "M6", "M9"]
     if "ALL" in bands:
@@ -121,7 +121,7 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
     # Save precision results
     if save:
         output_filename = os.path.join(
-            eniric.config.paths["precision"],
+            eniric.config.paths["precision_results"],
             "precision_results_2017_ref_band-{0}_snr-{1}.dat".format(ref_band, snr),
         )
         ids = []
@@ -382,7 +382,7 @@ def calculate_prec(
 
             # Precision given by the first method:
             print("Performing analysis for: ", id_string)
-            prec_1 = Qcalculator.rv_precision(wav_stellar, flux_stellar, grad=grad)
+            prec_1 = rv_precision(wav_stellar, flux_stellar, grad=grad)
 
             # Precision as given by the second_method
             wav_stellar_chunks, flux_stellar_chunks = eniric.legacy.mask_clumping(
@@ -407,7 +407,7 @@ def calculate_prec(
             """
 
             # Precision as given by the third_method
-            prec_3 = Qcalculator.rv_precision(
+            prec_3 = rv_precision(
                 wav_stellar, flux_stellar, mask=flux_atm_selected ** 2, grad=grad
             )
 

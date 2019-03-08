@@ -2642,10 +2642,10 @@ def plot_paper_plots():
                         id_string = "{0:s}-{1:s}-{2:.01f}-{3:s}-{4:2.01f}".format(
                             star, band, float(vel), res, float(smpl)
                         )
-                        precision = results[id_string]
+                        rv_prec = results[id_string]
                         print(
                             "{0!s}: & {1:.1f}\t & {2:.1f}\t & {3:.1f} \\\\".format(
-                                id_string, precision[0], precision[1], precision[2]
+                                id_string, rv_prec[0], rv_prec[1], rv_prec[2]
                             )
                         )
 

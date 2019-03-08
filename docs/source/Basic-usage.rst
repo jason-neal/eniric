@@ -4,18 +4,18 @@ Basic Usage
 
 To calculate the RV precision given a spectrum with ``wavelength`` and ``flux`` you can use the ``rv_precsion`` function
 
-.. autofunction eniric.Qcalculator :: rv_precision
+.. autofunction eniric.precision :: rv_precision
 
 .. code-block:: python
 
-   from eniric.Qcalculator import rv_precision
+   from eniric.precision import rv_precision
    rv = rv_precision(wavelength, flux)
 
 or for the flux independent spectral ``quality``
 
 .. code-block:: python
 
-   from eniric.Qcalculator import quality
+   from eniric.precision import quality
    q = quality(wavelength, flux)
 
 To apply a mask to the optimal pixel weights pass it as the 3rd argument.

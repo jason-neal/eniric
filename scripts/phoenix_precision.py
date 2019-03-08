@@ -15,7 +15,7 @@ import eniric
 from eniric.atmosphere import Atmosphere
 from eniric.broaden import convolution
 from eniric.corrections import correct_artigau_2018
-from eniric.Qcalculator import quality, rv_precision
+from eniric.precision import quality, rv_precision
 from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import (

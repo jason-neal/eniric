@@ -19,7 +19,7 @@ class TestConfig:
             ("phoenix_raw", os.path.join(*["data", "test_data", "phoenix-raw"])),
             ("btsettl_raw", os.path.join(*["data", "test_data", "btsettl-raw"])),
             ("atmmodel", os.path.join(*["data", "atmmodel"])),
-            ("precision", "precision"),
+            ("precision_results", "precision"),
             ("test_data", os.path.join(*["data", "test_data"])),
         ],
     )
