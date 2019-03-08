@@ -3,7 +3,7 @@ Configuration
 =============
 
 Configuration is preformed using a config.yaml placed in the directory you wish to run eniric from.
-It configures the path locations to the spectral libraries, as well as user spectral band configuration.  
+It configures the path locations to the spectral libraries, as well as user spectral band configuration.
 
 config.yaml
 
@@ -21,7 +21,7 @@ config.yaml
      resampled: "data/resampled"
      test_data: "data/test_data/"
      atmmodel: "data/atmmodel"
-     precision: "precision/"
+     precision_results: "precision/"
 
    bands:
      all: ["VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP"]

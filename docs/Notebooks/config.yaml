@@ -7,7 +7,7 @@ paths:
   phoenix_raw: ["..","..","data", "test_data", "phoenix-raw"]
   btsettl_raw: ["..","..","data", "test_data", "btsettl-raw"]
   atmmodel: ["..","..","data", "atmmodel"]
-  precision: ["precision"]
+  precision_results: ["precision"]
   test_data: ["..","..","data","test_data"]
 
 cache:

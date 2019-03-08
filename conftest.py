@@ -62,7 +62,7 @@ def resampled_data(request):
     return id_string, wav, flux
 
 
-# Define some fixtures for Qcalculator.
+# Define some fixtures for eniric.precision.
 per_s_cm2 = (1 / u.second) / (u.centimeter ** 2)
 
 

@@ -5,14 +5,10 @@ import numpy as np
 import pytest
 
 import eniric
-from eniric import (
-    Qcalculator as Q,
-    io_module as io,
-    snr_normalization as snrnorm,
-    utilities as utils,
-)
+from eniric import io_module as io, snr_normalization as snrnorm, utilities as utils
 from eniric.obsolete.nIR_run import main as nir_run
 from eniric.obsolete.utilities import barycenter_shift
+from eniric.precision import rv_precision
 
 resampled_template = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}_res3.0.dat"
 wave_photon_template = (
@@ -218,8 +214,8 @@ def test_normalize_flux_new_verse_old(resampled_data):
     print("new norm", new_norm)
     print("old_norm", old_norm)
 
-    rvprec_new = Q.rv_precision(wav, new_norm)
-    rvprec_old = Q.rv_precision(wav, old_norm)
+    rvprec_new = rv_precision(wav, new_norm)
+    rvprec_old = rv_precision(wav, old_norm)
 
     print("new rv=", rvprec_new, "old rv=", rvprec_old)
     assert np.abs(rvprec_new.value - rvprec_old.value) < 0.4
@@ -395,7 +391,8 @@ def test_band_snr_norm_test_data():
     # snr_constant_band
     star, band, vel, res = "M0", "J", 1.0, "100k"
     test_data = os.path.join(
-        eniric.config.paths["resampled"], resampled_template.format(star, band, vel, res)
+        eniric.config.paths["resampled"],
+        resampled_template.format(star, band, vel, res),
     )
     wav, flux = io.pdread_2col(test_data)
 

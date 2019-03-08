@@ -6,7 +6,7 @@ paths:
   btsettl_raw: ["data", "test_data", "btsettl-raw"]
   test_data: ["data","test_data"]
   atmmodel: ["data", "atmmodel"]
-  precision: ["precision"]
+  precision_results: ["precision"]
   # Obsolete paths for testing only
   phoenix_dat: ["data", "test_data","obsolete","PHOENIX-ACES_spectra"]
   results:  ["data","test_data","obsolete","results"]

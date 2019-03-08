@@ -1,4 +1,4 @@
-"""Test Qcalculator."""
+"""Test eniric.precision."""
 
 import astropy.units as u
 import numpy as np
@@ -6,9 +6,16 @@ import pytest
 from astropy import constants as const
 from astropy.units import Quantity
 
-import eniric.Qcalculator as Q
 from eniric.atmosphere import Atmosphere
-from eniric.Qcalculator import mask_check, pixel_weights
+from eniric.precision import (
+    incremental_quality,
+    incremental_rv,
+    mask_check,
+    pixel_weights,
+    quality,
+    rv_precision,
+    sqrt_sum_wis,
+)
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import (
     band_limits,
@@ -32,7 +39,7 @@ def test_rvprev_calc(test_spec, wav_unit, flux_unit, trans_unit):
     if test_spec[2] is not None:
         mask *= trans_unit
 
-    rv = Q.rv_precision(wav, flux, mask)
+    rv = rv_precision(wav, flux, mask)
     assert rv.unit == m_per_s
     assert not hasattr(rv.value, "__len__")  # assert value is a scalar
     assert isinstance(rv, u.Quantity)
@@ -43,7 +50,7 @@ def test_rvprev_calc_with_lists(test_spec):
     wav = list(test_spec[0])
     flux = list(test_spec[1])
     mask = test_spec[2]
-    rv = Q.rv_precision(wav, flux, mask)
+    rv = rv_precision(wav, flux, mask)
     assert not hasattr(rv.value, "__len__")  # assert value is a scalar
     assert isinstance(rv, u.Quantity)
     assert rv.unit == m_per_s
@@ -53,7 +60,7 @@ def test_sqrt_sum_wis_with_no_units(test_spec):
     """Test that sqrt_sum_wis can handle inputs as Quantities or unitless.
     Returns a dimensionless unscaled Quantity.
     """
-    sqrtsumwis = Q.sqrt_sum_wis(test_spec[0], test_spec[1], test_spec[2])
+    sqrtsumwis = sqrt_sum_wis(test_spec[0], test_spec[1], test_spec[2])
     # Doesn't turn into quantity if does not have to.
     assert not isinstance(sqrtsumwis, u.Quantity)
     assert not hasattr(sqrtsumwis, "__len__")  # assert value is a scalar
@@ -70,7 +77,7 @@ def test_sqrt_sum_wis(test_spec, wav_unit, flux_unit, trans_unit):
     if test_spec[2] is not None:
         mask *= trans_unit
 
-    sqrtsumwis = Q.sqrt_sum_wis(wav, flux, mask)
+    sqrtsumwis = sqrt_sum_wis(wav, flux, mask)
     print("wav", wav, type(wav))
     print("flux", flux, type(flux))
     print("mask", mask, type(mask))
@@ -97,7 +104,7 @@ def test_relation_of_rv_to_sqrtsumwis(test_spec, wav_unit, flux_unit, trans_unit
         mask *= trans_unit
         mask = mask ** 2
     assert np.all(
-        Q.rv_precision(wav, flux, mask=mask) == c / Q.sqrt_sum_wis(wav, flux, mask=mask)
+        rv_precision(wav, flux, mask=mask) == c / sqrt_sum_wis(wav, flux, mask=mask)
     )
 
 
@@ -109,11 +116,11 @@ def test_transmission_reduces_precision(test_spec):
 
     # Value should be less then normal if trans <=1
     if transmission is not None:
-        assert Q.rv_precision(wav, flux, mask=None) < Q.rv_precision(
+        assert rv_precision(wav, flux, mask=None) < rv_precision(
             wav, flux, mask=transmission
         )
     # mask=None is the same as mask of all 1.
-    assert Q.rv_precision(wav, flux, mask=None) == Q.rv_precision(
+    assert rv_precision(wav, flux, mask=None) == rv_precision(
         wav, flux, mask=np.ones_like(wav)
     )
 
@@ -125,8 +132,8 @@ def test_improved_gradient_reduces_precision(test_spec):
     flux = test_spec[1]
     transmission = test_spec[2]
 
-    a = Q.rv_precision(wav, flux, mask=transmission, grad=False).value
-    b = Q.rv_precision(wav, flux, mask=transmission, grad=True).value
+    a = rv_precision(wav, flux, mask=transmission, grad=False).value
+    b = rv_precision(wav, flux, mask=transmission, grad=True).value
     assert a <= b
 
 
@@ -135,14 +142,14 @@ def test_quality_independent_of_flux_level(scale):
     """Q of a spectrum is independent of flux level."""
     wavelength = np.arange(100)
     flux = np.random.random(100)
-    assert np.allclose(Q.quality(wavelength, flux), Q.quality(wavelength, flux * scale))
+    assert np.allclose(quality(wavelength, flux), quality(wavelength, flux * scale))
 
 
 def test_quality_independent_of_units(test_spec, wav_unit, flux_unit):
     """Quality should be returned as unitless (not a quantity)."""
     wave = test_spec[0] * wav_unit
     flux = test_spec[1] * flux_unit
-    q = Q.quality(wave, flux)
+    q = quality(wave, flux)
 
     assert not isinstance(q, Quantity)
     assert isinstance(q, float)
@@ -229,10 +236,10 @@ def test_sqrt_sum_wis_with_mask_with_unit_fails(
     transmission = np.random.rand(len(wav)) * trans_unit2
 
     with pytest.raises(TypeError):
-        Q.sqrt_sum_wis(wav, flux, mask=transmission ** 2)
+        sqrt_sum_wis(wav, flux, mask=transmission ** 2)
 
     with pytest.raises(TypeError):
-        Q.rv_precision(wav, flux, mask=transmission ** 2)
+        rv_precision(wav, flux, mask=transmission ** 2)
 
 
 def test_sqrt_sum_wis_transmission_outofbounds(test_spec, wav_unit, flux_unit):
@@ -247,23 +254,23 @@ def test_sqrt_sum_wis_transmission_outofbounds(test_spec, wav_unit, flux_unit):
 
     # Higher value
     with pytest.raises(ValueError):
-        Q.rv_precision(wav, flux, mask=mask_1)
+        rv_precision(wav, flux, mask=mask_1)
 
     with pytest.raises(ValueError):
-        Q.sqrt_sum_wis(wav, flux, mask=mask_1)
+        sqrt_sum_wis(wav, flux, mask=mask_1)
 
         # Lower value
     with pytest.raises(ValueError):
-        Q.sqrt_sum_wis(wav, flux, mask=mask_2)
+        sqrt_sum_wis(wav, flux, mask=mask_2)
 
     with pytest.raises(ValueError):
-        Q.sqrt_sum_wis(wav, flux, mask=mask_2)
+        sqrt_sum_wis(wav, flux, mask=mask_2)
 
 
 def test_sqrtsumwis_warns_nonfinite(grad_flag):
     """Some warning tests."""
     with pytest.warns(UserWarning, match="This will cause infinite errors."):
-        Q.sqrt_sum_wis(
+        sqrt_sum_wis(
             np.array([1, 2, 3]),
             np.array([1, 2, 3]),
             np.array([0, 0, 0]),
@@ -271,7 +278,7 @@ def test_sqrtsumwis_warns_nonfinite(grad_flag):
         )  # All masked
 
     with pytest.warns(UserWarning, match="Weight sum is not finite"):
-        Q.sqrt_sum_wis(
+        sqrt_sum_wis(
             np.array([2, 2, 2]),
             np.array([1, 2, 3]),
             np.array([1, 1, 1]),
@@ -302,7 +309,7 @@ def test_increment_quality_gives_reasonable_length(real_spec, increment_percent)
     """
     print(real_spec)
     wav, flux = real_spec[0], real_spec[1]
-    x, q = Q.incremental_quality(wav, flux, percent=increment_percent)
+    x, q = incremental_quality(wav, flux, percent=increment_percent)
     d1 = wav[0] * increment_percent / 100
     d2 = wav[-1] * increment_percent / 100
     dlambda = wav[-1] - wav[0]
@@ -320,7 +327,7 @@ def test_increments_rv_gives_reasonable_length(real_spec, increment_percent):
      first and last point * the percent increment.
      """
     wav, flux, mask = real_spec[0], real_spec[1], real_spec[2]
-    x, rv = Q.incremental_rv(wav, flux, mask=mask, percent=increment_percent)
+    x, rv = incremental_rv(wav, flux, mask=mask, percent=increment_percent)
     d1 = wav[0] * increment_percent / 100
     d2 = wav[-1] * increment_percent / 100
     dlambda = wav[-1] - wav[0]
@@ -340,10 +347,8 @@ def test_increments_rv_accumulate_same_as_full(real_spec, increment_percent, no_
         # Try with mask= None also.
         mask = None
 
-    rv_full = Q.rv_precision(wav, flux, mask=mask).value
-    x, incremented_rv = Q.incremental_rv(
-        wav, flux, mask=mask, percent=increment_percent
-    )
+    rv_full = rv_precision(wav, flux, mask=mask).value
+    x, incremented_rv = incremental_rv(wav, flux, mask=mask, percent=increment_percent)
     incremented_weighted = weighted_error(incremented_rv)
 
     assert np.round(rv_full, 2) == np.round(incremented_weighted, 2)
