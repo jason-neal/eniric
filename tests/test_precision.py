@@ -301,7 +301,6 @@ def real_spec(request):
     return wav, flux, atm.transmission
 
 
-@xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
 def test_increment_quality_gives_reasonable_length(real_spec, increment_percent):
     """The expected number of steps would be between the
     wavelength difference divided by the
@@ -320,7 +319,6 @@ def test_increment_quality_gives_reasonable_length(real_spec, increment_percent)
     assert len(x) == len_q
 
 
-@xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
 def test_increments_rv_gives_reasonable_length(real_spec, increment_percent):
     """The expected number of steps would be between the
      wavelength difference divided by the
@@ -338,7 +336,6 @@ def test_increments_rv_gives_reasonable_length(real_spec, increment_percent):
     assert len(x) == len_rv
 
 
-@xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
 @pytest.mark.parametrize("no_mask", [True, False])
 def test_increments_rv_accumulate_same_as_full(real_spec, increment_percent, no_mask):
     """Assuming that the weighted rv from the steps should equal the rv from the band."""

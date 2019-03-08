@@ -8,7 +8,6 @@ from scripts.phoenix_precision import convolve_and_resample
 xfail = pytest.mark.xfail
 
 
-@xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
 @pytest.mark.parametrize("desired_snr", [100.0, 150.0])
 @pytest.mark.parametrize("band", ["J", "Y", "VIS"])
 def test_snr_normalization(desired_snr, band, testing_spectrum):
@@ -35,7 +34,6 @@ def test_snr_normalization(desired_snr, band, testing_spectrum):
     assert round(new_snr_estimate, 0) == desired_snr
 
 
-@xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
 @pytest.mark.parametrize("desired_snr", [50.0, 200.0])
 @pytest.mark.parametrize("band", ["H", "GAP", "K"])
 def test_snr_normalization_constant(desired_snr, band, testing_spectrum):
@@ -48,7 +46,6 @@ def test_snr_normalization_constant(desired_snr, band, testing_spectrum):
     ) == snrnorm.snr_constant_wav(wav, flux, band_mid, snr=desired_snr)
 
 
-@xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
 @pytest.mark.parametrize("sampling", [3, 4.1])
 def test_band_snr_norm(testing_spectrum, sampling):
     """Compared to wav snr norm."""
