@@ -4,11 +4,10 @@
 # Paths can either be strings of list of strings which will be passed
 # to os.path.join() [os independent]
 paths:
-  phoenix_raw: ["..", "data", "pheonix-raw"] # Path to Phoenix-ACES spectra
+  phoenix_raw: ["..", "data", "phoenix-raw"] # Path to Phoenix-ACES spectra
   btsettl_raw: ["..", "data", "btsettl-raw"] # Path to BT-Settl spectra
   test_data: ["..", "data", "test_data"]
   atmmodel: ["..", "data", "atmmodel"]
-
   precision: ["precision"]  # A place to put precision results
   # Obsolete paths for testing only
   phoenix_dat: ["data", "test_data", "obsolete", "PHOENIX-ACES_spectra"]
@@ -30,8 +29,9 @@ bands:
 # "NIR": (0.83, 2.35)
 
 # Add your custom band limits here and include in "all" above
+# Limits must be contained in lists.
 custom_bands:
-  TEST: (2.1, 2.2)
+  TEST: [2.1, 2.2]
 
 cache:
   # location: None  # Disables cache
