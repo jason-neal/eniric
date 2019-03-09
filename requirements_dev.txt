@@ -9,6 +9,7 @@ matplotlib==3.0.3
 multiprocess==0.70.7
 mypy==0.670
 numpy==1.16.2
+oyaml==0.7
 pandas==0.24.1
 pandoc==1.0.2
 pre-commit==1.14.4
