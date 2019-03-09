@@ -20,7 +20,7 @@ install:
 
   # Setup config and make data
   # This is not the best place to put this but before_test didn't work.
-  - cmd: "move tests\\config.yaml config.yaml"
+  # - cmd: "move tests\\config.yaml config.yaml"
 
   # Downloading Eniric data with powershell script for windows
   - ps: ".\\scripts\\ps_download_eniric_data.ps1"

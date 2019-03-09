@@ -20,7 +20,7 @@ build:
 
     # Setup config and make test data
     - export MPLBACKEND="AGG"  # Non-interactive
-    - mv tests/config.yaml config.yaml
+    # - mv tests/config.yaml config.yaml
 
     # Download the Data for eniric and testing
     - download_eniric_data.sh  # Some files from Dropbox
