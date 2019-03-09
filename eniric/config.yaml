@@ -54,7 +54,7 @@ atmmodel:
 # above.
 # If you are wanting to use "Eniric" with the other features "Starfish" good luck!
 # (or open an issue github issue).
-name: ""
+name: "default"
 outdir: ""
 plotdir: ""
 grid:
