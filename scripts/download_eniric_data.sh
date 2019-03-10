@@ -19,7 +19,7 @@ fi
 )
 
 
-DIRECTORY2="data/test_data/"
+DIRECTORY2="test/data/"
 # Check to see if libraries/raw/ directory exists, if not, make it.
 if [ ! -d "$DIRECTORY2" ]; then
   echo $DIRECTORY2 does not exist, creating.

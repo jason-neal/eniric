@@ -44,11 +44,10 @@ class TestConfig:
     @pytest.mark.parametrize(
         "key, value",
         [
-            ("phoenix_raw", os.path.join(*["data", "test_data", "phoenix-raw"])),
-            ("btsettl_raw", os.path.join(*["data", "test_data", "btsettl-raw"])),
+            ("phoenix_raw", os.path.join(*["tests", "data", "phoenix-raw"])),
+            ("btsettl_raw", os.path.join(*["tests", "data", "btsettl-raw"])),
             ("atmmodel", os.path.join(*["data", "atmmodel"])),
             ("precision", "precision"),
-            ("test_data", os.path.join(*["data", "test_data"])),
         ],
     )
     def test_paths_keys(self, test_config, key, value):
