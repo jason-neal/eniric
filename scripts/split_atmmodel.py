@@ -12,12 +12,13 @@ import numpy as np
 from astropy import constants as const
 
 import eniric
+from eniric import config
 from eniric.atmosphere import Atmosphere
 from eniric.utilities import band_limits, doppler_shift_wav
 
-atmmodel = "{0}.dat".format(eniric.config.atmmodel["base"])
+atmmodel = "{0}.dat".format(config.atmmodel["base"])
 choices = ["ALL"]
-choices.extend(eniric.config.bands["all"])
+choices.extend(config.bands["all"])
 
 
 def _parser():
@@ -43,7 +44,7 @@ def _parser():
         "--data_dir",
         help="Telluric model data directory",
         type=str,
-        default=eniric.config.paths["atmmodel"],
+        default=config.paths["atmmodel"],
     )
     parser.add_argument(
         "--new_name",
@@ -128,14 +129,14 @@ def main(
        Telluric line depth cutoff. Default = 2%.
     """
     if (bands is None) or ("ALL" in bands):
-        bands_ = eniric.config.bands["all"]
+        bands_ = config.bands["all"]
     else:
         bands_ = bands
 
     if new_name is None:
         new_name = model.split(".")[0]
     if data_dir is None:
-        data_dir_ = eniric.config.paths["atmmodel"]
+        data_dir_ = config.paths["atmmodel"]
     else:
         data_dir_ = str(data_dir)
 

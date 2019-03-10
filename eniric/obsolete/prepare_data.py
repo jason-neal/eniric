@@ -18,6 +18,7 @@ from astropy.io import fits
 
 import eniric
 import eniric.io_module as io
+from eniric import config
 
 
 def _parser():
@@ -126,11 +127,11 @@ def main(
 
     """
     if data_dir is None:
-        data_dir = eniric.config.paths["phoenix_dat"]
+        data_dir = config.paths["phoenix_dat"]
     os.makedirs(data_dir, exist_ok=True)
 
     if phoenix_dir is None:
-        phoenix_dir = eniric.config.paths["phoenix_raw"]
+        phoenix_dir = config.paths["phoenix_raw"]
 
     # Get Phoenix wavelength data
     wavelength_file = "WAVE_PHOENIX-ACES-AGSS-COND-2011.fits"

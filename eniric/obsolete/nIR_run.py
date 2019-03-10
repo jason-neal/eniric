@@ -8,6 +8,7 @@ from datetime import datetime as dt
 from typing import List, Optional, Sequence, Union
 
 import eniric
+from eniric import config
 from eniric.obsolete.nIRanalysis import convolve_spectra
 from eniric.obsolete.utilities import get_spectrum_name, resampler
 from eniric.utilities import resolutions2ints
@@ -39,7 +40,7 @@ def _parser():
         "--band",
         type=str,
         default="ALL",
-        choices=eniric.config.bands["all"],
+        choices=config.bands["all"],
         help="Wavelength band to select",
         nargs="+",
     )
@@ -94,7 +95,7 @@ def main(
     Multiple values of startype, vsini, resolution, band, and sample_rate can
     be provided.
 
-    Read files from eniric.config.paths["phoenix_dat"]"
+    Read files from config.paths["phoenix_dat"]"
 
     Parameters
     ----------
@@ -129,12 +130,12 @@ def main(
 
     start_time = dt.now()
 
-    phoenix_path = eniric.config.paths["phoenix_dat"]
+    phoenix_path = config.paths["phoenix_dat"]
 
-    results_dir = eniric.config.paths["results"]
+    results_dir = config.paths["results"]
     os.makedirs(results_dir, exist_ok=True)
 
-    resampled_dir = eniric.config.paths["resampled"]
+    resampled_dir = config.paths["resampled"]
     os.makedirs(resampled_dir, exist_ok=True)
 
     if not normalize:

@@ -12,10 +12,11 @@ from typing import List, Optional
 import numpy as np
 
 import eniric
+from eniric import config
 from eniric.atmosphere import Atmosphere
 
 choices = [None, "ALL"]
-choices.extend(eniric.config.bands["all"])
+choices.extend(config.bands["all"])
 
 
 def _parser():
@@ -51,14 +52,14 @@ def main(bands: Optional[List[str]] = None, verbose: bool = False):
         Wavelength bands to perform barycenter shifts on. Default is all bands.
     """
     if (bands is None) or ("ALL" in bands):
-        bands_ = eniric.config.bands["all"]
+        bands_ = config.bands["all"]
     else:
         bands_ = bands
 
     for band in bands_:
         unshifted_atmmodel = join(
-            eniric.config.paths["atmmodel"],
-            "{0}_{1}.dat".format(eniric.config.atmmodel["base"], band),
+            config.paths["atmmodel"],
+            "{0}_{1}.dat".format(config.atmmodel["base"], band),
         )
         if verbose:
             print("Reading atmospheric model...", unshifted_atmmodel)

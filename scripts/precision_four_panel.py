@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 
 import eniric
+from eniric import config
 from eniric.utilities import rv_cumulative, rv_cumulative_full
 
 matplotlib.use("Agg")
@@ -445,9 +446,7 @@ def cumulative_plot(
 if __name__ == "__main__":
     # ToDo: Add an argparse cli
 
-    precision_file = os.path.join(
-        eniric.config.paths["precision"], "precision_results.csv"
-    )
+    precision_file = os.path.join(config.paths["precision"], "precision_results.csv")
     plot_precision(precision_file, teffs=[3900, 3500, 2800, 2600])
     # plot_precision(precision_file, teffs=[3900, 3500, 2800, 2600], logg=4, fe_h=1)
 

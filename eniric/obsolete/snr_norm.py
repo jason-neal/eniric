@@ -4,11 +4,11 @@ from typing import Tuple, Union
 
 from numpy.core.multiarray import ndarray
 
-import eniric
+from eniric import config
 from eniric.io_module import pdread_2col
 from eniric.snr_normalization import snr_constant_band
 
-resampled_dir = eniric.config.paths["resampled"]
+resampled_dir = config.paths["resampled"]
 
 
 def normalize_flux(
@@ -104,7 +104,7 @@ def decompose_id_string(id_string: str) -> Tuple[str, str, str, str]:
             "Id-string {0} is not valid for normalization.".format(id_string)
         )
 
-    if band not in eniric.config.bands["all"]:
+    if band not in config.bands["all"]:
         raise ValueError(
             "The band '{}' found in id-string is not valid.".format(id_string)
         )
@@ -138,7 +138,7 @@ def get_reference_spectrum(
 
     try:
         wav_ref, flux_ref = pdread_2col(
-            os.path.join(eniric.config.paths["resampled"], file_to_read)
+            os.path.join(config.paths["resampled"], file_to_read)
         )
     except FileNotFoundError as e:
         print(

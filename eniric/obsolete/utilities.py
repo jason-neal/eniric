@@ -10,7 +10,7 @@ from numpy.core.multiarray import ndarray
 
 import eniric
 import eniric.obsolete.IOmodule
-from eniric import io_module as io
+from eniric import config, io_module as io
 from eniric.atmosphere import consecutive_truths
 from eniric.resample import log_resample
 
@@ -217,8 +217,8 @@ def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
     return wav_micron, flux_photons
 
 
-results_dir = eniric.config.paths["results"]
-resampled_dir = eniric.config.paths["resampled"]
+results_dir = config.paths["results"]
+resampled_dir = config.paths["resampled"]
 
 
 def resample_allfiles(
@@ -234,9 +234,9 @@ def resample_allfiles(
         Directory to save resampled results.
     """
     if results_dir is None:
-        results_dir = eniric.config.paths["results"]  # type: ignore
+        results_dir = config.paths["results"]  # type: ignore
     if resampled_dir is None:
-        resampled_dir = eniric.config.paths["resampled"]  # type: ignore
+        resampled_dir = config.paths["resampled"]  # type: ignore
     # Getting a list of all the files
     onlyfiles = [f for f in os.listdir(results_dir) if isfile(join(results_dir, f))]
 

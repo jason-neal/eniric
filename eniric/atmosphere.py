@@ -8,6 +8,7 @@ from numpy import ndarray
 
 import eniric
 import eniric.io_module as io
+from eniric import config
 from eniric.broaden import resolution_convolution
 from eniric.utilities import band_limits
 
@@ -136,8 +137,8 @@ class Atmosphere(object):
 
         extension = "_bary.dat" if bary else ".dat"
         atmmodel = join(
-            eniric.config.paths["atmmodel"],
-            "{0}_{1}{2}".format(eniric.config.atmmodel["base"], band, extension),
+            config.paths["atmmodel"],
+            "{0}_{1}{2}".format(config.atmmodel["base"], band, extension),
         )
 
         try:
@@ -154,8 +155,7 @@ class Atmosphere(object):
                 )
             )
             full_model = join(
-                eniric.config.paths["atmmodel"],
-                "{0}.dat".format(eniric.config.atmmodel["base"]),
+                config.paths["atmmodel"], "{0}.dat".format(config.atmmodel["base"])
             )
             atm = cls.from_file(full_model)
 

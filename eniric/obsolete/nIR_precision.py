@@ -17,6 +17,7 @@ import eniric.obsolete.plotting_functions as plt_functions
 import eniric.obsolete.snr_norm
 import eniric.Qcalculator as Qcalculator
 import eniric.snr_normalization as snrnorm
+from eniric import config
 from eniric.atmosphere import Atmosphere
 from eniric.obsolete.utilities import barycenter_shift
 from eniric.utilities import band_selector, moving_average
@@ -24,7 +25,7 @@ from eniric.utilities import band_selector, moving_average
 rc("text", usetex=True)  # set stuff for latex usage
 
 ref_choices = ["SELF"]
-ref_choices.extend(eniric.config.bands["all"])
+ref_choices.extend(config.bands["all"])
 
 
 def _parser():
@@ -41,7 +42,7 @@ def _parser():
         "--bands",
         type=str,
         default="J",
-        choices=eniric.config.bands["all"],
+        choices=config.bands["all"],
         help="Wavelength bands to select. Default=J.",
         nargs="+",
     )
@@ -82,7 +83,7 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
         Save results to file.
 
     """
-    os.makedirs(eniric.config.paths["precision"], exist_ok=True)
+    os.makedirs(config.paths["precision"], exist_ok=True)
 
     spectral_types = ["M0", "M3", "M6", "M9"]
     if "ALL" in bands:
@@ -121,7 +122,7 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
     # Save precision results
     if save:
         output_filename = os.path.join(
-            eniric.config.paths["precision"],
+            config.paths["precision"],
             "precision_results_2017_ref_band-{0}_snr-{1}.dat".format(ref_band, snr),
         )
         ids = []
@@ -204,8 +205,8 @@ def calculate_prec(
 
         if use_unshifted:
             atmmodel = os.path.join(
-                eniric.config.paths["atmmodel"],
-                "{0}_{1}.dat".format(eniric.config.atmmodel["base"], band),
+                config.paths["atmmodel"],
+                "{0}_{1}.dat".format(config.atmmodel["base"], band),
             )
             print("Reading atmospheric model...")
             atm = Atmosphere.from_file(atmmodel)
@@ -235,8 +236,8 @@ def calculate_prec(
             mask_atm = barycenter_shift(wav_atm, mask_atm, rv_offset=rv_offset)
         else:
             shifted_atmmodel = os.path.join(
-                eniric.config.paths["atmmodel"],
-                "{0}_{1}_bary.dat".format(eniric.config.atmmodel["base"], band),
+                config.paths["atmmodel"],
+                "{0}_{1}_bary.dat".format(config.atmmodel["base"], band),
             )
             print("Reading pre-doppler-shifted atmospheric model...")
             atm = Atmosphere.from_file(shifted_atmmodel)
@@ -274,7 +275,7 @@ def calculate_prec(
             # print("Working on "+file_to_read+".")
             try:
                 wav_stellar, flux_stellar = io.pdread_2col(
-                    os.path.join(eniric.config.paths["resampled"], file_to_read)
+                    os.path.join(config.paths["resampled"], file_to_read)
                 )
             except FileNotFoundError:
                 # Turn list of strings into strings without symbols  ["J", "K"] -> J K

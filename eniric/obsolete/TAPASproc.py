@@ -8,6 +8,7 @@ import string
 import numpy as np
 
 import eniric.io_module as io
+from eniric import config
 
 dirmodels = "/home/pfigueira/data/tapas/nIRanalysis_visible/"
 list_files = "list_tapas_models.txt"
@@ -67,7 +68,7 @@ def read_allfiles(mask_limit=0.02):
             mask.append(0.0)
 
     write_4col_eeed(
-        os.path.join(outdir, "{0}_visible.dat".format(eniric.config.atmmodel["base"])),
+        os.path.join(outdir, "{0}_visible.dat".format(config.atmmodel["base"])),
         wav,
         mean_flux,
         std_flux,
