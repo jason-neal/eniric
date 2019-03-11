@@ -7,7 +7,6 @@ images/*
 docs/*.py
 docs/*.html
 data/atmmodel/Average_TAPAS_2014*.dat
-data/test_data/obsolete/*
 data/test_data/phoenix-raw/*.fits
 data/test_data/phoenix-raw/*/*.fits
 

@@ -26,13 +26,6 @@ if [ ! -d "$DIRECTORY2" ]; then
   mkdir -p $DIRECTORY2
 fi
 
-(cd $DIRECTORY2
-    wget "https://www.dropbox.com/s/raw/oq2x7dsjeuxrf7t/obsolete.tar.gz"
-    ../../scripts/untar_here.py obsolete.tar.gz
-    rm obsolete.tar.gz
-)
-
-
 
 DIRECTORY3="data/"
 

@@ -24,8 +24,6 @@ build:
 
     # Download the Data for eniric and testing
     - download_eniric_data.sh  # Some files from Dropbox
-    # Generate data
-    - make_test_data.py  # shouldn't be doing much as they are all in dropbox
 
     # Prepare atmosphere models
     - make atmos
