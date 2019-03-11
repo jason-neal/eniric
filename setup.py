@@ -20,10 +20,12 @@ here = os.path.abspath(os.path.dirname(__file__))
 with codecs.open(os.path.join(here, "README.md")) as f:
     long_description = f.read()
 
-
 with codecs.open(os.path.join(here, "requirements.txt")) as f:
     requirements = f.read().splitlines()
 
+# Conditional pytest-runner install
+needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
+pytest_runner = ['pytest-runner>=4'] if needs_pytest else []
 
 config = {
     "name": "eniric",
@@ -36,14 +38,26 @@ config = {
     "author_email": "jason.neal@astro.up.pt",
     "version": "1.0rc1",
     "license": "MIT Licence",
-    "setup_requires": ["pytest-runner"],
+    "setup_requires": [] + pytest_runner,
     "tests_require": ["pytest", "hypothesis"],
     "install_requires": requirements,
     "extras_require": {
         "dev": ["check-manifest"],
-        "test": ["coverage", "pytest", "pytest-cov", "python-coveralls", "hypothesis"],
-    },  # $ pip install -e .[dev,test]
-    "packages": ["eniric", "scripts",],
+        "test": ["coverage",
+                 "pytest",
+                 "pytest-cov",
+                 "python-coveralls",
+                 "hypothesis",
+                 ],
+        "docs": ["sphinx >= 1.4",
+                 "sphinx_rtd_theme",
+                 "rstcheck"],
+        "ci": ["codacy-coverage==1.3.11",
+               "codeclimate-test-reporter>=0.2.3",
+               "python-coveralls>=2.9.1",
+               ]
+    },  # $ pip install -e .[dev,test, docs]
+    "packages": ["eniric", "scripts", ],
     "scripts": [
         "scripts/phoenix_precision.py",
         "scripts/split_atmmodel.py",
