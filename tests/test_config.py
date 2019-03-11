@@ -130,3 +130,11 @@ class TestConfig:
         assert test_config.cache["location"] == "test_output"
         test_config.cache["location"] = previous
         assert test_config.cache["location"] == previous
+
+    def test_pathdir(self):
+        assert config.pathdir == os.path.split(config._path)[0]
+        with pytest.raises(AttributeError):
+            config.pathdir = 5
+
+    def test_pathdir_getter(self):
+        assert config.pathdir == config.get_pathdir()

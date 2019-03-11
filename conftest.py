@@ -1,4 +1,4 @@
-import os
+from os.path import join
 
 import astropy.units as u
 import numpy as np
@@ -54,8 +54,10 @@ def resampled_data(request):
     star, band, vel, res = request.param
     id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
 
-    test_data = os.path.join(
-        config.paths["resampled"], resampled_template.format(star, band, vel, res)
+    test_data = join(
+        config.pathdir,
+        config.paths["resampled"],
+        resampled_template.format(star, band, vel, res),
     )
     wav, flux = io.pdread_2col(test_data)
     return id_string, wav, flux
@@ -125,7 +127,7 @@ def grad_flag(request):
 )
 def atm_model(request):
     """Get atmospheric model name to load."""
-    return os.path.join(config.paths["atmmodel"], request.param)
+    return join(config.pathdir, config.paths["atmmodel"], request.param)
 
 
 @pytest.fixture(params=[2.5, 4])

@@ -1,6 +1,6 @@
 # Default YAML configuration script for Eniric
 
-# Paths to locations used by eniric
+# Paths to locations used by eniric, relative to config.yaml
 # Paths can either be strings of list of strings which will be passed
 # to os.path.join() [os independent]
 paths:

@@ -6,7 +6,6 @@ Don't do to many.
 """
 from typing import List, Tuple
 
-import eniric
 from eniric import config
 from eniric.obsolete.nIR_run import main as nir_run
 from eniric.obsolete.prepare_data import main as prepare_data

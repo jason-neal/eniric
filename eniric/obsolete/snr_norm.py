@@ -1,5 +1,6 @@
 import os
 import re
+from os.path import join
 from typing import Tuple, Union
 
 from numpy.core.multiarray import ndarray
@@ -8,7 +9,7 @@ from eniric import config
 from eniric.io_module import pdread_2col
 from eniric.snr_normalization import snr_constant_band
 
-resampled_dir = config.paths["resampled"]
+resampled_dir = join(config.pathdir, config.paths["resampled"])
 
 
 def normalize_flux(
@@ -138,7 +139,7 @@ def get_reference_spectrum(
 
     try:
         wav_ref, flux_ref = pdread_2col(
-            os.path.join(config.paths["resampled"], file_to_read)
+            join(config.pathdir, config.paths["resampled"], file_to_read)
         )
     except FileNotFoundError as e:
         print(

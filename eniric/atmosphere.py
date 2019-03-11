@@ -137,6 +137,7 @@ class Atmosphere(object):
 
         extension = "_bary.dat" if bary else ".dat"
         atmmodel = join(
+            config.pathdir,
             config.paths["atmmodel"],
             "{0}_{1}{2}".format(config.atmmodel["base"], band, extension),
         )
@@ -155,7 +156,9 @@ class Atmosphere(object):
                 )
             )
             full_model = join(
-                config.paths["atmmodel"], "{0}.dat".format(config.atmmodel["base"])
+                config.pathdir,
+                config.paths["atmmodel"],
+                "{0}.dat".format(config.atmmodel["base"]),
             )
             atm = cls.from_file(full_model)
 

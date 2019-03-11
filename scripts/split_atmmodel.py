@@ -44,7 +44,7 @@ def _parser():
         "--data_dir",
         help="Telluric model data directory",
         type=str,
-        default=config.paths["atmmodel"],
+        default=join(config.pathdir, config.paths["atmmodel"]),
     )
     parser.add_argument(
         "--new_name",
@@ -136,7 +136,7 @@ def main(
     if new_name is None:
         new_name = model.split(".")[0]
     if data_dir is None:
-        data_dir_ = config.paths["atmmodel"]
+        data_dir_ = join(config.pathdir, config.paths["atmmodel"])
     else:
         data_dir_ = str(data_dir)
 

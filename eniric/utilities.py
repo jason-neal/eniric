@@ -2,13 +2,13 @@
 import collections
 import errno
 import os
+from os.path import join
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from astropy import constants as const
 from numpy import ndarray
 
-import eniric
 from eniric import config
 
 # Band limits.
@@ -307,7 +307,7 @@ def load_aces_spectrum(
 
     Spectra available from http://phoenix.astro.physik.uni-goettingen.de
     """
-    base = config.paths["phoenix_raw"] + os.sep
+    base = join(config.pathdir, config.paths["phoenix_raw"], "")
 
     if len(params) == 3:  # Only 3 parameters given
         params = [params[0], params[1], params[2], 0]  # Set alpha=0
@@ -391,7 +391,7 @@ def load_btsettl_spectrum(
         assert params[-1] == 0  # Checks index 3 when present.
         params = params[0:2]  # Only allow 2 params
 
-    base = config.paths["btsettl_raw"] + os.sep
+    base = join(config.pathdir, config.paths["btsettl_raw"], "")
 
     btsettl_grid = BTSETTL(base=base, air=air, wl_range=wl_range)
 

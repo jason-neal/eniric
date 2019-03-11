@@ -28,6 +28,12 @@ class Config(object):
 
         self._protect_rewrites = os.path.abspath(path) == DEFAULT_CONFIG_FILE
 
+    def get_pathdir(self):
+        """Directory of the config file."""
+        return os.path.dirname(self._path)
+
+    pathdir = property(get_pathdir)
+
     def __contains__(self, key):
         return key in self._config
 
@@ -64,7 +70,7 @@ class Config(object):
             return super().__getattribute__(key)
 
     def __setattr__(self, key, value):
-        if key not in ["_path", "_protect_rewrites", "_config"]:
+        if key not in ["_path", "_protect_rewrites", "_config", "pathdir"]:
             if key in self:
                 self.__setitem__(key, value)
                 self._rewrite()

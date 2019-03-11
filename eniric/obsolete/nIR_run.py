@@ -5,6 +5,7 @@ import argparse
 import os
 import sys
 from datetime import datetime as dt
+from os.path import join
 from typing import List, Optional, Sequence, Union
 
 import eniric
@@ -69,12 +70,7 @@ def _parser():
         action="store_true",
         help="Replace data files if already created.",
     )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="Turn on Verbose",
-    )
+    parser.add_argument("-v", "--verbose", action="store_true", help="Turn on Verbose")
     return parser.parse_args()
 
 
@@ -88,7 +84,7 @@ def main(
     unnormalized: bool = False,
     org: bool = False,
     replace: bool = False,
-    verbose: bool=False,
+    verbose: bool = False,
 ):
     """Run convolutions of NIR spectra for the range of given parameters.
 
@@ -130,12 +126,12 @@ def main(
 
     start_time = dt.now()
 
-    phoenix_path = config.paths["phoenix_dat"]
+    phoenix_path = join(config.pathdir, config.paths["phoenix_dat"])
 
-    results_dir = config.paths["results"]
+    results_dir = join(config.pathdir, config.paths["results"])
     os.makedirs(results_dir, exist_ok=True)
 
-    resampled_dir = config.paths["resampled"]
+    resampled_dir = join(config.pathdir, config.paths["resampled"])
     os.makedirs(resampled_dir, exist_ok=True)
 
     if not normalize:
@@ -145,7 +141,7 @@ def main(
 
     counter = 0
     for star in startype:
-        spectrum_name = os.path.join(phoenix_path, get_spectrum_name(star, org=org))
+        spectrum_name = join(phoenix_path, get_spectrum_name(star, org=org))
 
         for b in band:
             for vel in vsini:
@@ -157,7 +153,7 @@ def main(
                         )
 
                         if (
-                            os.path.exists(os.path.join(results_dir, result_name))
+                            os.path.exists(join(results_dir, result_name))
                             and not replace
                         ):
                             if verbose:
@@ -194,7 +190,7 @@ def main(
     if verbose:
         print(
             "Time to convolve {0:d} combinations = {1}".format(
-            counter, dt.now() - start_time
+                counter, dt.now() - start_time
             )
         )
     return 0

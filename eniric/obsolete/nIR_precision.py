@@ -5,6 +5,7 @@ import itertools
 import os
 import re
 import sys
+from os.path import join
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -83,7 +84,7 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
         Save results to file.
 
     """
-    os.makedirs(config.paths["precision"], exist_ok=True)
+    os.makedirs(join(config.pathdir, config.paths["precision"]), exist_ok=True)
 
     spectral_types = ["M0", "M3", "M6", "M9"]
     if "ALL" in bands:
@@ -121,7 +122,8 @@ def main(bands="J", use_unshifted=False, save=False, snr=100, ref_band="J"):
         )
     # Save precision results
     if save:
-        output_filename = os.path.join(
+        output_filename = join(
+            config.pathdir,
             config.paths["precision"],
             "precision_results_2017_ref_band-{0}_snr-{1}.dat".format(ref_band, snr),
         )
@@ -204,7 +206,8 @@ def calculate_prec(
     for band in bands:
 
         if use_unshifted:
-            atmmodel = os.path.join(
+            atmmodel = join(
+                config.pathdir,
                 config.paths["atmmodel"],
                 "{0}_{1}.dat".format(config.atmmodel["base"], band),
             )
@@ -235,7 +238,8 @@ def calculate_prec(
             # mask_atm = atm.old_barycenter_shift(wav_atm, mask_atm, rv_offset=rv_offset)
             mask_atm = barycenter_shift(wav_atm, mask_atm, rv_offset=rv_offset)
         else:
-            shifted_atmmodel = os.path.join(
+            shifted_atmmodel = join(
+                config.pathdir,
                 config.paths["atmmodel"],
                 "{0}_{1}_bary.dat".format(config.atmmodel["base"], band),
             )
@@ -275,7 +279,7 @@ def calculate_prec(
             # print("Working on "+file_to_read+".")
             try:
                 wav_stellar, flux_stellar = io.pdread_2col(
-                    os.path.join(config.paths["resampled"], file_to_read)
+                    join(config.pathdir, config.paths["resampled"], file_to_read)
                 )
             except FileNotFoundError:
                 # Turn list of strings into strings without symbols  ["J", "K"] -> J K

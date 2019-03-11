@@ -58,6 +58,7 @@ def main(bands: Optional[List[str]] = None, verbose: bool = False):
 
     for band in bands_:
         unshifted_atmmodel = join(
+            config.pathdir,
             config.paths["atmmodel"],
             "{0}_{1}.dat".format(config.atmmodel["base"], band),
         )

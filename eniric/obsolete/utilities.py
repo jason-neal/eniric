@@ -62,14 +62,14 @@ def get_spectrum_name(
                     "Warning! Alpha is outside acceptable range -0.2->0.2. (for current science case)"
                 )
 
-            phoenix_name = os.path.join(
+            phoenix_name = join(
                 "Z{0:+4.1f}.Alpha={1:+5.2f}".format(feh, alpha),
                 "lte{0:05d}-{1:4.2f}{2:+4.1f}.Alpha={3:+5.2f}.{4:s}".format(
                     temps[startype], logg, feh, alpha, base
                 ),
             )
         else:
-            phoenix_name = os.path.join(
+            phoenix_name = join(
                 "Z{0:+4.1f}".format(feh),
                 "lte{0:05d}-{1:4.2f}{2:+4.1f}.{3:s}".format(
                     temps[startype], logg, feh, base
@@ -217,8 +217,8 @@ def read_spectrum(spec_name: str) -> Tuple[ndarray, ndarray]:
     return wav_micron, flux_photons
 
 
-results_dir = config.paths["results"]
-resampled_dir = config.paths["resampled"]
+results_dir = join(config.pathdir, config.paths["results"])
+resampled_dir = join(config.pathdir, config.paths["resampled"])
 
 
 def resample_allfiles(
@@ -234,9 +234,9 @@ def resample_allfiles(
         Directory to save resampled results.
     """
     if results_dir is None:
-        results_dir = config.paths["results"]  # type: ignore
+        results_dir = join(config.pathdir, config.paths["results"])  # type: ignore
     if resampled_dir is None:
-        resampled_dir = config.paths["resampled"]  # type: ignore
+        resampled_dir = join(config.pathdir, config.paths["resampled"])  # type: ignore
     # Getting a list of all the files
     onlyfiles = [f for f in os.listdir(results_dir) if isfile(join(results_dir, f))]
 
@@ -270,7 +270,7 @@ def resampler(
         Sampling per pixel.
     """
     os.makedirs(resampled_dir, exist_ok=True)
-    read_name = os.path.join(results_dir, spectrum_name)
+    read_name = join(results_dir, spectrum_name)
 
     match = re.search(r"_R(\d{2,3})k", spectrum_name)
     if match:
@@ -287,7 +287,7 @@ def resampler(
         resampled_dir,
         "{0}_res{1:3.01f}.dat".format(spectrum_name[:-4], float(sampling)),
     ]
-    filetowrite = os.path.join(*output_path)
+    filetowrite = join(*output_path)
     eniric.obsolete.IOmodule.write_e_2col(
         filetowrite, wav_grid[1:-2], interpolated_flux[1:-2]
     )  # [1:-2] for border effects

@@ -4,6 +4,7 @@
 """
 import os
 import string
+from os.path import join
 
 import numpy as np
 
@@ -45,11 +46,10 @@ def read_tapas(filename):
 
 def read_allfiles(mask_limit=0.02):
     """Read all the files in list_files."""
-    files = io.read_fullcol(os.path.join(dirmodels, list_files))
+    files = io.read_fullcol(join(dirmodels, list_files))
     print("Reading the files...")
     atm_models = [
-        read_tapas(os.path.join(dirmodels, dirmodels + file_act[:-1]))
-        for file_act in files
+        read_tapas(join(dirmodels, dirmodels + file_act[:-1])) for file_act in files
     ]
     print("done.")
 
@@ -68,7 +68,7 @@ def read_allfiles(mask_limit=0.02):
             mask.append(0.0)
 
     write_4col_eeed(
-        os.path.join(outdir, "{0}_visible.dat".format(config.atmmodel["base"])),
+        join(outdir, "{0}_visible.dat".format(config.atmmodel["base"])),
         wav,
         mean_flux,
         std_flux,

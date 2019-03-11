@@ -12,11 +12,11 @@ import argparse
 import os
 import re
 import sys
+from os.path import join
 
 import numpy as np
 from astropy.io import fits
 
-import eniric
 import eniric.io_module as io
 from eniric import config
 
@@ -135,7 +135,7 @@ def main(
 
     # Get Phoenix wavelength data
     wavelength_file = "WAVE_PHOENIX-ACES-AGSS-COND-2011.fits"
-    wavelength = fits.getdata(os.path.join(phoenix_dir, wavelength_file))
+    wavelength = fits.getdata(join(phoenix_dir, wavelength_file))
 
     if flux_type == "photon":
         file_suffix = "_wave_photon.dat"  # For saving output
@@ -192,8 +192,8 @@ def main(
 
         for phoenix_file in phoenix_files:
             z_folder = path.split(os.sep)[-1]
-            os.makedirs(os.path.join(data_dir, z_folder), exist_ok=True)
-            output_filename = os.path.join(
+            os.makedirs(join(data_dir, z_folder), exist_ok=True)
+            output_filename = join(
                 data_dir, z_folder, phoenix_file[:-5] + file_suffix
             )  # Name of .dat file
             if os.path.exists(output_filename) and not replace:
@@ -203,7 +203,7 @@ def main(
                     )
                 )
                 continue
-            spectra = fits.getdata(os.path.join(path, phoenix_file))
+            spectra = fits.getdata(join(path, phoenix_file))
 
             # Need to add conversions pedro preformed to flux!
             r"""The energy units of Phoenix fits files is erg/s/cm**2/cm

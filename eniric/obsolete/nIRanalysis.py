@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
+from os.path import join
 from typing import Optional
 
 import matplotlib.pyplot as plt
@@ -17,9 +18,9 @@ from eniric.obsolete.utilities import read_spectrum
 # set stuff for latex usage
 rc("text", usetex=True)
 
-data_rep = config.paths["phoenix_dat"]
-results_dir = config.paths["results"]
-resampled_dir = config.paths["resampled"]
+data_rep = join(config.pathdir, config.paths["phoenix_dat"], "")
+results_dir = join(config.pathdir, config.paths["results"], "")
+resampled_dir = join(config.pathdir, config.paths["resampled"], "")
 
 # models form PHOENIX-ACES
 M0_ACES = data_rep + "lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_wave.dat"
@@ -107,7 +108,7 @@ def convolve_spectra(
             results_dir, name_model, band, vsini, R / 1000, norm_
         )
     else:
-        filename = os.path.join(results_dir, output_name)
+        filename = join(results_dir, output_name)
 
     save_convolution_results(filename, wav_band, flux_band, convolved_flux)
 
