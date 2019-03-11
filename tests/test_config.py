@@ -31,29 +31,29 @@ class TestConfig:
         assert config.custom_bands == config["custom_bands"]
 
     @pytest.mark.parametrize(
-        "key, value",
+        "key, values",
         [
-            ("phoenix_raw", os.path.join(*["..", "data", "phoenix-raw"])),
-            ("btsettl_raw", os.path.join(*["..", "data", "btsettl-raw"])),
-            ("atmmodel", os.path.join(*["..", "data", "atmmodel"])),
-            ("precision", "precision"),
-            ("test_data", os.path.join(*["..", "data", "test_data"])),
+            ("phoenix_raw", ["..", "data", "phoenix-raw"]),
+            ("btsettl_raw", ["..", "data", "btsettl-raw"]),
+            ("atmmodel", ["..", "data", "atmmodel"]),
+            ("precision", ["..", "data", "precision"]),
+            ("test_data", ["..", "tests", "data"]),
         ],
     )
-    def test_default_paths_keys(self, test_config, key, value):
-        assert config.paths[key] == value
+    def test_default_paths_keys(self, key, values):
+        assert config.paths[key] == os.path.join(*values)
 
     @pytest.mark.parametrize(
-        "key, value",
+        "key, values",
         [
-            ("phoenix_raw", os.path.join(*["tests", "data", "phoenix-raw"])),
-            ("btsettl_raw", os.path.join(*["tests", "data", "btsettl-raw"])),
-            ("atmmodel", os.path.join(*["data", "atmmodel"])),
-            ("precision", "precision"),
+            ("phoenix_raw", ["phoenix-raw"]),
+            ("btsettl_raw", ["btsettl-raw"]),
+            ("atmmodel", ["..", "..", "data", "atmmodel"]),
+            ("precision", ["..", "..", "data", "precision"]),
         ],
     )
-    def test_paths_keys(self, test_config, key, value):
-        assert test_config.paths[key] == value
+    def test_paths_keys(self, test_config, key, values):
+        assert test_config.paths[key] == os.path.join(*values)
 
     def test_paths(self):
         assert isinstance(config.paths, dict)
