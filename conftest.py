@@ -10,8 +10,6 @@ from eniric import config
 from eniric.atmosphere import Atmosphere
 from eniric.utilities import load_aces_spectrum
 
-resampled_template = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}_res3.0.dat"
-
 
 @pytest.fixture
 def published_data():
@@ -32,35 +30,6 @@ def published_data():
 def model_parameters(request):
     # Tuple of "SpType, band, vsini, R"
     return request.param
-
-
-@pytest.fixture(
-    params=[
-        ("M0", "Z", 1.0, "60k"),
-        ("M0", "K", 5.0, "60k"),
-        ("M3", "Y", 5.0, "80k"),
-        ("M6", "J", 10.0, "100k"),
-        ("M6", "H", 10.0, "100k"),
-        ("M9", "K", 1.0, "80k"),
-    ]
-)
-def resampled_data(request):
-    """Load a resampled spectra.
-
-    Returns id-string, wavelength and flux.
-
-    Fixture so that data files only get loaded once here.
-    """
-    star, band, vel, res = request.param
-    id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
-
-    test_data = join(
-        config.pathdir,
-        config.paths["resampled"],
-        resampled_template.format(star, band, vel, res),
-    )
-    wav, flux = io.pdread_2col(test_data)
-    return id_string, wav, flux
 
 
 # Define some fixtures for Qcalculator.

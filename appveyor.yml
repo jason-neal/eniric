@@ -24,8 +24,6 @@ install:
 
   # Downloading Eniric data with powershell script for windows
   - ps: ".\\scripts\\ps_download_eniric_data.ps1"
-  # Generate data  # Should not do much as data already downloaded.
-  - cmd: "%PYTHON%\\python.exe eniric\\obsolete\\make_test_data.py"
 
   # Prepare atmosphere models
   - cmd: "%PYTHON%\\python.exe scripts\\split_atmmodel.py -b ALL"

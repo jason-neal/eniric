@@ -25,8 +25,8 @@ with codecs.open(join(here, "requirements.txt")) as f:
     requirements = f.read().splitlines()
 
 # Conditional pytest-runner install
-needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
-pytest_runner = ['pytest-runner>=4'] if needs_pytest else []
+needs_pytest = {"pytest", "test", "ptr"}.intersection(sys.argv)
+pytest_runner = ["pytest-runner>=4"] if needs_pytest else []
 
 config = {
     "name": "eniric",
@@ -44,21 +44,15 @@ config = {
     "install_requires": requirements,
     "extras_require": {
         "dev": ["check-manifest"],
-        "test": ["coverage",
-                 "pytest",
-                 "pytest-cov",
-                 "python-coveralls",
-                 "hypothesis",
-                 ],
-        "docs": ["sphinx >= 1.4",
-                 "sphinx_rtd_theme",
-                 "rstcheck"],
-        "ci": ["codacy-coverage==1.3.11",
-               "codeclimate-test-reporter>=0.2.3",
-               "python-coveralls>=2.9.1",
-               ]
+        "test": ["coverage", "pytest", "pytest-cov", "python-coveralls", "hypothesis"],
+        "docs": ["sphinx >= 1.4", "sphinx_rtd_theme", "rstcheck"],
+        "ci": [
+            "codacy-coverage==1.3.11",
+            "codeclimate-test-reporter>=0.2.3",
+            "python-coveralls>=2.9.1",
+        ],
     },  # $ pip install -e .[dev,test, docs]
-    "packages": ["eniric", "scripts", "eniric.obsolete"],
+    "packages": ["eniric", "scripts"],
     "scripts": [
         "scripts/phoenix_precision.py",
         "scripts/split_atmmodel.py",
@@ -66,10 +60,6 @@ config = {
         "scripts/untar_here.py",
         "scripts/download_eniric_data.sh",
         "tests/download_test_PHOENIX_spec.sh",
-        "eniric/obsolete/make_test_data.py",
-        "eniric/obsolete/nIR_run.py",
-        "eniric/obsolete/nIR_precision.py",
-        "eniric/obsolete/prepare_data.py",
     ],
     "include_package_data": True,
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers

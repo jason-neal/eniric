@@ -9,10 +9,6 @@ paths:
   test_data: ["..", "tests", "data"]
   atmmodel: ["..", "data", "atmmodel"]
   precision: ["..", "data", "precision"]  # A place to put precision results
-  # Obsolete paths for testing only
-  phoenix_dat: ["data", "test_data", "obsolete", "PHOENIX-ACES_spectra"]
-  results:  ["..", "data", "test_data", "obsolete", "results"]
-  resampled: ["..", "data", "test_data", "obsolete", "resampled"]
 
 # Wavelength bands.
 bands:
