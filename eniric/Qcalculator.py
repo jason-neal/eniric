@@ -52,9 +52,9 @@
 import warnings
 from typing import Optional, Tuple, Union
 
-from astropy import constants as const
 import astropy.units as u
 import numpy as np
+from astropy import constants as const
 from astropy.units.quantity import Quantity
 from numpy import ndarray
 
@@ -213,7 +213,7 @@ def pixel_weights(
     flux: Union[ndarray, Quantity],
     grad: bool = True,
 ):
-    """Calculate individual pixel weights.
+    r"""Calculate individual pixel weights.
     w(i) = \lambda(i)^2 (\partial A(i)/\partial\lambda)^2 / A(i)
 
     Parameters
@@ -226,7 +226,7 @@ def pixel_weights(
         Toggle function for spectral slope. Default False + forward finite difference.
     """
     if isinstance(flux, u.Quantity):
-        """Units of variance are squared"""
+        # The units of variance are squared.
         flux_variance = flux.value * flux.unit * flux.unit
     else:
         flux_variance = flux
