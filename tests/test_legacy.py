@@ -76,6 +76,7 @@ def test_legacy_RV_warns_nonfinite(grad_flag):
         )
 
 
+@pytest.mark.xfail(ModuleNotFoundError, reason="Issue with Starfish install.")
 @pytest.mark.parametrize("band", ["H", "J", "K"])
 def test_weights_clumping_grad(testing_spectrum, grad_flag, band):
     # Test masked clumping verse weight mask with new gradients
