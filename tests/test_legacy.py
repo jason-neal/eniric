@@ -76,11 +76,11 @@ def test_legacy_RV_warns_nonfinite(grad_flag):
         )
 
 
-def test_weights_clumping_grad(resampled_data, grad_flag):
-    # Test masked clumping vere weight mask with new gradients
+@pytest.mark.parametrize("band", ["H", "J", "K"])
+def test_weights_clumping_grad(testing_spectrum, grad_flag, band):
+    # Test masked clumping verse weight mask with new gradients
     # Test on an actual spectrum to check sizes of difference
-    id_string, wav, flux = resampled_data
-    band = id_string.split("-")[1]
+    wav, flux = testing_spectrum
     atm = Atmosphere.from_band(band)
     mask = np.ones_like(wav)
     mask = atm.at(wav).mask
@@ -90,7 +90,7 @@ def test_weights_clumping_grad(resampled_data, grad_flag):
 
     # They are not exactly the same by are within a specific percentage.
     ratio = (weighted.value - clumped.value) / clumped.value
-    print(grad_flag, ratio)
+
     if grad_flag:
         # The difference for the new gradient is smaller.
         assert abs(ratio) < 0.008
