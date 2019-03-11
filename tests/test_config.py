@@ -6,13 +6,15 @@ import yaml
 from eniric import DEFAULT_CONFIG_FILE, config
 from eniric._config import Config
 
+base_dir = os.path.dirname(__file__)
+test_filename = os.path.join(base_dir, "data", "test_config.yaml")
+
 
 class TestConfig:
     @pytest.fixture
     def test_config(self):
         """Config file for testing."""
-        base_dir = os.path.dirname(__file__)
-        filename = os.path.join(base_dir, "test_config.yaml")
+        filename = test_filename
         yield Config(filename)
 
     def test_default_filename(self):
@@ -91,8 +93,7 @@ class TestConfig:
 
     def test_change_file(self):
         previous = config.name
-        base_dir = os.path.dirname(__file__)
-        filename = os.path.join(base_dir, "test_config.yaml")
+        filename = test_filename
         config.change_file(filename)
         assert config.name != previous
         assert config._path == filename

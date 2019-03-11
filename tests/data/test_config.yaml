@@ -1,12 +1,12 @@
 paths:
-  phoenix_raw: [tests, data, phoenix-raw]
-  btsettl_raw: [tests, data, btsettl-raw]
-  test_data: [tests, data]
-  atmmodel: [data, atmmodel]
+  phoenix_raw: [phoenix-raw]
+  btsettl_raw: [btsettl-raw]
+  test_data: [.]
+  atmmodel: [.., .., data, atmmodel]
   precision: [precision]
-  phoenix_dat: [data, test_data, obsolete, PHOENIX-ACES_spectra]
-  results: [data, test_data, obsolete, results]
-  resampled: [data, test_data, obsolete, resampled]
+  phoenix_dat: [obsolete, PHOENIX-ACES_spectra]
+  results: [obsolete, results]
+  resampled: [obsolete, resampled]
 cache: {location: test_output}
 atmmodel: {base: Average_TAPAS_2014}
 bands:
