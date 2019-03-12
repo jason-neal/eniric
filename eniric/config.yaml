@@ -6,7 +6,6 @@
 paths:
   phoenix_raw: ["..", "data", "phoenix-raw"] # Path to Phoenix-ACES spectra
   btsettl_raw: ["..", "data", "btsettl-raw"] # Path to BT-Settl spectra
-  test_data: ["..", "tests", "data"]
   atmmodel: ["..", "data", "atmmodel"]
   precision: ["..", "data", "precision"]  # A place to put precision results
 

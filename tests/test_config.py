@@ -37,7 +37,6 @@ class TestConfig:
             ("btsettl_raw", ["..", "data", "btsettl-raw"]),
             ("atmmodel", ["..", "data", "atmmodel"]),
             ("precision", ["..", "data", "precision"]),
-            ("test_data", ["..", "tests", "data"]),
         ],
     )
     def test_default_paths_keys(self, key, values):
