@@ -1,6 +1,7 @@
 import codecs
 import os
 import sys
+from os.path import join
 
 if sys.version < "3.6":
     sys.exit(
@@ -17,15 +18,15 @@ except ImportError:
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Get the long description from the README file
-with codecs.open(os.path.join(here, "README.md")) as f:
+with codecs.open(join(here, "README.md")) as f:
     long_description = f.read()
 
-with codecs.open(os.path.join(here, "requirements.txt")) as f:
+with codecs.open(join(here, "requirements.txt")) as f:
     requirements = f.read().splitlines()
 
 # Conditional pytest-runner install
-needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
-pytest_runner = ['pytest-runner>=4'] if needs_pytest else []
+needs_pytest = {"pytest", "test", "ptr"}.intersection(sys.argv)
+pytest_runner = ["pytest-runner>=4"] if needs_pytest else []
 
 config = {
     "name": "eniric",
@@ -43,21 +44,15 @@ config = {
     "install_requires": requirements,
     "extras_require": {
         "dev": ["check-manifest"],
-        "test": ["coverage",
-                 "pytest",
-                 "pytest-cov",
-                 "python-coveralls",
-                 "hypothesis",
-                 ],
-        "docs": ["sphinx >= 1.4",
-                 "sphinx_rtd_theme",
-                 "rstcheck"],
-        "ci": ["codacy-coverage==1.3.11",
-               "codeclimate-test-reporter>=0.2.3",
-               "python-coveralls>=2.9.1",
-               ]
+        "test": ["coverage", "pytest", "pytest-cov", "python-coveralls", "hypothesis"],
+        "docs": ["sphinx >= 1.4", "sphinx_rtd_theme", "rstcheck"],
+        "ci": [
+            "codacy-coverage==1.3.11",
+            "codeclimate-test-reporter>=0.2.3",
+            "python-coveralls>=2.9.1",
+        ],
     },  # $ pip install -e .[dev,test, docs]
-    "packages": ["eniric", "scripts", ],
+    "packages": ["eniric", "scripts"],
     "scripts": [
         "scripts/phoenix_precision.py",
         "scripts/split_atmmodel.py",
