@@ -86,7 +86,9 @@ class Config(object):
         with open(self._path, "w") as fd:
             yaml.safe_dump(self._config, fd)
 
-    def update(self, d={}, **kwargs):
+    def update(self, d=None, **kwargs):
+        if d is None:
+            d = {}
         protected_rewrites = self._protect_rewrites
         self._protect_rewrites = True
 
