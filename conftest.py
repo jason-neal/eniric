@@ -1,12 +1,13 @@
 import os
+from os.path import join
 
 import astropy.units as u
 import numpy as np
 import pandas as pd
 import pytest
 
-import eniric
 import eniric.io_module as io
+from eniric import config
 from eniric.atmosphere import Atmosphere
 from eniric.utilities import load_aces_spectrum
 
@@ -96,7 +97,7 @@ def grad_flag(request):
 )
 def atm_model(request):
     """Get atmospheric model name to load."""
-    return os.path.join(eniric.config.paths["atmmodel"], request.param)
+    return join(config.pathdir, config.paths["atmmodel"], request.param)
 
 
 @pytest.fixture(params=[2.5, 4])
@@ -122,6 +123,17 @@ def sliced_atmmodel_default_mask(request, atm_model):
 
 
 @pytest.fixture(params=[[3900, 4.5, 0, 0], [2600, 4.5, 0, 0]])
-def testing_spectrum(request):
+def testing_spectrum(request, use_test_config):
     wav, flux = load_aces_spectrum(request.param)
     return wav, flux
+
+
+@pytest.fixture(scope="function")
+def use_test_config():
+    """Change configuration used to the test_config file."""
+    original = config._path
+    base_dir = os.path.dirname(__file__)
+    test_filename = os.path.join(base_dir, "tests", "data", "test_config.yaml")
+    config.change_file(test_filename)
+    yield None
+    config.change_file(original)

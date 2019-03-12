@@ -3,60 +3,138 @@ import os
 import pytest
 import yaml
 
-from eniric import config
+from eniric import DEFAULT_CONFIG_FILE, config
+from eniric._config import Config
 
-default_config = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config.yaml")
+base_dir = os.path.dirname(__file__)
+test_filename = os.path.join(base_dir, "data", "test_config.yaml")
 
 
 class TestConfig:
-    @pytest.mark.xfail()
+    @pytest.fixture
+    def test_config(self):
+        """Config file for testing."""
+        filename = test_filename
+        yield Config(filename)
+
     def test_default_filename(self):
-        assert config.filename == default_config
+        default_config = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), "eniric", "config.yaml"
+        )
+        assert DEFAULT_CONFIG_FILE == default_config
+
+    def test_base_dots(self):
+        assert config.paths == config["paths"]
+        assert config.cache == config["cache"]
+        assert config.atmmodel == config["atmmodel"]
+        assert config.bands == config["bands"]
+        assert config.custom_bands == config["custom_bands"]
 
     @pytest.mark.parametrize(
-        "key, value",
+        "key, values",
         [
-            ("phoenix_raw", os.path.join(*["data", "test_data", "phoenix-raw"])),
-            ("btsettl_raw", os.path.join(*["data", "test_data", "btsettl-raw"])),
-            ("atmmodel", os.path.join(*["data", "atmmodel"])),
-            ("precision", "precision"),
-            ("test_data", os.path.join(*["data", "test_data"])),
+            ("phoenix_raw", ["..", "data", "phoenix-raw"]),
+            ("btsettl_raw", ["..", "data", "btsettl-raw"]),
+            ("atmmodel", ["..", "data", "atmmodel"]),
+            ("precision", ["..", "data", "precision"]),
         ],
     )
-    def test_paths_keys(self, key, value):
-        assert config.paths[key] == value
+    def test_default_paths_keys(self, key, values):
+        assert config.paths[key] == os.path.join(*values)
+
+    @pytest.mark.parametrize(
+        "key, values",
+        [
+            ("phoenix_raw", ["phoenix-raw"]),
+            ("btsettl_raw", ["btsettl-raw"]),
+            ("atmmodel", ["..", "..", "data", "atmmodel"]),
+            ("precision", ["..", "..", "data", "precision"]),
+        ],
+    )
+    def test_paths_keys(self, test_config, key, values):
+        assert test_config.paths[key] == os.path.join(*values)
 
     def test_paths(self):
         assert isinstance(config.paths, dict)
 
-    def test_cache(self):
+    def test_cache(self,):
         assert isinstance(config.cache, dict)
         assert config.cache["location"] == ".joblib"
 
-    def test_atmmodel(self):
+    def test_atmmodel(self, test_config):
         assert isinstance(config.atmmodel, dict)
         assert config.atmmodel["base"] == "Average_TAPAS_2014"
 
-    def test_bands(self):
+    def test_default_bands(self):
         assert isinstance(config.bands, dict)
         assert isinstance(config.bands["all"], list)
-        assert "K" in config.bands["all"]
-        assert "J" in config.bands["all"]
+        assert config.bands["all"] == [
+            "VIS",
+            "GAP",
+            "Z",
+            "Y",
+            "J",
+            "H",
+            "K",
+            "CONT",
+            "NIR",
+            "TEST",
+        ]
+
+    def test_bands(self, test_config):
+        assert test_config.bands["all"] == ["K", "H", "J", "Y", "Z", "TEST"]
 
     def test_custom_bands(self):
         assert isinstance(config.custom_bands, dict)
         for value in config.custom_bands.values():
             assert isinstance(value, list)
+            assert len(value) == 2
 
-    def test_lazy_load(self):
-        previous = config.cache["location"]
-        with open(config.filename, "r+") as f:
-            base = yaml.safe_load(f)
-            base["cache"].update({"location": "test_output"})
-            yaml.dump(base, f)
-        assert config.cache["location"] != previous
-        assert config.cache["location"] == "test_output"
-        with open(config.filename, "r+") as f:
-            base = yaml.safe_load(f)
-            base["cache"].update({"location": previous})
-            yaml.dump(base, f)
+    def test_change_file(self):
+        previous = config.name
+        filename = test_filename
+        config.change_file(filename)
+        assert config.name != previous
+        assert config._path == filename
+
+    def test_set_attr_fail_on_default(self):
+        with pytest.raises(RuntimeError):
+            config.name = "Stephen King"
+
+    def test_set_base_attr(self, test_config):
+        previous = test_config.name
+        test_config.name = "new name"
+        assert test_config.name == "new name"
+        test_config.name = previous
+        assert test_config.name == previous
+
+    def test_set_non_base_attr(self, test_config):
+        old_path = test_config.paths["btsettl_raw"]
+        test_config.paths["btsettl_raw"] = "testpath_btsettl_raw"
+        assert test_config.paths["btsettl_raw"] == "testpath_btsettl_raw"
+        test_config.paths["btsettl_raw"] = old_path
+        assert test_config.paths["btsettl_raw"] == old_path
+
+    def test_copy_config(self, tmpdir):
+        assert not os.path.exists(tmpdir.join("config.yaml"))
+        config.copy_file(tmpdir)
+        assert os.path.exists(tmpdir.join("config.yaml"))
+
+    def test_lazy_load(self, test_config):
+        previous = test_config.cache["location"]
+        base = test_config._config
+        base["cache"].update({"location": "test_output"})
+        with open(test_config._path, "w") as f:
+            yaml.safe_dump(base, f)
+
+        assert test_config.cache["location"] == "test_output"
+        test_config.cache["location"] = previous
+        assert test_config.cache["location"] == previous
+
+    def test_pathdir(self):
+        assert config.pathdir == os.path.split(config._path)[0]
+        with pytest.raises(AttributeError):
+            config.pathdir = 5
+
+    def test_pathdir_getter(self):
+        assert config.pathdir == config.get_pathdir()

@@ -27,7 +27,7 @@ cd $HOMEDIR
 
 # Test data
 
-$DIRECTORY = ".\data\test_data\"
+$DIRECTORY = ".\tests\data\"
 
 Write-Host $DIRECTORY
 

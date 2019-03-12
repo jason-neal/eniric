@@ -11,7 +11,7 @@ from astropy import units as u
 from astropy.units import Quantity
 from numpy import ndarray
 
-import eniric
+from eniric import config
 from eniric.atmosphere import Atmosphere
 from eniric.broaden import convolution
 from eniric.corrections import correct_artigau_2018
@@ -28,7 +28,7 @@ from eniric.utilities import (
 num_procs_minus_1 = os.cpu_count() - 1
 
 ref_choices = ["SELF"]
-ref_choices.extend(eniric.config.bands["all"])
+ref_choices.extend(config.bands["all"])
 
 
 def _parser():
@@ -100,7 +100,7 @@ def _parser():
         "--bands",
         type=str,
         default="J",
-        choices=eniric.config.bands["all"],
+        choices=config.bands["all"],
         help="Wavelength bands to select. Default=J.",
         nargs="+",
     )
@@ -473,7 +473,7 @@ if __name__ == "__main__":
     snr = args.snr
     air = args.air
     if "ALL" in args.bands:
-        args.bands.extend(eniric.config.bands["all"])
+        args.bands.extend(config.bands["all"])
         args.bands = set(args.bands)  # Unique
     ref_band = args.ref_band
 
