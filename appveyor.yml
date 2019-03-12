@@ -20,16 +20,14 @@ install:
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
 
   # Installing eniric now
-  - "%PYTHON%\\python.exe -m pip install .[dev,test,docs,ci]"
+  - "%PYTHON%\\python.exe -m pip install -e .[dev,test,docs,ci]"
 
   # Setup config and make data
   # This is not the best place to put this but before_test didn't work.
-  - cmd: "move tests\\config.yaml config.yaml"
+  # - cmd: "move tests\\config.yaml config.yaml"
 
   # Downloading Eniric data with powershell script for windows
   - ps: ".\\scripts\\ps_download_eniric_data.ps1"
-  # Generate data  # Should not do much as data already downloaded.
-  - cmd: "%PYTHON%\\python.exe eniric\\obsolete\\make_test_data.py"
 
   # Prepare atmosphere models
   - cmd: "%PYTHON%\\python.exe scripts\\split_atmmodel.py -b ALL"

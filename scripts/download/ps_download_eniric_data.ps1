@@ -27,7 +27,7 @@ cd $HOMEDIR
 
 # Test data
 
-$DIRECTORY = ".\data\test_data\"
+$DIRECTORY = ".\tests\data\"
 
 Write-Host $DIRECTORY
 
@@ -39,11 +39,6 @@ mkdir $DIRECTORY
 
 
 cd $DIRECTORY
-dir
-# obsolete data
-wget "https://www.dropbox.com/s/raw/oq2x7dsjeuxrf7t/obsolete.tar.gz" -UseBasicParsing -OutFile "obsolete.tar.gz"
-python ..\..\scripts\untar_here.py ".\obsolete.tar.gz"
-del "obsolete.tar.gz"
 
 # Phoenix-raw data  and BT-settl raw data
 #wget "https://www.dropbox.com/s/raw/skg8zwi7vnxgesj/data_raw.tar.gz" -UseBasicParsing -OutFile "data_raw.tar.gz"

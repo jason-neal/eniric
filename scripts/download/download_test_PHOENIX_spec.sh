@@ -3,8 +3,8 @@
 # Inspired by Starfish
 # Invoke this script from the top directory.
 
-DIRECTORY="data/test_data/phoenix-raw/"
-DIRECTORY2="data/test_data/btsettl-raw/"
+DIRECTORY="tests/data/phoenix-raw/"
+DIRECTORY2="tests/data/btsettl-raw/"
 
 # Check to see if libraries/raw/ directory exists, if not, make it.
 if [ ! -d "$DIRECTORY" ]; then
@@ -34,7 +34,7 @@ fi
 #)
 download_test_aces.py
 
-( 
+(
   cd $DIRECTORY2
   # Download the BT-Settl
   wget https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/lte039.0-4.5-0.0a+0.0.BT-Settl.spec.fits.gz

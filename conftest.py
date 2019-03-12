@@ -1,16 +1,15 @@
 import os
+from os.path import join
 
 import astropy.units as u
 import numpy as np
 import pandas as pd
 import pytest
 
-import eniric
 import eniric.io_module as io
+from eniric import config
 from eniric.atmosphere import Atmosphere
 from eniric.utilities import load_aces_spectrum
-
-resampled_template = "Spectrum_{0}-PHOENIX-ACES_{1}band_vsini{2}_R{3}_res3.0.dat"
 
 
 @pytest.fixture
@@ -32,34 +31,6 @@ def published_data():
 def model_parameters(request):
     # Tuple of "SpType, band, vsini, R"
     return request.param
-
-
-@pytest.fixture(
-    params=[
-        ("M0", "Z", 1.0, "60k"),
-        ("M0", "K", 5.0, "60k"),
-        ("M3", "Y", 5.0, "80k"),
-        ("M6", "J", 10.0, "100k"),
-        ("M6", "H", 10.0, "100k"),
-        ("M9", "K", 1.0, "80k"),
-    ]
-)
-def resampled_data(request):
-    """Load a resampled spectra.
-
-    Returns id-string, wavelength and flux.
-
-    Fixture so that data files only get loaded once here.
-    """
-    star, band, vel, res = request.param
-    id_string = "{0:s}-{1:s}-{2:.1f}-{3:s}".format(star, band, float(vel), res)
-
-    test_data = os.path.join(
-        eniric.config.paths["resampled"],
-        resampled_template.format(star, band, vel, res),
-    )
-    wav, flux = io.pdread_2col(test_data)
-    return id_string, wav, flux
 
 
 # Define some fixtures for Qcalculator.
@@ -126,7 +97,7 @@ def grad_flag(request):
 )
 def atm_model(request):
     """Get atmospheric model name to load."""
-    return os.path.join(eniric.config.paths["atmmodel"], request.param)
+    return join(config.pathdir, config.paths["atmmodel"], request.param)
 
 
 @pytest.fixture(params=[2.5, 4])
@@ -152,6 +123,17 @@ def sliced_atmmodel_default_mask(request, atm_model):
 
 
 @pytest.fixture(params=[[3900, 4.5, 0, 0], [2600, 4.5, 0, 0]])
-def testing_spectrum(request):
+def testing_spectrum(request, use_test_config):
     wav, flux = load_aces_spectrum(request.param)
     return wav, flux
+
+
+@pytest.fixture(scope="function")
+def use_test_config():
+    """Change configuration used to the test_config file."""
+    original = config._path
+    base_dir = os.path.dirname(__file__)
+    test_filename = os.path.join(base_dir, "tests", "data", "test_config.yaml")
+    config.change_file(test_filename)
+    yield None
+    config.change_file(original)
