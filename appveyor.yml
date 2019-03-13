@@ -27,7 +27,7 @@ install:
   # - cmd: "move tests\\config.yaml config.yaml"
 
   # Downloading Eniric data with powershell script for windows
-  - ps: ".\\scripts\\ps_download_eniric_data.ps1"
+  - ps: ".\\scripts\\download\\ps_download_eniric_data.ps1"
 
   # Prepare atmosphere models
   - cmd: "%PYTHON%\\python.exe scripts\\split_atmmodel.py -b ALL"
