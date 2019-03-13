@@ -19,19 +19,12 @@ fi
 )
 
 
-DIRECTORY2="data/test_data/"
+DIRECTORY2="tests/data/"
 # Check to see if libraries/raw/ directory exists, if not, make it.
 if [ ! -d "$DIRECTORY2" ]; then
   echo $DIRECTORY2 does not exist, creating.
   mkdir -p $DIRECTORY2
 fi
-
-(cd $DIRECTORY2
-    wget "https://www.dropbox.com/s/raw/oq2x7dsjeuxrf7t/obsolete.tar.gz"
-    ../../scripts/untar_here.py obsolete.tar.gz
-    rm obsolete.tar.gz
-)
-
 
 
 DIRECTORY3="data/"

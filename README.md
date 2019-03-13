@@ -182,8 +182,6 @@ Some scripts are given in `scripts` to run this preparation over all desired par
 
 #### Precision Calculations
 
-`python scripts/nIR_precision.py`
-
 This takes in the processed spectra and performs the precision calculations for all 3 conditions outlined in the original paper.
 - Cond1. Total information
 - Cond2. +/-30km/s telluric line > 2% masking
@@ -202,17 +200,8 @@ To get around you can manually specify the SNR level to normalize to and which s
 
 ## Instructions
 
-Create an empty dir to hold your analysis.
-Create data dir with re-sampled, results, phoenix_dat
 Copy config.yaml and adjust the paths relative to what you created and to the raw phoenix spectra.
 
-scripts/prepare_spectra.py - This opens the phoenix flux spectra, add wavelength axis in microns and converts flux to photon counts. It saves this in the phoenix_dat dir. (The copy of wavelengths does waste space.)
-
-scripts/nIR_run.py - Perform the resolution and rotational convolution on the prepared spectra.
-
-This also does the re-sampling.
-
-e.g. python ../Codes/eniric/scripts/nIR_run.py -s M0 M3 M6 M9 -b Y J H K -v 1.0 5.0 10.0 -R 60000 80000 100000 --sample_rate 3
 
 
 ## Background

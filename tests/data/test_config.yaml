@@ -1,0 +1,29 @@
+paths:
+  phoenix_raw: [phoenix-raw]
+  btsettl_raw: [btsettl-raw]
+  test_data: [.]
+  atmmodel: [.., .., data, atmmodel]
+  precision_results: [.., .., data, precision]
+  phoenix_dat: [obsolete, PHOENIX-ACES_spectra]
+  results: [obsolete, results]
+  resampled: [obsolete, resampled]
+cache: {location: test_output}
+atmmodel: {base: Average_TAPAS_2014}
+bands:
+  all: [K, H, J, Y, Z, TEST]
+custom_bands:
+  TEST: [2.1, 2.2]
+name: test config
+outdir: ''
+plotdir: ''
+grid:
+  raw_path: ''
+  hdf5_path: ''
+  key_name: ''
+  parname: []
+  parrange: []
+  wl_range: []
+  buffer: 0
+data:
+  grid_name: ''
+  instruments: []
