@@ -46,7 +46,7 @@ This is the convolution kernel for a circular fibre.
 When analyzing the spectral libraries, rotational broadening is preformed first, followed by the instrumental broadening.
 
 Our convolution functions use wavelength dependent kernels and do not require uniform spacing between points, unlike `PyAstronomy <https://www.hs.uni-hamburg.de/DE/Ins/Per/Czesla/PyA/PyA/pyaslDoc/aslDoc/broadening.html>`_.
-This means our convolutions are slower but are more precise. We compare the convolutions in the `Convolution_speeds.ipynb <https://github.com/jason-neal/eniric/blob/develop/docs/Notebooks/Convolution_speeds.ipynb>`_ notebook.
+This means our convolutions are slower but are more precise. We compare the convolutions in the `Convolution_speeds.ipynb <https://github.com/jason-neal/eniric/blob/develop/docs/Notebooks/Convolution_speeds.ipynb>`__ notebook.
 
 
 Combined convolution
