@@ -429,7 +429,7 @@ def test_doppler_limits_rv_0(wmin, wmax):
 
 @xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
 @pytest.mark.parametrize("photons", [True, False])
-def test_load_btsettl_spectrum(photons):
+def test_load_btsettl_spectrum(photons, use_test_config):
     wav, flux = load_btsettl_spectrum(
         [3900, 4.5, 0, 0], photons=photons, air=False, wl_range=[21000, 22000]
     )
@@ -446,7 +446,7 @@ def test_invalid_feh_alpha_load_btsettl_spectrum(params):
 
 @xfail(raises=ModuleNotFoundError, reason="Issue with Starfish install.")
 @pytest.mark.parametrize("photons", [True, False])
-def test_load_aces_spectrum(photons):
+def test_load_aces_spectrum(photons, use_test_config):
     wav, flux = load_aces_spectrum(
         [3900, 4.5, 0, 0], photons=photons, air=False, wl_range=[21000, 22000]
     )

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-# Ispired by Starfish
+# Inspired by Starfish
 # Invoke this script from the top directory.
 
-DIRECTORY="data/test_data/phoenix-raw/"
-DIRECTORY2="data/test_data/btsettl-raw/"
+DIRECTORY="tests/data/phoenix-raw/"
+DIRECTORY2="tests/data/btsettl-raw/"
 
 # Check to see if libraries/raw/ directory exists, if not, make it.
 if [ ! -d "$DIRECTORY" ]; then
@@ -16,7 +16,7 @@ if [ ! -d "$DIRECTORY2" ]; then
   mkdir -p $DIRECTORY2
 fi
 
-( 
+(
   cd $DIRECTORY
 
   # Download the wavelength file
@@ -33,7 +33,7 @@ fi
   wget ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/Z-0.0/lte03900-4.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits
 )
 
-( 
+(
   cd $DIRECTORY2
   # Download the BT-Settl
   wget https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/lte039.0-4.5-0.0a+0.0.BT-Settl.spec.fits.gz
