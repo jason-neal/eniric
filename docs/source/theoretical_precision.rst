@@ -21,7 +21,7 @@ Several flags can take multiple values separated by a space. All combinations of
 
 The available inputs parameters are:
 
-.. code-block:: bash
+.. code-block::
 
     $ phoenix_precision.py -h
 
