@@ -8,6 +8,7 @@ build:
 
   cache_dir_list:
       - $HOME/.cache/pip
+      - $HOME/data/test_data
 
   ci:
     - pip install --upgrade pip
