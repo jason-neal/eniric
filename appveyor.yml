@@ -7,7 +7,12 @@ environment:
     - PYTHON: "C:\\Python36-x64"
     - PYTHON: "C:\\Python37-x64"
 
+cache:
+  - "%LOCALAPPDATA%\\pip\\Cache -> appveyor.yml" # Use cache unless appveyor.yml changes.
+  - "data\\test_data -> appveyor.yml"           # Use cache unless appveyor.yml changes.
+
 install:
+  - SET PATH=%PYTHON%;%PYTHON%\Scripts\;%path%
   - "%PYTHON%\\python.exe -m pip install --upgrade pip"
   # We need wheel installed to build wheels
   - "%PYTHON%\\python.exe -m pip install wheel"
@@ -23,7 +28,7 @@ install:
   # - cmd: "move tests\\config.yaml config.yaml"
 
   # Downloading Eniric data with powershell script for windows
-  - ps: ".\\scripts\\ps_download_eniric_data.ps1"
+  - ps: ".\\scripts\\download\\ps_download_eniric_data.ps1"
 
   # Prepare atmosphere models
   - cmd: "%PYTHON%\\python.exe scripts\\split_atmmodel.py -b ALL"

@@ -27,6 +27,7 @@ Other:
 - Relax pining in `requirements.txt`.
 - Use `requirements.txt` in `setup.py`
 - Depreciate `--model phoenix` from `phoenix_precision.py`.
+- move download scripts to scripts/download.
 
 
 ### v0.5.1
