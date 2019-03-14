@@ -73,28 +73,28 @@ def test_unitary_gaussian_type_errors():
         unitary_gaussian(1, "center", fwhm)
 
 
-@pytest.mark.parametrize("num_proc", [1, 2])
+@pytest.mark.parametrize("num_proc", [1])
 def test_convolution_can_accept_int(num_proc):
-    n = 20
+    n = 5
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
-    convolution(x, y, vsini=1, R=100_000, band="K", num_procs=num_proc)
+    convolution(x, y, vsini=1, R=1000, band="K", num_procs=num_proc)
 
 
-@pytest.mark.parametrize("num_proc", [1, 2])
+@pytest.mark.parametrize("num_proc", [1])
 def test_rot_convolution_can_accept_int(num_proc):
-    n = 20
+    n = 5
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
     rotational_convolution(x, x, y, vsini=1, num_procs=num_proc)
 
 
-@pytest.mark.parametrize("num_proc", [1, 2])
+@pytest.mark.parametrize("num_proc", [1])
 def test_res_convolution_can_accept_int(num_proc):
-    n = 20
+    n = 5
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
-    resolution_convolution(x, x, y, R=100_000, num_procs=num_proc)
+    resolution_convolution(x, x, y, R=1000, num_procs=num_proc)
 
 
 @pytest.mark.parametrize("num_proc", [1, 2])

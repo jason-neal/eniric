@@ -306,13 +306,3 @@ def test_from_band_is_a_constructor(band):
     assert isinstance(atm, Atmosphere)
     assert np.all(atm.wl <= max_wl * 1.01)
     assert np.all(atm.wl >= min_wl * 0.99)
-
-
-@pytest.mark.parametrize("num_procs", [None, 2])
-@pytest.mark.parametrize("R", [5000, 80000])
-def test_atmosphere_broaden(R, num_procs):
-    atm = Atmosphere.from_band("K")
-    atm = atm.wave_select(2.3, 2.301)
-    print(len(atm.wl))
-    atm1 = atm.broaden(resolution=R, num_procs=num_procs)
-    assert atm1 is None
