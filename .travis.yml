@@ -8,7 +8,8 @@ python:
 cache:
   directories:
     - $HOME/.cache/pip
-    - $HOME/data/test_data
+    - $HOME/tests/data
+    - $HOME/data
 
 install:
   - pip install --upgrade pip
