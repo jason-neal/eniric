@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from hypothesis import given, settings, strategies as st
-from multiprocess import Pool
+from joblib import Parallel
 
 from eniric.broaden import (
     convolution,
@@ -34,7 +34,6 @@ def test_rotational_kernel(delta_lambdas, vsini, epsilon):
     new_profile = rotation_kernel(delta_lambdas, delta_lambda_l, vsini, epsilon)
 
     assert len(new_profile) == len(delta_lambdas)
-    # other properties to test?
 
 
 @given(
@@ -102,8 +101,10 @@ def test_convolution_can_accept_worker_pool(num_proc):
     n = 20
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
-    with Pool(num_proc) as mproc:
-        convolution(x, y, vsini=1, R=100_000, band="K", num_procs=mproc, verbose=False)
+    with Parallel(num_proc) as parallel:
+        convolution(
+            x, y, vsini=1, R=100_000, band="K", num_procs=parallel, verbose=False
+        )
 
 
 @pytest.mark.parametrize("num_proc", [1, 2])
@@ -111,8 +112,8 @@ def test_rot_convolution_can_accept_worker_pool(num_proc):
     n = 20
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
-    with Pool(num_proc) as mproc:
-        rotational_convolution(x, x, y, vsini=1, num_procs=mproc, verbose=False)
+    with Parallel(num_proc) as parallel:
+        rotational_convolution(x, x, y, vsini=1, num_procs=parallel, verbose=False)
 
 
 @pytest.mark.parametrize("num_proc", [1, 2])
@@ -120,8 +121,8 @@ def test_res_convolution_can_accept_worker_pool(num_proc):
     n = 20
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
-    with Pool(num_proc) as mproc:
-        resolution_convolution(x, x, y, R=100_000, num_procs=mproc, verbose=False)
+    with Parallel(num_proc) as parallel:
+        resolution_convolution(x, x, y, R=100_000, num_procs=parallel, verbose=False)
 
 
 @pytest.mark.parametrize("num_proc", [3.14, "str"])
@@ -130,7 +131,7 @@ def test_rot_convolution_with_bad_num_proc(num_proc):
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
     with pytest.raises(
-        TypeError, match="num_proc must be an int or a multiprocess Pool"
+        TypeError, match="num_proc must be an int or joblib.parallel.Parallel"
     ):
         rotational_convolution(x, x, y, vsini=1, num_procs=num_proc, verbose=False)
 
@@ -141,7 +142,7 @@ def test_res_convolution_with_bad_num_proc(num_proc):
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
     with pytest.raises(
-        TypeError, match="num_proc must be an int or a multiprocess Pool"
+        TypeError, match="num_proc must be an int or joblib.parallel.Parallel"
     ):
         resolution_convolution(x, x, y, R=100_000, num_procs=num_proc, verbose=False)
 
