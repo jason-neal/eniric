@@ -58,8 +58,9 @@ config = {
         "scripts/split_atmmodel.py",
         "scripts/barycenter_broaden_atmmodel.py",
         "scripts/untar_here.py",
-        "scripts/download_eniric_data.sh",
-        "tests/download_test_PHOENIX_spec.sh",
+        "scripts/download/download_eniric_data.sh",
+        "scripts/download/download_test_PHOENIX_spec.sh",
+        "scripts/download/download_test_aces.py",
     ],
     "include_package_data": True,
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers

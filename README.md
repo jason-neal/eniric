@@ -66,7 +66,6 @@ These should be automatically installed (if not present) when installing `eniric
 - astropy
 - joblib>=0.12.3
 - matplotlib
-- multiprocess
 - numpy>=0.15.4
 - pandas
 - pyyaml
@@ -144,7 +143,7 @@ setting the `location: None` in the `config.yaml`.
 - *Parallel Processing*:
 The default number of processors used is one less then the total number of cores (N-1).
 You can change this by specifying the `num_procs`.
-Setting `num_procs = 0` or `1` disables parallel processing.
+Setting `num_procs = 1` disables parallel processing.
 
 ## Usage
 You can now calculate the theoretical RV precision for any PHOENIX-ACES model.

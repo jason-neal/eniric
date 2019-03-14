@@ -43,12 +43,12 @@ fi
 
 
 # This should download the PHOENIX spectra
-# download_test_PHOENIX_spec.sh
+download_test_PHOENIX_spec.sh
 
 # FTP on travis gives several delays when getting phoenix data.
 # So putting Phoenix data in dropbox now also.
-(cd $DIRECTORY2
-    wget "https://www.dropbox.com/s/raw/skg8zwi7vnxgesj/data_raw.tar.gz"
-    ../../scripts/untar_here.py data_raw.tar.gz
-    rm data_raw.tar.gz
-)
+#(cd $DIRECTORY2
+#    wget "https://www.dropbox.com/s/raw/skg8zwi7vnxgesj/data_raw.tar.gz"
+#    ../../scripts/untar_here.py data_raw.tar.gz
+#    rm data_raw.tar.gz
+#)
