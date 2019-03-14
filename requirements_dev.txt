@@ -3,7 +3,6 @@ codacy-coverage==1.3.11
 codeclimate-test-reporter==0.2.3
 coverage==4.5.2
 https://github.com/jason-neal/Starfish/archive/eniric_suitable.zip#egg=astrostarfish
-https://github.com/jason-neal/Starfish/archive/eniric_suitable.zip#egg=Starfish
 hypothesis==4.7.17
 joblib==0.13.2  # >=0.12.3
 matplotlib==3.0.3
