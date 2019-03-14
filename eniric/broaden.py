@@ -130,7 +130,7 @@ def rotational_convolution(
                 )
             except TypeError:
                 raise TypeError(
-                    "num_proc must be an int, joblib.parallel.Parallel. Not '{}'".format(
+                    "num_proc must be an int or joblib.parallel.Parallel. Not '{}'".format(
                         type(num_procs)
                     )
                 )

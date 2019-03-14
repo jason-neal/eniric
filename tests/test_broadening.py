@@ -131,7 +131,7 @@ def test_rot_convolution_with_bad_num_proc(num_proc):
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
     with pytest.raises(
-        TypeError, match="num_proc must be an int, joblib.parallel.Parallel"
+        TypeError, match="num_proc must be an int or joblib.parallel.Parallel"
     ):
         rotational_convolution(x, x, y, vsini=1, num_procs=num_proc, verbose=False)
 
@@ -142,7 +142,7 @@ def test_res_convolution_with_bad_num_proc(num_proc):
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
     with pytest.raises(
-        TypeError, match="num_proc must be an int, joblib.parallel.Parallel"
+        TypeError, match="num_proc must be an int or joblib.parallel.Parallel"
     ):
         resolution_convolution(x, x, y, R=100_000, num_procs=num_proc, verbose=False)
 
