@@ -1,5 +1,4 @@
 """Module with functions that have precision corrections."""
-from typing import Dict
 
 
 def correct_artigau_2018(band: str) -> float:
@@ -29,7 +28,7 @@ def correct_artigau_2018(band: str) -> float:
     K        |  1.47 | 1.06  2.00  1.66   1.27
 
     Usage:
-      Multiply by model precisions to get to real corrections.
+      Multiply by model precisions to get to "real" values.
     """
 
     corrections = {
@@ -45,5 +44,5 @@ def correct_artigau_2018(band: str) -> float:
     }  # type: Dict[str, float]
     try:
         return corrections[band]
-    except KeyError as e:
+    except KeyError:
         raise KeyError("Band '{}' does not have a valid correction key".format(band))

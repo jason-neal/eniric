@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import numpy as np
 import pytest
 
@@ -8,7 +6,7 @@ from eniric.resample import log_resample, my_logspace
 
 @pytest.mark.parametrize("wav_start, wav_stop", [(2.1, 2.2), (1657.11, 1695)])
 @pytest.mark.parametrize("sampling", [2, 5])
-@pytest.mark.parametrize("resolution", [20000, 100001])
+@pytest.mark.parametrize("resolution", [20000, 100_001])
 def test_log_resample(wav_start, wav_stop, sampling, resolution):
     wav = np.linspace(wav_start, wav_stop, 50)
 

@@ -10,8 +10,6 @@ help:
 	@echo "		Remove build artifacts."
 	@echo "	clean-data"
 	@echo "		Remove test data."
-	@echo "	data"
-	@echo "		Create test data."
 	@echo "	atmos"
 	@echo "		Prepare atmosphere model data."
 	@echo "	isort"
@@ -41,9 +39,6 @@ clean-data:
 	rm --force --recursive data/test_data/PHOENIX-ACES_spectra
 	rm --force --recursive data/test_data/results
 	rm --force --recursive data/test_data/resampled
-
-data:
-	python eniric_scripts/make_test_data.py
 
 atmos:
 	split_atmmodel.py -b ALL
@@ -79,4 +74,5 @@ mypy:
 	mypy --ignore-missing-imports .
 
 pdf:
+	pip install pandoc>=1.0.2
 	(cd paper && pandoc --filter pandoc-citeproc --bibliography=paper.bib --variable classoption=onecolumn --variable papersize=a4paper -s paper.md -o paper.pdf)

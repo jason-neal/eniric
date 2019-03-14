@@ -2,6 +2,7 @@
 import argparse
 import itertools
 import os
+import warnings
 from typing import List, Tuple
 
 import numpy as np
@@ -9,7 +10,7 @@ from astropy import units as u
 from astropy.units import Quantity
 from numpy import ndarray
 
-import eniric
+from eniric import config
 from eniric.atmosphere import Atmosphere
 from eniric.broaden import convolution
 from eniric.corrections import correct_artigau_2018
@@ -26,7 +27,7 @@ from eniric.utilities import (
 num_procs_minus_1 = os.cpu_count() - 1
 
 ref_choices = ["SELF"]
-ref_choices.extend(eniric.bands["all"])
+ref_choices.extend(config.bands["all"])
 
 
 def _parser():
@@ -37,13 +38,20 @@ def _parser():
     parser = argparse.ArgumentParser(
         description="Calculate quality for any library spectra."
     )
-    parser.add_argument("-t", "--temp", type=int, help="Temperature", nargs="+")
+    parser.add_argument(
+        "-t",
+        "--temp",
+        type=int,
+        default=[3900],
+        help="Temperature, default=[3900].",
+        nargs="+",
+    )
     parser.add_argument(
         "-l",
         "--logg",
         type=float,
         default=[4.5],
-        help="Logg, default = [4.5]",
+        help="Logg, default = [4.5].",
         nargs="+",
     )
     parser.add_argument(
@@ -51,7 +59,7 @@ def _parser():
         "--metal",
         type=float,
         default=[0.0],
-        help="Metallicity, default=[0.0]",
+        help="Metallicity, default=[0.0].",
         nargs="+",
     )
     parser.add_argument(
@@ -59,11 +67,16 @@ def _parser():
         "--alpha",
         type=float,
         default=[0.0],
-        help="Alpha, default=[0.0]",
+        help="Alpha, default=[0.0].",
         nargs="+",
     )
     parser.add_argument(
-        "-s", "--sampling", type=float, default=[3.0], help="Sampling", nargs="+"
+        "-s",
+        "--sampling",
+        type=float,
+        default=[3.0],
+        help="Sampling, default=[3.0].",
+        nargs="+",
     )
     parser.add_argument(
         "-r",
@@ -78,7 +91,7 @@ def _parser():
         "--vsini",
         type=float,
         default=[1.0],
-        help="Rotational Velocity",
+        help="Rotational Velocity, default = [1.0]",
         nargs="+",
     )
     parser.add_argument(
@@ -86,16 +99,16 @@ def _parser():
         "--bands",
         type=str,
         default="J",
-        choices=eniric.bands["all"],
+        choices=config.bands["all"],
         help="Wavelength bands to select. Default=J.",
         nargs="+",
     )
     parser.add_argument(
         "--model",
         type=str,
-        default="phoenix",
-        choices=["phoenix", "btsettl"],
-        help="Spectral models to use. Default=phoenix.",
+        default="aces",
+        choices=["aces", "btsettl", "phoenix"],
+        help="Spectral models to use. Default=aces.",
     )
     parser.add_argument(
         "--snr", help="Mid-band SNR scaling. (Default=100)", default=100, type=float
@@ -132,7 +145,7 @@ def _parser():
     )
     parser.add_argument("--correct", help="Apply RV corrections", action="store_true")
 
-    parser.add_argument("--verbose", help="Turn on verbose.", action="store_true")
+    parser.add_argument("-V", "--verbose", help="Turn on verbose.", action="store_true")
     parser.add_argument(
         "--disable_normalization",
         help="Turn off convolution normalization.",
@@ -152,7 +165,7 @@ def do_analysis(
     ref_band: str = "J",
     rv: float = 0.0,
     air: bool = False,
-    model: str = "phoenix",
+    model: str = "aces",
     verbose: bool = False,
 ) -> List[Quantity]:
     """Precision and Quality for specific parameter set.
@@ -181,7 +194,7 @@ def do_analysis(
     air: bool
         Get model in air wavelengths (default=False).
     model: str
-        Name of synthetic library (phoenix, btsettl) to use. Default = 'phoenix'.
+        Name of synthetic library (aces, btsettl) to use. Default = 'aces'.
     verbose:
         Enable verbose (default=False).
 
@@ -206,17 +219,14 @@ def do_analysis(
     if ref_band.upper() == "SELF":
         ref_band = band
 
-    if model == "phoenix":
-        # Full photon count spectrum
+    model = check_model(model)
+
+    if model == "aces":
         wav, flux = load_aces_spectrum(star_params, photons=True, air=air)
     elif model == "btsettl":
         wav, flux = load_btsettl_spectrum(star_params, photons=True, air=air)
     else:
-        raise ValueError(
-            "Model name error in '{}'. Valid choices are 'phoenix and 'btsettl'".format(
-                model
-            )
-        )
+        raise Exception("Invalid model name reached.")
 
     wav_grid, sampled_flux = convolve_and_resample(
         wav, flux, vsini, R, band, sampling, **conv_kwargs
@@ -290,9 +300,7 @@ def convolve_and_resample(
     sampled_flux: ndarray
         Convolved and resampled flux array
     """
-    wav_band, flux_band, convolved_flux = convolution(
-        wav, flux, vsini, R, band, **conv_kwargs
-    )
+    wav_band, __, convolved_flux = convolution(wav, flux, vsini, R, band, **conv_kwargs)
     # Re-sample to sampling per resolution element.
     wav_grid = log_resample(wav_band, sampling, R)
     sampled_flux = np.interp(wav_grid, wav_band, convolved_flux)
@@ -404,6 +412,23 @@ def select_csv_columns(line: str, ncols: int = 8) -> str:
     return ",".join(line.split(",")[:ncols])
 
 
+def check_model(model: str) -> str:
+    """Check model is 'aces' or 'btsettl'."""
+    if model == "phoenix":
+        warnings.warn(
+            "The model name 'phoenix' is depreciated, use 'aces' instead.",
+            DeprecationWarning,
+        )
+        model = "aces"
+    if model not in ["aces", "btsettl"]:
+        raise ValueError(
+            "Model name error of '{}'. Valid choices are 'aces' and 'btsettl'".format(
+                model
+            )
+        )
+    return model
+
+
 if __name__ == "__main__":
     args = _parser()
 
@@ -434,12 +459,12 @@ if __name__ == "__main__":
     snr = args.snr
     air = args.air
     if "ALL" in args.bands:
-        args.bands.extend(eniric.bands["all"])
+        args.bands.extend(config.bands["all"])
         args.bands = set(args.bands)  # Unique
     ref_band = args.ref_band
 
     # Load the relevant spectra
-    if args.model == "phoenix":
+    if args.model == "aces":
         models_list = itertools.product(args.temp, args.logg, args.metal, args.alpha)
     else:
         models_list = itertools.product(args.temp, args.logg, [0], [0])
@@ -456,13 +481,13 @@ if __name__ == "__main__":
     # To later skip recalculation.
     computed_values = get_already_computed(args.output, args.add_rv)
 
+    # Iteration over stellar model (temp. logg, feh, alpha) then an inner loop over parameters (R, vsini, sampling, rv)
     for model in models_list:
         # Create generator for params_list
         params_list = itertools.product(
             args.resolution, args.bands, args.vsini, args.sampling, args.rv
         )
-
-        for iter_num, (R, band, vsini, sample, rv) in enumerate(params_list):
+        for (R, band, vsini, sample, rv) in params_list:
             pars = (R, band, vsini, sample, rv)
 
             if is_already_computed(

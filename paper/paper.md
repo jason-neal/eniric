@@ -28,8 +28,7 @@ date: September 2018
 bibliography: paper.bib
 ---
 
-With recent high-precision spectrographs targeting radial velocity (RV) precision at the 10\ cms$^{-1}$ level\ [e.g. @pepe_espresso_2014],
- in the quest to find smallest planets it is important to understand the theoretical precision attainable in stellar spectra.
+With recent high-precision spectrographs targeting radial velocity (RV) precision at the 10\ cms$^{-1}$ level\ [e.g. @pepe_espresso_2014] in the quest to find smallest planets, it is important to understand the theoretical precision attainable in stellar spectra.
 *Eniric* provides a simple way to calculate the theoretical spectral quality
 and RV precision (i.e., information content) of synthetic and/or observed stellar spectra given vectors of wavelength and photon flux.
 
@@ -48,22 +47,24 @@ This improves the convolution performance but not to the level achievable by alg
 *Eniric* enables the relative precision between synthetic spectra by allowing for normalization to a user defined signal-to-noise ratio (SNR) per pixel at a specific wavelength.
  Although user definable the default choice is a SNR of 100 at the center of the J-band (1.25\ $\mu$m) as used in @figueira_radial_2016.
 
-The precision calculations are not limited to the large spectroscopic bands, but can also be performed on narrow wavelength slices, along the entire spectrum.
+The precision calculations are not limited to the large spectroscopic bands, but can also be performed on narrow wavelength slices along the entire spectrum.
 This allows one to explore the RV precision across the entire spectrum and perform comparision between observations and synthetic libraries [e.g. @artigau_optical_2018].
 
-Extraneous information not included in the spectra (i.e., not photon noise, or line content information)
+Extraneous information not included in the spectra (i.e., not photon noise nor line content information)
 can be included in the precision calculation through the use of a spectral mask. This mask can be used to
-indicate which spectral lines are to be included/excluded or if some sections should receive more
+indicate which spectral lines are to be included/excluded (via a binary mask) or if some spectral lines should receive more
 statistical weight for an external reason.
 For example, masks derived from an atmospheric absorption spectrum can be used to explore the treatment
 and correction the atmospheric absorption on the RV precision [@figueira_radial_2016].
+A typical treatment for the Earths atmosphere is the exclusion (via masking) of any region within 30\ kms$^{-1}$ of an atmospheric absorption line deeper than 2%, to account for Earths barycentric motion.
 
-The script [`phoenix_precision.py`](https://github.com/jason-neal/eniric/blob/develop/eniric_scripts/phoenix_precision.py) is provided to compute relative RV precisions of any synthetic spectra in the
- [*PHOENIX-ACES*](http://phoenix.astro.physik.uni-goettingen.de) [@husser_new_2013] and
- [*BT-Settl* (CIFIST2011-2015)](https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/) [@baraffe_new_2015] synthetic libraries,
- given the identifying spectral parameters, making use of *Starfish*'s
- [Grid Tools](https://iancze.github.io/Starfish/current/grid_tools.html) [@czekala_constructing_2015].
-The RV precision is computed under the three separate conditions of @figueira_radial_2016 and tabulated for all combinations of
+The script [`phoenix_precision.py`](https://github.com/jason-neal/eniric/blob/develop/scripts/phoenix_precision.py) is provided to easily compute relative RV precisions for synthetic spectra from the
+[*PHOENIX-ACES*](http://phoenix.astro.physik.uni-goettingen.de) [@husser_new_2013] and
+[*BT-Settl* (CIFIST2011-2015)](https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/) [@baraffe_new_2015] libraries.
+The [Grid Tools](https://iancze.github.io/Starfish/current/grid_tools.html) module from *Starfish* [@czekala_constructing_2015] is used to load in the library spectra given the identifying stellar parameters i.e, temperature, logg, metalicity and alpha.
+The RV precision is computed under the three separate conditions of @figueira_radial_2016.
+These are: the full spectrum, the exclusion of regions within 30\ kms$^{-1}$ of deep telluric lines (binary mask), and the full spectrum assuming a ``perfect'' telluric correction in which the spectrum is recovered but with an increased variance dependant on the telluric line depth (weighted mask).
+The results are tabulated for all combinations of
 the spectral parameters, SNR, instrument resolutions, rotational velocities, pixel sampling, and
 wavelength choices provided to the script. An example of relative precision results is shown in Figure 1.
 
@@ -76,7 +77,8 @@ The dashed line represents the theoretical limits imposed by the full spectrum, 
 The spectra were normalized to have a SNR of 100 per resolution element as measured at the center of the J-band.
 This is similar to Figure 1 from [@figueira_radial_2016] but with updated precision values.](./precisions.png)
 
-[*Eniric*](https://github.com/jason-neal/eniric) is available on [*Github*](https://github.com/jason-neal/eniric) with documentation found in `README.md` and on the [wiki](https://github.com/jason-neal/eniric/wiki) page with usage examples provided as [Jupyter notebooks](https://github.com/jason-neal/eniric/tree/master/docs/Notebooks).
+[*Eniric*](https://github.com/jason-neal/eniric) is available on [*Github*](https://github.com/jason-neal/eniric) with documentation found in the `README.md` and at [ReadtheDocs](https://eniric.readthedocs.io/en/latest/) with usage examples provided as [Jupyter notebooks](https://github.com/jason-neal/eniric/tree/master/docs/Notebooks).
+It utilizes packages from the scientific Python stack including [NumPy](http://www.numpy.org/) [@oliphant_guide_2015] and [SciPy](https://www.scipy.org/) [@scipy_scipy.org_2019], [Matplotlib](https://matplotlib.org/) [@hunter_matplotlib_2007], [Pandas](http://pandas.pydata.org/) [@mckinney_data_2010], and [Astropy](http://docs.astropy.org/en/stable/) [@astropy_collaboration_astropy_2013,@astropy_collaboration_astropy_2018]. It also uses [Joblib](https://joblib.readthedocs.io/en/latest/)[@joblib_joblib_2019], [Starfish](https://starfish.readthedocs.io/en/latest/) [@czekala_constructing_2015], and [tqdm](https://tqdm.github.io/) [@tqdm/tqdm].
 
 [Comment]: # ([*PyPI*](https://pypi.org/project/eniric/) and is installable with *pip*.)
 

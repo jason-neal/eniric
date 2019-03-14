@@ -77,7 +77,7 @@ def test_convolution_can_accept_int(num_proc):
     n = 20
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
-    convolution(x, y, vsini=1, R=100000, band="K", num_procs=num_proc)
+    convolution(x, y, vsini=1, R=100_000, band="K", num_procs=num_proc)
 
 
 @pytest.mark.parametrize("num_proc", [1, 2])
@@ -93,7 +93,7 @@ def test_res_convolution_can_accept_int(num_proc):
     n = 20
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
-    resolution_convolution(x, x, y, R=100000, num_procs=num_proc)
+    resolution_convolution(x, x, y, R=100_000, num_procs=num_proc)
 
 
 @pytest.mark.parametrize("num_proc", [1, 2])
@@ -103,7 +103,7 @@ def test_convolution_can_accept_worker_pool(num_proc):
     y = np.random.randn(n)
     with Parallel(num_proc) as parallel:
         convolution(
-            x, y, vsini=1, R=100000, band="K", num_procs=parallel, verbose=False
+            x, y, vsini=1, R=100_000, band="K", num_procs=parallel, verbose=False
         )
 
 
@@ -122,7 +122,7 @@ def test_res_convolution_can_accept_worker_pool(num_proc):
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
     with Parallel(num_proc) as parallel:
-        resolution_convolution(x, x, y, R=100000, num_procs=parallel, verbose=False)
+        resolution_convolution(x, x, y, R=100_000, num_procs=parallel, verbose=False)
 
 
 @pytest.mark.parametrize("num_proc", [3.14, "str"])
@@ -131,7 +131,7 @@ def test_rot_convolution_with_bad_num_proc(num_proc):
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
     with pytest.raises(
-        TypeError, message="num_proc must be an int, joblib.parallel.Parallel"
+        TypeError, match="num_proc must be an int, joblib.parallel.Parallel"
     ):
         rotational_convolution(x, x, y, vsini=1, num_procs=num_proc, verbose=False)
 
@@ -142,16 +142,16 @@ def test_res_convolution_with_bad_num_proc(num_proc):
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
     with pytest.raises(
-        TypeError, message="num_proc must be an int, joblib.parallel.Parallel"
+        TypeError, match="num_proc must be an int, joblib.parallel.Parallel"
     ):
-        resolution_convolution(x, x, y, R=100000, num_procs=num_proc, verbose=False)
+        resolution_convolution(x, x, y, R=100_000, num_procs=num_proc, verbose=False)
 
 
 def test_convolution_can_accept_None():
     n = 20
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
-    convolution(x, y, vsini=1, R=100000, band="K", num_procs=None)
+    convolution(x, y, vsini=1, R=100_000, band="K", num_procs=None)
 
 
 def test_rot_convolution_can_accept_None():
@@ -165,7 +165,7 @@ def test_res_convolution_can_accept_None():
     n = 20
     x = np.linspace(2.0, 2.3, n)
     y = np.random.randn(n)
-    resolution_convolution(x, x, y, R=100000, num_procs=None)
+    resolution_convolution(x, x, y, R=100_000, num_procs=None)
 
 
 @pytest.mark.parametrize("zero_vsini", [0, 0.00, np.int(0.0), np.float64(0.0)])

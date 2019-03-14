@@ -8,6 +8,7 @@ from numpy import ndarray
 
 import eniric
 import eniric.io_module as io
+from eniric import config
 from eniric.broaden import resolution_convolution
 from eniric.utilities import band_limits
 
@@ -71,7 +72,15 @@ class Atmosphere(object):
             base: "Average_TAPAS_2014"
     """
 
-    def __init__(self, wavelength, transmission, mask=None, std=None, shifted=False, verbose=False):
+    def __init__(
+        self,
+        wavelength,
+        transmission,
+        mask=None,
+        std=None,
+        shifted=False,
+        verbose=False,
+    ):
         assert len(wavelength) == len(
             transmission
         ), "Wavelength and transmission do not match length."
@@ -128,8 +137,9 @@ class Atmosphere(object):
 
         extension = "_bary.dat" if bary else ".dat"
         atmmodel = join(
-            eniric.paths["atmmodel"],
-            "{0}_{1}{2}".format(eniric.atmmodel["base"], band, extension),
+            config.pathdir,
+            config.paths["atmmodel"],
+            "{0}_{1}{2}".format(config.atmmodel["base"], band, extension),
         )
 
         try:
@@ -146,7 +156,9 @@ class Atmosphere(object):
                 )
             )
             full_model = join(
-                eniric.paths["atmmodel"], "{0}.dat".format(eniric.atmmodel["base"])
+                config.pathdir,
+                config.paths["atmmodel"],
+                "{0}.dat".format(config.atmmodel["base"]),
             )
             atm = cls.from_file(full_model)
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
+"""Simple script using pandas to transform from *.csv to *.tsv."""
 import sys
-import pandas
 
-"""Simple script using pandas to transform from *.csv to *.tsv"""
+import pandas
 
 if __name__ == "__main__":
     name = sys.argv[1]

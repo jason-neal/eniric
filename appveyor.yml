@@ -11,43 +11,23 @@ install:
   - "%PYTHON%\\python.exe -m pip install --upgrade pip"
   # We need wheel installed to build wheels
   - "%PYTHON%\\python.exe -m pip install wheel"
-
-  - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
+  -
   - "%PYTHON%\\python.exe -m pip install -r requirements_dev.txt"
-
-  # Installing Starfish
-  - "cd c:\\projects"
-  - "mkdir Starfish"
-  - "cd Starfish"
-  # This does not work due to Starfish compilation on Windows.
-  # - "%PYTHON%\\python.exe -m pip install numpy cython"
-  # - "%PYTHON%\\python.exe -m pip install https://github.com/iancze/Starfish/archive/master.zip#egg=Starfish"
-  - ps: "wget https://raw.githubusercontent.com/iancze/Starfish/master/requirements.txt -OutFile starfish_requirements.txt"
-  - "%PYTHON%\\python.exe -m pip install -r starfish_requirements.txt"
-  - "%PYTHON%\\python.exe -m pip install -e git+https://github.com/jason-neal/Starfish.git@windows#egg=Starfish"
-
-  # - "git clone https://github.com/jason-neal/Starfish.git"
-  # - "cd c:\\projects\\Starfish"
-  # - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
-  # - "git checkout windows"   # Especially configured to build on windows
-  # - "%PYTHON%\\python.exe setup.py develop"
+  - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
 
   # Installing eniric now
-  - cmd: "cd c:\\projects\\eniric"
-  - "%PYTHON%\\python.exe setup.py install"
+  - "%PYTHON%\\python.exe -m pip install -e .[dev,test,docs,ci]"
 
   # Setup config and make data
   # This is not the best place to put this but before_test didn't work.
-  - cmd: "move tests\\config.yaml config.yaml"
+  # - cmd: "move tests\\config.yaml config.yaml"
 
   # Downloading Eniric data with powershell script for windows
-  - ps: ".\\eniric_scripts\\ps_download_eniric_data.ps1"
-  # Generate data  # Should not do much as data already downloaded.
-  - cmd: "%PYTHON%\\python.exe eniric\\obsolete\\make_test_data.py"
+  - ps: ".\\scripts\\ps_download_eniric_data.ps1"
 
   # Prepare atmosphere models
-  - cmd: "%PYTHON%\\python.exe eniric_scripts\\split_atmmodel.py -b ALL"
-  - cmd: "%PYTHON%\\python.exe eniric_scripts\\bary_shift_atmmodel.py -b ALL"
+  - cmd: "%PYTHON%\\python.exe scripts\\split_atmmodel.py -b ALL"
+  - cmd: "%PYTHON%\\python.exe scripts\\bary_shift_atmmodel.py -b ALL"
 
 build: off
 

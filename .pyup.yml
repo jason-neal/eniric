@@ -1,12 +1,12 @@
 # configure updates globally
 # default: all
 # allowed: all, insecure, False
-update: all
+update: insecure
 
 # configure dependency pinning globally
 # default: True
 # allowed: True, False
-pin: True
+pin: False
 
 # set the default branch
 # default: empty, the default branch on GitHub
@@ -25,11 +25,13 @@ search: True
 # Specify requirement files by hand, default is empty
 # default: empty
 # allowed: list
-#requirements:
-  #- requirements/prod.txt:
-  #    # update insecure only, pin all
-  #    update: insecure
-  #    pin: True
+requirements:
+  - requirements_dev.txt:
+      update: all
+      pin: True
+
+  - requirements.txt:
+      pin: False
 
 # add a label to pull requests, default is not set
 # requires private repo permissions, even on public repos

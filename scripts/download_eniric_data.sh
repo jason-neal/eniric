@@ -15,23 +15,16 @@ if [ ! -d "$DIRECTORY" ]; then
 fi
 (cd $DIRECTORY
     wget "https://www.dropbox.com/s/raw/uab283lmkaptsib/Average_TAPAS_2014.dat.tar.gz"
-    ../../eniric_scripts/untar_here.py Average_TAPAS_2014.dat.tar.gz
+    ../../scripts/untar_here.py Average_TAPAS_2014.dat.tar.gz
 )
 
 
-DIRECTORY2="data/test_data/"
+DIRECTORY2="tests/data/"
 # Check to see if libraries/raw/ directory exists, if not, make it.
 if [ ! -d "$DIRECTORY2" ]; then
   echo $DIRECTORY2 does not exist, creating.
   mkdir -p $DIRECTORY2
 fi
-
-(cd $DIRECTORY2
-    wget "https://www.dropbox.com/s/raw/oq2x7dsjeuxrf7t/obsolete.tar.gz"
-    ../../eniric_scripts/untar_here.py obsolete.tar.gz
-    rm obsolete.tar.gz
-)
-
 
 
 DIRECTORY3="data/"
@@ -44,7 +37,7 @@ fi
 
 (cd $DIRECTORY3
     wget "https://www.dropbox.com/s/raw/i4cxjrhcbx6e37x/precision.tar.gz"
-   ../eniric_scripts/untar_here.py precision.tar.gz
+   ../scripts/untar_here.py precision.tar.gz
     rm precision.tar.gz
 )
 
@@ -56,6 +49,6 @@ fi
 # So putting Phoenix data in dropbox now also.
 (cd $DIRECTORY2
     wget "https://www.dropbox.com/s/raw/skg8zwi7vnxgesj/data_raw.tar.gz"
-    ../../eniric_scripts/untar_here.py data_raw.tar.gz
+    ../../scripts/untar_here.py data_raw.tar.gz
     rm data_raw.tar.gz
 )

@@ -23,7 +23,7 @@ def test_Atmosphere_funtional_test(short_atmosphere):
     atm.verbose = True
     atm.mask = np.ones_like(atm.wl, dtype=bool)  # reset mask
     assert not np.all(atm.transmission[atm.mask] >= 0.98)
-    atm.broaden(100000)
+    atm.broaden(100_000)
     atm.mask_transmission(2)
     assert np.all(atm.transmission[atm.mask] >= 0.98)
     atm.bary_shift_mask(consecutive_test=True)
@@ -33,7 +33,7 @@ def test_Atmosphere_funtional_test(short_atmosphere):
 @pytest.mark.parametrize(
     "wave, transmission, std, mask",
     [
-        ([1, 2, 3, 4], [.5, .6, .7, 8], [0., 0.2, 0.1, 0.2], [0, 1, 1, 1]),
+        ([1, 2, 3, 4], [0.5, 0.6, 0.7, 8], [0.0, 0.2, 0.1, 0.2], [0, 1, 1, 1]),
         ([2000, 2100], [0.97, 0.99], [0.1, 0.1], [False, True]),
         ([], [], [], []),
     ],
@@ -62,7 +62,8 @@ def test_atmosphere_class_turns_lists_to_arrays(wave, transmission, std, mask):
 
 
 @pytest.mark.parametrize(
-    "wave, transmission", [([1, 2, 3], [0.4, 0.5, 0.6]), ([7, 8, 9], [.10, .11, .12])]
+    "wave, transmission",
+    [([1, 2, 3], [0.4, 0.5, 0.6]), ([7, 8, 9], [0.10, 0.11, 0.12])],
 )
 def test_atmosphere_class_nomask(wave, transmission):
     atmos = Atmosphere(wave, transmission)
@@ -111,10 +112,8 @@ def test_values_within_the_rv_of_telluric_lines_are_masked(
     atmos.bary_shift_mask(rv=rv, consecutive_test=False)
 
     for pixel, mask_value, org_val in zip(atmos.wl, atmos.mask, org_mask):
-        if mask_value == 0:
-            # Already masked out
-            pass
-        else:
+        if mask_value != 0:
+            assert org_val != 0
             # Find rv limits to this pixel.
             wl_lower, wl_upper = pixel * (1 - rv / 3e5), pixel * (1 + rv / 3e5)
             wl_mask = (atmos.wl >= wl_lower) * (atmos.wl < wl_upper)
@@ -225,7 +224,7 @@ def test_atmos_broadening_reduces_number_of_masked_points(
 
 
 @pytest.mark.xfail()
-@pytest.mark.parametrize("resolution", [5000000])
+@pytest.mark.parametrize("resolution", [5_000_000])
 def test_atmos_broadening_at_higher_res_should_not_reduce_number_of_masked_points(
     atmosphere_fixture, resolution
 ):
