@@ -19,6 +19,7 @@ class Config(object):
         ----------
         path: str or path-like
             The filename for creating the Config. Must be YAML.
+
         """
         self._path = path
         self._protect_rewrites = True
@@ -87,6 +88,7 @@ class Config(object):
             yaml.safe_dump(self._config, fd)
 
     def update(self, d=None, **kwargs):
+        """Update the config values and save to the config file."""
         if d is None:
             d = {}
         protected_rewrites = self._protect_rewrites
@@ -99,38 +101,43 @@ class Config(object):
         self._rewrite()
 
     def change_file(self, filename):
-        """
-        Change the current configuration to use the given YAML file.
+        """Change the current configuration to use the given YAML file.
 
         Parameters
         ----------
         filename: str or path-like
             The YAML file to switch to using for config.
 
-        Usage
-        -----
+        Example
+        -------
         .. code-block:: python
+
             eniric.config.change_file('new_config.yaml')
+
         """
         self._path = filename
         with open(self._path, "r") as fd:
             self._config = yaml.safe_load(fd)
 
-    def copy_file(self, directory=os.getcwd(), switch=True):
+    def copy_file(self, directory=None, switch=True):
         """Copies the master config file to the given directory.
 
         Parameters
         ----------
         directory: str or path-like
-            The directory to copy the ``config.yaml`` file to. Default is current working directory.
+            The directory to copy the ``config.yaml`` file to. Default is os.getcwd().
         switch: bool
             If True, will switch the current config to use the copied file. Default is True
 
-        Usage
-        -----
+        Example
+        -------
         .. code-block:: python
+
             eniric.config.copy_file()
+
         """
+        if directory is None:
+            directory = os.getcwd()
         outname = os.path.join(directory, "config.yaml")
         shutil.copy(DEFAULT_CONFIG_FILE, outname)
         if switch:
