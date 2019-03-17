@@ -1,6 +1,6 @@
-******************************************
+==========================================
 Theoretical Precision of Synthetic Spectra
-******************************************
+==========================================
 
 The theoretical precision of M-dwarf synthetic spectra is extensively explored in `Figueira et al. (2016)`_.
 Eniric extends this work to any spectra in the `PHOENIX-ACES <http://phoenix.astro.physik.uni-goettingen.de/>`_ or the `BT-Settl-CIFIST2011_2015 <https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/>`_ spectral libraries.
@@ -14,14 +14,14 @@ For more information see the Starfish documentation `here <https://iancze.github
 
 
 Example Usage
-=============
+-------------
 
 ``phoenix_precision.py`` is called by passing the stellar and other parameters on the command line.
 Several flags can take multiple values separated by a space. All combinations of the parameters supplied will be computed.
 
 The available inputs parameters are:
 
-.. code-block::
+.. code-block:: text
 
     $ phoenix_precision.py -h
 
@@ -77,13 +77,14 @@ The available inputs parameters are:
                             Disable the convolution normalization.
 
 
-Remember: The parameter space is multiplicative so the runtime increases when increasing the number of values for each parameter.
+.. Note:: The parameter space is multiplicative so the runtime increases when increasing the number of values for each parameter.
 
 
 Output File
-===========
+-----------
 
 The script returns a table with input parameters and the calculated precisions for all three tellruic conditions presented in Figueira et al. (2016) for the parameter combinations requested.
+E.g:
 
 ::
 
@@ -128,7 +129,7 @@ In this way ``precsions.csv`` can be appended to with new values, while keeping 
 
 
 Calculating Precisions
-======================
+----------------------
 Below are some specific examples of using ``phoenix_precision.py``.
 
 This script has been used to generate nIR RV precision values across the M-dwarf temperature range.
@@ -137,7 +138,7 @@ The commands to use to generate these datasets are provided below.
 
 
 Figueira et al. 2016
---------------------
+++++++++++++++++++++
 
 To reproduce the calculations of `Figueira et al. (2016)`_ you can use the
 
@@ -147,7 +148,7 @@ To reproduce the calculations of `Figueira et al. (2016)`_ you can use the
 
 
 NIRPS
------
++++++
 For the NIRPS ETC precisions were calculated for the whole M-dwarf range between 2500 and 4000 K.
 These were centred on the H-band centering with a SNR of 100. This also included R=75000 tailored to the NIRPS instrument.
 
@@ -158,7 +159,7 @@ These were centred on the H-band centering with a SNR of 100. This also included
 
 
 SPIRou
-------
+++++++
 For the SPIRou ETC the parameter combinations are the same as `Figueira et al. (2016)`_ but
 calculated relative to a SNR of 100 in each respective bands.
 
@@ -168,7 +169,7 @@ calculated relative to a SNR of 100 in each respective bands.
 
 
 BT-SETTL
-========
+--------
 To use the BT-Settl sectral library  use the ``--model`` flag.
 
 .. code-block:: bash
