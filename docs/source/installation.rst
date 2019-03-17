@@ -84,3 +84,40 @@ Eniric has been tested to work on both  **Linux** and **Windows**.
 .. _Starfishgithub: https://github.com/iancze/Starfish.git
 
 __ Starfishgithub_
+
+
+Testing
+-------
+To test ``eniric`` is installed try
+
+.. code-block:: bash
+
+    python -c "import eniric"
+
+
+To run the test suite run ``pytest`` from the root directory of the repository (requires pytest).
+This will result in an output similar to:
+
+.. code-block:: bash
+
+    $ pytest
+
+    ============================= test session starts ==============================
+    platform linux -- Python 3.6.7, pytest-4.3.0, py-1.7.0, pluggy-0.8.0
+    hypothesis profile 'default' -> database=DirectoryBasedExampleDatabase('/home/travis/build/jason-neal/eniric/.hypothesis/examples')
+    rootdir: /home/travis/build/jason-neal/eniric, inifile: setup.cfg
+    plugins: cov-2.6.1, hypothesis-4.7.17
+    collected 718 items
+
+    ...
+
+    ======= 610 passed, 84 xfailed, 24 xpassed, 2 warnings in 33.00 seconds ========
+   The command "pytest" exited with 0.
+
+
+The requirements for the test suite can be installed from the root of the repository using
+
+.. code-block:: bash
+
+    python setup.py install .[test]
+
