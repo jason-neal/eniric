@@ -102,6 +102,9 @@ or on **Windows** in a PowerShell
     ps_download_eniric_data.ps1
 
 This includes an atmospheric transmission spectrum, located at ``data/atmos/Average_TAPAS_2014.dat``, which can be used for spectral masking.
+
+.. Note:: This is to keep the size of the git repository small.
+
 Testing
 -------
 To test ``eniric`` is installed try
@@ -137,3 +140,4 @@ The requirements for the test suite can be installed from the root of the reposi
 
     python setup.py install .[test]
 
+.. Note:: A users copied ``config.yaml`` file in the repository home directory may interfere with the test results, causing some failures.

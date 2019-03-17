@@ -157,6 +157,8 @@ These were centred on the H-band centering with a SNR of 100. This also included
    phoenix_precision.py -t 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000
     -m 0.0, -l 5.0 --snr 100 -b Z Y J H K --ref_band H -r 60000 75000 80000 100000 -v 1.0 5.0 10.0
 
+.. Note:: The PHOENIX-ACES models for this range need to have been downloaded.
+
 
 SPIRou
 ++++++
