@@ -291,14 +291,23 @@ def incremental_quality(
     qualities = []
     for pos1, pos2 in zip(positions[:-1], positions[1:]):
         pos_mask = (wavelength >= pos1) & (wavelength < pos2)
+        if np.sum(pos_mask) <= 1:
+            # 1 or less points in this section
+            continue
+
         x = wavelength[pos_mask]
         y = flux[pos_mask]
         if mask is not None:
             z = mask[pos_mask]
         else:
             z = mask  # None
-        q = quality(x, y, mask=z, **kwargs)
+
+        try:
+            q = quality(x, y, mask=z, **kwargs)
+        except:
+            continue
         qualities.append([np.mean(x), q])
+
     x, q = np.asarray(qualities).T
     return x, q
 
@@ -336,13 +345,20 @@ def incremental_rv(
     velocities = []
     for pos1, pos2 in zip(positions[:-1], positions[1:]):
         pos_mask = (wavelength >= pos1) & (wavelength < pos2)
+        if np.sum(pos_mask) <= 1:
+            # 1 or less points in this section
+            continue
+
         x = wavelength[pos_mask]
         y = flux[pos_mask]
         if mask is not None:
             z = mask[pos_mask]
         else:
             z = mask  # None
-        rv_calc = rv_precision(x, y, mask=z, **kwargs)
+        try:
+            rv_calc = rv_precision(x, y, mask=z, **kwargs)
+        except:
+            continue
         velocities.append([np.mean(x), rv_calc.value])
 
     x, rv = np.asarray(velocities).T
