@@ -73,11 +73,11 @@ def rv_precision(
 
     Parameters
     ----------
-    wavelength: array-like or Quantity array
+    wavelength: array-like or Quantity
         Wavelength of spectrum.
-    flux: array-like or Quantity array
+    flux: array-like or Quantity
         Flux of spectrum.
-    mask:Optional[ndarray]
+    mask: array-like, Quantity or None
         Masking function array to apply to the pixel weights.
     kwargs:
         Kwargs for sqrt_sum_wis
@@ -92,18 +92,23 @@ def rv_precision(
 
 
 def quality(
-    wavelength: Union[Quantity, ndarray], flux: Union[Quantity, ndarray], **kwargs
+    wavelength: Union[Quantity, ndarray],
+    flux: Union[Quantity, ndarray],
+    mask: Optional[ndarray] = None,
+    **kwargs,
 ) -> Union[float, Quantity]:
     """Calculation of the spectral Quality, Q, for a spectrum.
 
     Parameters
     ----------
-    wavelength: array-like or Quantity array
+    wavelength: array-like or Quantity
         Wavelength of spectrum.
-    flux: array-like or Quantity array
+    flux: array-like or Quantity
         Flux of spectrum.
+    mask: array-like, Quantity or None
+        Masking function array to apply to the pixel weights.
     kwargs:
-        Kwargs for sqrt_sum_wis
+        Kwargs for sqrt_sum_wis (including mask).
 
     Returns
     -------
@@ -121,7 +126,7 @@ def quality(
     flux = flux * u.dimensionless_unscaled  # Turn into Quantity if not already
     flux = flux / flux.unit  # Remove units from flux (sqrt(N_e) is unitless)
 
-    wis = sqrt_sum_wis(wavelength, flux, **kwargs)
+    wis = sqrt_sum_wis(wavelength, flux, mask=mask, **kwargs)
     q = wis / np.sqrt(np.nansum(flux))
     return q.value
 
@@ -134,17 +139,17 @@ def sqrt_sum_wis(
 ) -> Union[float, Quantity]:
     """Calculation of the Square root of the sum of the weights(Wis) for a spectrum.
 
-    Mask is used to apply a masking function to the weights (to mask out telluric lines for example)
+    Mask is used to apply a masking function to the weights (to mask out telluric lines for example).
 
         W(i) = W(i) * m(i)
 
     Parameters
     ----------
-    wavelength: array-like or Quantity array
+    wavelength: array-like or Quantity
         Wavelength of spectrum.
-    flux: array-like or Quantity array
+    flux: array-like or Quantity
         Flux of spectrum.
-    mask: Optional ndarray
+    mask: array-like, Quantity or None
         Weighting mask function. Default is all ones.
     grad: bool
         Flag to use np.gradient.
@@ -253,61 +258,77 @@ def pixel_weights(
 
 
 def incremental_quality(
-    wavelength: ndarray, flux: ndarray, percent: Union[int, float] = 10, **kwargs
+    wavelength: ndarray,
+    flux: ndarray,
+    *,
+    mask: Optional[Union[Quantity, ndarray]] = None,
+    percent: Union[int, float] = 10,
+    **kwargs,
 ) -> Tuple[ndarray, ndarray]:
     """Determine spectral quality in incremental sections.
 
     Parameters
     ----------
-    wavelength: array-like or Quantity array
+    wavelength: array-like or Quantity
         Wavelength of spectrum.
-    flux: array-like or Quantity array
+    flux: array-like or Quantity
         Flux of spectrum.
-    percent: Union[int,float]  (default=10)
+    mask: array-like, Quantity or None
+        Pixel weight mask.
+    percent: Union[int, float]  (default=10)
         The percent size of chunk around each wavelength position.
     kwargs:
-        Kwargs passed onto quality().
+        Extra arguments passed onto quality() (including mask).
 
     Returns
     -------
     x: ndarray
-     Central wavelength value for quality section.
+     Central wavelength values of each section.
     q: ndarray
        Spectral quality for each section.
     """
     positions = log_chunks(wavelength, percent)
     qualities = []
     for pos1, pos2 in zip(positions[:-1], positions[1:]):
-        mask = (wavelength >= pos1) & (wavelength < pos2)
-        x = wavelength[mask]
-        y = flux[mask]
-        q = quality(x, y, **kwargs)
+        pos_mask = (wavelength >= pos1) & (wavelength < pos2)
+        x = wavelength[pos_mask]
+        y = flux[pos_mask]
+        if mask is not None:
+            z = mask[pos_mask]
+        else:
+            z = mask  # None
+        q = quality(x, y, mask=z, **kwargs)
         qualities.append([np.mean(x), q])
     x, q = np.asarray(qualities).T
     return x, q
 
 
 def incremental_rv(
-    wavelength: ndarray, flux: ndarray, mask: ndarray, percent: float = 10, **kwargs
+    wavelength: ndarray,
+    flux: ndarray,
+    *,
+    mask: Optional[Union[Quantity, ndarray]] = None,
+    percent: float = 10,
+    **kwargs,
 ) -> Tuple[ndarray, ndarray]:
     """Determine spectral RV precision in incremental sections.
     Parameters
     ----------
-    wavelength: array-like or Quantity array
+    wavelength: array-like or Quantity
         Wavelength of spectrum.
-    flux: array-like or Quantity array
+    flux: array-like or Quantity
         Flux of spectrum.
-    flux: array-like or Quantity array
+    mask: array-like, Quantity or None
         Pixel weight mask.
-    percent: Union[int,float]  (default=10)
+    percent: Union[int, float] (default=10)
         The percent size of chunk around each wavelength position.
     kwargs:
-        Kwargs passed onto quality().
+        Extra arguments passed onto rv_precision().
 
     Returns
     -------
     x: ndarray
-     Central wavelength value for quality section.
+       Central wavelength values of each section.
     rv: ndarray
        Spectral RV precision for each section.
     """
@@ -321,7 +342,7 @@ def incremental_rv(
             z = mask[pos_mask]
         else:
             z = mask  # None
-        rv_calc = rv_precision(x, y, z, **kwargs)
+        rv_calc = rv_precision(x, y, mask=z, **kwargs)
         velocities.append([np.mean(x), rv_calc.value])
 
     x, rv = np.asarray(velocities).T
