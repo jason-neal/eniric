@@ -44,7 +44,7 @@ to install these run
 
      pip install -r requirements_dev.txt
 
-from the cloned ``eniric`` repo.
+from the cloned ``eniric`` repository.
 
 
 Starfish
@@ -86,6 +86,22 @@ OS
 __ Starfishgithub_
 
 
+Eniric Data
+-----------
+There are some data files not included in the ``eniric`` repository that are *necessary for testing*.
+These can be easily downloaded using the provided scripts.
+
+.. code-block:: bash
+
+    $ download_eniric_data.sh
+
+or on **Windows** in a PowerShell
+
+.. code-block:: bash
+
+    ps_download_eniric_data.ps1
+
+This includes an atmospheric transmission spectrum, located at ``data/atmos/Average_TAPAS_2014.dat``, which can be used for spectral masking.
 Testing
 -------
 To test ``eniric`` is installed try
