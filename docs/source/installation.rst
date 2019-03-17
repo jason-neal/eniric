@@ -50,7 +50,7 @@ from the cloned ``eniric`` repo.
 Starfish
 ^^^^^^^^
 
-Eniric makes use of Starfish's ``GridTools`` module to load the synthetic libraries: PHOENIX-ACES and BT-Settl models.
+``Eniric`` makes use of Starfish's ``GridTools`` module to load the synthetic libraries: PHOENIX-ACES and BT-Settl models.
 
 ``Starfish`` is currently going through API changes and not yet available on pypi.
 
@@ -79,7 +79,7 @@ Other requirements required with Starfish are:
 OS
 --
 
-Eniric has been tested to work on both  **Linux** and **Windows**.
+``Eniric`` has been tested to work on both  **Linux** and **Windows**.
 
 .. _Starfishgithub: https://github.com/iancze/Starfish.git
 
