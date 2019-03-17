@@ -169,7 +169,7 @@ calculated relative to a SNR of 100 in each respective bands.
 
 BT-SETTL
 ========
-To use the BT-Settl sectral library  use the `--model` flag.
+To use the BT-Settl sectral library  use the ``--model`` flag.
 
 .. code-block:: bash
 

@@ -44,8 +44,8 @@ Welcome to Eniric's documentation!
    examples
 
 
-`Eniric` is a Python 3.6+ software written to calculate the theoretical Radial Velocity (RV) precision of Near-InfraRed (NIR) stellar spectra.
-`Eniric` is an overhaul and extension to the code initially used in `Figueira et al. 2016`_ to analysis the precision of M-dwarf stars in the NIR, extending its ability to use any synthetic spectra from the PHOENIX-ACES and BT-Settl libraries, or user provided spectra, and making it easier/faster to use.
+``Eniric`` is a Python 3.6+ software written to calculate the theoretical Radial Velocity (RV) precision of Near-InfraRed (NIR) stellar spectra.
+``Eniric`` is an overhaul and extension to the code initially used in `Figueira et al. 2016`_ to analysis the precision of M-dwarf stars in the NIR, extending its ability to use any synthetic spectra from the PHOENIX-ACES and BT-Settl libraries, or user provided spectra, and making it easier/faster to use.
 Extending the performance and usability, it is able to be used on any synthetic spectra from the `PHOENIX-ACES`_ and `BT-Settl`_ (CIFIST2011-2015) libraries.
 
 To get started see the :doc:`Installation <./installation>`, or the :doc:`Basic Usage <./basic_usage>`.
@@ -53,7 +53,7 @@ To get started see the :doc:`Installation <./installation>`, or the :doc:`Basic 
 Features
 --------
 
-`Eniric` contains a number of features to transform and prepare the spectra; both observed and synthetic.
+``Eniric`` contains a number of features to transform and prepare the spectra; both observed and synthetic.
 
 * :doc:`Spectral broadening <./broadening>`:
    Allows for Rotational and Instrumental broadening of synthetic spectra given rotation speed ``vsini`` and resolution ``R``.
@@ -68,7 +68,7 @@ Features
    The RV precision are present relative to a specified SNR per pixel in the center of a photometric band.
    The default as used in the `Figueira et al. 2016`_ is a SNR of 100 at the center of the J-band.
 * Spectral Re-sampling
-   Allows for re-sampling of spectra to `N` pixels per FWHM. Default is 3.
+   Allows for re-sampling of spectra to ``N`` pixels per FWHM. Default is 3.
 * Photometric Band selection
 
   * Analysis the RV precision attainable by individual photometric bands ``Z``\ , ``Y``\ , ``J``\ , ``H``\ , ``K``.

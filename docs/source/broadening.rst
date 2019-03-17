@@ -3,7 +3,7 @@ Broadening
 ==========
 
 .. py:module:: eniric.broaden
-    :synopsis: A module to perform spectral brodening.
+    :synopsis: A module to perform spectral broadening.
 
 :mod:`broaden` is a module to perform broadening of the stellar spectra.
 
