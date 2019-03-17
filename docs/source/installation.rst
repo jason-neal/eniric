@@ -2,7 +2,7 @@
 Installation
 ************
 
-You can install ``Eniric`` by cloning the current ``master`` branch.
+You can install ``eniric`` by cloning the current ``master`` branch.
 
 It is recommended to use a ``conda`` or ``virtualenv`` environment.
 To use the most up-to-date packages install the pinned requirements from the ``requirements_dev.txt`` file
