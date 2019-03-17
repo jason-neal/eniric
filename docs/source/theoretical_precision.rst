@@ -3,7 +3,7 @@ Theoretical Precision of Synthetic Spectra
 ==========================================
 
 The theoretical precision of M-dwarf synthetic spectra is extensively explored in `Figueira et al. (2016)`_.
-Eniric extends this work to any spectra in the `PHOENIX-ACES <http://phoenix.astro.physik.uni-goettingen.de/>`_ or the `BT-Settl-CIFIST2011_2015 <https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/>`_ spectral libraries.
+``Eniric`` extends this work to any spectra in the `PHOENIX-ACES <http://phoenix.astro.physik.uni-goettingen.de/>`_ or the `BT-Settl-CIFIST2011_2015 <https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/>`_ spectral libraries.
 
 The script ``phoenix_precision.py`` is provided to easily generate synthetic RV precision values, similarly to and beyond the work of `Figueira et al. (2016)`_.
 The precision of a spectrum can be obtained by providing its library parameters Teff, logg, Fe/H and, alpha. This has been mainly used on M-dwarf spectra with temperatures < 4000K, but higher temperatures also work.

@@ -25,7 +25,7 @@ Misc
 ^^^^
 
 * Convolution speeds (`Github <https://github.com/jason-neal/eniric/blob/master/docs/Notebooks/Convolution_speeds.ipynb>`__) (`nbviewer <https://nbviewer.jupyter.org/github/jason-neal/eniric/blob/master/docs/Notebooks/Compare_precisions.ipynb>`__)
-   Compares covoltuion speed between Eniric and `PyAstronomy <https://www.hs.uni-hamburg.de/DE/Ins/Per/Czesla/PyA/PyA/pyaslDoc/aslDoc/broadening.html>`_.
+   Compares covoltuion speed between ``Eniric`` and `PyAstronomy <https://www.hs.uni-hamburg.de/DE/Ins/Per/Czesla/PyA/PyA/pyaslDoc/aslDoc/broadening.html>`_.
 
 * Extract paper precisions (`Github <https://github.com/jason-neal/eniric/blob/master/docs/Notebooks/Extract-paper-precisions.ipynb>`__) (`nbviewer <https://nbviewer.jupyter.org/github/jason-neal/eniric/blob/master/docs/Notebooks/Extract-paper-precisions.ipynb>`__)
   Uses ``tabula`` to extract the published precision values from Appendix 1 of `Figueira et al. (2016)`_.
