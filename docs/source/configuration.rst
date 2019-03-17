@@ -1,49 +1,48 @@
-
+=============
 Configuration
 =============
 
-Configuration is preformed using a config.yaml placed in the directory you wish to run eniric from.
-It configures the path locations to the spectral libraries, as well as user spectral band configuration.
+.. py:module:: eniric._config
+    :synopsis: Handle eniric configuration.
 
-config.yaml
+Configuration is preformed using a ``config.yaml``  placed in the working directory you wish to run ``eniric`` from.
+It configures the path locations to the spectral libraries and allows for user defined spectral bands.
 
-::
+If a ``config.yaml``  file does not exist then the default is used, located at ``eniric/config.yaml``.
 
-   # YAML configuration script
+You can copy the default configuration to a directory located at ``<path_to_dir>`` using ``config.copy_file(<path_to_dir>)``
 
-   name: eniric_default
+For example, to copy it to the current directory from the command line use:
 
-   # The parameters defining the spectral libraries live here.
-   paths:
-     phoenix_raw: "../../data/PHOENIX-ALL/PHOENIX"
-     phoenix_dat: "data/PHOENIX-ACES_spectra"
-     results: "data/results"
-     resampled: "data/resampled"
-     test_data: "data/test_data/"
-     atmmodel: "data/atmmodel"
-     precision_results: "precision/"
+.. code-block:: bash
 
-   bands:
-     all: ["VIS", "K", "H", "J", "Y", "Z", "CONT", "NIR", "GAP"]
+    $ python -c "from eniric import config; config.copy_file('.')"
+
+The configuration values can be changed in python and saved back to the config file.
+For example
+
+.. code-block:: python
+
+    from eniric import config
+    config.paths["precision"] = ["new", "path", "to", "precision"]  # or "new/path/to/precision"
+    config.update()
+
+will update precision path in the configuration file.
 
 
-   # Keywords needed for Starfish to be used
-   outdir : results/
+.. note:: The default ``config.yaml`` file cannot be overwritten.
 
-   plotdir : plots/
 
-   # Starfish parameters defining your raw spectral library live here.
-   grid:
-       raw_path: "../../data/PHOENIX-ALL/PHOENIX"
-       parname: ["temp", "logg", "Z"]
-       hdf5_path: ""
-       # raw_path: "../libraries/raw/CIFIST/"
-       key_name: "t{0:.0f}g{1:.1f}" # Specifies how the params are stored
-       parname: ["temp", "logg", "Z"]
-       parrange: [[2300, 3700], [4.0, 5.5], [-1.5, 1.5]]
-       wl_range: [6300, 6360]
-       buffer: 50. # AA
+Eniric configuration
+--------------------
+The default configuration file is shown below. The comments explain the keywords needed.
 
-   data:
-       grid_name: "Eniric"
-       instruments: []
+.. literalinclude:: ../../eniric/config.yaml
+    :linenos:
+    :language: yaml
+
+
+Config Class
+------------
+.. autoclass:: eniric._config.Config
+    :members:
