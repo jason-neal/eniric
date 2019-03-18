@@ -5,8 +5,7 @@ Atmospheric Transmission
 For ground-based observations it is important to understand the how the atmospheric absorption affects the Radial Velocity precision. ``Eniric`` does this in two scenarios; masking out all wavelength regions affected by telluric lines over adjusting for barycentric motion, or assuming perfect atmospheric correction, in which the variance of the photon noise is adjusted.
 
 For this ``eniric`` contains a average telluric transmission model. It is an average model was created from weekly transmission spectra in 2014 simulated with the `TAPAS`_ software (\ `Bertaux et al 2014`_\) as detailed in (`Figueira et al. 2016`_).
-The main parmeters are
-
+The main parameters are
 
 * La Silla Observatory
 * airmass = 1.2 (z = 33.5 degrees)
@@ -29,6 +28,20 @@ Will create the subsets of ``my_telluric_model_H.txt`` and ``my_telluric_model_K
 If the the band subset cannot be found the ``my_telluric_model.txt`` will be used as a fallback.
 
 You can configure the location of and atmmodel to use in config.yaml.
+
+
+.. _Masking_ref:
+
+Weight Masking
+~~~~~~~~~~~~~~
+
+Three cases:
+
+* all 1's
+* 1s and 0s
+* Transmission spectrum
+  The masking function is squared which only affects the 3rd option, If you want to alter the weights in a specific way you will need to account for this when deriving the mask.
+
 
 Barycentric Motion
 ==================
