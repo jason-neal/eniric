@@ -53,13 +53,4 @@ To use the default telluric line model to apply masking:
 The presence of absorption lines in Earth's atmosphere affects the spectral precision.
 There are two options to handle this. Complete masking of telluric lines within 30 km/s, reduction in spectral variance by the transmission spectrum.
 
-
-Weight Masking
-~~~~~~~~~~~~~~
-
-Three cases:
-
-* all 1's
-* 1s and 0s
-* Transmission spectrum
-  The masking function is squared which only affects the 3rd option, If you want to alter the weights in a specific way you will need to account for this when deriving the mask.
+For more details about about the mask parameter see  :ref:`Masking_ref`.

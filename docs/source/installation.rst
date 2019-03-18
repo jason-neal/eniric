@@ -117,7 +117,7 @@ To test ``eniric`` is installed try
 To run the test suite run ``pytest`` from the root directory of the repository (requires pytest).
 This will result in an output similar to:
 
-.. code-block:: bash
+.. code-block:: text
 
     $ pytest
 
@@ -138,6 +138,6 @@ The requirements for the test suite can be installed from the root of the reposi
 
 .. code-block:: bash
 
-    python setup.py install .[test]
+   $ python setup.py install .[test]
 
 .. Note:: A users copied ``config.yaml`` file in the repository home directory may interfere with the test results, causing some failures.
