@@ -1,4 +1,4 @@
-
+========================
 Atmospheric Transmission
 ========================
 
@@ -44,7 +44,7 @@ Three cases:
 
 
 Barycentric Motion
-==================
+------------------
 
 To exclude wavelength regions that will be affected by telluric lines at some point during the year you can extend out the telluric maskk.
 
