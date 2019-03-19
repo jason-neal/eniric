@@ -1,6 +1,6 @@
-************
+============
 Installation
-************
+============
 
 You can install ``eniric`` by cloning the current ``master`` branch.
 

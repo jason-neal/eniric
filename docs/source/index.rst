@@ -27,7 +27,7 @@
    :target: https://badge.fury.io/py/eniric
    :alt: PyPI version
 
-
+==================================
 Welcome to Eniric's documentation!
 ==================================
 
@@ -106,7 +106,7 @@ The project is licensed under the `MIT License <https://github.com/jason-neal/en
 
 
 Indices and tables
-==================
+^^^^^^^^^^^^^^^^^^
 
 * :ref:`genindex`
 * :ref:`modindex`

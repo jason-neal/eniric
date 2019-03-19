@@ -61,7 +61,6 @@ Caching
 
 Convolution results are cached using :mod:`joblib`, see https://joblib.readthedocs.io/en/latest/memory.html
 
-
 Caching of the convolution stages is performed to avoid re-computation of this slow component when possible using `\ ``joblib.Memory``  <https://joblib.readthedocs.io/en/latest/memory.html>`_. The caching directory defaults to ``~/.joblib`` but can be changed in the configuration file ``config.yaml``.
 
 Caching can be disabled by setting ``location=None`` in ``config.yml``.
