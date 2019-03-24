@@ -46,3 +46,5 @@ Config Class
 ------------
 .. autoclass:: eniric._config.Config
     :members:
+
+    .. automethod:: copy_file(directory=os.getcwd(), switch=True)
