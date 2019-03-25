@@ -18,16 +18,22 @@ or for the flux independent spectral ``quality``, Q,
    from eniric.precision import quality
    q = quality(wavelength, flux)
 
-To apply a mask to the optimal pixel weights pass it as the 3rd argument to either function.
+
+.. _atmospheremasking_ref:
+
+Masking
+-------
+It is possible to include custom pixel masks both :func:`rv_recision` and :func:`quality`, to selectively select, exclude, or weight the spectra.
+These are pass it as the 3rd argument to either function.
 
 .. code-block:: python
 
    rv = rv_precision(wavelength, flux, mask=my_mask)
    q = quality(wavelength, flux, mask=my_mask)
 
-Not supplying a mask or setting ``mask=None`` is equivalent to a mask of all ``1``\ 's which will have no impact on the precision.
+Not supplying a mask or setting ``mask=None`` is equivalent to a mask of all ``1``\ 's which will have no impact on the precision (i.e. all pixels are weighted equally).
 
-To use the default (supplied) telluric line model to apply spectral masking you can use the Atmopshere class:
+To use the default (supplied) telluric line model to apply spectral masking you can use the Atmosphere class:
 
 .. code-block:: python
 
@@ -44,4 +50,4 @@ To use the default (supplied) telluric line model to apply spectral masking you 
    # Perfect telluric correction mask.
    rv3 = rv_precision(wavelength, flux, mask=atm.transmission**2)
 
-For more details about about the mask parameter see :ref:`Masking_ref`.
+For more details about about the masks used here see :ref:`Masking_ref`.
