@@ -127,6 +127,7 @@ The different columns of the output file are given in the table below.
 The first 9 columns uniquely identify a set of input parameter values, this is used to avoid repeating an identical computaion.
 In this way ``precsions.csv`` can be appended to with new values, while keeping the other values, if desired.
 
+.. _Calculating-Precisions:
 
 Calculating Precisions
 ----------------------
@@ -137,8 +138,8 @@ These were requested by the NIRPS and SPIRou consortia for use as into their res
 The commands to use to generate these datasets are provided below.
 
 
-Figueira et al. 2016
-++++++++++++++++++++
+Figueira et al. (2016)
+++++++++++++++++++++++
 
 To reproduce the calculations of `Figueira et al. (2016)`_ you can use the
 
@@ -177,6 +178,25 @@ To use the BT-Settl sectral library  use the ``--model`` flag.
 .. code-block:: bash
 
    phoenix_precision.py -t 2600, 2900, 3500, 3900 -b Z Y J H K --model btsettl
+
+
+Precision Corrections
+---------------------
+Artigau et al. (2018) provided corrections to the precision obtained
+from syntheithc mnodel, after a comparision to obsrevered spectra.
+
+The multiplicative correction factors for each band can be obtained
+with :func:`correct_artigau_2018`, e.g.:
+
+.. code-block:: python
+
+    rv_K = 1 # m/s
+    correction_factor = correct_artigau_2018(band="K")
+    rv_K_corrected = rv_K * correction_factor
+
+
+.. automodule:: eniric.corrections
+    :members:
 
 
 .. _`Figueira et al. (2016)`: http://dx.doi.org/10.1051/0004-6361/201526900
