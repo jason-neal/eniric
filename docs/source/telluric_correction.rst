@@ -2,6 +2,9 @@
 Atmospheric Transmission
 ========================
 
+.. py:module:: eniric.atmosphere
+    :synopsis: A class to handle an telluric absorption spectrum.
+
 For ground-based observations it is important to understand the how the atmospheric absorption affects the Radial Velocity precision. ``Eniric`` does this in two scenarios; masking out all wavelength regions affected by telluric lines over adjusting for barycentric motion, or assuming perfect atmospheric correction, in which the variance of the photon noise is adjusted.
 
 For this ``eniric`` contains a average telluric transmission model. It is an average model was created from weekly transmission spectra in 2014 simulated with the `TAPAS`_ software (\ `Bertaux et al 2014`_\) as detailed in (`Figueira et al. 2016`_).
@@ -42,17 +45,17 @@ The atmospheric absorption can be used to mask
 
 The three default cases treated in Figueira et al. (2016) were no telluric corection, masking, assumption of perfect telluric correction.
 
-The masks M for these three cases are as follows, given the atmospheretic transmission T for each wavelenght/pixel ,i.
+The masks :math:`M` for these three cases are as follows, given the atmospheretic transmission :math:`T` for each wavelenght or pixel, :math:`i`.
 
 * Condition 1
-   No telluric treatment, theoretical precision of the specturm.
+   No telluric treatment, theoretical precision of the spectrum.
 
 .. math::
 
   M(i) = 1
 
 * Condition 2
- Masking out telluric lines deeper than :math:`\tau` (e.g. :math:`\tau=0.98` for 2%).
+    Masking out telluric lines deeper than :math:`\tau` (e.g. :math:`\tau=0.98` for 2%).
 
 .. math::
 
@@ -75,13 +78,13 @@ For examples using these masks see :ref:`atmospheremasking_ref` or the usage in 
 
 The mask for Condition 2 can be created using Atmosphere class
 
-.. automethod:: Atmosphere.mask
+.. automethod:: Atmosphere.mask_transmission
 
 
 Barycentric Motion
 ------------------
 
-To exclude wavelength regions that will be affected by telluric lines at some point during the year you can extend out the telluric maskk.
+To exclude wavelength regions that will be affected by telluric lines at some point during the year you can extend out the telluric mask.
 
 .. code-block:: python
 
@@ -91,7 +94,7 @@ This extends the regions that are masked out, you can check that the mask contin
 
 .. code-block:: python
 
-   assert np.all(transmission[mask] > 0.98)     # check old mask works
+   assert np.all(transmission[mask] > 0.98)     # Check old mask works
    assert np.all(transmission[new_mask] > 0.98) # Check new mask
    # More points should be zero in extended mask
    assert np.sum(new_mask) < np.sum(mask)
@@ -99,9 +102,11 @@ This extends the regions that are masked out, you can check that the mask contin
 The fraction ``(np.sum(new_mask) - np.sum(mask)) /np.sum(mask)`` can also indicate the increase in masked out wavelengths.
 
 
+
 Module
 ------
 .. automodule:: eniric.atmosphere
+    :members:
 
 
 .. _TAPAS: https://cds-espri.ipsl.upmc.fr/tapas/

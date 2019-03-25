@@ -35,7 +35,7 @@ class Atmosphere(object):
         Enable verbose. Default is False.
 
     Constructors
-    ----------
+    ------------
     from_file(atmmodel)
         Read in atmospheric model and prepare.
     from_band(band, bary=False)
@@ -56,7 +56,7 @@ class Atmosphere(object):
     mask_transmission(depth)
         Mask the transmission below given depth. e.g. 2%
     barycenter_broaden(rv, consecutive_test)
-        Sweep telluric mask symmetrically by rv.
+        Sweep telluric mask symmetrically by +/- a velocity.
     broaden(resolution, *kwargs)
         Instrument broadening of the atmospheric transmission profile.
 
@@ -249,7 +249,9 @@ class Atmosphere(object):
         )
 
     def mask_transmission(self, depth: float = 2.0) -> None:
-        """Mask the transmission below given depth. e.g. 2%
+        """Mask the transmission below given depth. e.g. 2%.
+
+        Updates the mask.
 
         Parameters
         ----------
@@ -257,22 +259,22 @@ class Atmosphere(object):
             Telluric line depth percentage to mask out. Default is 2.0.
             E.g. depth=2 will mask transmission deeper than 2%.
 
-        Updates the mask.
         """
         cutoff = 1 - depth / 100.0
         self.mask = self.transmission >= cutoff
 
     def barycenter_broaden(self, rv: float = 30.0, consecutive_test: bool = False):
-        """Sweep telluric mask symmetrically by rv.
+        """Sweep telluric mask symmetrically by +/- a velocity.
+
+        Updates the objects mask.
 
         Parameters
         ----------
         rv: float
-            Velocity to extend masks in km/s. Default is 30.
+            Velocity to extend masks in km/s. Default is 30 km/s.
         consecutive_test: bool
             Checks for 3 consecutive zeros to mask out transmission. Default is False.
 
-        Updates the mask.
         """
         if self.shifted:
             warnings.warn(
@@ -376,8 +378,8 @@ def consecutive_truths(condition: ndarray) -> ndarray:
 
     Notes
     -----
-    Solution found at {http://stackoverflow.com/questions/24342047/
-                       count-consecutive-occurences-of-values-varying-in-length-in-a-numpy-array}
+    Solution found at http://stackoverflow.com/questions/24342047
+
     """
     if not np.any(condition):  # No match to condition
         return np.array([0])
