@@ -1,29 +1,34 @@
-"""
-Functions for file resampling.
-
-"""
+"""Functions for spectral resampling."""
 from typing import Union
 
 import numpy as np
+from numpy import ndarray
 
 
 def log_resample(
     wavelength, sampling: Union[int, float], resolution: Union[int, float]
-) -> np.ndarray:
+) -> ndarray:
     """Resample spectrum with a given sampling per resolution element.
+
+    Uses faster method using log and powers of a base.
+    The base is (1.0 + 1.0/(sampling*resolution).
 
     Parameters
     ----------
-    wavelength: np.ndarray
+    wavelength: numpy.ndarray
         Wavelength array.
     sampling: int, float
         Points to sample per resolution element
     resolution: int, float
         Instrumental resolution
 
-    Uses faster method using log and powers of a base.
-    The base is (1.0 + 1.0/(sampling*resolution).
+    Returns
+    -------
+    logspace: ndarray
+        Array of points with a set sampling per resolution element.
 
+    Note
+    ----
     Almost equivalent to using
     np.logspace(np.log(wavelength)/np.log(base), np.log(wavelength)/np.log(base),
         np.log(wavelength_end / wavelength_start) / np.log(base), base).
@@ -33,10 +38,10 @@ def log_resample(
 
     # Create grid using logarithms with base of (1.0 + 1.0/(sampling*resolution))
     base = 1.0 + 1.0 / (float(sampling) * float(resolution))  # type : float
-    return my_logspace(wavelength_start, wavelength_end, base, end_point=True)
+    return wl_logspace(wavelength_start, wavelength_end, base, end_point=True)
 
 
-def my_logspace(start, stop, base, end_point: bool = False):
+def wl_logspace(start, stop, base, end_point: bool = False):
     """Like np.logspace but start and stop in wavelength units.
 
     Parameters
@@ -65,14 +70,27 @@ def my_logspace(start, stop, base, end_point: bool = False):
     return start * base ** powers
 
 
-def log_chunks(wavelength, percent):
+def log_chunks(wavelength: ndarray, percent: float) -> ndarray:
     r"""Define the bounds at which $(\Delta \lambda)/\lambda = X\%$.
 
     Allows spectrum to be split into chunks in which the size is X% of the given wavelength.
     This takes logarithmic steps with a base of (1+X/100).
+
+    Parameters
+    ----------
+    wavelength: ndarry
+        Wavelength array.
+    percent: float
+        Base step in percentage.
+
+    Returns
+    -------
+    logspace: ndarray
+        Array of points with a growth in wavelength spanned of a given percent.
+
     """
     base = 1 + percent / 100.0
     wl_min = np.nanmin(wavelength)
     wl_max = np.nanmax(wavelength)
 
-    return my_logspace(wl_min, wl_max, base, end_point=True)
+    return wl_logspace(wl_min, wl_max, base, end_point=True)
