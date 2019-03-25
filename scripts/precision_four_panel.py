@@ -1,4 +1,9 @@
-"""Plot a Figueira et al. 2016 like plot."""
+"""
+precision_four_panel.py
+-----------------------
+Plot a Figueira et al. (2016) Figure 1 like plot.
+
+"""
 
 import sys
 from os.path import join
@@ -16,7 +21,19 @@ matplotlib.use("Agg")
 
 
 def load_dataframe(filename):
-    """Load in precision file, clean up spaces in csv."""
+    """Load in precision file, clean up spaces in csv.
+
+    Parameters
+    ----------
+    filename: str
+        Name of phoenix_precision.py output.
+
+    Returns
+    -------
+    df: pandas.DataFrame
+        DataFrame of data.
+
+    """
     df = pd.read_csv(precision_file)
     # Temp, logg, [Fe/H], Alpha, Band, Resolution, vsini, Sampling, Quality, Cond. 1, Cond. 2, Cond. 3, correct flag
     df.columns = df.columns.str.strip()
@@ -40,7 +57,26 @@ def load_dataframe(filename):
 def plot_precision(
     precision_file, teffs=None, logg=4.5, fe_h=0.0, vsini=1.0, sampling=3
 ):
-    """Plot precision 4 panel with RV. precision."""
+    """Plot precision 4 panel with RV  precision.
+
+    Saves figure to `plots/`.
+
+    Parameters
+    ----------
+    precision_file: str
+        Name of phoenix_precision.py output.
+    teffs: List of int or None
+       Stellar temperatures. Default is [3900, 3500, 2800, 2600].
+    logg: int
+        Stellar Logg. Default is 4.5.
+    fe_h: int
+        Stellar metallicity. Default is 0.0.
+    vsini: float
+       Rotational velocity. Default is 1.0.
+    sampling:
+        Spectral sampling. Default is 3.
+
+    """
     if teffs is None:
         # Default teffs
         teffs = [3900, 3500, 2800, 2600]
@@ -215,7 +251,17 @@ def filter_df(df, filter_dict, drop_list=None):
 
 
 def cumulative_df(df, full_cum=False):
-    """Index by band, """
+    """Calculated cumulative RV precision across bands.
+    The precision of "Z", "ZY", "ZYJ", "ZYJH", "ZYJHK" bands.
+
+    Parameters
+    ----------
+    df: pandas.DataFrame
+       DataFrame.
+    full_cum: bool
+       Include "YJHK", "JHK", "HK", "K" grouping also. Default is False.
+
+    """
     bands = df.index
     assert all(bands == ["Z", "Y", "J", "H", "K"]), bands
     if full_cum:
@@ -254,6 +300,25 @@ def cumulative_plot(
 
     full_cum: bool
     Cumlative over entire range [ "Z","ZY", "ZYJ", "ZYJH", "ZYJHK","YJHK", "JHK","HK","K"]
+
+    Saves figure to `plots/`.
+
+    Parameters
+    ----------
+    precision_file: str
+        Name of phoenix_precision.py output.
+    teffs: List of int or None
+       Stellar temperatures. Default is [3900, 3500, 2800, 2600].
+    logg: int
+        Stellar Logg. Default is 4.5.
+    fe_h: int
+        Stellar metallicity. Default is 0.0.
+    vsini: float
+       Rotational velocity. Default is 1.0.
+    sampling:
+        Spectral sampling. Default is 3.
+    full_cum: bool
+        Cumulative over entire range. Default is False.
 
     """
     if teffs is None:
