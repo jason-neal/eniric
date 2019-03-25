@@ -32,15 +32,50 @@ You can configure the location of and atmmodel to use in config.yaml.
 
 .. _Masking_ref:
 
-Weight Masking
-~~~~~~~~~~~~~~
+Telluric Masking
+----------------
+In real observations telluric lines contaminate the spectra and need to be removed.
+Typically this is done by excluding waveelengths that are near deep (e.g. >2%) telluric lines.
+Figueria et al. (2016) condsidered three different conditions which can be
 
-Three cases:
+The atmospheric absorption can be used to mask
 
-* all 1's
-* 1s and 0s
-* Transmission spectrum
-  The masking function is squared which only affects the 3rd option, If you want to alter the weights in a specific way you will need to account for this when deriving the mask.
+The three default cases treated in Figueira et al. (2016) were no telluric corection, masking, assumption of perfect telluric correction.
+
+The masks M for these three cases are as follows, given the atmospheretic transmission T for each wavelenght/pixel ,i.
+
+* Condition 1
+   No telluric treatment, theoretical precision of the specturm.
+
+.. math::
+
+  M(i) = 1
+
+* Condition 2
+ Masking out telluric lines deeper than :math:`\tau` (e.g. :math:`\tau=0.98` for 2%).
+
+.. math::
+
+    M(i) &= \begin{cases}
+    0, \hspace{1em} T(i) < \tau\\
+    1, \hspace{1em} T(i) \ge \tau\\
+    \end{cases}\label{eqn:mask2}\\
+
+* Condition 3
+    The assumption of perfect telluric correction.
+    The telluric lines have been completely removed however the flux variance at the locations of the lines increases
+    due to the lower flux received.
+    This can be implemented with the following mask
+
+.. math::
+
+  M(i) = {T(i)}^2
+
+For examples using these masks see :ref:`atmospheremasking_ref` or the usage in :mod:`phoenix_precision.py`.
+
+The mask for Condition 2 can be created using Atmosphere class
+
+.. automethod:: Atmosphere.mask
 
 
 Barycentric Motion
