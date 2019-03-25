@@ -31,10 +31,7 @@ ref_choices.extend(config.bands["all"])
 
 
 def _parser():
-    """Take care of all the argparse stuff.
-
-    :returns: the args
-    """
+    """Take care of all the argparse stuff."""
     parser = argparse.ArgumentParser(
         description="Calculate precision and quality for synthetic spectra."
     )
