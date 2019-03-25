@@ -59,7 +59,7 @@ def rotational_convolution(
     num_procs: int, None or joblib.parallel.Parallel.
         Number of processes to use, n_job parameter in joblib.
         If num_procs =  1, then a single core is used.
-        Can also be a joblib.parallel.Parallel instance.
+        Can also be a joblib.parallel.Parallel instance. Default is None.
     verbose: bool
         Show the tqdm progress bar. Default is True.
 
