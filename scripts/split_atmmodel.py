@@ -22,11 +22,7 @@ choices.extend(config.bands["all"])
 
 
 def _parser():
-    """Take care of all the argparse stuff.
-
-    :returns: the args
-    """
-
+    """Take care of all the argparse stuff."""
     parser = argparse.ArgumentParser(description="Band separate out atmospheric model.")
 
     parser.add_argument("-m", "--model", help="Model name", type=str, default=atmmodel)
@@ -72,7 +68,7 @@ def _parser():
 def check_positive(value: str) -> float:
     """Function to check if input is positive.
 
-    http://stackoverflow.com/questions/14117415/in-python-using-argparse-allow-only-positive-integers.
+    http://stackoverflow.com/questions/14117415.
 
     Parameters
     ----------
@@ -128,6 +124,7 @@ def main(
         To later apply barycenter shifting. Default is 100.
     cutoff_depth: float
        Telluric line depth cutoff percent. Default = 2.0.
+
     """
     if (bands is None) or ("ALL" in bands):
         bands_ = config.bands["all"]
