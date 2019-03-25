@@ -1,6 +1,10 @@
 #!/usr/bin/env python
-"""Script to split the large atmospheric model transmission spectra into the separate bands.
+"""
+split_atmmodel
+--------------
+Script to split the large atmospheric model transmission spectra into the separate bands.
 This create smaller files to load for each band for individual bands only.
+
 """
 import argparse
 import os
@@ -9,9 +13,7 @@ from os.path import join
 from typing import List, Optional
 
 import numpy as np
-from astropy import constants as const
 
-import eniric
 from eniric import config
 from eniric.atmosphere import Atmosphere
 from eniric.utilities import band_limits, doppler_shift_wav
@@ -72,7 +74,7 @@ def check_positive(value: str) -> float:
 
     Parameters
     ----------
-    value: "str"
+    value: str
         A input string from argparse to check if it is a positive number.
 
     Returns
@@ -101,7 +103,7 @@ def main(
     bands: Optional[List[str]] = None,
     new_name: Optional[str] = None,
     data_dir: Optional[str] = None,
-    rv_extend: float = 100,
+    rv_extend: float = 100.0,
     cutoff_depth: float = 2.0,
     verbose: bool = False,
 ):
@@ -124,6 +126,11 @@ def main(
         To later apply barycenter shifting. Default is 100.
     cutoff_depth: float
        Telluric line depth cutoff percent. Default = 2.0.
+
+    Returns
+    -------
+    exit_status: int
+        Unix-like exit. Non-zero indicates a failure occurred.
 
     """
     if (bands is None) or ("ALL" in bands):
@@ -181,7 +188,11 @@ def main(
         write_status[i] = split_atm.to_file(filename, header=header, fmt="%11.8f")
     if verbose:
         print("Finished telluric model splitting")
-    return int(np.sum(write_status))  # If any extracts fail they will turn up here.
+
+    exit_status = int(
+        np.sum(write_status)
+    )  # If any extracts fail they will turn up here.
+    return exit_status
 
 
 if __name__ == "__main__":

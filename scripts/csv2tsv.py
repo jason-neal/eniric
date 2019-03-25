@@ -1,5 +1,11 @@
 #!/usr/bin/env python
-"""Simple script using pandas to transform from *.csv to *.tsv."""
+"""
+csv2tsv.py
+----------
+Simple script using pandas to transform from \*.csv to \*.tsv.
+
+"""
+
 import sys
 
 import pandas

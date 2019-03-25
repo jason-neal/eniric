@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+"""
+phoenix_precision.py
+--------------------
+Script to generate RV precision of synthetic spectra, see :ref:`Calculating-Precisions`.
+
+"""
 import argparse
 import itertools
 import os
@@ -172,8 +178,8 @@ def do_analysis(
     air: bool = False,
     model: str = "aces",
     verbose: bool = False,
-) -> List[Quantity]:
-    """Precision and Quality for specific parameter set.
+) -> Tuple[Quantity]:
+    """Calculate RV precision and Quality for specific parameter set.
 
     Parameters
     ----------
@@ -203,14 +209,28 @@ def do_analysis(
     verbose:
         Enable verbose (default=False).
 
-    Notes:
+    Returns
+    -------
+    q: astropy.Quality
+     Spectral quality.
+    result_1: astropy.Quality
+        RV precision under condition 1.
+    result_2 : astropy.Quality
+        RV precision under condition 2.
+    result_3: astropy.Quality
+        RV precision under condition 3.
+
+    Notes
+    -----
         We apply the radial velocity doppler shift after
-           - convolution (rotation and resolution)
-           - resampling
-           - SNR normalization.
+            - convolution (rotation and resolution)
+            - resampling
+            - SNR normalization.
+
         in this way the RV only effects the precision due to the telluric mask interaction.
-        The RV should maybe come between the rotational and instrumental convolution
+        Physically the RV should be applied between the rotational and instrumental convolution
         but we assume this effect is negligible.
+
     """
     if conv_kwargs is None:
         conv_kwargs = {
@@ -284,7 +304,7 @@ def do_analysis(
 
     # Turn quality back into a Quantity (to give it a .value method)
     q = q * u.dimensionless_unscaled
-    return [q, result_1, result_2, result_3]
+    return q, result_1, result_2, result_3
 
 
 def convolve_and_resample(
@@ -304,6 +324,7 @@ def convolve_and_resample(
         Resampled wavelength array
     sampled_flux: ndarray
         Convolved and resampled flux array
+
     """
     wav_band, __, convolved_flux = convolution(wav, flux, vsini, R, band, **conv_kwargs)
     # Re-sample to sampling per resolution element.
@@ -319,7 +340,8 @@ def model_format_args(model, pars):
     model in [temp, logg, fe/h, alpha]
     pars in order (R, band, vsini, sample).
 
-    Can now also optionally handle a 5th parameter rv.
+    Can now also optionally handle a 5th parameter RV.
+
     """
     temp = int(model[0])
     logg = float(model[1])
@@ -336,7 +358,7 @@ def model_format_args(model, pars):
         return temp, logg, fe_h, alpha, band, res, vsini, sample, 0.0
 
 
-def header_row(add_rv=False):
+def header_row(add_rv=False) -> str:
     """Header row for output file."""
     if add_rv:
         header = (
@@ -351,7 +373,7 @@ def header_row(add_rv=False):
     return header
 
 
-def get_already_computed(filename: str, add_rv: bool = False):
+def get_already_computed(filename: str, add_rv: bool = False) -> List[str]:
     """Get the string of already computed model/parameters from the result file."""
     param_lines = []
     with open(filename, "r") as f:
@@ -374,7 +396,7 @@ def is_already_computed(
     add_rv: bool = False,
     correct: bool = False,
     verbose=False,
-):
+) -> bool:
     """Check if any combinations have already been preformed.
     Correct is boolean for applied Artigau correction."""
     model_par_str_args = model_format_args(model, pars)
@@ -411,14 +433,35 @@ def strip_whitespace(line: str) -> str:
 
 def select_csv_columns(line: str, ncols: int = 8) -> str:
     """Select first ncols in a line from a csv.
+
+    Parameters
+    ----------
     ncols: int
         Number of column to select.
+
+    Returns
+    -------
+    selected_cols: str
+        Selected ncols of csv.
+
     """
     return ",".join(line.split(",")[:ncols])
 
 
 def check_model(model: str) -> str:
-    """Check model is 'aces' or 'btsettl'."""
+    """Check model is 'aces' or 'btsettl'.
+
+    Parameters
+    ----------
+    model: str
+        Model name. Should be either 'aces' or 'btsettl'.
+
+    Returns
+    -------
+    model: str
+       Valid model output; either 'aces' or 'btsettl'.
+
+"""
     if model == "phoenix":
         warnings.warn(
             "The model name 'phoenix' is depreciated, use 'aces' instead.",

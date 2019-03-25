@@ -1,7 +1,10 @@
 #!/usr/bin/env python
-"""Pre-doppler-shift the Tapas atmosphere model for RV Precision.
+"""
+barycenter_broaden_atmmodel
+---------------------------
+Doppler shift the Tapas atmosphere model and save to files.
+This makes the RV precision calculations faster.
 
-To make RV precision calculations faster.
 """
 
 import argparse
@@ -38,7 +41,7 @@ def _parser():
     return parser.parse_args()
 
 
-def main(bands: Optional[List[str]] = None, verbose: bool = False):
+def main(bands: Optional[List[str]] = None, verbose: bool = False) -> None:
     """Preform the barycentric shifting of atmosphere masks and saves result.
 
     This saves time in the precision determination code.
@@ -47,6 +50,7 @@ def main(bands: Optional[List[str]] = None, verbose: bool = False):
     ----------
     bands: list of str
         Wavelength bands to perform barycenter shifts on. Default is all bands.
+
     """
     if (bands is None) or ("ALL" in bands):
         bands_ = config.bands["all"]
