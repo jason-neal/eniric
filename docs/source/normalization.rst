@@ -8,5 +8,3 @@ Normalization
 .. automodule:: eniric.snr_normalization
     :members: snr_constant_wav, snr_constant_band, sampling_index
     :undoc-members:
-
-
