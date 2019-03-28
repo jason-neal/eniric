@@ -95,6 +95,10 @@ These can be easily downloaded using the provided scripts.
 
     $ download_eniric_data.sh
 
+.. Note:: If you have an issue connecting to dropbox you can also try
+        adding the ``--no-check-certificate`` flag.
+
+
 or on **Windows** in a PowerShell
 
 .. code-block:: bash
@@ -104,6 +108,7 @@ or on **Windows** in a PowerShell
 This includes an atmospheric transmission spectrum, located at ``data/atmos/Average_TAPAS_2014.dat``, which can be used for spectral masking.
 
 .. Note:: This is to keep the size of the git repository small.
+
 
 Testing
 -------

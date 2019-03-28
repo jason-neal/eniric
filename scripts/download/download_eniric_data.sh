@@ -3,12 +3,12 @@
 # Inspired by Starfish
 # Invoke this script from the top eniric directory.
 
-# Check for an --no-check-certificates argument
+# Check for an --no-check-certificate argument
 
 function display_usage(){
    echo "
    Usage:
-       $0 [--no-check-certificates]
+       $0 [--no-check-certificate]
 
    Downloads data for eniric from dropbox and the phoenix aces library."
 }
@@ -27,12 +27,12 @@ if [ $# -gt 1 ];
     exit 1
 fi
 
-# Check if $1 equals --no-check-certificates,
+# Check if $1 equals --no-check-certificate,
 # otherwise an unknown flag was used:
 if [ $# -eq 0 ];
     then
     certcheck=""
-elif [ "$1" = "--no-check-certificates" ];
+elif [ "$1" = "--no-check-certificate" ];
     then
     certcheck=$1
 else
