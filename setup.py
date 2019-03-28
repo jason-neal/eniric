@@ -37,7 +37,7 @@ config = {
     "url": "https://github.com/jason-neal/eniric.git",
     "download_url": "https://github.com/jason-neal/eniric.git",
     "author_email": "jason.neal@astro.up.pt",
-    "version": "1.0rc1",
+    "version": "1.0rc3",
     "license": "MIT Licence",
     "setup_requires": [] + pytest_runner,
     "tests_require": ["pytest", "hypothesis"],
