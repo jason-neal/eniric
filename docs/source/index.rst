@@ -1,7 +1,3 @@
-.. Eniric documentation master file, created by
-   sphinx-quickstart on Tue Dec 11 23:58:47 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
 .. image:: https://img.shields.io/badge/python-3.6+-blue.svg
    :target: https://www.python.org/downloads/release/python-360/
@@ -53,13 +49,15 @@ Extending the performance and usability, it is able to be used on any synthetic 
 
 To get started see the :doc:`Installation <./installation>`, or the :doc:`Basic Usage <./basic_usage>`.
 
+
 Features
 --------
 
 ``Eniric`` contains a number of features to transform and prepare the spectra; both observed and synthetic.
 
 * :doc:`Spectral broadening <./broadening>`:
-   Allows for Rotational and Instrumental broadening of synthetic spectra given rotation speed ``vsini`` and resolution ``R``.
+   Allows for Rotational and Instrumental broadening of synthetic spectra given a rotation speed ``vsini`` and resolution ``R``.
+
 * :doc:`Atmospheric transmission <telluric_correction>` masking:
     Analyzing the RV precision attainable under the different masking conditions presented in `Figueira et al. 2016`_.
 
@@ -67,19 +65,26 @@ Features
   * Masking all regions affected by atmospheric absorption of a given % over the course of the year.
   * Assuming perfect telluric correction in which the variance of the measured flux is impacted.
 
-* Relative RV precision
-   The RV precision are present relative to a specified SNR per pixel in the center of a photometric band.
-   The default as used in the `Figueira et al. 2016`_ is a SNR of 100 at the center of the J-band.
-* Spectral Re-sampling
-   Allows for re-sampling of spectra to ``N`` pixels per FWHM. Default is 3.
-* Photometric Band selection
+* Spectral :doc:`Resampling <resampling>`
+   Allows for resampling of synthetic spectra to ``N`` pixels per FWHM. Default is 3.
 
-  * Analysis the RV precision attainable by individual photometric bands ``Z``\ , ``Y``\ , ``J``\ , ``H``\ , ``K``.
-  * User definable
+* :doc:`SNR normalization <normalization>`
+   Normalize spectral flux to a defined SNR level.
+
+* Photometric band selection
+    Analysis splitable into individual photometric bands ``Z``\ , ``Y``\ , ``J``\ , ``H``\ , ``K``.
+    User definable.
+
+* :doc:`Theoretical RV precision <theoretical_precision>`
+   Compute spectral RV precision and spectral quality.
 
 * Incremental quality/precision
-    Determine the incremental spectral quality or RV precision on narrow wavelength slices across the entire spectrum, similar to that present in Figure 1 of `Artigau et al. 2018 <http://adsabs.harvard.edu/abs/2018AJ....155..198A>`_.
-* Analyse precision of synthetic libraries
+    Determine the RV precision and spectral quality on narrow wavelength slices across the entire spectrum, similar to that present in Figure 1 of `Artigau et al. 2018 <http://adsabs.harvard.edu/abs/2018AJ....155..198A>`_.
+
+* Analyse relative precision of synthetic libraries
+    The RV precision of are present relative to a specified SNR per pixel in the center of a photometric band.
+    The default as used in `Figueira et al. 2016`_ is a SNR of 100 at the center of the J-band.
+
     - Available through Starfish's `grid_tools <https://iancze.github.io/Starfish/current/grid_tools.html>`_.
        - `PHOENIX-ACES`_
        - `BT-Settl`_
@@ -90,17 +95,38 @@ Features
    :alt: Example relative precisions
    :align: center
 
-   Precision achieved with *eniric* as a function of spectral band for stars with a rotational velocity of vsini=1.0\ kms$^{-1}$ and temperatures 3900 K, 3500 K, 2800 K, 2600 K, corresponding to spectral types M0, M3, M6, and M9 respectively.
+   Precision achieved with *eniric* as a function of spectral band for stars with a rotational velocity of vsini=1.0 km/s and temperatures 3900 K, 3500 K, 2800 K, 2600 K, corresponding to spectral types M0, M3, M6, and M9 respectively.
    The dashed line represents the theoretical limits imposed by condition 1, and the filled area represents the values within the limits set by conditions 2 (circles) and 3 (triangles); blue, green, and red represent the results obtained for resolutions of 60000, 80000, and 100000, respectively.
    The spectra were normalized to have a SNR of 100 per resolution element as measured at the center of the J-band.
    This is similar to Figure 1 from `Figueira et al. 2016`_ but with updated precision values.
+
+
+Background
+----------
+The origin of this code was used in `Figueira et al. 2016`_.
+
+.. code-block:: text
+
+    P. Figueira, V. Zh. Adibekyan, M. Oshagh, J. J. Neal, B. Rojas-Ayala, C. Lovis, C. Melo, F. Pepe, N. C. Santos, M. Tsantaki, 2016,
+    Radial velocity information content of M dwarf spectra in the near-infrared,
+    Astronomy and Astrophysics, 586, A101
+
+To reproduce the updated results for `Figueira et al. 2016`_
+
+.. code-block:: bash
+
+    phoenix_precision.py -t 3900 3500 2800 2600 -l 4.5 -m 0.0 -r 60000 80000 100000 -v 1.0 5.0 10.0 -b Z Y J H K
+
+after :ref:`install_ref` and :ref:`config_ref`.
 
 
 Support
 -------
 
 If you are having issues, please let us know.
-Submit an issue on `Github <https://github.com/jason-neal/eniric/issues>`_.
+
+You can submit an issue on `Github <https://github.com/jason-neal/eniric/issues>`_.
+
 
 License
 -------

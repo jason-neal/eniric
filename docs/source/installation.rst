@@ -1,3 +1,5 @@
+.. _install_ref:
+
 ============
 Installation
 ============
@@ -15,6 +17,12 @@ To use the most up-to-date packages install the pinned requirements from the ``r
    python setup.py develop
 
 Installation from the github repository should also be possible.
+
+.. code-block:: bash
+
+    pip install https://github.com/jason-neal/eniric/archive/master.zip#egg=eniric
+
+or for the develop branch
 
 .. code-block:: bash
 
@@ -98,7 +106,6 @@ These can be easily downloaded using the provided scripts.
 
 .. Note:: If you have an issue connecting to dropbox you can also try
         adding the ``--no-check-certificate`` flag.
-
 
 or on **Windows** in a PowerShell
 
