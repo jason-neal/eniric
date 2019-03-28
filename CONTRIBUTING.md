@@ -5,12 +5,12 @@
 
 #### Do you have more general questions about eniric?
 
-* Please check the [documentation](https://github.com/jason-neal/eniric/wiki) to make sure your question is not answered there.
+* Please check the [documentation](https://eniric.readthedocs.io/en/latest) to make sure your question is not answered there.
 * If not, feel free to open a new issue
 
 #### **Did you find a bug?**
 
-* Please open a GitHub [issue](https://github.com/jason-neal/eniric/issues). to tell us about it. 
+* Please open a GitHub [issue](https://github.com/jason-neal/eniric/issues). to tell us about it.
   Would be even more awesome if you could provide a possible solution!  
   &nbsp; maybe check if the bug was not already reported (and solved) by searching the closed issues.
 
@@ -25,17 +25,14 @@
 
 
 #### Coding conventions
-The style guide for eniric is governed by [black](https://github.com/ambv/black) wth default settings. 
-You can run this yourself but it is also included in the pre-commit hooks. 
+The style guide for eniric is governed by [black](https://github.com/ambv/black) wth default settings.
+You can run this yourself but it is also included in the pre-commit hooks.
 
-Before commiting changes you can activate the [pre-commit hooks](https://github.com/pre-commit/pre-commit) using    
+Before commiting changes you can activate the [pre-commit hooks](https://github.com/pre-commit/pre-commit) using  
 
     pip install pre-commit
     pre-commit install
-    
+
 This will then preform the pre-commit checks before commiting.
 
-
 Thank you!
-
-(Adapted from [kima](https://github.com/j-faria/kima/blob/master/CONTRIBUTING.md))

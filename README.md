@@ -19,11 +19,11 @@ Checkout the documentation on [Read the Docs](https://eniric.readthedocs.io/en/l
 ## Features:
 `Eniric` contains a number of features to transform and prepare the spectra (observed and synthetic).
 
-- [Spectral broadening](https://github.com/jason-neal/eniric/wiki/Broadening)
+- [Spectral broadening](https://eniric.readthedocs.io/en/latest/broadening.html)
 
      Allows for Rotational and Instrumental broadening of synthetic spectra given a rotation speed ``vsini`` and resolution ``R``.
 
-- [Atmospheric transmission masking](https://github.com/jason-neal/eniric/wiki/Atmospheric-Transmission)
+- [Atmospheric transmission masking](https://eniric.readthedocs.io/en/latest/telluric_corection.html)
 
    Analyzing the RV precision attainable under the different masking conditions presented in `Figueira et al. 2016`_.
   * No treatment of atmospheric transmission
