@@ -4,11 +4,10 @@
 
 # eniric files
 images/*
+plots/*
 docs/*.py
 docs/*.html
-data/atmmodel/Average_TAPAS_2014*.dat
-data/test_data/phoenix-raw/*.fits
-data/test_data/phoenix-raw/*/*.fits
+data/*
 tests/data/phoenix-raw/*
 tests/data/btsettl-raw/*
 
