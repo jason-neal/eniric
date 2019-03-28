@@ -255,7 +255,7 @@ class Atmosphere(object):
 
         Parameters
         ----------
-        depth : float
+        depth: float
             Telluric line depth percentage to mask out. Default is 2.0.
             E.g. depth=2 will mask transmission deeper than 2%.
 

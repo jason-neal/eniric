@@ -30,14 +30,14 @@ def log_resample(
     Note
     ----
     Almost equivalent to using
-    np.logspace(np.log(wavelength)/np.log(base), np.log(wavelength)/np.log(base),
-        np.log(wavelength_end / wavelength_start) / np.log(base), base).
+    ``np.logspace(np.log(wavelength)/np.log(base), np.log(wavelength)/np.log(base),
+        np.log(wavelength_end / wavelength_start) / np.log(base), base)``.
     """
     wavelength_start = np.nanmin(wavelength)
     wavelength_end = np.nanmax(wavelength)
 
     # Create grid using logarithms with base of (1.0 + 1.0/(sampling*resolution))
-    base = 1.0 + 1.0 / (float(sampling) * float(resolution))  # type : float
+    base = 1.0 + 1.0 / (float(sampling) * float(resolution))  # type: float
     return wl_logspace(wavelength_start, wavelength_end, base, end_point=True)
 
 

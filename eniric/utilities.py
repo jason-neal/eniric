@@ -83,7 +83,7 @@ def band_middle(band: str) -> float:
     band: str
         Band label
 
-    Return
+    Returns
     -------
     middle: float
         Wavelength at middle band.
@@ -436,7 +436,7 @@ def doppler_shift_wav(wavelength: ndarray, vel: float):
     ----------
     wavelength: ndarray
         Wavelength vector
-    vel : float
+    vel: float
         Velocity to Doppler shift by in km/s.
 
     Notes
@@ -472,7 +472,7 @@ def doppler_shift_flux(
         Wavelength vector
     flux: ndarray
         Flux vector
-    vel : float
+    vel: float
         Velocity to Doppler shift by in km/s.
     new_wav: Optional[ndarray]
         New wavelength array to evaluate the doppler shifted flux at.

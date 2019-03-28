@@ -18,6 +18,7 @@ These are:
 * Effect of spectral gradient (`Github <https://github.com/jason-neal/eniric/blob/master/docs/Notebooks/spectral_gradient.ipynb>`__) (`nbviewer <https://nbviewer.jupyter.org/github/jason-neal/eniric/blob/master/docs/Notebooks/spectral_gradient.ipynb>`__)
 * Split_verse_Weighted_masking (`Github <https://github.com/jason-neal/eniric/blob/master/docs/Notebooks/Split_verse_Weighted_masking.ipynb>`__) (`nbviewer <https://nbviewer.jupyter.org/github/jason-neal/eniric/blob/master/docs/Notebooks/Split_verse_Weighted_masking.ipynb>`__)
 
+
 Misc
 ^^^^
 

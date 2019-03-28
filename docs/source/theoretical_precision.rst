@@ -127,6 +127,7 @@ The different columns of the output file are given in the table below.
 The first 9 columns uniquely identify a set of input parameter values, this is used to avoid repeating an identical computaion.
 In this way ``precsions.csv`` can be appended to with new values, while keeping the other values, if desired.
 
+
 .. _Calculating-Precisions:
 
 Calculating Precisions
@@ -145,7 +146,7 @@ To reproduce the calculations of `Figueira et al. (2016)`_ you can use the
 
 .. code-block:: bash
 
-   phoenix_precision.py -t 2600, 2900, 3500, 3900 -m 0.0, -l 4.5 --snr 100 -b Z Y J H K --ref_band J
+   phoenix_precision.py -t 2600 2800 3500 3900 -m 0.0, -l 4.5 -r 60000 80000 100000 -v 1.0 5.0 10.0 --snr 100 -b Z Y J H K --ref_band J
 
 
 NIRPS
@@ -193,7 +194,6 @@ with :func:`correct_artigau_2018`, e.g.:
     rv_K = 1 # m/s
     correction_factor = correct_artigau_2018(band="K")
     rv_K_corrected = rv_K * correction_factor
-
 
 .. automodule:: eniric.corrections
     :members:
