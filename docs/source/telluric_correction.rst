@@ -102,6 +102,27 @@ This extends the regions that are masked out, you can check that the mask contin
 The fraction ``(np.sum(new_mask) - np.sum(mask)) /np.sum(mask)`` can also indicate the increase in masked out wavelengths.
 
 
+Telluric Preparation
+--------------------
+The default telluric transmission spectrum provided with ``eniric`` is given in ``data\Atmodel\Average_TAPAS_2014.dat``.
+This is quite unweildly, opening and slicing of the large telluric spectrum reduces performance.
+
+To prepare this for computations it is better to split the spectra into the individual wavelength bands and apply the barycentric shifts.
+
+.. code-block:: bash
+
+    split_atmmodel.py
+    barycenter_broaden_atmmodel.py
+
+These two scripts will split the large telluirc spectra into the bands specified in the ``config.yaml``.
+They default to a mask of 2% depth. To change the masking cutoff depth use the ``--cutoff-depth`` flag.
+
+.. code-block:: bash
+
+    split_atmmodel.py --cutoff-depth 4
+
+The ``Atmosphere`` class will try to load the individaul band spectra but will fall back to the base file.
+
 
 Module
 ------
