@@ -38,13 +38,19 @@ Download Scripts
 Scripts to download the eniric data and phoenix data.
 They can be run from the command line.
 
-* scripts/download/download_eniric_data.sh
+.. code-block:: bash
+
+    scripts/download/download_eniric_data.sh
 
 This is also available as a powershell script.
 
-* scripts/download/ps_download_eniric_data.ps1
+.. code-block:: bash
+
+    scripts/download/ps_download_eniric_data.ps1
 
 The test data from the PHOENIX-ACES library is specifically
 downloaded using Starfish utilities in
 
-* scripts/download/download_test_aces.py.
+.. code-block:: bash
+
+    scripts/download/download_test_aces.py.
