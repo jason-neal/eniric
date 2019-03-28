@@ -17,6 +17,7 @@ To get a list of commit messages since last version to help write change log try
 - Example Notebooks.
 - Add `Contributing.md` and `Contributors.md`.
 - Zip required testing data, Delete unneeded data.
+- Refactor `eniric.Qcalculator` module to `eniric.precision`.
 
 Other:
 - `Blacken` source code.

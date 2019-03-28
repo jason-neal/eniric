@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 
-"""Bundled script to un-tar the eniric data downloaded."""
+"""
+untar_here.py
+-------------
+Bundled script to un-tar the eniric data downloaded.
+
+Uses the tarfile module to extract the data.
+
+"""
 import sys
 import tarfile
 

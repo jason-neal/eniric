@@ -1,7 +1,10 @@
 #!/usr/bin/env python
-"""Pre-doppler-shift the Tapas atmosphere model for RV Precision.
+"""
+barycenter_broaden_atmmodel
+---------------------------
+Doppler shift the Tapas atmosphere model and save to files.
+This makes the RV precision calculations faster.
 
-To make RV precision calculations faster.
 """
 
 import argparse
@@ -20,10 +23,7 @@ choices.extend(config.bands["all"])
 
 
 def _parser():
-    """Take care of all the argparse stuff.
-
-    :returns: the args
-    """
+    """Take care of all the argparse stuff."""
     parser = argparse.ArgumentParser(
         description=("Pre-doppler shift atmosphere masks.")
     )
@@ -34,14 +34,14 @@ def _parser():
         type=str,
         default="ALL",
         choices=choices,
-        help="Wavelength bands to select. Default=None.",
+        help="Wavelength bands to select. Default is None.",
         nargs="+",
     )
     parser.add_argument("-v", "--verbose", help="Turn on verbose.", action="store_true")
     return parser.parse_args()
 
 
-def main(bands: Optional[List[str]] = None, verbose: bool = False):
+def main(bands: Optional[List[str]] = None, verbose: bool = False) -> None:
     """Preform the barycentric shifting of atmosphere masks and saves result.
 
     This saves time in the precision determination code.
@@ -50,6 +50,7 @@ def main(bands: Optional[List[str]] = None, verbose: bool = False):
     ----------
     bands: list of str
         Wavelength bands to perform barycenter shifts on. Default is all bands.
+
     """
     if (bands is None) or ("ALL" in bands):
         bands_ = config.bands["all"]
@@ -71,7 +72,7 @@ def main(bands: Optional[List[str]] = None, verbose: bool = False):
             print("Calculating impact of Barycentric movement on mask...")
         org_mask = atm.mask
         masked_before = np.sum(org_mask)
-        atm.bary_shift_mask(consecutive_test=True)
+        atm.barycenter_broaden(consecutive_test=True)
 
         masked_after = np.sum(atm.mask)
         if verbose:

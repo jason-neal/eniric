@@ -6,7 +6,7 @@ from astropy import units as u
 from astropy.units import Quantity
 from numpy.core.multiarray import ndarray
 
-from eniric.Qcalculator import rv_precision
+from eniric.precision import rv_precision
 
 
 # Legacy function in which the spectra is split into chunks first and then the pixel weights are calculated.

@@ -26,7 +26,7 @@ def test_Atmosphere_funtional_test(short_atmosphere):
     atm.broaden(100_000)
     atm.mask_transmission(2)
     assert np.all(atm.transmission[atm.mask] >= 0.98)
-    atm.bary_shift_mask(consecutive_test=True)
+    atm.barycenter_broaden(consecutive_test=True)
     assert np.all(atm.transmission[atm.mask] >= 0.98)
 
 
@@ -109,7 +109,7 @@ def test_values_within_the_rv_of_telluric_lines_are_masked(
     atmos = sliced_atmmodel_default_mask
     org_mask = atmos.mask.copy()
     # RV shift mask
-    atmos.bary_shift_mask(rv=rv, consecutive_test=False)
+    atmos.barycenter_broaden(rv=rv, consecutive_test=False)
 
     for pixel, mask_value, org_val in zip(atmos.wl, atmos.mask, org_mask):
         if mask_value != 0:
@@ -128,7 +128,7 @@ def test_atmos_barycenter_shift_mask(sliced_atmmodel_default_mask, consec_test):
     org_mask = atmos.mask.copy()
     org_number_masked = np.sum(org_mask)
     org_len = len(org_mask)
-    atmos.bary_shift_mask(consecutive_test=consec_test)
+    atmos.barycenter_broaden(consecutive_test=consec_test)
     new_number_masked = np.sum(atmos.mask)
 
     assert (new_number_masked < org_number_masked) or (
@@ -306,13 +306,3 @@ def test_from_band_is_a_constructor(band):
     assert isinstance(atm, Atmosphere)
     assert np.all(atm.wl <= max_wl * 1.01)
     assert np.all(atm.wl >= min_wl * 0.99)
-
-
-@pytest.mark.parametrize("num_procs", [None, 2])
-@pytest.mark.parametrize("R", [5000, 80000])
-def test_atmosphere_broaden(R, num_procs):
-    atm = Atmosphere.from_band("K")
-    atm = atm.wave_select(2.3, 2.301)
-    print(len(atm.wl))
-    atm1 = atm.broaden(resolution=R, num_procs=num_procs)
-    assert atm1 is None
