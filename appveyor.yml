@@ -3,13 +3,13 @@ environment:
     # For Python versions available on Appveyor, see
     # http://www.appveyor.com/docs/installed-software#python
     - PYTHON: "C:\\Python36"
-    - PYTHON: "C:\\Python37"
-    - PYTHON: "C:\\Python36-x64"
     - PYTHON: "C:\\Python37-x64"
 
 cache:
   - "%LOCALAPPDATA%\\pip\\Cache -> appveyor.yml" # Use cache unless appveyor.yml changes.
-  - "data\\test_data -> appveyor.yml"           # Use cache unless appveyor.yml changes.
+  - "tests\\data -> appveyor.yml"
+  - "data\\ -> appveyor.yml"
+  - "tests\\data -> appveyor.yml"
 
 install:
   - SET PATH=%PYTHON%;%PYTHON%\Scripts\;%path%
@@ -32,7 +32,7 @@ install:
 
   # Prepare atmosphere models
   - cmd: "%PYTHON%\\python.exe scripts\\split_atmmodel.py -b ALL"
-  - cmd: "%PYTHON%\\python.exe scripts\\bary_shift_atmmodel.py -b ALL"
+  - cmd: "%PYTHON%\\python.exe scripts\\barycenter_broaden_atmmodel.py -b ALL"
 
 build: off
 

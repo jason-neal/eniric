@@ -31,7 +31,7 @@ __all__ = [
     "corrections",
     "legacy",
     "io_module",
-    "Qcalculator",
+    "precision",
     "resample",
     "snr_normalization",
     "utilities",

@@ -1,6 +1,10 @@
 #!/usr/bin/env python
-"""Script to split the large atmospheric model transmission spectra into the separate bands.
+"""
+split_atmmodel
+--------------
+Script to split the large atmospheric model transmission spectra into the separate bands.
 This create smaller files to load for each band for individual bands only.
+
 """
 import argparse
 import os
@@ -9,9 +13,7 @@ from os.path import join
 from typing import List, Optional
 
 import numpy as np
-from astropy import constants as const
 
-import eniric
 from eniric import config
 from eniric.atmosphere import Atmosphere
 from eniric.utilities import band_limits, doppler_shift_wav
@@ -22,11 +24,7 @@ choices.extend(config.bands["all"])
 
 
 def _parser():
-    """Take care of all the argparse stuff.
-
-    :returns: the args
-    """
-
+    """Take care of all the argparse stuff."""
     parser = argparse.ArgumentParser(description="Band separate out atmospheric model.")
 
     parser.add_argument("-m", "--model", help="Model name", type=str, default=atmmodel)
@@ -56,14 +54,14 @@ def _parser():
         "--rv_extend",
         default=100,
         type=check_positive,
-        help="Doppler RV (km/s) to extend the wavelength limits of the band. Default=100 km/s",
+        help="RV in km/s to extend the wavelength limits of the band. Default is 100.",
     )
     parser.add_argument(
         "-c",
         "--cutoff_depth",
         default=2,
         type=float,
-        help=r"Telluric line depth cutoff. Default = 2 percent.",
+        help=r"Telluric line depth cutoff percent. Default is 2.0.",
     )
     parser.add_argument("-v", "--verbose", help="Turn on verbose.", action="store_true")
     return parser.parse_args()
@@ -72,11 +70,11 @@ def _parser():
 def check_positive(value: str) -> float:
     """Function to check if input is positive.
 
-    http://stackoverflow.com/questions/14117415/in-python-using-argparse-allow-only-positive-integers.
+    http://stackoverflow.com/questions/14117415.
 
     Parameters
     ----------
-    value: "str"
+    value: str
         A input string from argparse to check if it is a positive number.
 
     Returns
@@ -105,7 +103,7 @@ def main(
     bands: Optional[List[str]] = None,
     new_name: Optional[str] = None,
     data_dir: Optional[str] = None,
-    rv_extend: float = 100,
+    rv_extend: float = 100.0,
     cutoff_depth: float = 2.0,
     verbose: bool = False,
 ):
@@ -123,10 +121,17 @@ def main(
         New file name base.
     data_dir: Optional[str]
         Directory for results. Can also be given in config.yaml "paths:atmmodel:"...
-    rv_extend: float (positive) (default 100)
-        Rv amount to extend wavelength range of telluric band. To later apply barycenter shifting.
+    rv_extend: float
+        Absolute RV to extend wavelength range of telluric band.
+        To later apply barycenter shifting. Default is 100.
     cutoff_depth: float
-       Telluric line depth cutoff. Default = 2%.
+       Telluric line depth cutoff percent. Default = 2.0.
+
+    Returns
+    -------
+    exit_status: int
+        Unix-like exit. Non-zero indicates a failure occurred.
+
     """
     if (bands is None) or ("ALL" in bands):
         bands_ = config.bands["all"]
@@ -183,7 +188,11 @@ def main(
         write_status[i] = split_atm.to_file(filename, header=header, fmt="%11.8f")
     if verbose:
         print("Finished telluric model splitting")
-    return int(np.sum(write_status))  # If any extracts fail they will turn up here.
+
+    exit_status = int(
+        np.sum(write_status)
+    )  # If any extracts fail they will turn up here.
+    return exit_status
 
 
 if __name__ == "__main__":

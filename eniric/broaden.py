@@ -1,8 +1,8 @@
-"""Broadening functions
+"""Spectral broadening functions:
 
-Used to convolve the spectra for
-    - Stellar rotation
-    - Instrumental resolution
+Used to convolve the model spectra for
+    - Stellar rotation broadening.
+    - Instrumental profile broadening.
 
 Uses joblib.Memory to cache convolution results to skip repeated computation.
 """
@@ -39,52 +39,53 @@ def rotational_convolution(
     num_procs: Optional[Union[int, joblib.parallel.Parallel]] = None,
     verbose: bool = True,
 ) -> ndarray:
-    """Perform Rotational convolution.
+    r"""Perform Rotational convolution.
 
     Parameters
     ----------
     wavelength: ndarray
-        Wavelength to calculate convolution at.
+        Wavelength array.
     extended_wav: ndarray
-       Wavelength extended to avoid boundary issues.
+       Extended wavelength array to avoid boundary issues.
     extended_flux: ndarray
-        Photon flux, at extend wavelength
+        Photon flux for the extended wavelength array.
     vsini: float
         Rotational velocity in km/s.
-    epsilon: float (default = 0.6)
-        Limb darkening coefficient
-    normalize: bool (default = True)
-        Area normalize the broadening kernel (corrects for unequal sampling of position).
+    epsilon: float
+        Limb darkening coefficient. Default is 0.6.
+    normalize: bool
+        Area normalize the broadening kernel. This corrects for kernel area with unequal wavelength spacing.
+        Default is True.
     num_procs: int, None or joblib.parallel.Parallel.
-        Number of processes to use.
-        If None it is assigned to 1 less then total number of cores.
+        Number of processes to use, n_job parameter in joblib.
+        If num_procs =  1, then a single core is used.
+        Can also be a joblib.parallel.Parallel instance. Default is None.
     verbose: bool
-        Show the tqdm progress bar (default = True).
+        Show the tqdm progress bar. Default is True.
 
     Returns
     -------
     convolved_flux: ndarray
-        The convolved_flux evaluated at wavelength points.
+        The convolved flux evaluated at the wavelength array.
 
     """
 
     def element_rot_convolution(single_wav: float) -> float:
-        """Embarrassingly parallel part of rotational convolution.
+        r"""Embarrassingly parallel part of rotational convolution.
 
         Calculates the convolution value for a single pixel.
-
         The parameters extended_wav, extended_flux, vsini, epsilon and normalize
         are obtained from the outer scope.
 
         Parameters
         ----------
         single_wav: float
-            Wavelength value to calculate convolution at.
+            Wavelength to calculate the convolution at.
 
         Returns
         -------
         sum_val: float
-            Sum of flux convolved for this pixel/wavelength.
+            Sum of flux convolved for this wavelength.
 
         """
         # Select all values such that they are within the fwhm limits
@@ -156,36 +157,38 @@ def resolution_convolution(
     num_procs: Optional[Union[int, joblib.parallel.Parallel]] = None,
     verbose: bool = True,
 ) -> ndarray:
-    """Perform Resolution convolution.
+    r"""Perform Resolution convolution.
 
     Parameters
     ----------
     wavelength: ndarray
-        Wavelength in microns to
+        Wavelength array.
     extended_wav: ndarray
-        Wavelength array slightly longer to avoid boundary errors.
+       Extended wavelength array to avoid boundary issues.
     extended_flux: ndarray
-        Photon flux
+        Photon flux for the extended wavelength array.
     R: float
-        Resolution of instrumental profile.
-    fwhm_lim: float (default = 5.0)
-        FWHM limit for instrument broadening.
-    normalize: bool (default = True)
-        Area normalize the broadening kernels (corrects for unequal sampling of position).
+        Resolution of Guassian instrumental profile.
+    fwhm_lim: float
+        FWHM limit for instrument broadening. Default is 5.0.
+    normalize: bool
+        Area normalize the broadening kernel. This corrects for kernel area with unequal wavelength spacing.
+        Default is True.
     num_procs: int, None or joblib.parallel.Parallel.
-        Number of processes to use.
-        If None it is assigned to 1 less then total number of cores.
+        Number of processes to use, n_job parameter in joblib.
+        If num_procs =  1, then a single core is used.
+        Can also be a joblib.parallel.Parallel instance.
     verbose: bool
-        Show the tqdm progress bar (default = True).
+        Show the tqdm progress bar. Default is True.
 
     Returns
     -------
     convolved_flux: ndarray
-        The convolved_flux evaluated at wavelength points.
+        The convolved flux evaluated at the wavelength array.
     """
 
     def element_res_convolution(single_wav: float) -> float:
-        """Embarrassingly parallel component of resolution convolution.
+        r"""Embarrassingly parallel component of resolution convolution.
 
         Calculates the convolution value for a single pixel.
 
@@ -200,7 +203,7 @@ def resolution_convolution(
         Returns
         -------
         sum_val: float
-            Sum of flux convolved for this pixel/wavelength
+            Sum of flux convolved for this pixel/wavelength.
         """
         fwhm = single_wav / R
         # Mask of wavelength range within fwhm_lim* fwhm of wav
@@ -262,34 +265,33 @@ def convolution(
     normalize: bool = True,
     verbose: bool = True,
 ):
-    """Perform convolution of spectrum.
-
-    Rotational convolution followed by a Gaussian of a specified resolution R.
+    r"""Perform rotational then Instrumental broadening with convolutions.
 
     Parameters
     ----------
     wav: ndarray
-        Wavelength in microns
+        Wavelength array.
     flux: ndarray
-        Photon flux
+        Flux array.
     vsini: float
         Rotational velocity in km/s.
     R: int
         Resolution of instrumental profile.
     band: str
-        Wavelength band to choose, default="All"
-    epsilon: float (default = 0.6)
-        Limb darkening coefficient
-    fwhm_lim: float (default = 5.0)
-        FWHM limit for instrument broadening.
-    normalize: bool (default = True)
-        Area normalize the broadening kernels (corrects for unequal sampling of position).
+        Wavelength band to choose, default is "All".
+    epsilon: float
+        Limb darkening coefficient. Default is 0.6.
+    fwhm_lim: float
+        FWHM limit for instrument broadening. Default is 5.0.
+    normalize: bool
+        Area normalize the broadening kernel. This corrects for kernel area with unequal wavelength spacing.
+        Default is True.
     num_procs: int, None or joblib.parallel.Parallel.
-        Number of processes to use.
-        If None it is assigned to 1 less then total number of cores.
-        Can also be a joblib.parallel.Parallel.
+        Number of processes to use, n_job parameter in joblib.
+        If num_procs =  1, then a single core is used.
+        Can also be a joblib.parallel.Parallel instance.
     verbose: bool
-        Show the twdm progress bars (default = True).
+        Show the tqdm progress bar. Default is True.
 
     Returns
     -------
@@ -357,21 +359,21 @@ def unitary_gaussian(
     center: Union[float, int, str],
     fwhm: Union[float, int, str],
 ) -> ndarray:
-    """Gaussian function of area = 1.
+    """Gaussian kernal of area 1.
 
     Parameters
     ----------
     x: array-like
-        Position array
+        Position array.
     center: float
-        Central position of Gaussian
+        Central position of Gaussian.
     fwhm: float
-        Full Width at Half Maximum
+        Full Width at Half Maximum.
 
     Returns
     -------
-    result: array-like
-        Result of gaussian function sampled at x values.
+    kernel: array-like
+        Gaussian kernel.
     """
     if not isinstance(fwhm, (np.float, np.int)):
         raise TypeError("The fwhm value is not a number, {0}".format(type(fwhm)))
@@ -383,33 +385,35 @@ def unitary_gaussian(
     sigma = np.abs(fwhm) / (2 * np.sqrt(2 * np.log(2)))
     amp = 1.0 / (sigma * np.sqrt(2 * np.pi))
     tau = -((x - center) ** 2) / (2 * (sigma ** 2))
-    result = amp * np.exp(tau)
+    kernel = amp * np.exp(tau)
 
-    return result
+    return kernel
 
 
 def rotation_kernel(
     delta_lambdas: ndarray, delta_lambda_l: float, vsini: float, epsilon: float
 ) -> ndarray:
-    """Calculate the rotation kernel for a given wavelength
+    r"""Rotation kernel for a given line center.
 
     Parameters
     ----------
     delta_lambdas: array
-        Wavelength values selected within delta_lambda_l around central value. (check)
+        Wavelength difference from the line center lambda.
     delta_lambda_l: float
-        FWHM of rotational broadening. (check)
+        Maximum line shift of line center by vsini.
     vsini: float
-        Projected rotational velocity [km/s]
+        Projected rotational velocity in km/s.
     epsilon: float
-        Linear limb-darkening coefficient (0-1).
+        Linear limb-darkening coefficient, between 0 and 1.
 
     Returns
     -------
-        Rotational kernel
+    kernel: array
+        Rotational kernel.
 
-    Notes:
-    Equations * from .... book.
+    Notes
+    -----
+    Gray, D. F. (2005). The Observation and Analysis of Stellar Photospheres. 3rd ed. Cambridge University Press.
 
     """
     denominator = np.pi * vsini * (1.0 - epsilon / 3.0)
@@ -417,8 +421,9 @@ def rotation_kernel(
 
     c1 = 2.0 * (1.0 - epsilon) / denominator
     c2 = 0.5 * np.pi * epsilon / denominator
+    kernel = c1 * np.sqrt(1.0 - lambda_ratio_sqr) + c2 * (1.0 - lambda_ratio_sqr)
 
-    return c1 * np.sqrt(1.0 - lambda_ratio_sqr) + c2 * (1.0 - lambda_ratio_sqr)
+    return kernel
 
 
 def oned_circle_kernel(x: ndarray, center: float, fwhm: float):
@@ -435,24 +440,25 @@ def oned_circle_kernel(x: ndarray, center: float, fwhm: float):
 
     Returns
     -------
-        Collapsed circle kernel
+    Collapsed circle kernel.
 
-    Notes:
+    Notes
+    -----
     Tries to represent the broadening by the fiber of a fiber feed spectrograph.
 
-    Artigau 2018 - stated mathematically equivalent to a cosine between -pi/2 and pi/2. This is what has tried to be created.
+    Artigau 2018 - stated this is mathematically equivalent to a cosine between -pi/2 and pi/2.
     """
     fwhm_scale = 2.094_395_1  # Numerically derived
 
     A = 1  # Amplitude
     B = fwhm_scale / fwhm  # Scale to give specific fwhm
 
-    result = A * np.cos(B * (x - center))
+    kernel = A * np.cos(B * (x - center))
 
-    # Limit to main cos lobe only
+    # Limit to main cosine lobe only
     upper_xi = center + np.pi / 2 / B
     lower_xi = center - np.pi / 2 / B
     mask = mask_between(x, lower_xi, upper_xi)
-    result[~mask] = 0
+    kernel[~mask] = 0
 
-    return result
+    return kernel

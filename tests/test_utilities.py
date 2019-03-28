@@ -7,7 +7,7 @@ from astropy import constants as const
 from hypothesis import given
 
 import eniric.utilities as utils
-from eniric.Qcalculator import quality
+from eniric.precision import quality
 from eniric.utilities import (
     doppler_limits,
     doppler_shift_flux,

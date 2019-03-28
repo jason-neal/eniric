@@ -3,7 +3,7 @@ paths:
   btsettl_raw: [btsettl-raw]
   test_data: [.]
   atmmodel: [.., .., data, atmmodel]
-  precision: [.., .., data, precision]
+  precision_results: [.., .., data, precision]
   phoenix_dat: [obsolete, PHOENIX-ACES_spectra]
   results: [obsolete, results]
   resampled: [obsolete, resampled]

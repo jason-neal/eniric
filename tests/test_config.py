@@ -36,7 +36,7 @@ class TestConfig:
             ("phoenix_raw", ["..", "data", "phoenix-raw"]),
             ("btsettl_raw", ["..", "data", "btsettl-raw"]),
             ("atmmodel", ["..", "data", "atmmodel"]),
-            ("precision", ["..", "data", "precision"]),
+            ("precision_results", ["..", "data", "precision"]),
         ],
     )
     def test_default_paths_keys(self, key, values):
@@ -48,7 +48,7 @@ class TestConfig:
             ("phoenix_raw", ["phoenix-raw"]),
             ("btsettl_raw", ["btsettl-raw"]),
             ("atmmodel", ["..", "..", "data", "atmmodel"]),
-            ("precision", ["..", "..", "data", "precision"]),
+            ("precision_results", ["..", "..", "data", "precision"]),
         ],
     )
     def test_paths_keys(self, test_config, key, values):

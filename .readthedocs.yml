@@ -1,0 +1,21 @@
+# Read the Docs Configuration File
+
+# Build PDF aswell as HTML and JSON
+formats:
+    - pdf
+
+# Requirements file
+requirements_file:
+    requirements_dev.txt
+
+build:
+    image: latest
+
+python:
+    version: 3.6
+    setup_py_install: true
+    # From extras_require in setup.py
+    extra_requirements:
+        - dev
+        - tests
+        - docs

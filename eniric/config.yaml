@@ -1,17 +1,17 @@
-# Default YAML configuration script for Eniric
+# Default YAML configuration script for Eniric.
 
-# Paths to locations used by eniric, relative to config.yaml
+# Paths to locations used by eniric, relative to config.yaml.
 # Paths can either be strings of list of strings which will be passed
-# to os.path.join() [os independent]
+# to :py:func:`os.path.join` (This is for os independence)
 paths:
   phoenix_raw: ["..", "data", "phoenix-raw"] # Path to Phoenix-ACES spectra
   btsettl_raw: ["..", "data", "btsettl-raw"] # Path to BT-Settl spectra
-  atmmodel: ["..", "data", "atmmodel"]
-  precision: ["..", "data", "precision"]  # A place to put precision results
+  atmmodel: ["..", "data", "atmmodel"] # Path of atmosphere model directory
+  precision_results: ["..", "data", "precision"]  # A place to put precision results
 
 # Wavelength bands.
 bands:
-  all: ["VIS", "GAP", "Z", "Y", "J", "H", "K", "CONT", "NIR", "TEST"]
+  all: ["VIS", "GAP", "Z", "Y", "J", "H", "K", "CONT", "NIR", "TEST"] # "all" name available in scripts
 # Already included wavelength bands  (see `eniric.utilities.py`)
 # "VIS": (0.38, 0.78),
 # "GAP": (0.78, 0.83),
@@ -23,43 +23,20 @@ bands:
 # "CONT": (0.45, 1.05),
 # "NIR": (0.83, 2.35)
 
-# Add your custom band limits here and include in "all" above
+# Add your custom band limits here and include in "all" list above.
 # Limits must be contained in lists.
 custom_bands:
   TEST: [2.1, 2.2]
 
+# Location of the joblib memory cache.
 cache:
   # location: None  # Disables cache
   location: [".joblib"]
 
+# Properties of the atmospheric model used.
 atmmodel:
   # Base name of telluric model
   base: "Average_TAPAS_2014"
 
-
-## Starfish Keywords
-# These keywords are necessary to exist in the config.yaml (to enable Starfish to run)
-# but are not used by and have no affect on Eniric and the loading of the phoenix spectral libraries.
-# As such they are all set to nothing.
-#
-# To configure the path to the phoenix libraries use
-#    paths:
-#        phoenix_raw:
-#        btsettl_raw:
-# above.
-# If you are wanting to use "Eniric" with the other features "Starfish" good luck!
-# (or open an issue github issue).
+# Necessary configuration keywords for Starfish can be included in this file.
 name: "default"
-outdir: ""
-plotdir: ""
-grid:
-  raw_path: ""
-  hdf5_path: ""
-  key_name: ""
-  parname: []
-  parrange: []
-  wl_range: []
-  buffer: 0
-data:
-  grid_name: ""
-  instruments: []

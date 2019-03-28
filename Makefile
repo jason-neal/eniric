@@ -42,7 +42,7 @@ clean-data:
 
 atmos:
 	split_atmmodel.py -b ALL
-	bary_shift_atmmodel.py -b ALL
+	barycenter_broaden_atmmodel.py -b ALL
 
 clean-build:
 	rm --force --recursive build/
