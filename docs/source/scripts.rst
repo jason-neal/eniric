@@ -4,7 +4,6 @@ Scripts
 Scripts provided with eniric.
 
 
-
 .. automodule:: scripts.phoenix_precision
     :members:
 
@@ -26,6 +25,7 @@ Scripts provided with eniric.
 .. automodule:: scripts.csv2tsv
     :members:
 
+
 .. automodule:: scripts.untar_here
     :members:
 
@@ -40,7 +40,6 @@ They can be run from the command line.
 This is also available as a powershell script.
 
 * scripts/download/ps_download_eniric_data.ps1
-
 
 The test data from the PHOENIX-ACES library is specifically
 downloaded using Starfish utilities in
