@@ -26,9 +26,11 @@ Checkout the documentation on [Read the Docs](https://eniric.readthedocs.io/en/l
 - [Atmospheric transmission masking](https://eniric.readthedocs.io/en/latest/telluric_corection.html)
 
    Analyzing the RV precision attainable under the different masking conditions presented in `Figueira et al. 2016`_.
-  * No treatment of atmospheric transmission
-  * Masking all regions affected by atmospheric absorption of a given % over the course of the year.
-  * Assuming perfect telluric correction in which the variance of the measured flux is impacted.
+
+   The three conditions specifically treated are:
+   * No contamination or treatment of atmospheric transmission
+   * Masking all regions affected by atmospheric absorption of a given depth % over the course of the year.
+   * Assuming perfect telluric correction in which the variance of the measured flux is impacted.
 
 - Relative RV precision
 

@@ -44,7 +44,7 @@ Welcome to Eniric's documentation!
    utilities
 
 ``Eniric`` is a Python 3.6+ software written to calculate the theoretical Radial Velocity (RV) precision of Near-InfraRed (NIR) stellar spectra.
-``Eniric`` is an overhaul and extension to the code initially used in `Figueira et al. 2016`_ to analysis the precision of M-dwarf stars in the NIR, extending its ability to use any synthetic spectra from the PHOENIX-ACES and BT-Settl libraries, or user provided spectra, and making it easier/faster to use.
+``Eniric`` is an overhaul and extension to the code initially used in `Figueira et al. 2016`_ to analysis the precision of M-dwarf stars in the NIR, extending its ability to use any synthetic spectra from the PHOENIX-ACES and BT-Settl libraries, or user provided spectra, and making it easier and faster to use.
 Extending the performance and usability, it is able to be used on any synthetic spectra from the `PHOENIX-ACES`_ and `BT-Settl`_ (CIFIST2011-2015) libraries.
 
 To get started see the :doc:`Installation <./installation>`, or the :doc:`Basic Usage <./basic_usage>`.
@@ -53,7 +53,7 @@ To get started see the :doc:`Installation <./installation>`, or the :doc:`Basic 
 Features
 --------
 
-``Eniric`` contains a number of features to transform and prepare the spectra; both observed and synthetic.
+``Eniric`` contains a number of tools to transform and analyse synthetic or observed spectra.
 
 * :doc:`Spectral broadening <./broadening>`:
    Allows for Rotational and Instrumental broadening of synthetic spectra given a rotation speed ``vsini`` and resolution ``R``.
@@ -61,9 +61,10 @@ Features
 * :doc:`Atmospheric transmission <telluric_correction>` masking:
     Analyzing the RV precision attainable under the different masking conditions presented in `Figueira et al. 2016`_.
 
-  * No treatment of atmospheric transmission
-  * Masking all regions affected by atmospheric absorption of a given % over the course of the year.
-  * Assuming perfect telluric correction in which the variance of the measured flux is impacted.
+    The three conditions specifically treated are:
+      * No contamination or treatment of atmospheric transmission
+      * Masking all regions affected by atmospheric absorption of a given depth % over the course of the year.
+      * Assuming perfect telluric correction in which the variance of the measured flux is impacted.
 
 * Spectral :doc:`Resampling <resampling>`
    Allows for resampling of synthetic spectra to ``N`` pixels per FWHM. Default is 3.
@@ -79,7 +80,7 @@ Features
    Compute spectral RV precision and spectral quality.
 
 * Incremental quality/precision
-    Determine the RV precision and spectral quality on narrow wavelength slices across the entire spectrum, similar to that present in Figure 1 of `Artigau et al. 2018 <http://adsabs.harvard.edu/abs/2018AJ....155..198A>`_.
+    Determine the RV precision and spectral quality on narrow wavelength slices across the entire spectrum, similar to that present in Figure 1 of both `Bouchy et al.(2001) <https://www.aanda.org/articles/aa/abs/2001/29/aa1316/aa1316.html>`_ and `Artigau et al. (2018) <http://adsabs.harvard.edu/abs/2018AJ....155..198A>`_.
 
 * Analyse relative precision of synthetic libraries
     The RV precision of are present relative to a specified SNR per pixel in the center of a photometric band.
@@ -95,7 +96,7 @@ Features
    :alt: Example relative precisions
    :align: center
 
-   Precision achieved with *eniric* as a function of spectral band for stars with a rotational velocity of vsini=1.0 km/s and temperatures 3900 K, 3500 K, 2800 K, 2600 K, corresponding to spectral types M0, M3, M6, and M9 respectively.
+   Precision achieved with ``eniric`` as a function of spectral band for stars with a rotational velocity of vsini=1.0 km/s and temperatures 3900 K, 3500 K, 2800 K, 2600 K, corresponding to spectral types M0, M3, M6, and M9 respectively.
    The dashed line represents the theoretical limits imposed by condition 1, and the filled area represents the values within the limits set by conditions 2 (circles) and 3 (triangles); blue, green, and red represent the results obtained for resolutions of 60000, 80000, and 100000, respectively.
    The spectra were normalized to have a SNR of 100 per resolution element as measured at the center of the J-band.
    This is similar to Figure 1 from `Figueira et al. 2016`_ but with updated precision values.
@@ -103,7 +104,8 @@ Features
 
 Background
 ----------
-The origin of this code was used in `Figueira et al. 2016`_.
+The theoretical background and first version of the code used in Eniric was
+presented in `Figueira et al. 2016`_.
 
 .. code-block:: text
 
@@ -111,13 +113,11 @@ The origin of this code was used in `Figueira et al. 2016`_.
     Radial velocity information content of M dwarf spectra in the near-infrared,
     Astronomy and Astrophysics, 586, A101
 
-To reproduce the updated results for `Figueira et al. 2016`_
+After :ref:`install_ref` and :ref:`config_ref` the updated results for `Figueira et al. 2016`_ can be reproduced by ``eniric`` with the following command.
 
 .. code-block:: bash
 
     phoenix_precision.py -t 3900 3500 2800 2600 -l 4.5 -m 0.0 -r 60000 80000 100000 -v 1.0 5.0 10.0 -b Z Y J H K
-
-after :ref:`install_ref` and :ref:`config_ref`.
 
 
 Support
