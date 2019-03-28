@@ -59,7 +59,6 @@ config = {
         "scripts/barycenter_broaden_atmmodel.py",
         "scripts/untar_here.py",
         "scripts/download/download_eniric_data.sh",
-        "scripts/download/download_test_PHOENIX_spec.sh",
         "scripts/download/download_test_aces.py",
     ],
     "include_package_data": True,

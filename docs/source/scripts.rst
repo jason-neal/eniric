@@ -42,9 +42,7 @@ This is also available as a powershell script.
 * scripts/download/ps_download_eniric_data.ps1
 
 
-The test data specifically is downloaded with.
- * scripts/download/download_test_PHOENIX_spec.sh
+The test data from the PHOENIX-ACES library is specifically
+downloaded using Starfish utilities in
 
-and
-* scripts.download.download_test_aces
-
+* scripts/download/download_test_aces.py.
