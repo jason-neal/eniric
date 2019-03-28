@@ -84,7 +84,7 @@ def rv_precision(
 
     Returns
     -------
-    RVrms : Quantity scalar
+    RVrms: astropy.Quantity
        Radial velocity precision of spectra in m/s.
 
     """
@@ -99,6 +99,11 @@ def quality(
 ) -> Union[float, Quantity]:
     """Calculation of the spectral Quality, Q, for a spectrum.
 
+    ``Q = sqrt{sum{W(i)}} / sqrt{sum{A_0{i}}``
+
+    The spectral quality, Q, is independent of the flux level and is only
+    a function of the spectral profile.
+
     Parameters
     ----------
     wavelength: array-like or Quantity
@@ -112,15 +117,8 @@ def quality(
 
     Returns
     -------
-    sqrt{sum{W(i)}}: float
-       Spectral quality
-
-    Notes
-    -----
-        Q = sqrt{sum{W(i)}} / sqrt{sum{A_0{i}}
-
-    The spectral quality, Q, is independent of the flux level and is only
-    a function of the spectral profile.
+    q: float
+       Spectral quality.
 
     """
     flux = flux * u.dimensionless_unscaled  # Turn into Quantity if not already
@@ -158,8 +156,8 @@ def sqrt_sum_wis(
 
     Returns
     -------
-    sqrt{sum{W(i)}}: float or Quantity scalar
-       Square root of the sum of the pixel weights(Wis)
+    sqrt_sum_wis: float or astropy.Quantity
+       Square root of the sum of the pixel weights (Wis).
 
     """
     if mask is None:
@@ -202,17 +200,26 @@ def mask_check(mask):
         raise ValueError("Mask should be within range from 0 to 1 only.")
 
 
-def slope(wavelength, flux):
-    """Forward Finite difference derivative which looses one value of array.
+def slope(wavelength: Union[ndarray, Quantity], flux: Union[ndarray, Quantity]):
+    """Forward Finite difference derivative which loses one value of array.
 
         f' = (f(x+h)-f(x)) / h.
         f'[i] = (flux[i+1] - flux[i])/ (wavelength[i+1] - wavelength[i])
 
+    Parameters
+    ----------
+    wavelength: numpy.ndarray or astropy.Quantty
+        Wavelength array.
+    flux: numpy.ndarray or astropy.Quantty
+        Flux array.
+
     Returns
     -------
-    Array with n-1 points.
+    ffd: numpy.ndarray
+        FFD slope of spectrum with n-1 points.
     """
-    return np.diff(flux) / np.diff(wavelength)
+    ffd = np.diff(flux) / np.diff(wavelength)
+    return ffd
 
 
 def pixel_weights(
@@ -221,6 +228,7 @@ def pixel_weights(
     grad: bool = True,
 ):
     r"""Calculate individual pixel weights.
+
     w(i) = \lambda(i)^2 (\partial A(i)/\partial\lambda)^2 / A(i)
 
     Parameters
@@ -228,9 +236,15 @@ def pixel_weights(
     wavelength: Union[ndarray, Quantity]
         Wavelength array.
     flux: Union[ndarray, Quantity]
-     Flux array.
+        Flux array.
     grad: bool
         Toggle function for spectral slope. Default False + forward finite difference.
+
+    Returns
+    -------
+    wis: ndarray
+        Array of pixel weigths.
+
     """
     if isinstance(flux, u.Quantity):
         # The units of variance are squared.
@@ -286,6 +300,7 @@ def incremental_quality(
      Central wavelength values of each section.
     q: ndarray
        Spectral quality for each section.
+
     """
     positions = log_chunks(wavelength, percent)
     qualities = []
@@ -340,6 +355,7 @@ def incremental_rv(
        Central wavelength values of each section.
     rv: ndarray
        Spectral RV precision for each section.
+
     """
     positions = log_chunks(wavelength, percent)
     velocities = []

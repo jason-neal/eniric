@@ -1,10 +1,7 @@
 ===========
 Basic Usage
 ===========
-
 To calculate the RV precision given a spectrum with ``wavelength`` and ``flux`` you can use the ``rv_precsion`` function.
-
-.. autofunction eniric.precision :: rv_precision
 
 .. code-block:: python
 
@@ -17,6 +14,10 @@ or for the flux independent spectral ``quality``, Q,
 
    from eniric.precision import quality
    q = quality(wavelength, flux)
+
+
+.. autofunction:: eniric.precision.rv_precision
+.. autofunction:: eniric.precision.quality
 
 
 .. _atmospheremasking_ref:
