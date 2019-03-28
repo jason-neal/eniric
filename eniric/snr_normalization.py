@@ -65,8 +65,8 @@ def snr_constant_band(
     verbose: bool
         Enable verbose. Default is False.
 
-    Return
-    ------
+    Returns
+    -------
     norm_value: float
         Normalization value to divide spectrum by to achieve a
         signal-to-noise level of snr within an resolution element
@@ -120,8 +120,8 @@ def snr_constant_wav(
     verbose: bool
         Enable verbose. Default is False.
 
-    Return
-    ------
+    Returns
+    -------
     norm_value: float
         Normalization value to divide the flux by to achieve the desired SNR "SNR"
         in resolution element (defined by "sampling") around the wavelength "wav_ref".
@@ -165,8 +165,8 @@ def sampling_index(
     array_length: int or None
         Length of array the indexes will be used in. To not exceed array length. Default is None.
 
-    Return
-    ------
+    Returns
+    -------
     indexes: ndarray
         The index values.
 
