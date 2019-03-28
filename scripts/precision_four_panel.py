@@ -59,7 +59,7 @@ def plot_precision(
 ):
     """Plot precision 4 panel with RV  precision.
 
-    Saves figure to `plots/`.
+    Saves figure to ``plots/``.
 
     Parameters
     ----------
@@ -301,7 +301,7 @@ def cumulative_plot(
     full_cum: bool
     Cumlative over entire range [ "Z","ZY", "ZYJ", "ZYJH", "ZYJHK","YJHK", "JHK","HK","K"]
 
-    Saves figure to `plots/`.
+    Saves figure to ``plots/``.
 
     Parameters
     ----------

@@ -20,7 +20,10 @@ Scripts provided with eniric.
     :members:
 
 
-.. _image:: .\_static\precisions.png
+.. figure:: _static/precisions.png
+   :target: https://github.com/jason-neal/eniric/blob/master/paper/precisions.png
+   :alt: Example relative precisions from ``precision_four_panel.py``
+   :align: center
 
 .. automodule:: scripts.csv2tsv
     :members:
