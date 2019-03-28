@@ -27,12 +27,13 @@ Requirements
 The requirements for ``eniric`` are:
 
 * astropy
-* joblib
+* joblib>=0.12.3
 * matplotlib
 * multiprocess
-* numpy
+* numpy>=0.15.4
 * pandas
 * pyyaml
+* oyaml
 * scipy
 * `Starfish`__
 * tqdm
