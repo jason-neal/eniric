@@ -28,6 +28,14 @@ help:
 	@echo "		Run type checking with mypy"
 	@echo "	pdf"
 	@echo "		Make pdf from paper.md"
+	@echo "	publish_setup"
+	@echo "		Update the tools for distribution."
+	@echo "	build_dist"
+	@echo "		Build the distribution of eniric."
+	@echo "	pypi_test"
+	@echo "		Publish eniric to Test PyPi."
+	@echo "	pypi_publish"
+	@echo "		Publish eniric to PyPi."
 
 
 clean-pyc:
@@ -36,9 +44,9 @@ clean-pyc:
 	find . -name '*~' -exec rm --force  {} +
 
 clean-data:
-	rm --force --recursive data/test_data/PHOENIX-ACES_spectra
-	rm --force --recursive data/test_data/results
-	rm --force --recursive data/test_data/resampled
+	rm --force --recursive data/
+	rm --force --recursive tests/data/phoenix-raw
+	rm --force --recursive tests/data/btsettl-raw
 
 atmos:
 	split_atmmodel.py -b ALL
@@ -76,3 +84,15 @@ mypy:
 pdf:
 	pip install pandoc>=1.0.2
 	(cd paper && pandoc --filter pandoc-citeproc --bibliography=paper.bib --variable classoption=onecolumn --variable papersize=a4paper -s paper.md -o paper.pdf)
+
+publish_setup:
+	pip install --upgrade twine setuptools wheel
+
+build_dist:
+	python setup.py sdist bdist_wheel
+
+pypi_test:
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+pypi_publish:
+	twine upload dist/*
