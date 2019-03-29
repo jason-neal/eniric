@@ -68,7 +68,7 @@ A custom fixed branch of Starfish can be used on both Linux and Windows.
 
 .. code-block:: bash
 
-    pip install https://github.com/jason-neal/Starfish/archive/eniric_suitable.zip#egg=Starfish
+    pip install https://github.com/jason-neal/Starfish/archive/eniric_suitable.zip#egg=astrostarfish
 
 If issues arise regarding ``Starfish`` see `github.com/iancze/Starfish <Starfishgithub_>`_:,
 
