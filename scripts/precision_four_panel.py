@@ -13,7 +13,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-import eniric
 from eniric import config
 from eniric.utilities import rv_cumulative, rv_cumulative_full
 

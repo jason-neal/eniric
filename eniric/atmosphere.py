@@ -6,7 +6,6 @@ import numpy as np
 from astropy import constants as const
 from numpy import ndarray
 
-import eniric
 import eniric.io_module as io
 from eniric import config
 from eniric.broaden import resolution_convolution

@@ -6,7 +6,6 @@ Used to convolve the model spectra for
 
 Uses joblib.Memory to cache convolution results to skip repeated computation.
 """
-import os
 from typing import Optional, Union
 
 import joblib
@@ -16,7 +15,6 @@ from joblib import Memory, Parallel, delayed
 from numpy.core.multiarray import ndarray
 from tqdm import tqdm
 
-import eniric
 from eniric import config
 from eniric.utilities import band_selector, cpu_minus_one, mask_between, wav_selector
 
