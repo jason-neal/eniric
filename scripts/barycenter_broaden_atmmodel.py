@@ -14,7 +14,6 @@ from typing import List, Optional
 
 import numpy as np
 
-import eniric
 from eniric import config
 from eniric.atmosphere import Atmosphere
 
@@ -103,4 +102,9 @@ def main(bands: Optional[List[str]] = None, verbose: bool = False) -> None:
 if __name__ == "__main__":
     args = vars(_parser())
     opts = {k: args[k] for k in args}
-    sys.exit(main(**opts))
+    try:
+        main(**opts)
+        sys.exit(0)
+    except:
+        raise
+        sys.exit(1)

@@ -9,7 +9,7 @@ import argparse
 import itertools
 import os
 import warnings
-from typing import List, Tuple
+from typing import Any, List, Optional, Tuple
 
 import numpy as np
 from astropy import units as u
@@ -25,12 +25,13 @@ from eniric.resample import log_resample
 from eniric.snr_normalization import snr_constant_band
 from eniric.utilities import (
     band_middle,
+    cpu_minus_one,
     doppler_shift_flux,
     load_aces_spectrum,
     load_btsettl_spectrum,
 )
 
-num_procs_minus_1 = os.cpu_count() - 1
+num_cpu_minus_1 = cpu_minus_one()
 
 ref_choices = ["SELF"]
 ref_choices.extend(config.bands["all"])
@@ -127,7 +128,7 @@ def _parser():
     parser.add_argument(
         "--num_procs",
         help="Number of processors to use, default = (Total cores - 1)",
-        default=num_procs_minus_1,
+        default=num_cpu_minus_1,
         type=int,
     )
     parser.add_argument(
@@ -178,7 +179,7 @@ def do_analysis(
     air: bool = False,
     model: str = "aces",
     verbose: bool = False,
-) -> Tuple[Quantity]:
+) -> Tuple[Quantity, ...]:
     """Calculate RV precision and Quality for specific parameter set.
 
     Parameters
@@ -236,7 +237,7 @@ def do_analysis(
         conv_kwargs = {
             "epsilon": 0.6,
             "fwhm_lim": 5.0,
-            "num_procs": num_procs_minus_1,
+            "num_procs": num_cpu_minus_1,
             "normalize": True,
             "verbose": verbose,
         }
@@ -494,7 +495,7 @@ if __name__ == "__main__":
     try:
         num_procs = args.num_procs
     except AttributeError:
-        num_procs = num_procs_minus_1
+        num_procs = num_cpu_minus_1
 
     conv_kwargs = {
         "epsilon": 0.6,
@@ -549,7 +550,7 @@ if __name__ == "__main__":
                 # skipping the recalculation
                 continue
             else:
-                result = do_analysis(
+                precision_result: Tuple[Any, ...] = do_analysis(
                     model,
                     vsini=vsini,
                     R=R,
@@ -561,15 +562,16 @@ if __name__ == "__main__":
                     air=air,
                     model=args.model,
                 )
-                result = [
-                    round(res.value, 1) if res is not None else None for res in result
+                result: List[Optional[float]] = [
+                    round(res.value, 1) if res is not None else None
+                    for res in precision_result
                 ]
 
                 if args.correct:
                     # Apply Artigau 2018 Corrections
                     corr_value = correct_artigau_2018(band)
                     for ii, res in enumerate(result):
-                        if ii > 0:  # Not the quality
+                        if (ii > 0) and (result[ii] is not None):  # Not the quality
                             result[ii] = res * corr_value
 
                 result[0] = int(result[0]) if result[0] is not None else None

@@ -2,6 +2,7 @@ import codecs
 import os
 import sys
 from os.path import join
+from typing import List
 
 if sys.version < "3.6":
     sys.exit(
@@ -26,7 +27,8 @@ with codecs.open(join(here, "requirements.txt")) as f:
 
 # Conditional pytest-runner install
 needs_pytest = {"pytest", "test", "ptr"}.intersection(sys.argv)
-pytest_runner = ["pytest-runner>=4"] if needs_pytest else []
+pytest_runner: List[str] = ["pytest-runner>=4"] if needs_pytest else []
+setup_requires: List[str] = []
 
 config = {
     "name": "eniric",
@@ -39,7 +41,7 @@ config = {
     "author_email": "jason.neal@astro.up.pt",
     "version": "1.0rc3",
     "license": "MIT Licence",
-    "setup_requires": [] + pytest_runner,
+    "setup_requires": setup_requires + pytest_runner,
     "tests_require": ["pytest", "hypothesis"],
     "install_requires": requirements,
     "extras_require": {

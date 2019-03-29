@@ -18,13 +18,14 @@ from tqdm import tqdm
 
 import eniric
 from eniric import config
-from eniric.utilities import band_selector, mask_between, wav_selector
+from eniric.utilities import band_selector, cpu_minus_one, mask_between, wav_selector
 
 # Cache convolution results.
 memory = Memory(location=config.cache["location"], verbose=0)
 
 c_kmps = const.c.to("km/s").value
-num_procs_minus_1 = os.cpu_count() - 1
+
+num_cpu_minus_1 = cpu_minus_one()
 
 
 @memory.cache(ignore=["num_procs", "verbose"])
@@ -113,7 +114,7 @@ def rotational_convolution(
         return sum_val
 
     if num_procs is None:
-        num_procs = num_procs_minus_1
+        num_procs = num_cpu_minus_1
 
     if vsini != 0:
         tqdm_wav = tqdm(wavelength, disable=not verbose)
@@ -229,7 +230,7 @@ def resolution_convolution(
     tqdm_wav = tqdm(wavelength, disable=not verbose)
 
     if num_procs is None:
-        num_procs = num_procs_minus_1
+        num_procs = num_cpu_minus_1
 
     if isinstance(num_procs, int):
         with Parallel(n_jobs=num_procs) as parallel:

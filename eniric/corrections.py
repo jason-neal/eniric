@@ -37,6 +37,7 @@ Table 3 from Artigau et al. (2018):
 +---------+--------+-----+-----+-----+-----+
 
 """
+from typing import Dict
 
 
 def correct_artigau_2018(band: str) -> float:
@@ -58,7 +59,7 @@ def correct_artigau_2018(band: str) -> float:
 
     """
 
-    corrections = {
+    corrections: Dict[str, float] = {
         "g": 0.66,
         "r": 0.82,
         "i": 0.94,
@@ -68,7 +69,7 @@ def correct_artigau_2018(band: str) -> float:
         "J": 0.38,
         "H": 1.37,
         "K": 1.47,
-    }  # type: Dict[str, float]
+    }
     try:
         return corrections[band]
     except KeyError:

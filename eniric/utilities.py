@@ -514,3 +514,21 @@ def doppler_limits(rvmax, wmin, wmax):
     doppler_minus, doppler_plus = (1 - np.abs(rvmax) / c_km), (1 + np.abs(rvmax) / c_km)
 
     return wmin * doppler_minus, wmax * doppler_plus
+
+
+def cpu_minus_one() -> int:
+    """Get one less than number of CPUs available.
+
+    Returns
+    -------
+    num_cpu_minus_1: int
+        One less than number of CPUs, or one.
+    """
+    num_cpu: Optional[int] = os.cpu_count()
+    num_cpu_minus_1: int
+
+    if (num_cpu is None) or (num_cpu == 1):
+        num_cpu_minus_1 = 1
+    else:
+        num_cpu_minus_1 = num_cpu - 1
+    return num_cpu_minus_1
