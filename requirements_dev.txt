@@ -7,7 +7,7 @@ matplotlib==3.0.3
 multiprocess==0.70.7
 mypy==0.670
 numpy==1.16.2
-oyaml==0.7
+oyaml==0.9
 pandas==0.24.1
 pre-commit==1.14.4
 pytest==4.3.0
