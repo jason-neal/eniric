@@ -44,7 +44,7 @@ if ( -not (Test-Path $DIRECTORY3 -PathType Container))
 Write-Host "$DIRECTORY3 is not present. Creating"
 mkdir $DIRECTORY3
 }
-python ..\..\scripts\download\download_test_aces.py
+python .\scripts\download\download_test_aces.py -o $DIRECTORY3
 
 
 # BTsettl test data

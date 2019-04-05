@@ -68,7 +68,7 @@ def _parser():
 
 
 def check_positive(value: str) -> float:
-    """Function to check if input is positive.
+    """Check if input is positive.
 
     http://stackoverflow.com/questions/14117415.
 

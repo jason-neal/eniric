@@ -4,6 +4,8 @@ import sys
 from os.path import join
 from typing import List
 
+from setuptools import find_packages, setup
+
 if sys.version < "3.6":
     sys.exit(
         "Error: Python 3.6 or greater required for Eniric (using {})".format(
@@ -11,10 +13,6 @@ if sys.version < "3.6":
         )
     )
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -54,13 +52,14 @@ config = {
             "python-coveralls>=2.9.1",
         ],
     },  # $ pip install -e .[dev,test, docs]
-    "packages": ["eniric", "scripts"],
+    "packages": find_packages(),
     "scripts": [
         "scripts/phoenix_precision.py",
         "scripts/split_atmmodel.py",
         "scripts/barycenter_broaden_atmmodel.py",
         "scripts/untar_here.py",
         "scripts/download/download_eniric_data.sh",
+        "scripts/download/ps_download_eniric_data.ps1",
         "scripts/download/download_test_aces.py",
     ],
     "include_package_data": True,

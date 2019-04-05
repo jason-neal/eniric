@@ -64,7 +64,7 @@ lint:
 	flake8 --exclude=.tox
 
 test: clean-pyc
-	py.test --verbose --color=yes $(TEST_PATH)
+	py.test --color=yes $(TEST_PATH)
 
 init:
 	pip install -r requirements.txt
