@@ -74,7 +74,7 @@ if [ ! -d "$DIRECTORY3" ]; then
   mkdir -p $DIRECTORY3
 fi
 # This should download the PHOENIX ACES spectra
-download_test_aces.py
+download_test_aces.py -o $DIRECTORY3
 
 
 # BTsettl test data
