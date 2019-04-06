@@ -194,4 +194,4 @@ class TestConfig:
         __ = test_config[key]
         del test_config[key]
         with pytest.raises(KeyError):
-            test_config[key]
+            __ = test_config[key]
