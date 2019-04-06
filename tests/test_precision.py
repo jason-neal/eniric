@@ -6,6 +6,7 @@ import pytest
 from astropy import constants as const
 from astropy.units import Quantity
 
+from eniric import config
 from eniric.atmosphere import Atmosphere
 from eniric.precision import (
     incremental_quality,
@@ -292,7 +293,7 @@ def increment_percent(request):
 
 
 @pytest.fixture(params=["K", "J"])
-def real_spec(request):
+def real_spec(request, use_test_config):
     band = request.param
     wav, flux = load_aces_spectrum([3900, 4.5, 0.0, 0])
     wav, flux = wav_selector(wav, flux, *band_limits(band))
