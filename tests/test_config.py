@@ -91,22 +91,23 @@ class TestConfig:
             assert len(value) == 2
 
     def test_change_file(self):
-        previous = config.name
-        filename = test_filename
-        config.change_file(filename)
-        assert config.name != previous
-        assert config._path == filename
+        previous = config._path
+        config.change_file(test_filename)
+        assert config._path != previous
+        assert config._path == test_filename
+        config.change_file(previous)
+        assert config._path == previous
 
     def test_set_attr_fail_on_default(self):
         with pytest.raises(RuntimeError):
             config.name = "Stephen King"
 
     def test_set_base_attr(self, test_config):
-        previous = test_config.name
+        previous_name = test_config.name
         test_config.name = "new name"
         assert test_config.name == "new name"
-        test_config.name = previous
-        assert test_config.name == previous
+        test_config.name = previous_name
+        assert test_config.name == previous_name
 
     def test_set_non_base_attr(self, test_config):
         old_path = test_config.paths["btsettl_raw"]
@@ -115,10 +116,18 @@ class TestConfig:
         test_config.paths["btsettl_raw"] = old_path
         assert test_config.paths["btsettl_raw"] == old_path
 
-    def test_copy_config(self, tmpdir):
+    @pytest.mark.parametrize("switch", [True, False])
+    def test_copy_config(self, tmpdir, switch):
+        previous_file = config._path
         assert not os.path.exists(tmpdir.join("config.yaml"))
-        config.copy_file(tmpdir)
+        config.copy_file(tmpdir, switch=switch)
+        if switch:
+            assert str(tmpdir) in config.pathdir
+        else:
+            assert str(tmpdir) not in config.pathdir
         assert os.path.exists(tmpdir.join("config.yaml"))
+
+        config.change_file(previous_file)  # Restore config
 
     def test_lazy_load(self, test_config):
         previous = test_config.cache["location"]
@@ -138,3 +147,51 @@ class TestConfig:
 
     def test_pathdir_getter(self):
         assert config.pathdir == config.get_pathdir()
+
+    def test_update_config_with_None(self):
+        with pytest.raises(
+            RuntimeError, match="The default file is not allowed to be overwritten."
+        ):
+            # Default config protection
+            config.update(d=None)
+
+    def test_update_test_config_with_None(self, test_config):
+        previous_config = test_config
+        test_config.update(d=None)
+        assert previous_config == test_config
+
+    def test_update_test_config_with_dict(self, test_config):
+        temp_name = "test name"
+        temp_atmmodel = {"base": "test_Average_TAPAS"}
+        previous_name = test_config.name
+        previous_atmmodel = test_config.atmmodel
+        assert previous_name != temp_name
+        assert previous_atmmodel != temp_atmmodel
+        test_config.update(d={"name": temp_name, "atmmodel": temp_atmmodel})
+        assert test_config.name == temp_name
+        assert test_config.atmmodel == temp_atmmodel
+        test_config.update(d={"name": previous_name, "atmmodel": previous_atmmodel})
+        assert test_config.atmmodel == previous_atmmodel
+        assert test_config.name == previous_name
+
+    def test_update_with_kwargs(self, test_config):
+        temp_name = "test name"
+        temp_atmmodel = {"base": "test_Average_TAPAS"}
+        previous_name = test_config.name
+        previous_atmmodel = test_config.atmmodel
+        assert previous_name != temp_name
+        assert previous_atmmodel != temp_atmmodel
+        test_config.update(d=None, name=temp_name, atmmodel=temp_atmmodel)
+        assert test_config.name == temp_name
+        assert test_config.atmmodel == temp_atmmodel
+        test_config.update(d={"name": previous_name}, atmmodel=previous_atmmodel)
+        assert test_config.atmmodel == previous_atmmodel
+        assert test_config.name == previous_name
+
+    @pytest.mark.parametrize("key", ["name", "cache", "bands"])
+    def test_delitem(self, test_config, key):
+        # Ability to delete from config.
+        __ = test_config[key]
+        del test_config[key]
+        with pytest.raises(KeyError):
+            test_config[key]

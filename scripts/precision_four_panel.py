@@ -4,7 +4,7 @@ precision_four_panel.py
 Plot a Figueira et al. (2016) Figure 1 like plot.
 
 """
-
+import argparse
 import sys
 from os.path import join
 
@@ -507,15 +507,42 @@ def cumulative_plot(
     fig.savefig(fname + ".png", dpi=400)
 
 
-if __name__ == "__main__":
-    # ToDo: Add an argparse cli
-    precision_file = join(
-        config.pathdir, config.paths["precision_results"], "precision_results.csv"
+default_file = join(
+    config.pathdir, config.paths["precision_results"], "precision_results.csv"
+)
+
+
+def _parser():
+    """Take care of all the argparse stuff."""
+    parser = argparse.ArgumentParser(
+        description="Create a four panel RV relative precision plot."
     )
+    parser.add_argument(
+        "precision_file",
+        help="Precision result csv to use. Default is set with the config.yaml file. Currently {0}".format(
+            default_file
+        ),
+        type=str,
+        default=default_file,
+    )
+    parser.add_argument(
+        "-t",
+        "--temperatures",
+        nargs=4,
+        help="Temperatures to display in Kelvin. Default is [3900, 3500, 2800, 2600].",
+        type=int,
+        default=[3900, 3500, 2800, 2600],
+    )
+    return parser.parse_args()
 
-    plot_precision(precision_file, teffs=[3900, 3500, 2800, 2600])
-    # plot_precision(precision_file, teffs=[3900, 3500, 2800, 2600], logg=4, fe_h=1)
 
-    cumulative_plot(precision_file, teffs=[3900, 3500, 2800, 2600])
-    cumulative_plot(precision_file, teffs=[3900, 3500, 2800, 2600], full_cum=True)
+if __name__ == "__main__":
+    args = _parser()
+    precision_file = args.precision_file
+    temperatures = args.temperatures
+
+    plot_precision(precision_file, teffs=temperatures)
+    # plot_precision(precision_file, teffs=temperatures, logg=4, fe_h=1)
+    cumulative_plot(precision_file, teffs=temperatures)
+    cumulative_plot(precision_file, teffs=temperatures, full_cum=True)
     sys.exit(0)

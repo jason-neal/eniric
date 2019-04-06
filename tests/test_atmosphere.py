@@ -223,31 +223,6 @@ def test_atmos_broadening_reduces_number_of_masked_points(
         assert np.all((atm.transmission > cuttoff) == (atm_org.transmission > cuttoff))
 
 
-@pytest.mark.xfail()
-@pytest.mark.parametrize("resolution", [5_000_000])
-def test_atmos_broadening_at_higher_res_should_not_reduce_number_of_masked_points(
-    atmosphere_fixture, resolution
-):
-    # TODO Fix up this test
-    # Test broadening transmission preforms instrumental convolution
-    atm = atmosphere_fixture[:5000]
-    atm.mask_transmission(1)
-
-    atm_org = atm.copy()
-
-    atm.broaden(resolution=resolution, num_procs=1)
-    assert np.allclose(atm.wl, atm_org.wl)  # Should not have changed
-    assert np.allclose(atm.mask, atm_org.mask)  # Should not have changed
-    assert np.allclose(atm.std, atm_org.std)  # Should not have changed
-    assert not np.allclose(
-        atm.transmission, atm_org.transmission
-    )  # Should have changed
-    atm.mask_transmission(1)
-
-    assert np.allclose(atm.mask, atm_org.mask)  # Mask changes after convolution
-    assert np.sum(atm.mask) >= np.sum(atm_org.mask)  # Less points are masked out
-
-
 def test_Atmosphere_has_getitem():
     assert hasattr(Atmosphere, "__getitem__")
 
