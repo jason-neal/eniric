@@ -6,7 +6,6 @@ import pytest
 from astropy import constants as const
 from astropy.units import Quantity
 
-from eniric import config
 from eniric.atmosphere import Atmosphere
 from eniric.precision import (
     incremental_quality,
@@ -130,8 +129,8 @@ def test_both_gradients_possible(test_spec):
     wav = test_spec[0]
     flux = test_spec[1]
     transmission = test_spec[2]
-    a = rv_precision(wav, flux, mask=transmission, grad=False).value
-    b = rv_precision(wav, flux, mask=transmission, grad=True).value
+    rv_precision(wav, flux, mask=transmission, grad=False).value
+    rv_precision(wav, flux, mask=transmission, grad=True).value
     assert True
 
 
