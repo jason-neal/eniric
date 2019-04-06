@@ -96,7 +96,7 @@ def quality(
     flux: Union[Quantity, ndarray],
     mask: Optional[ndarray] = None,
     **kwargs,
-) -> Union[float, Quantity]:
+) -> float:
     """Calculation of the spectral Quality, Q, for a spectrum.
 
     ``Q = sqrt{sum{W(i)}} / sqrt{sum{A_0{i}}``
@@ -320,8 +320,9 @@ def incremental_quality(
         try:
             q = quality(x, y, mask=z, **kwargs)
         except:
-            continue
-        qualities.append([np.mean(x), q])
+            q = np.nan
+
+        qualities.append([np.nanmean(x), q])
 
     x, q = np.asarray(qualities).T
     return x, q
@@ -372,10 +373,10 @@ def incremental_rv(
         else:
             z = mask  # None
         try:
-            rv_calc = rv_precision(x, y, mask=z, **kwargs)
+            rv_calc = rv_precision(x, y, mask=z, **kwargs).value
         except:
-            continue
-        velocities.append([np.mean(x), rv_calc.value])
+            rv_calc = np.nan
+        velocities.append([np.nanmean(x), rv_calc])
 
     x, rv = np.asarray(velocities).T
     return x, rv
