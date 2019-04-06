@@ -129,8 +129,8 @@ def test_both_gradients_possible(test_spec):
     wav = test_spec[0]
     flux = test_spec[1]
     transmission = test_spec[2]
-    rv_precision(wav, flux, mask=transmission, grad=False).value
-    rv_precision(wav, flux, mask=transmission, grad=True).value
+    __ = rv_precision(wav, flux, mask=transmission, grad=False).value
+    __ = rv_precision(wav, flux, mask=transmission, grad=True).value
     assert True
 
 
