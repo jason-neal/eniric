@@ -3,7 +3,6 @@
 To get a list of commit messages since last version to help write change log try
     `git log YOUR_LAST_VERSION_TAG..HEAD --no-merges --format=%B`
 
-### Upcoming
 ### v1.0.0
 ----------
 - Add JOSS paper
@@ -14,9 +13,11 @@ To get a list of commit messages since last version to help write change log try
 - Functions for incremental quality and RV.
 - Updated plotting script, cumulative rv.
 - Doppler shift in `phoenix_precision.py`.
-- Example Notebooks.
+- Update Example Notebooks.
 - Add `Contributing.md` and `Contributors.md`.
 - Zip required testing data, Delete unneeded data.
+- Refactor `eniric.Qcalculator` module to `eniric.precision`.
+- Depreciate `--model phoenix` from `phoenix_precision.py`.
 
 Other:
 - `Blacken` source code.
@@ -24,10 +25,14 @@ Other:
 - Add `Python 3.7` testing.
 - Drop `Python 3.5` support.
 - Refactoring for 1.0 release.
+- Relax pining in `requirements.txt`.
+- Use `requirements.txt` in `setup.py`
+- move download scripts to scripts/download.
+- General documentation overhaul.
 
 
 ### v0.5.1
----------
+----------
 - Adjust setup/readme and \_\_init\_\_ files.
 
 

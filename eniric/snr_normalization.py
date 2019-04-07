@@ -1,12 +1,35 @@
-"""Automated snr normalization.
+"""
+The theoretical RV precision (only due to photon noise) is
+inversely dependent on the spectral flux.
+That is as the flux increases the error on the RV measurement decreases.
+
+The flux of a observed spectra is dependant on a number of
+factors e.g.
+    * Star luminosity
+    * Integration time
+    * Telescope area
+    * Instrument efficiency
 
 The photon flux can be scaled by multiplicative constant which
-affects the SNR of the spectra and the radial velocity precision.
+affects the photon SNR and the radial velocity precision.
 
-For consistency and valid comparision we normalize each spectra
-to achieve a consistent SNR at a specific location.
+To compare the relative theoretical precision between different
+synthetic spectra they are normalized consistently.
+
+This is achieved by normalizing to a specific SNR per
+resolution element at a particular location.
+
+By default this is a SNR of 100 at the center of the "J" band.
+Other band centers or wavelengths as well as other SNR values
+can be chosen.
+
+The following functions are used to determine the normalization
+constant to divide a spectrum by to achieve the desired
+normalization.
+
 """
 
+import math
 from typing import Optional, Union
 
 import numpy as np
@@ -21,6 +44,7 @@ def snr_constant_band(
     snr: Union[int, float] = 100,
     band: str = "J",
     sampling: Union[int, float] = 3.0,
+    verbose: bool = False,
 ) -> float:
     """Determine the normalization constant to achieve a SNR in the middle of a given band.
 
@@ -29,37 +53,44 @@ def snr_constant_band(
     Parameters
     ----------
     wav: ndarray
-        Wavelength array (microns)
+        Wavelength array in microns.
     flux: ndarray
-        Photon flux array (photons/s/cm**2)
-    snr: int,  default = 100
-        SNR to normalize to.
-    band: str, default = "J"
-        Band to use for normalization.
+        Photon flux array (photons/s/cm**2).
+    snr: int or float
+        SNR per resolution element to achieve. Default is 100.
+    band: str
+        Band to use for normalization. Default is "J".
     sampling: int or float
-       Number of pixels per resolution element.
+       Number of pixels per resolution element. Default is 3.
+    verbose: bool
+        Enable verbose. Default is False.
 
     Returns
     -------
-    normalization_value: float
+    norm_value: float
         Normalization value to divide spectrum by to achieve a
         signal-to-noise level of snr within an resolution element
         in the middle of the band.
 
     Note
     ----
-    If sampling is a float it will rounded to the nearest integer for indexing.
+    This is a wrapper around `snr_constant_wav`, using the band center.
+
+    Warning
+    -------
+    Wavelength is expected in microns!
+
     """
     band_middle = utils.band_middle(band)
 
     if not (wav[0] < band_middle < wav[-1]):
         raise ValueError("Band center not in wavelength range.")
 
-    norm_constant = snr_constant_wav(
-        wav, flux, wav_ref=band_middle, snr=snr, sampling=sampling
+    norm_value = snr_constant_wav(
+        wav, flux, wav_ref=band_middle, snr=snr, sampling=sampling, verbose=verbose
     )
 
-    return norm_constant
+    return norm_value
 
 
 def snr_constant_wav(
@@ -68,6 +99,7 @@ def snr_constant_wav(
     wav_ref: float,
     snr: Union[int, float] = 100,
     sampling: Union[int, float] = 3.0,
+    verbose: bool = False,
 ) -> float:
     """Determine the normalization constant to achieve a SNR at given wavelength.
 
@@ -76,15 +108,17 @@ def snr_constant_wav(
     Parameters
     ----------
     wav: ndarray
-        Wavelength in micron
+        Wavelength array.
     flux: ndarray
-        Photon flux array (photons/s/cm**2)
+        Photon flux array (photons/s/cm**2).
     wav_ref: float
         Wavelength to set the SNR per resolution element.
-    snr: int,  default = 100
-        SNR to set.
+    snr: int, float
+        SNR per resolution element to achieve. Default is 100.
     sampling: int or float
-       Number of pixels per resolution element.
+       Number of pixels per resolution element. Default is 3.
+    verbose: bool
+        Enable verbose. Default is False.
 
     Returns
     -------
@@ -92,12 +126,10 @@ def snr_constant_wav(
         Normalization value to divide the flux by to achieve the desired SNR "SNR"
         in resolution element (defined by "sampling") around the wavelength "wav_ref".
 
-    Notes
-    -----
-    We want to be consistent for each spectra. If we specify the middle of J band
-    as the reference it will need to be used for all bands of that spectra.
-
+    Note
+    ----
     If sampling is a float it will rounded to the nearest integer for indexing.
+
     """
     if wav_ref < wav[0] or wav_ref > wav[-1]:
         raise ValueError("Reference wavelength is outside of the wavelength bounds")
@@ -109,11 +141,12 @@ def snr_constant_wav(
 
     snr_estimate = np.sqrt(np.sum(flux[indexes]))
 
-    print(
-        "\tSanity Check: The reference S/N at {1:3.02f} was of {0:4.2f}.".format(
-            snr_estimate, wav_ref
+    if verbose:
+        print(
+            "\tSanity Check: The reference S/N at {1:3.02f} was of {0:4.2f}.".format(
+                snr_estimate, wav_ref
+            )
         )
-    )
     norm_value = (snr_estimate / snr) ** 2
     return norm_value
 
@@ -128,17 +161,16 @@ def sampling_index(
     index: int
         The index value which to select values around.
     sampling: int
-        Number of index values to return (sampling per resolution element). Must be an integer.
-    array_length: int or None, default = None
-        Length of array the indexes will be used in. To not exceed array length.
+        Number of index values to return (sampling per resolution element). Must be an integer. Default is 3.
+    array_length: int or None
+        Length of array the indexes will be used in. To not exceed array length. Default is None.
 
     Returns
     -------
-    indexes: ndarray of int64
+    indexes: ndarray
         The index values.
 
     """
-    import math
 
     half_sampling = math.floor(sampling / 2)
     if sampling % 2 == 0:  # even sampling

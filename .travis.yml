@@ -1,5 +1,5 @@
-dist: xenial
-sudo: true
+dist: xenial # Required for Python 3.7
+sudo: true   # travis-ci/travis-ci#9069
 language: python
 python:
     - 3.6
@@ -8,40 +8,35 @@ python:
 cache:
   directories:
     - $HOME/.cache/pip
+    - $HOME/tests/data
+    - $HOME/data
 
 install:
   - pip install --upgrade pip
   # Install eniric requirements
-  - travis_retry pip install -r requirements.txt
   - travis_retry pip install -r requirements_dev.txt
-
-  # Install Starfish
-  - wget -O starfishrequirements.txt https://raw.githubusercontent.com/iancze/Starfish/master/requirements.txt
-  - pip install -r starfishrequirements.txt
-  # - pip install https://github.com/iancze/Starfish/archive/master.zip#egg=Starfish
-  - pip install -e git+https://github.com/iancze/Starfish.git#egg=Starfish  # Editable install that includes build_ext
-
+  - travis_retry pip install -r requirements.txt
 
   # Now install eniric
-  - python setup.py install
+  - pip install -e .[dev,test,docs,ci]
 
 before_script:
   - export MPLBACKEND="AGG"  # Non-interactive
-  - mv tests/config.yaml config.yaml
+  # - mv tests/config.yaml config.yaml
 
   # Download the Data for eniric and testing
   - download_eniric_data.sh  # Some files from Dropbox
-  # Generate data
-  - make_test_data.py
 
   # Prepare atmosphere models
   - make atmos V=1
-  # - python eniric_scripts/split_atmmodel.py -b K H J Y Z TEST
-  # - python eniric_scripts/bary_shift_atmmodel.py -b K H J Y Z TEST
+  # - python scripts/split_atmmodel.py -b K H J Y Z TEST
+  # - python scripts/barycenter_broaden_atmmodel.py -b K H J Y Z TEST
 
 script:
     - pytest --cov=eniric --cov-report term-missing --durations 5
     - coverage xml -i
+
+    - rstcheck -r docs
 
 after_success:
   - coveralls

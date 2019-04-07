@@ -1,18 +1,16 @@
-"""
-Auxiliary functions for eniric
-"""
+"""Collection of utility functions for eniric."""
 import collections
 import errno
 import os
+from os.path import join
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
-import astropy.constants as const
 import numpy as np
+from astropy import constants as const
 from numpy import ndarray
 
-import eniric
+from eniric import config
 
-c = const.c
 # Band limits.
 bands_ = {
     "VIS": (0.38, 0.78),
@@ -26,7 +24,7 @@ bands_ = {
     "NIR": (0.83, 2.35),
 }
 
-bands_.update(eniric.custom_bands)
+bands_.update(config.custom_bands)
 
 
 def band_selector(wav: ndarray, flux: ndarray, band: str) -> Tuple[ndarray, ndarray]:
@@ -85,7 +83,7 @@ def band_middle(band: str) -> float:
     band: str
         Band label
 
-    Return
+    Returns
     -------
     middle: float
         Wavelength at middle band.
@@ -309,7 +307,7 @@ def load_aces_spectrum(
 
     Spectra available from http://phoenix.astro.physik.uni-goettingen.de
     """
-    base = eniric.paths["phoenix_raw"] + os.sep
+    base = join(config.pathdir, config.paths["phoenix_raw"], "")
 
     if len(params) == 3:  # Only 3 parameters given
         params = [params[0], params[1], params[2], 0]  # Set alpha=0
@@ -317,13 +315,13 @@ def load_aces_spectrum(
     if len(params) == 4:
         from Starfish.grid_tools import PHOENIXGridInterface as PHOENIX
 
-        phoenix_grid = PHOENIX(base=base, air=air, norm=False, wl_range=wl_range)
+        phoenix_grid = PHOENIX(base=base, air=air, wl_range=wl_range)
 
     else:
         raise ValueError("Number of parameters is incorrect")
 
     wav = phoenix_grid.wl
-    flux, hdr = phoenix_grid.load_flux(params)
+    flux = phoenix_grid.load_flux(params, norm=False)
 
     # Convert wavelength Angstrom to micron
     wav_micron = wav * 10 ** -4
@@ -381,6 +379,10 @@ def load_btsettl_spectrum(
         [M/H] = 0.0.
 
         Available from https://phoenix.ens-lyon.fr/Grids/BT-Settl/CIFIST2011_2015/FITS/
+
+    The BT-Settl models are Sampled at a higher rate than PHOENIX-ACES (>10 X).
+    Therefore we cut it by factor of 10 during loading to give them similar number of points.
+    This makes the convolutions go 10X faster.
     """
     from Starfish.grid_tools import CIFISTGridInterface as BTSETTL
 
@@ -389,16 +391,19 @@ def load_btsettl_spectrum(
         assert params[-1] == 0  # Checks index 3 when present.
         params = params[0:2]  # Only allow 2 params
 
-    base = eniric.paths["btsettl_raw"] + os.sep
+    base = join(config.pathdir, config.paths["btsettl_raw"], "")
 
-    btsettl_grid = BTSETTL(base=base, air=air, norm=False, wl_range=wl_range)
+    btsettl_grid = BTSETTL(base=base, air=air, wl_range=wl_range)
 
     wav = btsettl_grid.wl
+    # CIFIST flux is  W/m**2/um
+    flux = btsettl_grid.load_flux(params, norm=False)
+
+    # [::10] down samples only every 10th point from BT-Settl CIFIST spectrum.
+    wav, flux = wav[::10], flux[::10]
+
     # Convert wavelength from Angstrom to micron
     wav_micron = wav * 10 ** -4
-
-    # CIFIST flux is  W/m**2/um
-    flux, hdr = btsettl_grid.load_flux(params)
 
     flux_micron = flux * 10 ** -7  # Convert W/m**2/um to ergs/s/m**2/um)
     flux_micron *= 10 ** -4  # Convert 1/m**2 to 1/cm**2
@@ -431,13 +436,13 @@ def doppler_shift_wav(wavelength: ndarray, vel: float):
     ----------
     wavelength: ndarray
         Wavelength vector
-    vel : float
+    vel: float
         Velocity to Doppler shift by in km/s.
 
     Notes
     -----
     The Doppler shift is calculated using the relation
-       \Delta\lambda / \lambda\] = \[v / c
+      \[ \Delta\lambda / \lambda = v / c \]
     Where RV is the radial velocity (in km/s), \(\lambda_0\)`
     is the rest wavelength and \(\Delta\lambda\) is the wavelength
     shift, \(\lambda_{shift} - \lambda_0\)
@@ -446,7 +451,7 @@ def doppler_shift_wav(wavelength: ndarray, vel: float):
     if not np.isfinite(vel):
         ValueError("The velocity is not finite.")
 
-    shifted_wavelength = wavelength * (1 + (vel * 1000 / c.value))
+    shifted_wavelength = wavelength * (1 + (vel / const.c.to("km/s").value))
     return shifted_wavelength
 
 
@@ -467,7 +472,7 @@ def doppler_shift_flux(
         Wavelength vector
     flux: ndarray
         Flux vector
-    vel : float
+    vel: float
         Velocity to Doppler shift by in km/s.
     new_wav: Optional[ndarray]
         New wavelength array to evaluate the doppler shifted flux at.
@@ -505,7 +510,25 @@ def doppler_limits(rvmax, wmin, wmax):
     new_wmax: float
        Lower wavelength bound shifted by +rvmax
     """
-    c_km = const.c.value / 1000  # c in km/s
+    c_km = const.c.to("km/s").value  # c in km/s
     doppler_minus, doppler_plus = (1 - np.abs(rvmax) / c_km), (1 + np.abs(rvmax) / c_km)
 
     return wmin * doppler_minus, wmax * doppler_plus
+
+
+def cpu_minus_one() -> int:
+    """Get one less than number of CPUs available.
+
+    Returns
+    -------
+    num_cpu_minus_1: int
+        One less than number of CPUs, or one.
+    """
+    num_cpu: Optional[int] = os.cpu_count()
+    num_cpu_minus_1: int
+
+    if (num_cpu is None) or (num_cpu == 1):
+        num_cpu_minus_1 = 1
+    else:
+        num_cpu_minus_1 = num_cpu - 1
+    return num_cpu_minus_1

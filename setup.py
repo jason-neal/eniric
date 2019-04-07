@@ -1,6 +1,10 @@
 import codecs
 import os
 import sys
+from os.path import join
+from typing import List
+
+from setuptools import find_packages, setup
 
 if sys.version < "3.6":
     sys.exit(
@@ -9,16 +13,20 @@ if sys.version < "3.6":
         )
     )
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
 
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Get the long description from the README file
-with codecs.open(os.path.join(here, "README.md")) as f:
+with codecs.open(join(here, "README.md")) as f:
     long_description = f.read()
+
+with codecs.open(join(here, "requirements.txt")) as f:
+    requirements = f.read().splitlines()
+
+# Conditional pytest-runner install
+needs_pytest = {"pytest", "test", "ptr"}.intersection(sys.argv)
+pytest_runner: List[str] = ["pytest-runner>=4"] if needs_pytest else []
+setup_requires: List[str] = []
 
 config = {
     "name": "eniric",
@@ -29,37 +37,30 @@ config = {
     "url": "https://github.com/jason-neal/eniric.git",
     "download_url": "https://github.com/jason-neal/eniric.git",
     "author_email": "jason.neal@astro.up.pt",
-    "version": "1.0rc1",
-    "license": "MIT",
-    "setup_requires": ["pytest-runner"],
+    "version": "1.0rc3",
+    "license": "MIT Licence",
+    "setup_requires": setup_requires + pytest_runner,
     "tests_require": ["pytest", "hypothesis"],
-    "install_requires": [
-        "astropy",
-        "joblib>0.12",
-        "matplotlib",
-        "multiprocess",
-        "numpy",
-        "pandas",
-        "pyyaml",
-        "scipy",
-        "tqdm",
-    ],
+    "install_requires": requirements,
     "extras_require": {
         "dev": ["check-manifest"],
         "test": ["coverage", "pytest", "pytest-cov", "python-coveralls", "hypothesis"],
-    },  # $ pip install -e .[dev,test]
-    "packages": ["eniric", "eniric_scripts", "eniric.obsolete"],
+        "docs": ["sphinx >= 1.4", "sphinx_rtd_theme", "rstcheck"],
+        "ci": [
+            "codacy-coverage==1.3.11",
+            "codeclimate-test-reporter>=0.2.3",
+            "python-coveralls>=2.9.1",
+        ],
+    },  # $ pip install -e .[dev,test, docs]
+    "packages": find_packages(),
     "scripts": [
-        "eniric_scripts/phoenix_precision.py",
-        "eniric_scripts/split_atmmodel.py",
-        "eniric_scripts/bary_shift_atmmodel.py",
-        "eniric_scripts/untar_here.py",
-        "eniric_scripts/download_eniric_data.sh",
-        "tests/download_test_PHOENIX_spec.sh",
-        "eniric/obsolete/make_test_data.py",
-        "eniric/obsolete/nIR_run.py",
-        "eniric/obsolete/nIR_precision.py",
-        "eniric/obsolete/prepare_data.py",
+        "scripts/phoenix_precision.py",
+        "scripts/split_atmmodel.py",
+        "scripts/barycenter_broaden_atmmodel.py",
+        "scripts/untar_here.py",
+        "scripts/download/download_eniric_data.sh",
+        "scripts/download/ps_download_eniric_data.ps1",
+        "scripts/download/download_test_aces.py",
     ],
     "include_package_data": True,
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers

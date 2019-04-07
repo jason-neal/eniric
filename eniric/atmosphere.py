@@ -6,8 +6,8 @@ import numpy as np
 from astropy import constants as const
 from numpy import ndarray
 
-import eniric
 import eniric.io_module as io
+from eniric import config
 from eniric.broaden import resolution_convolution
 from eniric.utilities import band_limits
 
@@ -21,18 +21,20 @@ class Atmosphere(object):
     Attributes
     ----------
     wl: ndarray
-        Wavelength array
+        Wavelength array.
     transmission: ndarray
-        Atmospheric transmission (between 0 and 1)
+        Atmospheric transmission (between 0 and 1).
     std: ndarray
         Standard deviation of transmission.
     mask: ndarray
-        Transmission mask (1's are kept)
+        Transmission mask (1's are kept).
     shifted: bool
-        Indicate shifted mask
+        Indicate shifted mask. Default is False.
+    verbose: bool
+        Enable verbose. Default is False.
 
     Constructors
-    ----------
+    ------------
     from_file(atmmodel)
         Read in atmospheric model and prepare.
     from_band(band, bary=False)
@@ -52,24 +54,32 @@ class Atmosphere(object):
         Make a copy of atmosphere object.
     mask_transmission(depth)
         Mask the transmission below given depth. e.g. 2%
-    bary_shift_mask(rv, consecutive_test)
-        Sweep telluric mask symmetrically by rv.
+    barycenter_broaden(rv, consecutive_test)
+        Sweep telluric mask symmetrically by +/- a velocity.
     broaden(resolution, *kwargs)
         Instrument broadening of the atmospheric transmission profile.
 
     Configuration
     -------------
-    Two things can be set for the Atmosphere class in the `config.yaml` file
-    The path to atmosphere data
-    e.g.
-        paths:
-            atmmodel: "path/to/atmmodel/directory"
-    The name for the atmosphere model .dat file
+    Two things can be set for the Atmosphere class in the `config.yaml` file.
+    The path to the atmosphere data
+        e.g.
+            paths:
+                atmmodel: "path/to/atmmodel/directory"
+    The name for the atmosphere model *.dat file
         atmmodel:
             base: "Average_TAPAS_2014"
     """
 
-    def __init__(self, wavelength, transmission, mask=None, std=None, shifted=False):
+    def __init__(
+        self,
+        wavelength,
+        transmission,
+        mask=None,
+        std=None,
+        shifted=False,
+        verbose=False,
+    ):
         assert len(wavelength) == len(
             transmission
         ), "Wavelength and transmission do not match length."
@@ -84,6 +94,7 @@ class Atmosphere(object):
         else:
             self.mask = np.asarray(mask, dtype=bool)
         self.shifted = shifted
+        self.verbose = verbose
 
     @classmethod
     def from_file(cls, atmmodel: str):
@@ -120,13 +131,14 @@ class Atmosphere(object):
         band: str
             Name of atmosphere file.
         bary: bool
-            Barycentric shifted mask.
+            Barycentric shift the mask.
         """
 
         extension = "_bary.dat" if bary else ".dat"
         atmmodel = join(
-            eniric.paths["atmmodel"],
-            "{0}_{1}{2}".format(eniric.atmmodel["base"], band, extension),
+            config.pathdir,
+            config.paths["atmmodel"],
+            "{0}_{1}{2}".format(config.atmmodel["base"], band, extension),
         )
 
         try:
@@ -137,20 +149,22 @@ class Atmosphere(object):
                 """Could not find band file for band {0}.
              It is recommend to create this using
                 `split_atmosphere.py -b {0}`
-                `bary_shift_atmmodel.py -b {0}`
+                `barycenter_broaden_atmmodel.py -b {0}`
              Trying to load main atmosphere file for now. (will be slower).""".format(
                     band
                 )
             )
             full_model = join(
-                eniric.paths["atmmodel"], "{0}.dat".format(eniric.atmmodel["base"])
+                config.pathdir,
+                config.paths["atmmodel"],
+                "{0}.dat".format(config.atmmodel["base"]),
             )
             atm = cls.from_file(full_model)
 
             # Shorten to band
             atm = atm.wave_select(*band_limits(band))
             if bary:
-                atm.bary_shift_mask(consecutive_test=True)
+                atm.barycenter_broaden(consecutive_test=True)
         return atm
 
     def to_file(
@@ -193,11 +207,10 @@ class Atmosphere(object):
     def at(self, wave):
         """Return the transmission value at the closest points to wave.
 
-        This assumes that the atmosphere model is
-        sampled much higher than the stellar spectra.
+        This assumes that the atmosphere model is sampled at a higher rate
+        than the stellar spectra.
 
-        For instance the default has a sampling if 10 compared to 3.
-        (instead of interpolation)
+        For instance, the default Tapas model has a sampling if 10 compared to 3.
 
         Parameters
         ----------
@@ -235,34 +248,37 @@ class Atmosphere(object):
         )
 
     def mask_transmission(self, depth: float = 2.0) -> None:
-        """Mask the transmission below given depth. e.g. 2%
+        """Mask the transmission below given depth. e.g. 2%.
+
+        Updates the mask.
 
         Parameters
         ----------
-        depth : float (default = 2.0)
-            Telluric line depth percentage to mask out.
+        depth: float
+            Telluric line depth percentage to mask out. Default is 2.0.
             E.g. depth=2 will mask transmission deeper than 2%.
 
-        Updates the mask.
         """
         cutoff = 1 - depth / 100.0
         self.mask = self.transmission >= cutoff
 
-    def bary_shift_mask(self, rv: float = 30.0, consecutive_test: bool = False):
-        """Sweep telluric mask symmetrically by rv.
+    def barycenter_broaden(self, rv: float = 30.0, consecutive_test: bool = False):
+        """Sweep telluric mask symmetrically by +/- a velocity.
+
+        Updates the objects mask.
 
         Parameters
         ----------
-        rv: float (default=30 km/s)
-            Barycentric RV to extend masks in km/s. (Default=30 km/s)
-        consecutive_test: bool (default False)
-            Checks for 3 consecutive zeros to mask out transmission.
+        rv: float
+            Velocity to extend masks in km/s. Default is 30 km/s.
+        consecutive_test: bool
+            Checks for 3 consecutive zeros to mask out transmission. Default is False.
 
         """
         if self.shifted:
             warnings.warn(
                 "Detected that 'shifted' is already True. "
-                "Check that you want to rv extend masks again."
+                "Check that you want to rv extend the masks again."
             )
         rv_mps = rv * 1e3  # Convert from km/s into m/s
 
@@ -298,12 +314,13 @@ class Atmosphere(object):
                     else:
                         this_mask_value = True
                         if np.sum(~mask_slice) > 3:
-                            print(
-                                (
-                                    "There were {0}/{1} zeros in this "
-                                    "barycentric shift but None were 3 consecutive!"
-                                ).format(np.sum(~mask_slice), len(mask_slice))
-                            )
+                            if self.verbose:
+                                print(
+                                    (
+                                        "There were {0}/{1} zeros in this "
+                                        "barycentric shift but None were 3 consecutive!"
+                                    ).format(np.sum(~mask_slice), len(mask_slice))
+                                )
 
                 else:
                     this_mask_value = np.bool(
@@ -328,11 +345,11 @@ class Atmosphere(object):
         Parameters
         ----------
         resolution: float
-            Instrumental resolution/resolving power
+            Instrumental resolution R.
         fwhm_lim: int/float
-            Number of FWHM to extend convolution.
+            Number of FWHM to extend the wings of the convolution kernel.
         num_procs: Optional[int]
-            Number of processors to compute the convolution with. Default = total processors - 1
+            Number of processors to use. Default = total processors - 1
         """
         self.transmission = resolution_convolution(
             wavelength=self.wl,
@@ -360,8 +377,8 @@ def consecutive_truths(condition: ndarray) -> ndarray:
 
     Notes
     -----
-    Solution found at {http://stackoverflow.com/questions/24342047/
-                       count-consecutive-occurences-of-values-varying-in-length-in-a-numpy-array}
+    Solution found at http://stackoverflow.com/questions/24342047
+
     """
     if not np.any(condition):  # No match to condition
         return np.array([0])
