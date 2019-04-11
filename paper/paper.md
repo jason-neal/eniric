@@ -50,6 +50,11 @@ This improves the convolution performance but not to the level achievable by alg
 The precision calculations are not limited to the large spectroscopic bands, but can also be performed on narrow wavelength slices along the entire spectrum.
 This allows one to explore the RV precision across the entire spectrum and perform comparision between observations and synthetic libraries [e.g. @artigau_optical_2018].
 
+![Precision achieved with *Eniric* as a function of spectral band for stars with a rotational velocity of vsini=1.0\ kms$^{-1}$ and temperatures 3900 K, 3500 K, 2800 K, 2600 K, corresponding to spectral types M0, M3, M6, and M9 respectively.
+The dashed line represents the theoretical limits imposed by the full spectrum, and the filled area represents the values within the limits set by the complete removal of atmospheric absorption regions (circles) and the perfect correction of atmospheric absorption (triangles); blue, green, and red represent the results obtained for resolutions of 60000, 80000, and 100000, respectively.
+The spectra were normalized to have a SNR of 100 per resolution element as measured at the center of the J-band.
+This is similar to Figure 1 from [@figueira_radial_2016] but with updated precision values.](./precisions.png)
+
 Extraneous information not included in the spectra (i.e., not photon noise nor line content information)
 can be included in the precision calculation through the use of a spectral mask. This mask can be used to
 indicate which spectral lines are to be included/excluded (via a binary mask) or if some spectral lines should receive more
@@ -71,11 +76,6 @@ wavelength choices provided to the script. An example of relative precision resu
 *Eniric* has been recently used to calculate relative RV precision of M-dwarf spectra for use in the Exposure Time Calculators of *NIRPS*\ [@bouchy_nearinfrared_2017] and *SPIRou*\ [@artigau_spirou_2014], two new high-resolution NIR spectrographs.
 For *SPIRou* these were specifically calculated for the instruments resolution (R=75,000) and for all stellar temperatures between 2500--4000\ K.
 It is also currently being used to compare the theoretical precision between observed *CARMENES* spectra\ [@reiners_carmenes_2018] and their synthetic library counterparts.
-
-![Precision achieved with *Eniric* as a function of spectral band for stars with a rotational velocity of vsini=1.0\ kms$^{-1}$ and temperatures 3900 K, 3500 K, 2800 K, 2600 K, corresponding to spectral types M0, M3, M6, and M9 respectively.
-The dashed line represents the theoretical limits imposed by the full spectrum, and the filled area represents the values within the limits set by the complete removal of atmospheric absorption regions (circles) and the perfect correction of atmospheric absorption (triangles); blue, green, and red represent the results obtained for resolutions of 60000, 80000, and 100000, respectively.
-The spectra were normalized to have a SNR of 100 per resolution element as measured at the center of the J-band.
-This is similar to Figure 1 from [@figueira_radial_2016] but with updated precision values.](./precisions.png)
 
 [*Eniric*](https://github.com/jason-neal/eniric) is available on [*GitHub*](https://github.com/jason-neal/eniric) with documentation found in the `README.md` and at [ReadtheDocs](https://eniric.readthedocs.io/en/latest/) with usage examples provided as [Jupyter notebooks](https://github.com/jason-neal/eniric/tree/master/docs/Notebooks).
 It utilizes packages from the scientific Python stack including [NumPy](http://www.numpy.org/) [@oliphant_guide_2015] and [SciPy](https://www.scipy.org/) [@scipy_scipy.org_2019], [Matplotlib](https://matplotlib.org/) [@hunter_matplotlib_2007], [Pandas](http://pandas.pydata.org/) [@mckinney_data_2010], and [Astropy](http://docs.astropy.org/en/stable/) [@astropy_collaboration_astropy_2013;@astropy_collaboration_astropy_2018]. It also uses [Joblib](https://joblib.readthedocs.io/en/latest/)[@joblib_joblib_2019], [Starfish](https://starfish.readthedocs.io/en/latest/) [@czekala_constructing_2015], and [tqdm](https://tqdm.github.io/) [@tqdm/tqdm].
