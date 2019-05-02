@@ -51,7 +51,7 @@ config = {
             "codeclimate-test-reporter>=0.2.3",
             "python-coveralls>=2.9.1",
         ],
-    },  # $ pip install -e .[dev,test, docs]
+    },  # $ pip install -e .[dev,test, docs] --no-use-pep517
     "packages": find_packages(),
     "scripts": [
         "scripts/phoenix_precision.py",

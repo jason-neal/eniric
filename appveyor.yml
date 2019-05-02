@@ -13,7 +13,7 @@ cache:
 
 install:
   - SET PATH=%PYTHON%;%PYTHON%\Scripts\;%path%
-  - "%PYTHON%\\python.exe -m pip install --upgrade pip<19.1"
+  # - "%PYTHON%\\python.exe -m pip install --upgrade pip"
   # We need wheel installed to build wheels
   - "%PYTHON%\\python.exe -m pip install wheel"
   -
