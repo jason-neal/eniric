@@ -12,7 +12,7 @@ cache:
     - $HOME/data
 
 install:
-  - pip install --upgrade pip
+  - pip install --upgrade pip<19.1
   # Install eniric requirements
   - travis_retry pip install -r requirements_dev.txt
   - travis_retry pip install -r requirements.txt
