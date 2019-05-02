@@ -12,7 +12,7 @@ build:
       - $HOME/data
 
   ci:
-    - pip install --upgrade pip
+    # - pip install --upgrade pip
     # Install eniric requirements
     - travis_retry pip install -r requirements_dev.txt
     - travis_retry pip install -r requirements.txt
