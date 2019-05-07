@@ -9,6 +9,7 @@
 [![Updates](https://pyup.io/repos/github/jason-neal/eniric/shield.svg)](https://pyup.io/repos/github/jason-neal/eniric/)
 [![Python 3](https://pyup.io/repos/github/jason-neal/eniric/python-3-shield.svg)](https://pyup.io/repos/github/jason-neal/eniric/)
 [![PyPI version](https://badge.fury.io/py/eniric.svg)](https://badge.fury.io/py/eniric)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2658917.svg)](https://doi.org/10.5281/zenodo.2658917)
 
 `Eniric` is a Python 3 software to compute the theoretical Radial Velocity (RV) precision of stellar spectra.
 `Eniric` is an overhaul and extension to the code used in [Figueria et al. 2016](http://dx.doi.org/10.1051/0004-6361/201526900) to analysis the precision of M-dwarf stars.

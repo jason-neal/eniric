@@ -23,6 +23,11 @@
    :target: https://badge.fury.io/py/eniric
    :alt: PyPI version
 
+
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.2658917.svg
+   :target: https://doi.org/10.5281/zenodo.2658917
+
+
 ==================================
 Welcome to Eniric's documentation!
 ==================================
