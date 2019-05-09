@@ -28,6 +28,10 @@
    :target: https://doi.org/10.5281/zenodo.2658917
 
 
+.. image:: http://joss.theoj.org/papers/10.21105/joss.01053/status.svg
+   :target: https://doi.org/10.21105/joss.01053
+
+
 ==================================
 Welcome to Eniric's documentation!
 ==================================
