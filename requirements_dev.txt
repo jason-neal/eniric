@@ -9,7 +9,7 @@ mypy==0.701
 numpy==1.16.4
 oyaml==0.9
 pandas==0.24.2
-pre-commit==1.15.2
+pre-commit==1.16.1
 pytest==4.4.1
 pytest-cov==2.6.1
 pyyaml==5.1
