@@ -2,7 +2,7 @@ astropy==3.2.3
 coverage==4.5.4
 git+https://github.com/jason-neal/starfish@eniric_suitable#egg=astrostarfish
 hypothesis==4.42.5
-joblib==0.13.2  # >=0.12.3
+joblib==0.14.0  # >=0.12.3
 matplotlib==3.1.1
 multiprocess==0.70.8
 mypy==0.720
