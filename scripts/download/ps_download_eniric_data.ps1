@@ -18,7 +18,8 @@ Write-Host "$DIRECTORY1 is not present. Creating"
 mkdir $DIRECTORY1
 }
 cd $DIRECTORY1
-wget "https://www.dropbox.com/s/raw/i4cxjrhcbx6e37x/precision.tar.gz" -UseBasicParsing -OutFile ".\precision.tar.gz"
+# wget "https://www.dropbox.com/s/raw/i4cxjrhcbx6e37x/precision.tar.gz" -UseBasicParsing -OutFile ".\precision.tar.gz"
+wget "https://github.com/jason-neal/eniric-data/blob/master/data/precision.tar.gz?raw=true" -UseBasicParsing -OutFile ".\precision.tar.gz"
 dir
 python ..\scripts\untar_here.py "precision.tar.gz"
 cd $HOMEDIR
@@ -31,7 +32,8 @@ if ( -not (Test-Path $DIRECTORY2 -PathType Container))
 Write-Host "$DIRECTORY2 is not present. Creating"
 mkdir $DIRECTORY2
 }
-wget "https://www.dropbox.com/s/raw/uab283lmkaptsib/Average_TAPAS_2014.dat.tar.gz" -UseBasicParsing -OutFile "$DIRECTORY2\Average_TAPAS_2014.dat.tar.gz"
+# wget "https://www.dropbox.com/s/raw/uab283lmkaptsib/Average_TAPAS_2014.dat.tar.gz" -UseBasicParsing -OutFile "$DIRECTORY2\Average_TAPAS_2014.dat.tar.gz"
+wget "https://github.com/jason-neal/eniric-data/blob/master/data/atmmodel/Average_TAPAS_2014.dat.tar.gz?raw=true" -UseBasicParsing -OutFile "$DIRECTORY2\Average_TAPAS_2014.dat.tar.gz"
 cd $DIRECTORY2
 python ..\..\scripts\untar_here.py "Average_TAPAS_2014.dat.tar.gz"
 cd $HOMEDIR
