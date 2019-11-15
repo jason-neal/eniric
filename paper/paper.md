@@ -24,7 +24,7 @@ affiliations:
  - name: European Southern Observatory, Alonso de Córdova 3107, Vitacura, Casilla 19001, Santiago 19, Chile
    index: 3
 
-date: September 2018
+date: May 2019
 bibliography: paper.bib
 ---
 

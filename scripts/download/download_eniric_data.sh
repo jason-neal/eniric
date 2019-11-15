@@ -10,7 +10,7 @@ function display_usage(){
    Usage:
        $0 [--no-check-certificate]
 
-   Downloads data for eniric from dropbox and the phoenix aces library."
+   Downloads data for eniric from github and the phoenix aces library."
 }
 
 # check whether user had supplied -h or --help . If yes display usage
@@ -53,7 +53,8 @@ if [ ! -d "$DIRECTORY1" ]; then
   mkdir -p $DIRECTORY1
 fi
 (cd $DIRECTORY1
-    wget $certcheck "https://www.dropbox.com/s/raw/i4cxjrhcbx6e37x/precision.tar.gz"
+    # wget $certcheck "https://www.dropbox.com/s/raw/i4cxjrhcbx6e37x/precision.tar.gz"
+     wget $certcheck "https://github.com/jason-neal/eniric-data/blob/master/data/precision.tar.gz?raw=true" -O precision.tar.gz
    ../scripts/untar_here.py precision.tar.gz
     rm precision.tar.gz
 )
@@ -64,7 +65,8 @@ if [ ! -d "$DIRECTORY2" ]; then
   mkdir -p $DIRECTORY2
 fi
 (cd $DIRECTORY2
-    wget $certcheck "https://www.dropbox.com/s/raw/uab283lmkaptsib/Average_TAPAS_2014.dat.tar.gz"
+    #wget $certcheck "https://www.dropbox.com/s/raw/uab283lmkaptsib/Average_TAPAS_2014.dat.tar.gz"
+    wget $certcheck "https://github.com/jason-neal/eniric-data/blob/master/data/atmmodel/Average_TAPAS_2014.dat.tar.gz?raw=true" -O Average_TAPAS_2014.dat.tar.gz
     ../../scripts/untar_here.py Average_TAPAS_2014.dat.tar.gz
 )
 

@@ -1,5 +1,5 @@
 # [ENIRIC](https://github.com/jason-neal/eniric) - Extended Near InfraRed Information Content
-
+[![DOI](http://joss.theoj.org/papers/10.21105/joss.01053/status.svg)](https://doi.org/10.21105/joss.01053)
 [![Documentation Status](https://readthedocs.org/projects/eniric/badge/?version=latest)](https://eniric.readthedocs.io/en/latest/?badge=latest)
 [![Python 3.6+](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/24d3d525a79d4ae493de8c527540edef)](https://www.codacy.com/app/jason-neal/eniric?utm_source=github.com&utm_medium=referral&utm_content=jason-neal/eniric&utm_campaign=badger)
@@ -9,6 +9,7 @@
 [![Updates](https://pyup.io/repos/github/jason-neal/eniric/shield.svg)](https://pyup.io/repos/github/jason-neal/eniric/)
 [![Python 3](https://pyup.io/repos/github/jason-neal/eniric/python-3-shield.svg)](https://pyup.io/repos/github/jason-neal/eniric/)
 [![PyPI version](https://badge.fury.io/py/eniric.svg)](https://badge.fury.io/py/eniric)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2658917.svg)](https://doi.org/10.5281/zenodo.2658917)
 
 `Eniric` is a Python 3 software to compute the theoretical Radial Velocity (RV) precision of stellar spectra.
 `Eniric` is an overhaul and extension to the code used in [Figueria et al. 2016](http://dx.doi.org/10.1051/0004-6361/201526900) to analysis the precision of M-dwarf stars.
@@ -73,7 +74,7 @@ Checkout the documentation on [Read the Docs](https://eniric.readthedocs.io/en/l
 - [Configuration](https://eniric.readthedocs.io/en/latest/configuration.html)
 - [Basic Usage](https://eniric.readthedocs.io/en/latest/basic_usage.html)
 - [Broadening](https://eniric.readthedocs.io/en/latest/broadening.html)
-- [Atmospheric Transmission](https://eniric.readthedocs.io/en/latest/telluric_corection.html)
+- [Atmospheric Transmission](https://eniric.readthedocs.io/en/latest/telluric_correction.html)
 - [Normalization](https://eniric.readthedocs.io/en/latest/normalization.html)
 - [Resampling](https://eniric.readthedocs.io/en/latest/resampling.html)
 - [Theoretical Precision of Synthetic Spectra](https://eniric.readthedocs.io/en/latest/theoretical_precision.html)
