@@ -74,7 +74,7 @@ Checkout the documentation on [Read the Docs](https://eniric.readthedocs.io/en/l
 - [Configuration](https://eniric.readthedocs.io/en/latest/configuration.html)
 - [Basic Usage](https://eniric.readthedocs.io/en/latest/basic_usage.html)
 - [Broadening](https://eniric.readthedocs.io/en/latest/broadening.html)
-- [Atmospheric Transmission](https://eniric.readthedocs.io/en/latest/telluric_corection.html)
+- [Atmospheric Transmission](https://eniric.readthedocs.io/en/latest/telluric_correction.html)
 - [Normalization](https://eniric.readthedocs.io/en/latest/normalization.html)
 - [Resampling](https://eniric.readthedocs.io/en/latest/resampling.html)
 - [Theoretical Precision of Synthetic Spectra](https://eniric.readthedocs.io/en/latest/theoretical_precision.html)
