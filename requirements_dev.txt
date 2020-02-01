@@ -1,4 +1,4 @@
-astropy==3.2.3
+astropy==4.0
 coverage==4.5.4
 git+https://github.com/jason-neal/starfish@eniric_suitable#egg=astrostarfish
 hypothesis==4.42.5
