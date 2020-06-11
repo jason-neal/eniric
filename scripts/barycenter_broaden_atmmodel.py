@@ -7,6 +7,7 @@ This makes the RV precision calculations faster.
 
 """
 
+
 import argparse
 import sys
 from os.path import join
@@ -17,8 +18,7 @@ import numpy as np
 from eniric import config
 from eniric.atmosphere import Atmosphere
 
-choices = [None, "ALL"]
-choices.extend(config.bands["all"])
+choices = [None, "ALL", *config.bands["all"]]
 
 
 def _parser():
@@ -51,11 +51,7 @@ def main(bands: Optional[List[str]] = None, verbose: bool = False) -> None:
         Wavelength bands to perform barycenter shifts on. Default is all bands.
 
     """
-    if (bands is None) or ("ALL" in bands):
-        bands_ = config.bands["all"]
-    else:
-        bands_ = bands
-
+    bands_ = config.bands["all"] if (bands is None) or ("ALL" in bands) else bands
     for band in bands_:
         unshifted_atmmodel = join(
             config.pathdir,

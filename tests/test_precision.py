@@ -36,7 +36,7 @@ def test_rvprev_calc(test_spec, wav_unit, flux_unit, trans_unit):
     wav = test_spec[0] * wav_unit
     flux = test_spec[1] * flux_unit
     mask = test_spec[2]
-    if test_spec[2] is not None:
+    if mask is not None:
         mask *= trans_unit
 
     rv = rv_precision(wav, flux, mask)
@@ -100,7 +100,7 @@ def test_relation_of_rv_to_sqrtsumwis(test_spec, wav_unit, flux_unit, trans_unit
     wav = test_spec[0] * wav_unit
     flux = test_spec[1] * flux_unit
     mask = test_spec[2]
-    if test_spec[2] is not None:
+    if mask is not None:
         mask *= trans_unit
         mask = mask ** 2
     assert np.all(

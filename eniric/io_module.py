@@ -274,9 +274,8 @@ def pdwrite_cols(filename: str, *data, **kwargs) -> int:
     if kwargs:  # check for unwanted key words
         raise TypeError("Unexpected **kwargs: {!r}".format(kwargs))
 
-    if header is not None:
-        if len(header) != len(data):
-            raise ValueError("Size of data and header does not match.")
+    if header is not None and len(header) != len(data):
+        raise ValueError("Size of data and header does not match.")
 
     data_dict = {}
     for i, data_i in enumerate(data):

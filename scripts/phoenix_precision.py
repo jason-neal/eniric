@@ -5,6 +5,7 @@ phoenix_precision.py
 Script to generate RV precision of synthetic spectra, see :ref:`Calculating-Precisions`.
 
 """
+
 import argparse
 import itertools
 import os
@@ -33,8 +34,7 @@ from eniric.utilities import (
 
 num_cpu_minus_1 = cpu_minus_one()
 
-ref_choices = ["SELF"]
-ref_choices.extend(config.bands["all"])
+ref_choices = ["SELF", *config.bands["all"]]
 
 
 def _parser():
@@ -482,11 +482,10 @@ if __name__ == "__main__":
     args = _parser()
 
     # check bt-settl parameters
-    if args.model == "btsettl":
-        if (args.metal != [0]) or (args.alpha != [0]):
-            raise ValueError(
-                "You cannot vary metallicity and alpha for BT-Settl, remove these flags."
-            )
+    if args.model == "btsettl" and ((args.metal != [0]) or (args.alpha != [0])):
+        raise ValueError(
+            "You cannot vary metallicity and alpha for BT-Settl, remove these flags."
+        )
     try:
         normalize = not args.disable_normalization
     except AttributeError:

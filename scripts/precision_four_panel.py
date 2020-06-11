@@ -217,11 +217,11 @@ def plot_precision(
         ax[jj].tick_params(axis="both", which="major", labelsize=12)
 
         # ticks and labels
-        if (jj == 2) or (jj == 3):
+        if jj in [2, 3]:
             ax[jj].set_xlabel("Bands", fontsize=12)
-        if (jj == 1) or (jj == 3):
+        if jj in [1, 3]:
             ax[jj].set_yticklabels([])
-        if (jj == 0) or (jj == 1):
+        if jj in [0, 1]:
             ax[jj].set_xticklabels([])
 
     fig.text(
@@ -476,16 +476,16 @@ def cumulative_plot(
         ax[jj].tick_params(axis="both", which="major", labelsize=12)
 
         # ticks and labels
-        if (jj == 2) or (jj == 3):
+        if jj in [2, 3]:
             ax[jj].set_xlabel("Bands", fontsize=12)
             if full_cum:
                 ax[jj].tick_params(axis="x", labelrotation=40)
             else:
                 ax[jj].tick_params(axis="x", labelrotation=25)
 
-        if (jj == 1) or (jj == 3):
+        if jj in [1, 3]:
             ax[jj].set_yticklabels([])
-        if (jj == 0) or (jj == 1):
+        if jj in [0, 1]:
             ax[jj].set_xticklabels([])
 
     fig.text(
