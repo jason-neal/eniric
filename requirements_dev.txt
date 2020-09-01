@@ -8,7 +8,7 @@ multiprocess==0.70.10
 mypy==0.782
 numpy==1.19.1
 oyaml==1.0
-pandas==1.0.4
+pandas==1.1.1
 pre-commit==2.4.0
 pytest==5.4.2
 pytest-cov==2.9.0
