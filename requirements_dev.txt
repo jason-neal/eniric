@@ -5,7 +5,7 @@ hypothesis==5.30.0
 joblib==0.16.0  # >=0.12.3
 matplotlib==3.3.1
 multiprocess==0.70.10
-mypy==0.770
+mypy==0.782
 numpy==1.18.4
 oyaml==0.9
 pandas==1.0.4
