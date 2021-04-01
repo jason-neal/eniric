@@ -1,5 +1,5 @@
 astropy==4.2
-coverage==5.1
+coverage==5.5
 git+https://github.com/jason-neal/starfish@eniric_suitable#egg=astrostarfish
 hypothesis==5.16.0
 joblib==0.15.1  # >=0.12.3
