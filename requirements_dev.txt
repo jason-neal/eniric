@@ -4,7 +4,7 @@ git+https://github.com/jason-neal/starfish@eniric_suitable#egg=astrostarfish
 hypothesis==6.13.10
 joblib==1.0.1  # >=0.12.3
 matplotlib==3.4.2
-multiprocess==0.70.9
+multiprocess==0.70.11.1
 mypy==0.770
 numpy==1.18.4
 oyaml==0.9
