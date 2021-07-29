@@ -1,7 +1,7 @@
 ===========
 Basic Usage
 ===========
-To calculate the RV precision given a spectrum with ``wavelength`` and ``flux`` you can use the ``rv_precsion`` function.
+To calculate the RV precision given a spectrum with ``wavelength`` and ``flux`` you can use the ``rv_precision`` function.
 
 .. code-block:: python
 
@@ -24,8 +24,8 @@ or for the flux independent spectral ``quality``, Q,
 
 Masking
 -------
-It is possible to include custom pixel masks both :func:`rv_recision` and :func:`quality`, to selectively select, exclude, or weight the spectra.
-These are pass it as the 3rd argument to either function.
+It is possible to include custom pixel masks both :func:`rv_precision` and :func:`quality`, to selectively select, exclude, or weight the spectra.
+These are passed as the 3rd argument to either function.
 
 .. code-block:: python
 
