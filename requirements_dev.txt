@@ -6,7 +6,7 @@ joblib==1.1.0  # >=0.12.3
 matplotlib==3.5.0
 multiprocess==0.70.12.2
 mypy==0.910
-numpy==1.18.4
+numpy==1.21.4
 oyaml==0.9
 pandas==1.0.4
 pre-commit==2.4.0
