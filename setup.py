@@ -6,14 +6,6 @@ from typing import List
 
 from setuptools import find_packages, setup
 
-if sys.version < "3.6":
-    sys.exit(
-        "Error: Python 3.6 or greater required for Eniric (using {})".format(
-            sys.version
-        )
-    )
-
-
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Get the long description from the README file
@@ -39,6 +31,7 @@ config = {
     "author_email": "jason.neal@astro.up.pt",
     "version": "1.0",
     "license": "MIT Licence",
+    "python_requires": ">3.6",
     "setup_requires": setup_requires + pytest_runner,
     "tests_require": ["pytest", "hypothesis"],
     "install_requires": requirements,
