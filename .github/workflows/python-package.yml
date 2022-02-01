@@ -34,7 +34,7 @@ jobs:
     - name: Setup config and make test data
       run: |
         export MPLBACKEND="AGG"   # Non-interactive
-        download_eniric_data.sh -no-check-certificate  # Some files from Dropbox
+        download_eniric_data.sh --no-check-certificate  # Some files from Dropbox
         make atmos                # Prepare atmosphere models
  
     - name: Test with pytest
