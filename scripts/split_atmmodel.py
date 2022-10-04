@@ -133,11 +133,7 @@ def main(
         Unix-like exit. Non-zero indicates a failure occurred.
 
     """
-    if (bands is None) or ("ALL" in bands):
-        bands_ = config.bands["all"]
-    else:
-        bands_ = bands
-
+    bands_ = config.bands["all"] if (bands is None) or ("ALL" in bands) else bands
     if new_name is None:
         new_name = model.split(".")[0]
     if data_dir is None:
@@ -149,35 +145,34 @@ def main(
 
     # If trying to obtain the provided model extract from and it doesn't yet exist
     # extract from tar.gz file. (Extracted it is 230 MB which is to large for Git)
-    if "Average_TAPAS_2014.dat" == atmmodel:
-        if not os.path.exists(model_name):
-            if verbose:
-                print("Unpacking Average_TAPAS_2014.dat.tar.gz...")
-            import tarfile
+    if atmmodel == "Average_TAPAS_2014.dat" and not os.path.exists(model_name):
+        if verbose:
+            print("Unpacking Average_TAPAS_2014.dat.tar.gz...")
+        import tarfile
 
-            with tarfile.open(str(model_name) + ".tar.gz", "r") as tar:
-                def is_within_directory(directory, target):
-                    
-                    abs_directory = os.path.abspath(directory)
-                    abs_target = os.path.abspath(target)
-                
-                    prefix = os.path.commonprefix([abs_directory, abs_target])
-                    
-                    return prefix == abs_directory
-                
-                def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
-                
-                    for member in tar.getmembers():
-                        member_path = os.path.join(path, member.name)
-                        if not is_within_directory(path, member_path):
-                            raise Exception("Attempted Path Traversal in Tar File")
-                
-                    tar.extractall(path, members, numeric_owner=numeric_owner) 
-                    
-                
-                safe_extract(tar, data_dir_)
-            if verbose:
-                print("Unpacked")
+        with tarfile.open(f"{str(model_name)}.tar.gz", "r") as tar:
+            def is_within_directory(directory, target):
+
+                abs_directory = os.path.abspath(directory)
+                abs_target = os.path.abspath(target)
+
+                prefix = os.path.commonprefix([abs_directory, abs_target])
+
+                return prefix == abs_directory
+
+            def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+
+                for member in tar.getmembers():
+                    member_path = os.path.join(path, member.name)
+                    if not is_within_directory(path, member_path):
+                        raise Exception("Attempted Path Traversal in Tar File")
+
+                tar.extractall(path, members, numeric_owner=numeric_owner) 
+
+
+            safe_extract(tar, data_dir_)
+        if verbose:
+            print("Unpacked")
     if verbose:
         print("Loading from_file {0}".format(model_name))
     atm = Atmosphere.from_file(model_name)
