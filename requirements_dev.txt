@@ -1,17 +1,17 @@
-astropy==4.0.1.post1
-coverage==5.1
+astropy==5.1.1
+coverage==6.5.0
 git+https://github.com/jason-neal/starfish@eniric_suitable#egg=astrostarfish
-hypothesis==5.16.0
-joblib==0.15.1  # >=0.12.3
-matplotlib==3.2.1
-multiprocess==0.70.9
-mypy==0.770
-numpy==1.18.4
-oyaml==0.9
-pandas==1.0.4
-pre-commit==2.4.0
-pytest==5.4.2
-pytest-cov==2.9.0
-pyyaml==5.3.1
-scipy==1.4.1
-tqdm==4.46.0
+hypothesis==6.56.4
+joblib==1.2.0  # >=0.12.3
+matplotlib==3.6.1
+multiprocess==0.70.14
+mypy==0.982
+numpy==1.23.4
+oyaml==1.0
+pandas==1.5.1
+pre-commit==2.20.0
+pytest==7.2.0
+pytest-cov==4.0.0
+pyyaml==6.0
+scipy==1.9.3
+tqdm==4.64.1
