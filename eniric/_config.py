@@ -48,33 +48,33 @@ class Config(object):
         return self._config[key]
 
     def __setitem__(self, key, value):
-        ret = self._config.__setitem__(key, value)
-        return ret
+        return self._config.__setitem__(key, value)
 
     def __getattr__(self, key):
-        if key in self:
-            if key == "paths":
-                paths = self["paths"]
-                for k, value in paths.items():
-                    if isinstance(value, list):
-                        paths[k] = os.path.join(*value)
-                return paths
-            elif key == "cache":
-                cache = self["cache"]
-                if (cache["location"] is None) or (cache["location"] == "None"):
-                    cache["location"] = None  # Disables caching
-                elif isinstance(cache["location"], list):
-                    cache["location"] = os.path.join(*cache["location"])
-                return cache
-            return self[key]
-        else:
+        if key not in self:
             return super().__getattribute__(key)
+        if key == "cache":
+            cache = self["cache"]
+            if (cache["location"] is None) or (cache["location"] == "None"):
+                cache["location"] = None  # Disables caching
+            elif isinstance(cache["location"], list):
+                cache["location"] = os.path.join(*cache["location"])
+            return cache
+        elif key == "paths":
+            paths = self["paths"]
+            for k, value in paths.items():
+                if isinstance(value, list):
+                    paths[k] = os.path.join(*value)
+            return paths
+        return self[key]
 
     def __setattr__(self, key, value):
-        if key not in ["_path", "_protect_rewrites", "_config", "pathdir"]:
-            if key in self:
-                self.__setitem__(key, value)
-                self._rewrite()
+        if (
+            key not in ["_path", "_protect_rewrites", "_config", "pathdir"]
+            and key in self
+        ):
+            self.__setitem__(key, value)
+            self._rewrite()
 
         super().__setattr__(key, value)
 
