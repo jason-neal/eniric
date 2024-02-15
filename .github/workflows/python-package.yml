@@ -56,8 +56,8 @@ jobs:
     - name: Test documentation
       run: |
         rstcheck -r docs
-    - name: After Success
-      run: |
-        coveralls
-        codeclimate-test-reporter
-        python-codacy-coverage -r coverage.xml
+    #- name: After Success
+    #  run: |
+    #    coveralls
+    #    codeclimate-test-reporter
+    #    python-codacy-coverage -r coverage.xml
