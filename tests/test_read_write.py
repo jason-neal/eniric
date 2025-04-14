@@ -77,12 +77,12 @@ def test_write_col_errors_different_length(tmpdir):
     tmpfile = tmpdir.join("pd_multicol_test.dat")
     pd_multicol_name = str(tmpfile)
 
-    data1 = range(5)
-    data2 = range(5, 10)
-    bad_data = range(6)  # Different length
-
     # test uneven data lengths
     with pytest.raises(ValueError):
+        data1 = range(5)
+        data2 = range(5, 10)
+        bad_data = range(6)  # Different length
+
         io.pdwrite_cols(pd_multicol_name, data1, data2, bad_data)
 
 
@@ -90,12 +90,12 @@ def test_write_col_errors(tmpdir):
     tmpfile = tmpdir.join("pd_multicol_test.dat")
     pd_multicol_name = str(tmpfile)
 
-    data1 = range(5)
-    data2 = range(5, 10)
-    bad_data = range(6)  # Different length
-
     # test bad header
     with pytest.raises(ValueError):
+        data1 = range(5)
+        data2 = range(5, 10)
+        bad_data = range(6)  # Different length
+
         io.pdwrite_cols(
             pd_multicol_name, data1, data2, bad_data, header=["too", "many", "values"]
         )
@@ -105,7 +105,7 @@ def test_write_col_errors_bad_keyword(tmpdir):
     tmpfile = tmpdir.join("pd_multicol_test.dat")
     pd_multicol_name = str(tmpfile)
 
-    data1 = range(5)
-
     with pytest.raises(TypeError):
+        data1 = range(5)
+
         io.pdwrite_cols(pd_multicol_name, data1, bad="keyword")

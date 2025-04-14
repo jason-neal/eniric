@@ -80,9 +80,7 @@ def RVprec_calc_masked(
 
     # Zeros created from the initial empty array, when skipping single element chunks)
     slice_rvs = slice_rvs[np.nonzero(slice_rvs)]  # Only use nonzero values.
-    rv_value = 1.0 / (np.sqrt(np.nansum((1.0 / slice_rvs) ** 2.0)))
-
-    return rv_value
+    return 1.0 / (np.sqrt(np.nansum((1.0 / slice_rvs) ** 2.0)))
 
 
 def mask_clumping(

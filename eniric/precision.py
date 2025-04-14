@@ -169,11 +169,7 @@ def sqrt_sum_wis(
     pixel_wis = pixel_weights(wavelength, flux, grad=grad)
 
     # Apply masking function
-    if grad:
-        masked_wis = pixel_wis * mask
-    else:
-        masked_wis = pixel_wis * mask[:-1]
-
+    masked_wis = pixel_wis * mask if grad else pixel_wis * mask[:-1]
     sqrt_sum = np.sqrt(np.nansum(masked_wis))
     if not np.isfinite(sqrt_sum):
         warnings.warn("Weight sum is not finite = {}".format(sqrt_sum))
@@ -189,7 +185,7 @@ def sqrt_sum_wis(
 def mask_check(mask):
     """Checks for mask array."""
     if isinstance(mask, u.Quantity):
-        if not (mask.unit == u.dimensionless_unscaled):
+        if mask.unit != u.dimensionless_unscaled:
             raise TypeError(
                 "Mask should not be a non-dimensionless and unscaled Quantity!"
             )
@@ -218,8 +214,7 @@ def slope(wavelength: Union[ndarray, Quantity], flux: Union[ndarray, Quantity]):
     ffd: numpy.ndarray
         FFD slope of spectrum with n-1 points.
     """
-    ffd = np.diff(flux) / np.diff(wavelength)
-    return ffd
+    return np.diff(flux) / np.diff(wavelength)
 
 
 def pixel_weights(
@@ -252,8 +247,8 @@ def pixel_weights(
     else:
         flux_variance = flux
 
-    dydx_unit = 1
     if grad:
+        dydx_unit = 1
         # Hack for quantities with numpy gradient
         if isinstance(flux, Quantity):
             dydx_unit *= flux.unit

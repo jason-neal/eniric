@@ -85,10 +85,7 @@ class Atmosphere(object):
         ), "Wavelength and transmission do not match length."
         self.wl = np.asarray(wavelength)
         self.transmission = np.asarray(transmission)
-        if std is None:
-            self.std = np.zeros_like(wavelength)
-        else:
-            self.std = np.asarray(std)
+        self.std = np.zeros_like(wavelength) if std is None else np.asarray(std)
         if mask is None:
             self.mask = np.ones_like(wavelength, dtype=bool)
         else:
@@ -305,22 +302,21 @@ class Atmosphere(object):
                 if consecutive_test:
                     # Mask value False if 3 or more consecutive zeros in slice.
                     len_consec_zeros = consecutive_truths(~mask_slice)
-                    if np.all(
-                        ~mask_slice
+                    if (
+                        np.all(~mask_slice)
+                        or not np.all(~mask_slice)
+                        and np.max(len_consec_zeros) >= 3
                     ):  # All pixels of slice is zeros (shouldn't get here)
-                        this_mask_value = False
-                    elif np.max(len_consec_zeros) >= 3:
                         this_mask_value = False
                     else:
                         this_mask_value = True
-                        if np.sum(~mask_slice) > 3:
-                            if self.verbose:
-                                print(
-                                    (
-                                        "There were {0}/{1} zeros in this "
-                                        "barycentric shift but None were 3 consecutive!"
-                                    ).format(np.sum(~mask_slice), len(mask_slice))
-                                )
+                        if np.sum(~mask_slice) > 3 and self.verbose:
+                            print(
+                                (
+                                    "There were {0}/{1} zeros in this "
+                                    "barycentric shift but None were 3 consecutive!"
+                                ).format(np.sum(~mask_slice), len(mask_slice))
+                            )
 
                 else:
                     this_mask_value = np.bool(

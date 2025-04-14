@@ -15,8 +15,7 @@ from eniric.utilities import load_aces_spectrum
 @pytest.fixture
 def published_data():
     name = "data/precision/precision_figueira_2016.dat"
-    df = pd.read_csv(name, sep="\t")
-    return df
+    return pd.read_csv(name, sep="\t")
 
 
 @pytest.fixture(

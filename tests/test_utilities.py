@@ -362,8 +362,7 @@ def test_weighted_error(input_, expected):
     ]
 )
 def wavelength(request):
-    wave = request.param
-    return wave
+    return request.param
 
 
 @pytest.mark.parametrize("direction,multiplier", [(-1, 0), (1, 2)])

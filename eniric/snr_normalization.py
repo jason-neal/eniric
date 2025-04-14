@@ -86,11 +86,9 @@ def snr_constant_band(
     if not (wav[0] < band_middle < wav[-1]):
         raise ValueError("Band center not in wavelength range.")
 
-    norm_value = snr_constant_wav(
+    return snr_constant_wav(
         wav, flux, wav_ref=band_middle, snr=snr, sampling=sampling, verbose=verbose
     )
-
-    return norm_value
 
 
 def snr_constant_wav(
@@ -147,8 +145,7 @@ def snr_constant_wav(
                 snr_estimate, wav_ref
             )
         )
-    norm_value = (snr_estimate / snr) ** 2
-    return norm_value
+    return (snr_estimate / snr) ** 2
 
 
 def sampling_index(
@@ -177,16 +174,13 @@ def sampling_index(
         # index values must be integer
         indexes = np.arange(index - half_sampling, index + half_sampling, dtype=int)
         assert len(indexes) % 2 == 0  # confirm even
-        assert len(indexes) == sampling
     else:
         indexes = index + np.arange(-half_sampling, sampling - half_sampling, dtype=int)
         assert len(indexes) % 2 != 0  # confirm odd
-        assert len(indexes) == sampling
-
-    if array_length is not None:
-        if np.any(indexes >= array_length):
-            # This may need fixed up in the future.
-            raise ValueError("Indexes has values greater than the length of array.")
+    assert len(indexes) == sampling
+    if array_length is not None and np.any(indexes >= array_length):
+        # This may need fixed up in the future.
+        raise ValueError("Indexes has values greater than the length of array.")
 
     if np.any(indexes < 0):
         raise ValueError("Indexes has values less than 0.")

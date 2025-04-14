@@ -384,9 +384,7 @@ def unitary_gaussian(
     sigma = np.abs(fwhm) / (2 * np.sqrt(2 * np.log(2)))
     amp = 1.0 / (sigma * np.sqrt(2 * np.pi))
     tau = -((x - center) ** 2) / (2 * (sigma ** 2))
-    kernel = amp * np.exp(tau)
-
-    return kernel
+    return amp * np.exp(tau)
 
 
 def rotation_kernel(
@@ -420,9 +418,7 @@ def rotation_kernel(
 
     c1 = 2.0 * (1.0 - epsilon) / denominator
     c2 = 0.5 * np.pi * epsilon / denominator
-    kernel = c1 * np.sqrt(1.0 - lambda_ratio_sqr) + c2 * (1.0 - lambda_ratio_sqr)
-
-    return kernel
+    return c1 * np.sqrt(1.0 - lambda_ratio_sqr) + c2 * (1.0 - lambda_ratio_sqr)
 
 
 def oned_circle_kernel(x: ndarray, center: float, fwhm: float):

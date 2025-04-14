@@ -175,10 +175,7 @@ def res2int(res: Any) -> int:
     if isinstance(res, (np.int, np.float, int, float)):
         value = res
     elif isinstance(res, str):
-        if res.lower().endswith("k"):
-            value = float(res[:-1]) * 1000
-        else:
-            value = float(res)
+        value = float(res[:-1]) * 1000 if res.lower().endswith("k") else float(res)
     else:
         raise TypeError("Resolution name Type error of type {}".format(type(res)))
 
@@ -211,10 +208,7 @@ def res2str(res: Any) -> str:
     if isinstance(res, (np.int, np.float)):
         value = res / 1000
     elif isinstance(res, str):
-        if res.lower().endswith("k"):
-            value = res[:-1]
-        else:
-            value = float(res) / 1000
+        value = res[:-1] if res.lower().endswith("k") else float(res) / 1000
     else:
         raise TypeError("Resolution name TypeError of type {}".format(type(res)))
 
@@ -247,7 +241,7 @@ def rv_cumulative_full(rv_vector: Union[List, ndarray]) -> ndarray:
     """Function that calculates the cumulative RV vector weighted_error. In both directions."""
     assert len(rv_vector) == 5, "This hardcoded solution only meant for 5 bands."
 
-    cumulation = np.asarray(
+    return np.asarray(
         [
             weighted_error(rv_vector[0]),  # First
             weighted_error(rv_vector[:2]),
@@ -261,15 +255,12 @@ def rv_cumulative_full(rv_vector: Union[List, ndarray]) -> ndarray:
         ],
         dtype=float,
     )
-    return cumulation
 
 
 def weighted_error(rv_vector: Union[List[float], ndarray]) -> float:
     """Function that calculates the average weighted error from a vector of errors."""
     rv_vector = np.asarray(rv_vector)
-    rv_value = 1.0 / (np.sqrt(np.sum((1.0 / rv_vector) ** 2.0)))
-
-    return rv_value
+    return 1.0 / (np.sqrt(np.sum((1.0 / rv_vector) ** 2.0)))
 
 
 def moving_average(x: ndarray, window_size: Union[int, float]) -> ndarray:
@@ -386,7 +377,7 @@ def load_btsettl_spectrum(
     """
     from Starfish.grid_tools import CIFISTGridInterface as BTSETTL
 
-    if (2 < len(params)) and (len(params) <= 4):
+    if len(params) > 2 and len(params) <= 4:
         assert params[2] == 0
         assert params[-1] == 0  # Checks index 3 when present.
         params = params[0:2]  # Only allow 2 params
@@ -451,8 +442,7 @@ def doppler_shift_wav(wavelength: ndarray, vel: float):
     if not np.isfinite(vel):
         ValueError("The velocity is not finite.")
 
-    shifted_wavelength = wavelength * (1 + (vel / const.c.to("km/s").value))
-    return shifted_wavelength
+    return wavelength * (1 + (vel / const.c.to("km/s").value))
 
 
 def doppler_shift_flux(
@@ -486,8 +476,7 @@ def doppler_shift_flux(
 
     if new_wav is None:
         new_wav = wavelength
-    new_flux = np.interp(new_wav, shifted_wavelength, flux)
-    return new_flux
+    return np.interp(new_wav, shifted_wavelength, flux)
 
 
 def doppler_limits(rvmax, wmin, wmax):
@@ -527,8 +516,4 @@ def cpu_minus_one() -> int:
     num_cpu: Optional[int] = os.cpu_count()
     num_cpu_minus_1: int
 
-    if (num_cpu is None) or (num_cpu == 1):
-        num_cpu_minus_1 = 1
-    else:
-        num_cpu_minus_1 = num_cpu - 1
-    return num_cpu_minus_1
+    return 1 if (num_cpu is None) or (num_cpu == 1) else num_cpu - 1

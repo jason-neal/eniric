@@ -12,10 +12,7 @@ def test_RV_prec_masked(test_spec):
     wav = test_spec[0]
     flux = test_spec[1]
     mask = test_spec[2]
-    if mask is not None:
-        mask = mask.round().astype(bool)
-    else:
-        mask = np.ones_like(wav)
+    mask = mask.round().astype(bool) if mask is not None else np.ones_like(wav)
     print(mask)
 
     # Pre clumping as done in Figueira et al. 2016

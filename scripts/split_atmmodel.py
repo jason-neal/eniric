@@ -6,6 +6,7 @@ Script to split the large atmospheric model transmission spectra into the separa
 This create smaller files to load for each band for individual bands only.
 
 """
+
 import argparse
 import os
 import sys
@@ -19,8 +20,7 @@ from eniric.atmosphere import Atmosphere
 from eniric.utilities import band_limits, doppler_shift_wav
 
 atmmodel = "{0}.dat".format(config.atmmodel["base"])
-choices = ["ALL"]
-choices.extend(config.bands["all"])
+choices = ["ALL", *config.bands["all"]]
 
 
 def _parser():

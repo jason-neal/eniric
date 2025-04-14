@@ -201,7 +201,6 @@ def test_atmos_broadening_reduces_number_of_masked_points(
 ):
     """Test broadening transmission preforms instrumental convolution."""
     percent = 4
-    cuttoff = 1 - percent / 100
     atm = atmosphere_fixture[:4000]
     atm.mask_transmission(percent)
 
@@ -219,6 +218,7 @@ def test_atmos_broadening_reduces_number_of_masked_points(
     atm.mask_transmission(percent)
 
     if np.allclose(atm.mask, atm_org.mask):  # Mask changes after convolution
+        cuttoff = 1 - percent / 100
         # If masks don't change check both conditions still the same
         assert np.all((atm.transmission > cuttoff) == (atm_org.transmission > cuttoff))
 
@@ -245,14 +245,14 @@ def test_Atmosphere_copyable(short_atmosphere):
     atm2 = atm.copy()
 
     assert np.all(atm.wl == atm2.wl)
-    assert not (atm.wl is atm2.wl)
+    assert atm.wl is not atm2.wl
 
     assert np.all(atm.transmission == atm2.transmission)
-    assert not (atm.transmission is atm2.transmission)
+    assert atm.transmission is not atm2.transmission
     assert np.all(atm.std == atm2.std)
-    assert not (atm.std is atm2.std)
+    assert atm.std is not atm2.std
     assert np.all(atm.mask == atm2.mask)
-    assert not (atm.mask is atm2.mask)
+    assert atm.mask is not atm2.mask
 
 
 def test_Atmosphere_copyable_attr():
